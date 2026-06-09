@@ -16,22 +16,12 @@ describe("configs.frontend", () => {
   });
 });
 
-describe("configs.frontendServices", () => {
-  it("obliga a trySafe en la capa de servicios del front", () => {
-    const config = plugin.configs.frontendServices;
-
-    expect(config.rules["skapxd/await-requires-try-safe"]).toBe("error");
-    expect(config.files).toContain("**/services/**/*.{ts,tsx}");
-  });
-});
-
 describe("parser de TypeScript en los presets", () => {
   it("todo preset que aplica a TS trae su parser (standalone, sin tseslint del consumidor)", () => {
     const presets = [
       plugin.configs.base,
       plugin.configs.backend,
       plugin.configs.frontend,
-      plugin.configs.frontendServices,
       plugin.configs.package,
       ...plugin.configs.next,
       ...plugin.configs.astro.filter(

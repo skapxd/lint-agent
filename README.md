@@ -309,25 +309,17 @@ import skapxd from "@skapxd/eslint-opinionated";
 
 export default [
   {
-    files: ["src/app/**/*.{ts,tsx}", "src/components/**/*.{ts,tsx}"],
+    files: ["src/**/*.{ts,tsx}"],
     ...skapxd.configs.shared.frontend,
   },
-  // Capa de servicios: todo await debe ir envuelto en trySafe.
-  skapxd.configs.shared.frontendServices,
 ];
 ```
 
-Por defecto `frontendServices` aplica a `**/services/**` y `**/api/**`. Si tus
-servicios viven en otra carpeta, sobreescribe `files`:
-
-```js
-export default [
-  {
-    ...skapxd.configs.shared.frontendServices,
-    files: ["src/data/**/*.{ts,tsx}"],
-  },
-];
-```
+El contrato del front: ninguna función está obligada a retornar `Result`, pero
+toda llamada asíncrona debe ir envuelta en `trySafe` — salvo que lo llamado ya
+retorne `Result`/`Promise<Result<...>>` (exención type-aware de
+`skapxd/await-requires-try-safe`). Aplica el preset a TODO el código del front
+(componentes, hooks, servicios), no solo a los componentes.
 
 ### Next.js
 
@@ -437,7 +429,7 @@ bloque con `linterOptions: { noInlineConfig: false }` para esos globs.
 | `skapxd/one-root-function-per-file` | Un archivo, una función top-level semántica. |
 | `skapxd/async-functions-return-result` | Funciones async de dominio deben retornar `Promise<Result<...>>`. |
 | `skapxd/result-error-requires-cause` | Un `Result.err` derivado debe preservar `cause: result.error`. |
-| `skapxd/await-requires-try-safe` | Los `await` deben estar protegidos por `trySafe`, salvo que lo awaiteado ya retorne `Result`. La activan `shared.frontend` y `shared.frontendServices`. |
+| `skapxd/await-requires-try-safe` | Los `await` deben estar protegidos por `trySafe`, salvo que lo awaiteado ya retorne `Result`. La activa el preset `shared.frontend`. |
 | `skapxd/no-ad-hoc-ok-result` | Evita contratos `{ ok: ... }` hechos a mano en async exports. |
 | `skapxd/max-hook-size` | Marca hooks grandes o con demasiados `useState`. |
 | `skapxd/jsx-return-name-pascal-case` | Funciones que retornan JSX deben nombrarse como componentes. |
@@ -517,9 +509,8 @@ el archivo.
 
 ### `skapxd/await-requires-try-safe`
 
-> La activan el preset `shared.frontend` (todo el front: componentes, hooks,
-> handlers) y `shared.frontendServices` (acotada a `**/services/**`,
-> `**/api/**`). El contrato del front queda así: ninguna función está obligada
+> La activa el preset `shared.frontend` en todo el front: componentes, hooks,
+> handlers y servicios. El contrato queda así: ninguna función está obligada
 > a retornar `Result`, pero toda llamada asíncrona debe ir en `trySafe` — salvo
 > que lo llamado ya retorne `Result` (ver exención más abajo). Para activarla
 > en otros globs, añádela tú mismo:
