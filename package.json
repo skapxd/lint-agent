@@ -75,6 +75,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/skapxd/eslint-plugin"
+    "url": "https://github.com/skapxd/eslint-opinionated"
   }
 }
