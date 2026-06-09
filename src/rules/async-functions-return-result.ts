@@ -1,0 +1,148 @@
+// @ts-nocheck
+import { containsCallNamed } from "#/utils/contains-call-named";
+import { getAsyncResultRuleOptions } from "#/utils/get-async-result-rule-options";
+import { getFunctionExpressionName } from "#/utils/get-function-expression-name";
+import { getParentFunctionName } from "#/utils/get-parent-function-name";
+import { getParentFunctionReportNode } from "#/utils/get-parent-function-report-node";
+import { getTypeContext } from "#/utils/get-type-context";
+import { isAnonymousGeneratedFunctionName } from "#/utils/is-anonymous-generated-function-name";
+import { isPromiseOfResultType } from "#/utils/is-promise-of-result-type";
+import { isSkapxdResultOrPromiseResultType } from "#/utils/is-skapxd-result-or-promise-result-type";
+import { matchesAnyPattern } from "#/utils/matches-any-pattern";
+
+export const asyncFunctionsReturnResult = {
+      meta: {
+        type: "problem",
+        docs: {
+          description:
+            "Exige Promise<Result<...>> en funciones async de dominio.",
+        },
+        messages: {
+          missingReturnType:
+            "La funcion async `{{name}}` debe declarar Promise<Result<...>> como tipo de retorno.",
+          invalidReturnType:
+            "La funcion async `{{name}}` debe retornar Promise<Result<...>> para modelar errores de forma explicita.",
+        },
+        schema: [
+          {
+            additionalProperties: false,
+            properties: {
+              allowFilePatterns: {
+                items: { type: "string" },
+                type: "array",
+              },
+              allowNamePatterns: {
+                items: { type: "string" },
+                type: "array",
+              },
+              checkMissingReturnType: { type: "boolean" },
+              checkMissingReturnTypeWhenCallNames: {
+                items: { type: "string" },
+                type: "array",
+              },
+              requireCallNames: {
+                items: { type: "string" },
+                type: "array",
+              },
+              promiseTypeNames: {
+                items: { type: "string" },
+                type: "array",
+              },
+              resultTypeNames: {
+                items: { type: "string" },
+                type: "array",
+              },
+            },
+            type: "object",
+          },
+        ],
+      },
+      create(context) {
+        const options = getAsyncResultRuleOptions(context.options[0]);
+        const filename = context.filename ?? context.getFilename();
+        const typeContext = getTypeContext(context);
+
+        // Verifica que el tipo de retorno sea un Result de @skapxd/result.
+        // Con información de tipos (projectService) resuelve el símbolo hasta
+        // el paquete; sin ella, cae a una comprobación por nombre.
+        function isSkapxdResultReturnType(annotation) {
+          if (typeContext) {
+            const type = typeContext.services.getTypeFromTypeNode(annotation);
+
+            return isSkapxdResultOrPromiseResultType(type, typeContext);
+          }
+
+          return isPromiseOfResultType(annotation, options);
+        }
+
+        function reportIfInvalidAsyncReturn(node, name, reportNode = node) {
+          if (!node.async || matchesAnyPattern(filename, options.allowFilePatterns)) {
+            return;
+          }
+
+          const functionName = name ?? "anonymous";
+
+          if (isAnonymousGeneratedFunctionName(functionName)) {
+            return;
+          }
+
+          if (matchesAnyPattern(functionName, options.allowNamePatterns)) {
+            return;
+          }
+
+          if (
+            options.requireCallNames.length &&
+            !containsCallNamed(node.body, options.requireCallNames)
+          ) {
+            return;
+          }
+
+          const returnType = node.returnType?.typeAnnotation;
+
+          if (!returnType) {
+            if (
+              options.checkMissingReturnType ||
+              containsCallNamed(node.body, options.checkMissingReturnTypeWhenCallNames)
+            ) {
+              context.report({
+                data: { name: functionName },
+                messageId: "missingReturnType",
+                node: reportNode,
+              });
+            }
+
+            return;
+          }
+
+          if (isSkapxdResultReturnType(returnType)) {
+            return;
+          }
+
+          context.report({
+            data: { name: functionName },
+            messageId: "invalidReturnType",
+            node: reportNode,
+          });
+        }
+
+        return {
+          ArrowFunctionExpression(node) {
+            reportIfInvalidAsyncReturn(
+              node,
+              getParentFunctionName(node),
+              getParentFunctionReportNode(node),
+            );
+          },
+          FunctionDeclaration(node) {
+            reportIfInvalidAsyncReturn(node, node.id?.name, node.id ?? node);
+          },
+          FunctionExpression(node) {
+            reportIfInvalidAsyncReturn(
+              node,
+              getFunctionExpressionName(node),
+              getParentFunctionReportNode(node),
+            );
+          },
+        };
+      },
+    };

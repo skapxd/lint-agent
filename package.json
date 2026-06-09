@@ -1,0 +1,80 @@
+{
+  "name": "@skapxd/eslint-plugin",
+  "version": "0.1.0",
+  "description": "Reusable ESLint architectural rules for TypeScript, React, backend, frontend, and package projects",
+  "packageManager": "pnpm@11.2.2",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "skapxd-lint-changed": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./astro": {
+      "types": "./dist/astro/index.d.ts",
+      "import": "./dist/astro/index.mjs",
+      "require": "./dist/astro/index.js"
+    },
+    "./next": {
+      "types": "./dist/next/index.d.ts",
+      "import": "./dist/next/index.mjs",
+      "require": "./dist/next/index.js"
+    },
+    "./shared": {
+      "types": "./dist/shared/index.d.ts",
+      "import": "./dist/shared/index.mjs",
+      "require": "./dist/shared/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "tsup && eslint src",
+    "lint:fix": "tsup && eslint src --fix",
+    "lint:changed": "tsup && node dist/cli.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "eslint",
+    "eslint-plugin",
+    "typescript",
+    "react",
+    "architecture",
+    "result"
+  ],
+  "author": "skapxd",
+  "license": "MIT",
+  "dependencies": {
+    "@skapxd/result": "^1.0.1"
+  },
+  "peerDependencies": {
+    "eslint": ">=9",
+    "typescript": ">=5",
+    "typescript-eslint": ">=8"
+  },
+  "devDependencies": {
+    "@types/node": "25.0.10",
+    "@typescript-eslint/rule-tester": "^8.60.1",
+    "commander": "^15.0.0",
+    "eslint": "9.39.4",
+    "jiti": "^2.7.0",
+    "tsup": "8.5.1",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.59.4",
+    "vitest": "^4.1.8"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/skapxd/eslint-plugin"
+  }
+}

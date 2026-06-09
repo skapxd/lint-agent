@@ -1,0 +1,1 @@
+export { createNextConfigs } from "./configs";

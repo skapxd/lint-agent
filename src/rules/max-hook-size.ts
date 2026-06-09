@@ -1,0 +1,90 @@
+// @ts-nocheck
+import { countOwnUseStateCalls } from "#/utils/count-own-use-state-calls";
+import { getFunctionExpressionName } from "#/utils/get-function-expression-name";
+import { getFunctionLineCount } from "#/utils/get-function-line-count";
+import { getMaxHookSizeOptions } from "#/utils/get-max-hook-size-options";
+import { getParentFunctionName } from "#/utils/get-parent-function-name";
+import { getParentFunctionReportNode } from "#/utils/get-parent-function-report-node";
+import { isHookName } from "#/utils/is-hook-name";
+
+export const maxHookSize = {
+      meta: {
+        type: "suggestion",
+        docs: {
+          description:
+            "Limita el tamaño y cantidad de estados propios en hooks React.",
+        },
+        messages: {
+          tooLargeHook:
+            "El hook `{{name}}` es demasiado grande: tiene {{lines}} lineas. Maximo permitido: {{maxLines}} lineas. Extrae efectos, handlers o flujos a hooks/archivos semanticos.",
+          tooManyUseState:
+            "El hook `{{name}}` declara {{useStateCount}} useState. Maximo permitido: {{maxUseState}}. Usa useReducer con acciones semanticas cuando varios campos cambian juntos, o extrae estado a hooks especializados.",
+        },
+        schema: [
+          {
+            additionalProperties: false,
+            properties: {
+              maxLines: { type: "number" },
+              maxUseState: { type: "number" },
+            },
+            type: "object",
+          },
+        ],
+      },
+      create(context) {
+        const options = getMaxHookSizeOptions(context.options[0]);
+
+        function reportIfOversizedHook(node, name, reportNode = node) {
+          if (!isHookName(name)) {
+            return;
+          }
+
+          const lines = getFunctionLineCount(node);
+          const useStateCount = countOwnUseStateCalls(node);
+
+          if (lines > options.maxLines) {
+            context.report({
+              data: {
+                lines: String(lines),
+                maxLines: String(options.maxLines),
+                name,
+              },
+              messageId: "tooLargeHook",
+              node: reportNode,
+            });
+          }
+
+          if (useStateCount > options.maxUseState) {
+            context.report({
+              data: {
+                maxUseState: String(options.maxUseState),
+                name,
+                useStateCount: String(useStateCount),
+              },
+              messageId: "tooManyUseState",
+              node: reportNode,
+            });
+          }
+        }
+
+        return {
+          ArrowFunctionExpression(node) {
+            reportIfOversizedHook(
+              node,
+              getParentFunctionName(node),
+              getParentFunctionReportNode(node),
+            );
+          },
+          FunctionDeclaration(node) {
+            reportIfOversizedHook(node, node.id?.name, node.id ?? node);
+          },
+          FunctionExpression(node) {
+            reportIfOversizedHook(
+              node,
+              getFunctionExpressionName(node),
+              getParentFunctionReportNode(node),
+            );
+          },
+        };
+      },
+    };

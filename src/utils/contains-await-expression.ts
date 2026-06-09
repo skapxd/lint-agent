@@ -1,0 +1,20 @@
+// @ts-nocheck
+import { getNodeChildren } from "./get-node-children";
+import { isAstNode } from "./is-ast-node";
+import { isFunctionNode } from "./is-function-node";
+
+export function containsAwaitExpression(node) {
+  if (!isAstNode(node)) {
+    return false;
+  }
+
+  if (node.type === "AwaitExpression") {
+    return true;
+  }
+
+  if (isFunctionNode(node)) {
+    return false;
+  }
+
+  return getNodeChildren(node).some((child) => containsAwaitExpression(child));
+}
