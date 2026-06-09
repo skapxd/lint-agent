@@ -52,18 +52,18 @@ const ruleTester = createTypedRuleTester();
 type RuleArg = Parameters<typeof ruleTester.run>[1];
 
 ruleTester.run(
-  "await-requires-try-safe",
-  rules["await-requires-try-safe"] as unknown as RuleArg,
+  "await-requires-result",
+  rules["await-requires-result"] as unknown as RuleArg,
   {
     invalid: [
       {
         code: invalidForeignTrySafe,
-        errors: [{ messageId: "unprotectedAwait" }],
+        errors: [{ messageId: "awaitWithoutResult" }],
         filename: "invalid-foreign-try-safe.ts",
       },
       {
         code: invalidForeignResult,
-        errors: [{ messageId: "unprotectedAwait" }],
+        errors: [{ messageId: "awaitWithoutResult" }],
         filename: "invalid-foreign-result.ts",
       },
     ],

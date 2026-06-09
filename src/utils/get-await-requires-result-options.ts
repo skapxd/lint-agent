@@ -1,5 +1,5 @@
 // @ts-nocheck
-export function getAwaitRequiresTrySafeOptions(options = {}) {
+export function getAwaitRequiresResultOptions(options = {}) {
   return {
     allowFilePatterns: options.allowFilePatterns ?? [],
     trySafeCallNames: options.trySafeCallNames ?? ["trySafe"],

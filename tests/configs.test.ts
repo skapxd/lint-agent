@@ -8,11 +8,22 @@ describe("configs.strict", () => {
 });
 
 describe("configs.frontend", () => {
-  it("obliga a trySafe en llamadas async sin exigir retornar Result", () => {
+  it("exige que todo await resuelva en Result sin obligar a retornarlo", () => {
     const config = plugin.configs.frontend;
 
-    expect(config.rules["skapxd/await-requires-try-safe"]).toBe("error");
+    expect(config.rules["skapxd/await-requires-result"]).toBe("error");
     expect(config.rules["skapxd/async-functions-return-result"]).toBeUndefined();
+  });
+});
+
+describe("alias deprecado await-requires-try-safe", () => {
+  it("sigue registrado, marcado como deprecado y apunta al nombre nuevo", () => {
+    const alias = plugin.rules["await-requires-try-safe"];
+
+    expect(alias).toBeDefined();
+    expect(alias.meta?.deprecated).toBe(true);
+    expect(alias.meta?.replacedBy).toContain("skapxd/await-requires-result");
+    expect(alias.create).toBe(plugin.rules["await-requires-result"].create);
   });
 });
 

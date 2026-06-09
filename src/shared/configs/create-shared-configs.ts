@@ -34,10 +34,11 @@ export function createSharedConfigs(pluginReference: unknown) {
       plugins: { skapxd: pluginReference },
       rules: {
         ...baseRules,
-        // En el front no se obliga a retornar Result, pero toda llamada
-        // asíncrona debe ir en trySafe — salvo que lo awaiteado ya retorne
-        // Result/Promise<Result> (exención type-aware de la regla).
-        "skapxd/await-requires-try-safe": "error",
+        // En el front no se obliga a retornar Result, pero todo await debe
+        // resolver en uno: o la función llamada ya retorna Promise<Result>
+        // (camino preferido: errores modelados en el dominio) o se envuelve
+        // en trySafe en el sitio.
+        "skapxd/await-requires-result": "error",
         "skapxd/jsx-return-name-pascal-case": "error",
         "skapxd/no-functions-inside-components": "error",
         "skapxd/no-jsx-ternary-null": "error",

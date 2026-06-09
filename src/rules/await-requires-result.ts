@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { getAwaitRequiresTrySafeOptions } from "#/utils/get-await-requires-try-safe-options";
+import { getAwaitRequiresResultOptions } from "#/utils/get-await-requires-result-options";
 import { getAwaitScopeName } from "#/utils/get-await-scope-name";
 import { getEnclosingTrySafeCall } from "#/utils/get-enclosing-try-safe-call";
 import { getTrySafeAwaitSuggestion } from "#/utils/get-try-safe-await-suggestion";
@@ -9,16 +9,16 @@ import { isSymbolFromSkapxdResult } from "#/utils/is-symbol-from-skapxd-result";
 import { isTrySafeCall } from "#/utils/is-try-safe-call";
 import { matchesAnyPattern } from "#/utils/matches-any-pattern";
 
-export const awaitRequiresTrySafe = {
+export const awaitRequiresResult = {
       meta: {
         type: "problem",
         docs: {
           description:
-            "Exige que los await esten protegidos por trySafe.",
+            "Exige que todo await resuelva en un Result: una funcion que retorne Promise<Result<...>> o trySafe en el sitio.",
         },
         messages: {
-          unprotectedAwait:
-            "El await dentro de `{{name}}` no esta protegido por trySafe. Envuelve la operacion asi: `{{suggestion}}`.",
+          awaitWithoutResult:
+            "El await dentro de `{{name}}` no resuelve en un Result. Mejor opcion: extrae la operacion a una funcion que retorne Promise<Result<...>> y modela ahi los errores de dominio (el trySafe vive dentro de esa funcion). Alternativa: envuelvela aqui mismo: `{{suggestion}}`.",
         },
         schema: [
           {
@@ -38,7 +38,7 @@ export const awaitRequiresTrySafe = {
         ],
       },
       create(context) {
-        const options = getAwaitRequiresTrySafeOptions(context.options[0]);
+        const options = getAwaitRequiresResultOptions(context.options[0]);
         const filename = context.filename ?? context.getFilename();
         const sourceCode = context.sourceCode ?? context.getSourceCode();
         const typeContext = getTypeContext(context);
@@ -91,7 +91,7 @@ export const awaitRequiresTrySafe = {
                 name: getAwaitScopeName(node),
                 suggestion: getTrySafeAwaitSuggestion(node.argument, sourceCode),
               },
-              messageId: "unprotectedAwait",
+              messageId: "awaitWithoutResult",
               node,
             });
           },

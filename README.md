@@ -318,7 +318,7 @@ export default [
 El contrato del front: ninguna función está obligada a retornar `Result`, pero
 toda llamada asíncrona debe ir envuelta en `trySafe` — salvo que lo llamado ya
 retorne `Result`/`Promise<Result<...>>` (exención type-aware de
-`skapxd/await-requires-try-safe`). Aplica el preset a TODO el código del front
+`skapxd/await-requires-result`). Aplica el preset a TODO el código del front
 (componentes, hooks, servicios), no solo a los componentes.
 
 ### Next.js
@@ -429,7 +429,7 @@ bloque con `linterOptions: { noInlineConfig: false }` para esos globs.
 | `skapxd/one-root-function-per-file` | Un archivo, una función top-level semántica. |
 | `skapxd/async-functions-return-result` | Funciones async de dominio deben retornar `Promise<Result<...>>`. |
 | `skapxd/result-error-requires-cause` | Un `Result.err` derivado debe preservar `cause: result.error`. |
-| `skapxd/await-requires-try-safe` | Los `await` deben estar protegidos por `trySafe`, salvo que lo awaiteado ya retorne `Result`. La activa el preset `shared.frontend`. |
+| `skapxd/await-requires-result` | Todo `await` debe resolver en un `Result`: o la función llamada retorna `Promise<Result<...>>` (preferido) o se envuelve en `trySafe`. La activa `shared.frontend`. |
 | `skapxd/no-ad-hoc-ok-result` | Evita contratos `{ ok: ... }` hechos a mano en async exports. |
 | `skapxd/max-hook-size` | Marca hooks grandes o con demasiados `useState`. |
 | `skapxd/jsx-return-name-pascal-case` | Funciones que retornan JSX deben nombrarse como componentes. |
@@ -507,27 +507,58 @@ valor del guard y `Result.err` vienen de `@skapxd/result`. Por eso funciona con
 aliases, re-exports y tipos inferidos, sin depender solo del nombre importado en
 el archivo.
 
-### `skapxd/await-requires-try-safe`
+### `skapxd/await-requires-result`
 
 > La activa el preset `shared.frontend` en todo el front: componentes, hooks,
 > handlers y servicios. El contrato queda así: ninguna función está obligada
-> a retornar `Result`, pero toda llamada asíncrona debe ir en `trySafe` — salvo
-> que lo llamado ya retorne `Result` (ver exención más abajo). Para activarla
-> en otros globs, añádela tú mismo:
+> a retornar `Result`, pero todo `await` debe **resolver** en uno. Para
+> activarla en otros globs, añádela tú mismo:
 >
 > ```js
 > rules: {
->   "skapxd/await-requires-try-safe": ["error", {
+>   "skapxd/await-requires-result": ["error", {
 >     trySafeCallNames: ["trySafe"],
 >     allowFilePatterns: [],
 >   }],
 > }
 > ```
+>
+> (`skapxd/await-requires-try-safe` es el nombre anterior; sigue funcionando
+> como alias deprecado y se eliminará en una versión futura.)
 
-Obliga a proteger operaciones `await` con `trySafe`:
+Hay dos caminos válidos, y la regla recomienda el primero:
+
+**1. El camino preferido: extrae la operación a una función que retorne
+`Promise<Result<...>>`** y modela ahí los errores de dominio. El `trySafe` vive
+dentro de esa función, en la frontera con el código que lanza, y el resto del
+código habla en errores con significado:
 
 ```ts
-const result = await trySafe(() => client.execute({...}));
+async function getUser(id: string): Promise<Result<User, UserError>> {
+  const response = await trySafe(() => fetch(`/users/${id}`));
+
+  if (!response.ok) {
+    return Result.err({
+      cause: response.error,
+      message: "No pude cargar el usuario.",
+      type: "USER_FETCH_FAILED",
+    });
+  }
+
+  return trySafe(() => response.value.json());
+}
+
+// En el componente: ya resuelve en Result, pasa directo.
+const user = await getUser(id); // ✅
+```
+
+La detección es type-aware: la regla resuelve el símbolo hasta `@skapxd/result`,
+así que un `Result` casero (homónimo, de otra librería) no exime.
+
+**2. La alternativa rápida: envuelve el `await` en `trySafe` ahí mismo:**
+
+```ts
+const result = await trySafe(() => client.execute({...})); // ✅
 ```
 
 o dentro de un callback:
@@ -539,18 +570,9 @@ const result = await trySafe(async () => {
 });
 ```
 
-Si lo que se awaitea ya retorna `Result`/`Promise<Result<...>>` de
-`@skapxd/result`, la regla no exige `trySafe`: los errores ya están modelados en
-el tipo y envolverlo sería redundante.
-
-```ts
-declare function getUser(): Promise<Result<User, Error>>;
-
-const result = await getUser(); // ✅ ya es un Result, no necesita trySafe
-```
-
-Esta exención es type-aware: un `Result` casero (que no venga de
-`@skapxd/result`) no exime.
+Sirve para código de pegamento, pero deja el error sin modelar (`Result<T,
+unknown>`). Cuando la misma operación se repite o el error importa, el mensaje
+de la regla empuja hacia el camino 1.
 
 ### `skapxd/max-hook-size`
 
@@ -629,7 +651,7 @@ if (!result.ok) return Result.err({ cause: result.error, type: "DB_FAILED" });
 ```
 
 Se complementa con `result-error-requires-cause` (preservar la causa) y, si la
-activas, con `await-requires-try-safe` (que además exige envolver cada `await`).
+activas, con `await-requires-result` (que además exige que cada `await` resuelva en un `Result`).
 
 ### `skapxd/no-promise-chain`
 
@@ -702,7 +724,7 @@ cierran el hueco.
 
 En cambio, las reglas atadas a `@skapxd/result`
 (`async-functions-return-result`, `result-error-requires-cause`,
-`await-requires-try-safe`) **no** dependen de nombres: resuelven el símbolo hasta
+`await-requires-result`) **no** dependen de nombres: resuelven el símbolo hasta
 el paquete real (vía el `name` de su `package.json`), así que funcionan con
 alias, re-exports y en monorepos.
 

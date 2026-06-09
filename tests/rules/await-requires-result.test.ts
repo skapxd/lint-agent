@@ -2,13 +2,13 @@ import { rules } from "../../src/shared/rules";
 import { createRuleTester } from "../rule-tester";
 
 createRuleTester().run(
-  "await-requires-try-safe",
-  rules["await-requires-try-safe"],
+  "await-requires-result",
+  rules["await-requires-result"],
   {
     invalid: [
       {
         code: "async function f() { await g(); }",
-        errors: [{ messageId: "unprotectedAwait" }],
+        errors: [{ messageId: "awaitWithoutResult" }],
       },
     ],
     valid: [

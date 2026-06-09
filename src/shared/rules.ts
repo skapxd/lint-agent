@@ -2,7 +2,7 @@ import { oneRootFunctionPerFile } from "#/rules/one-root-function-per-file";
 import { jsxReturnNamePascalCase } from "#/rules/jsx-return-name-pascal-case";
 import { asyncFunctionsReturnResult } from "#/rules/async-functions-return-result";
 import { noAdHocOkResult } from "#/rules/no-ad-hoc-ok-result";
-import { awaitRequiresTrySafe } from "#/rules/await-requires-try-safe";
+import { awaitRequiresResult } from "#/rules/await-requires-result";
 import { resultErrorRequiresCause } from "#/rules/result-error-requires-cause";
 import type { Rule } from "eslint";
 import { maxHookSize } from "#/rules/max-hook-size";
@@ -18,7 +18,16 @@ export const rules: Record<string, Rule.RuleModule> = {
   "jsx-return-name-pascal-case": jsxReturnNamePascalCase,
   "async-functions-return-result": asyncFunctionsReturnResult,
   "no-ad-hoc-ok-result": noAdHocOkResult,
-  "await-requires-try-safe": awaitRequiresTrySafe,
+  "await-requires-result": awaitRequiresResult,
+  // Alias deprecado del nombre anterior; se elimina en una versión futura.
+  "await-requires-try-safe": {
+    ...awaitRequiresResult,
+    meta: {
+      ...awaitRequiresResult.meta,
+      deprecated: true,
+      replacedBy: ["skapxd/await-requires-result"],
+    },
+  },
   "result-error-requires-cause": resultErrorRequiresCause,
   "max-hook-size": maxHookSize,
   "no-deep-relative-imports": noDeepRelativeImports,
