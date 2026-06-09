@@ -764,6 +764,23 @@ function Card() {
 helper en minúscula **sí** pueden tener funciones dentro — ahí es donde se mueve
 la lógica.
 
+**Opciones** (desde v0.6.0) para permitir los dos patrones React idiomáticos
+que la versión estricta bloqueaba — forzarlos a salir del componente producía
+workarounds peores que el problema (`.bind(null, ...)`, adapters artificiales):
+
+```js
+"skapxd/no-functions-inside-components": ["error", {
+  allowJsxCallbacks: true,       // <button onClick={() => onSelect(id)} />
+  allowArrayMapCallbacks: true,  // {entries.map((entry) => <Entry key={entry.id} />)}
+}]
+```
+
+Ambas exenciones aplican **solo a funciones anónimas inline en esa posición
+exacta**: el valor directo de una prop JSX, o el primer argumento de `.map(...)`.
+Un handler con nombre en el cuerpo (`const onClick = () => ...`), un callback de
+`useEffect` o un `.forEach` siguen reportándose — la lógica con peso sigue
+viviendo fuera del componente.
+
 ### `skapxd/no-try-catch`
 
 Prohíbe `try/catch`. La intención es que los errores se modelen como `Result` en

@@ -1,7 +1,11 @@
 // @ts-nocheck
 import { getContainingFunction } from "#/utils/get-containing-function";
 import { getFunctionName } from "#/utils/get-function-name";
+import { getNoFunctionsInsideComponentsOptions } from "#/utils/get-no-functions-inside-components-options";
+import { isAnonymousInlineFunction } from "#/utils/is-anonymous-inline-function";
+import { isArrayMapCallback } from "#/utils/is-array-map-callback";
 import { isFunctionNode } from "#/utils/is-function-node";
+import { isJsxAttributeCallback } from "#/utils/is-jsx-attribute-callback";
 import { isPascalCaseName } from "#/utils/is-pascal-case-name";
 
 export const noFunctionsInsideComponents = {
@@ -15,17 +19,44 @@ export const noFunctionsInsideComponents = {
       functionInsideComponent:
         "No definas funciones dentro del componente `{{component}}`: se recrean en cada render. Muevela a un hook (`useX`) o a un helper fuera del componente.",
     },
-    schema: [],
+    schema: [
+      {
+        additionalProperties: false,
+        properties: {
+          allowArrayMapCallbacks: { type: "boolean" },
+          allowJsxCallbacks: { type: "boolean" },
+        },
+        type: "object",
+      },
+    ],
   },
   create(context) {
+    const options = getNoFunctionsInsideComponentsOptions(context.options[0]);
+
     function isComponentFunction(node) {
       return isFunctionNode(node) && isPascalCaseName(getFunctionName(node));
+    }
+
+    function isAllowedInlineCallback(node) {
+      if (!isAnonymousInlineFunction(node)) {
+        return false;
+      }
+
+      if (options.allowJsxCallbacks && isJsxAttributeCallback(node)) {
+        return true;
+      }
+
+      return options.allowArrayMapCallbacks && isArrayMapCallback(node);
     }
 
     function reportIfInsideComponent(node) {
       const enclosingFunction = getContainingFunction(node);
 
       if (!enclosingFunction || !isComponentFunction(enclosingFunction)) {
+        return;
+      }
+
+      if (isAllowedInlineCallback(node)) {
         return;
       }
 
