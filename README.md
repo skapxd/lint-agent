@@ -257,7 +257,7 @@ completo**, también dispara las reglas estructurales (p. ej.
 src/
 ├── shared/
 │   ├── rules.ts
-│   ├── configs.ts
+│   ├── configs/
 │   └── index.ts
 ├── next/
 │   ├── configs.ts
@@ -378,6 +378,10 @@ export default [
   ...skapxd.configs.astro,
 ];
 ```
+
+> Para los archivos `.astro` el preset no impone parser: necesitas tener
+> `eslint-plugin-astro` configurado (su preset recomendado ya lo aporta).
+> Los `.ts/.tsx` sí traen el parser de `typescript-eslint` incluido.
 
 También puedes importar solo el factory de Astro:
 

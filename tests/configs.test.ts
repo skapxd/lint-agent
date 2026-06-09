@@ -15,3 +15,32 @@ describe("configs.frontendServices", () => {
     expect(config.files).toContain("**/services/**/*.{ts,tsx}");
   });
 });
+
+describe("parser de TypeScript en los presets", () => {
+  it("todo preset que aplica a TS trae su parser (standalone, sin tseslint del consumidor)", () => {
+    const presets = [
+      plugin.configs.base,
+      plugin.configs.backend,
+      plugin.configs.frontend,
+      plugin.configs.frontendServices,
+      plugin.configs.package,
+      ...plugin.configs.next,
+      ...plugin.configs.astro.filter(
+        (config: { name: string }) => config.name !== "skapxd/astro/astro-files",
+      ),
+    ];
+
+    for (const preset of presets) {
+      expect(preset.languageOptions?.parser, preset.name).toBeDefined();
+    }
+  });
+
+  it("el bloque de .astro no impone parser (lo aporta eslint-plugin-astro)", () => {
+    const astroFiles = plugin.configs.astro.find(
+      (config: { name: string }) => config.name === "skapxd/astro/astro-files",
+    );
+
+    expect(astroFiles).toBeDefined();
+    expect(astroFiles.languageOptions).toBeUndefined();
+  });
+});

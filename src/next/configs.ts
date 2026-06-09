@@ -1,10 +1,16 @@
-import { baseRules, createTypedLanguageOptions } from "#/shared/configs";
+import {
+  baseRules,
+  createBaseLanguageOptions,
+  createTypedLanguageOptions,
+} from "#/shared/configs";
 
 export function createNextConfigs(pluginReference: unknown) {
+  const baseLanguageOptions = createBaseLanguageOptions();
   const typedLanguageOptions = createTypedLanguageOptions();
 
   return [
     {
+      languageOptions: baseLanguageOptions,
       name: "skapxd/next/base",
       plugins: { skapxd: pluginReference },
       rules: baseRules,
@@ -35,6 +41,7 @@ export function createNextConfigs(pluginReference: unknown) {
     },
     {
       files: ["**/*.tsx"],
+      languageOptions: baseLanguageOptions,
       name: "skapxd/next/react",
       plugins: { skapxd: pluginReference },
       rules: {

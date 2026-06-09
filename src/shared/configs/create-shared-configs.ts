@@ -1,7 +1,9 @@
 import { baseRules } from "./base-rules";
+import { createBaseLanguageOptions } from "./create-base-language-options";
 import { createTypedLanguageOptions } from "./create-typed-language-options";
 
 export function createSharedConfigs(pluginReference: unknown) {
+  const baseLanguageOptions = createBaseLanguageOptions();
   const typedLanguageOptions = createTypedLanguageOptions();
 
   return {
@@ -21,6 +23,7 @@ export function createSharedConfigs(pluginReference: unknown) {
       },
     },
     base: {
+      languageOptions: baseLanguageOptions,
       name: "skapxd/shared/base",
       plugins: { skapxd: pluginReference },
       rules: baseRules,
@@ -56,6 +59,7 @@ export function createSharedConfigs(pluginReference: unknown) {
       },
     },
     package: {
+      languageOptions: baseLanguageOptions,
       name: "skapxd/shared/package",
       plugins: { skapxd: pluginReference },
       rules: {

@@ -1,12 +1,26 @@
-import { baseRules, createTypedLanguageOptions } from "#/shared/configs";
+import {
+  baseRules,
+  createBaseLanguageOptions,
+  createTypedLanguageOptions,
+} from "#/shared/configs";
 
 export function createAstroConfigs(pluginReference: unknown) {
+  const baseLanguageOptions = createBaseLanguageOptions();
   const typedLanguageOptions = createTypedLanguageOptions();
 
   return [
     {
-      files: ["src/**/*.{ts,tsx,astro}"],
+      files: ["src/**/*.{ts,tsx}"],
+      languageOptions: baseLanguageOptions,
       name: "skapxd/astro/base",
+      plugins: { skapxd: pluginReference },
+      rules: baseRules,
+    },
+    // Los .astro no llevan parser propio: lo aporta eslint-plugin-astro,
+    // que el consumidor debe tener configurado.
+    {
+      files: ["src/**/*.astro"],
+      name: "skapxd/astro/astro-files",
       plugins: { skapxd: pluginReference },
       rules: baseRules,
     },
