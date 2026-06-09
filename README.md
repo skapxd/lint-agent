@@ -576,7 +576,7 @@ Opción `maxDepth` (por defecto `0`) para permitir hasta N niveles de `../`:
 ```js
 rules: {
   // permite ../ (un nivel) pero sigue prohibiendo ../../
-  "skapxd/no-deep-relative-imports": ["warn", { maxDepth: 1 }],
+  "skapxd/no-deep-relative-imports": ["error", { maxDepth: 1 }],
 }
 ```
 

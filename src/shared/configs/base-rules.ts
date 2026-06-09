@@ -1,6 +1,6 @@
 export const baseRules = {
-  "skapxd/no-ad-hoc-ok-result": "warn",
-  "skapxd/no-deep-relative-imports": "warn",
+  "skapxd/no-ad-hoc-ok-result": "error",
+  "skapxd/no-deep-relative-imports": "error",
   "skapxd/no-promise-chain": "error",
   "skapxd/no-try-catch": "error",
   "skapxd/one-root-function-per-file": "error",

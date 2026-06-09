@@ -42,7 +42,7 @@ export function createSharedConfigs(pluginReference: unknown) {
         "skapxd/no-functions-inside-components": "error",
         "skapxd/no-jsx-ternary-null": "error",
         "skapxd/max-hook-size": [
-          "warn",
+          "error",
           {
             maxLines: 120,
             maxUseState: 1,

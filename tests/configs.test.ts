@@ -16,6 +16,27 @@ describe("configs.frontend", () => {
   });
 });
 
+describe("severidades", () => {
+  it("ningún preset usa warn: todas las reglas son error", () => {
+    const presets = [
+      plugin.configs.base,
+      plugin.configs.backend,
+      plugin.configs.frontend,
+      plugin.configs.package,
+      ...plugin.configs.next,
+      ...plugin.configs.astro,
+    ];
+
+    for (const preset of presets) {
+      for (const [rule, entry] of Object.entries(preset.rules ?? {})) {
+        const severity = Array.isArray(entry) ? entry[0] : entry;
+
+        expect(severity, `${preset.name} → ${rule}`).toBe("error");
+      }
+    }
+  });
+});
+
 describe("parser de TypeScript en los presets", () => {
   it("todo preset que aplica a TS trae su parser (standalone, sin tseslint del consumidor)", () => {
     const presets = [
