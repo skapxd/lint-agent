@@ -14,7 +14,7 @@ export const noAdHocOkResult = {
         },
         messages: {
           adHocOkResult:
-            "No retornes objetos ad hoc con `ok` desde la funcion async `{{name}}`. Usa Result.ok(...) / Result.err(...) con un error discriminado `{ type: ... }`.",
+            "No retornes objetos ad hoc con `ok` desde la funcion async `{{name}}`. Usa Result.ok(...) / Result.err(...) de @skapxd/result con un error discriminado `{ type: ... }`: un unico contrato Result permite consumir cada variante con `match()` de ts-pattern y `.exhaustive()`.",
         },
         schema: [],
       },

@@ -18,7 +18,7 @@ export const awaitRequiresResult = {
         },
         messages: {
           awaitWithoutResult:
-            "El await dentro de `{{name}}` no resuelve en un Result. Mejor opcion: extrae la operacion a una funcion que retorne Promise<Result<...>> y modela ahi los errores de dominio (el trySafe vive dentro de esa funcion). Alternativa: envuelvela aqui mismo: `{{suggestion}}`.",
+            "El await dentro de `{{name}}` no resuelve en un Result. Mejor opcion: extrae la operacion a una funcion que retorne Promise<Result<...>> y modela ahi los errores de dominio con `{ type, message, cause }` (el trySafe vive dentro de esa funcion). Alternativa: envuelvela aqui mismo: `{{suggestion}}`. En ambos casos, consume el Result con `match()` de ts-pattern.",
         },
         schema: [
           {

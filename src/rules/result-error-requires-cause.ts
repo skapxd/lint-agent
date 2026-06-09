@@ -16,7 +16,7 @@ export const resultErrorRequiresCause = {
         },
         messages: {
           missingCause:
-            "El error de `{{name}}` ya existe como `{{name}}.error`. Preservalo en Result.err con `cause: {{name}}.error`.",
+            "El error de `{{name}}` ya existe como `{{name}}.error`. Preservalo en Result.err con `cause: {{name}}.error`: la cadena de causas conecta el error de dominio con la excepcion original que capturo `trySafe`; sin ella el debugging pierde el contexto.",
         },
         schema: [],
       },

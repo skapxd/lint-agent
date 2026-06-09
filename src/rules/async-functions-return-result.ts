@@ -19,9 +19,9 @@ export const asyncFunctionsReturnResult = {
         },
         messages: {
           missingReturnType:
-            "La funcion async `{{name}}` debe declarar Promise<Result<...>> como tipo de retorno.",
+            "La funcion async `{{name}}` debe declarar Promise<Result<...>> como tipo de retorno: trySafe en la frontera, errores de dominio con `cause`, y el consumidor decide con `match()` de ts-pattern.",
           invalidReturnType:
-            "La funcion async `{{name}}` debe retornar Promise<Result<...>> para modelar errores de forma explicita.",
+            "La funcion async `{{name}}` debe retornar Promise<Result<...>> para modelar errores de forma explicita: trySafe en la frontera, errores de dominio con `cause`, y el consumidor decide con `match()` de ts-pattern.",
         },
         schema: [
           {

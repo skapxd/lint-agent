@@ -14,7 +14,7 @@ export const noPromiseChain = {
     },
     messages: {
       noPromiseChain:
-        "No encadenes `.{{method}}()` en una promesa. La unica forma de tratar funciones asincronas es `await` (envuelto en `trySafe`).",
+        "No encadenes `.{{method}}()` en una promesa. La unica forma de tratar funciones asincronas es `await`: o la funcion llamada ya retorna Promise<Result<...>> o envuelve la llamada en `trySafe` de @skapxd/result.",
     },
     schema: [
       {

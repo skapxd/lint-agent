@@ -8,7 +8,7 @@ export const noTryCatch = {
     },
     messages: {
       noTryCatch:
-        "Usa `trySafe` de @skapxd/result en lugar de try/catch. El error queda modelado como Result en vez de saltar como excepcion.",
+        "Usa `trySafe` de @skapxd/result en lugar de try/catch: el error queda modelado como Result en vez de saltar como excepcion. Luego mapealo a un error de dominio `{ type, message, cause }` y consumelo con `match()` de ts-pattern.",
     },
     schema: [],
   },
