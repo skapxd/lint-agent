@@ -43,6 +43,18 @@ export function createSharedConfigs(pluginReference: unknown) {
         ],
       },
     },
+    // Capa de servicios del front (peticiones, clientes de API): todo await
+    // debe ir envuelto en trySafe de @skapxd/result. El consumidor puede
+    // sobreescribir `files` si sus servicios viven en otra carpeta.
+    frontendServices: {
+      files: ["**/services/**/*.{ts,tsx}", "**/api/**/*.{ts,tsx}"],
+      languageOptions: typedLanguageOptions,
+      name: "skapxd/shared/frontend-services",
+      plugins: { skapxd: pluginReference },
+      rules: {
+        "skapxd/await-requires-try-safe": "error",
+      },
+    },
     package: {
       name: "skapxd/shared/package",
       plugins: { skapxd: pluginReference },

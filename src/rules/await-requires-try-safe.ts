@@ -4,6 +4,7 @@ import { getAwaitScopeName } from "#/utils/get-await-scope-name";
 import { getEnclosingTrySafeCall } from "#/utils/get-enclosing-try-safe-call";
 import { getTrySafeAwaitSuggestion } from "#/utils/get-try-safe-await-suggestion";
 import { getTypeContext } from "#/utils/get-type-context";
+import { isSkapxdResultOrPromiseResultExpression } from "#/utils/is-skapxd-result-or-promise-result-expression";
 import { isSymbolFromSkapxdResult } from "#/utils/is-symbol-from-skapxd-result";
 import { isTrySafeCall } from "#/utils/is-try-safe-call";
 import { matchesAnyPattern } from "#/utils/matches-any-pattern";
@@ -61,6 +62,15 @@ export const awaitRequiresTrySafe = {
         return {
           AwaitExpression(node) {
             if (matchesAnyPattern(filename, options.allowFilePatterns)) {
+              return;
+            }
+
+            // Si lo awaiteado ya es Result/Promise<Result> de @skapxd/result,
+            // los errores ya están modelados y trySafe sería redundante.
+            if (
+              typeContext &&
+              isSkapxdResultOrPromiseResultExpression(node.argument, typeContext)
+            ) {
               return;
             }
 

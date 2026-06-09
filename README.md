@@ -312,6 +312,20 @@ export default [
     files: ["src/app/**/*.{ts,tsx}", "src/components/**/*.{ts,tsx}"],
     ...skapxd.configs.shared.frontend,
   },
+  // Capa de servicios: todo await debe ir envuelto en trySafe.
+  skapxd.configs.shared.frontendServices,
+];
+```
+
+Por defecto `frontendServices` aplica a `**/services/**` y `**/api/**`. Si tus
+servicios viven en otra carpeta, sobreescribe `files`:
+
+```js
+export default [
+  {
+    ...skapxd.configs.shared.frontendServices,
+    files: ["src/data/**/*.{ts,tsx}"],
+  },
 ];
 ```
 
@@ -419,7 +433,7 @@ bloque con `linterOptions: { noInlineConfig: false }` para esos globs.
 | `skapxd/one-root-function-per-file` | Un archivo, una función top-level semántica. |
 | `skapxd/async-functions-return-result` | Funciones async de dominio deben retornar `Promise<Result<...>>`. |
 | `skapxd/result-error-requires-cause` | Un `Result.err` derivado debe preservar `cause: result.error`. |
-| `skapxd/await-requires-try-safe` | Los `await` deben estar protegidos por `trySafe`. **No la activa ningún preset; actívala a mano.** |
+| `skapxd/await-requires-try-safe` | Los `await` deben estar protegidos por `trySafe`. La activa el preset `shared.frontendServices` en la capa de servicios. |
 | `skapxd/no-ad-hoc-ok-result` | Evita contratos `{ ok: ... }` hechos a mano en async exports. |
 | `skapxd/max-hook-size` | Marca hooks grandes o con demasiados `useState`. |
 | `skapxd/jsx-return-name-pascal-case` | Funciones que retornan JSX deben nombrarse como componentes. |
@@ -499,8 +513,9 @@ el archivo.
 
 ### `skapxd/await-requires-try-safe`
 
-> **No está incluida en ningún preset.** Es la regla más agresiva del paquete
-> (marca *todos* los `await` sin proteger), así que se deja opt-in. Para usarla,
+> Es la regla más agresiva del paquete (marca *todos* los `await` sin proteger),
+> así que solo la activa el preset `shared.frontendServices`, acotada a la capa
+> de servicios (`**/services/**`, `**/api/**`). Para activarla en otros globs,
 > añádela tú mismo:
 >
 > ```js
@@ -526,6 +541,19 @@ const result = await trySafe(async () => {
   return response.json();
 });
 ```
+
+Si lo que se awaitea ya retorna `Result`/`Promise<Result<...>>` de
+`@skapxd/result`, la regla no exige `trySafe`: los errores ya están modelados en
+el tipo y envolverlo sería redundante.
+
+```ts
+declare function getUser(): Promise<Result<User, Error>>;
+
+const result = await getUser(); // ✅ ya es un Result, no necesita trySafe
+```
+
+Esta exención es type-aware: un `Result` casero (que no venga de
+`@skapxd/result`) no exime.
 
 ### `skapxd/max-hook-size`
 

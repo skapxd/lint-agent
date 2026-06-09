@@ -23,6 +23,31 @@ export async function load() {
 }
 `;
 
+// Awaitear una función que ya retorna Promise<Result> de @skapxd/result no
+// necesita trySafe: los errores ya están modelados en el tipo.
+const validAwaitedResult = `
+import { type Result } from "@skapxd/result";
+
+declare function getUser(): Promise<Result<number, Error>>;
+
+export async function load() {
+  const result = await getUser();
+  return result;
+}
+`;
+
+// Un Result casero (NO de @skapxd/result) no exime del trySafe.
+const invalidForeignResult = `
+type Result<T> = { ok: true; value: T } | { ok: false; error: Error };
+
+declare function getUser(): Promise<Result<number>>;
+
+export async function load() {
+  const result = await getUser();
+  return result;
+}
+`;
+
 const ruleTester = createTypedRuleTester();
 type RuleArg = Parameters<typeof ruleTester.run>[1];
 
@@ -36,7 +61,15 @@ ruleTester.run(
         errors: [{ messageId: "unprotectedAwait" }],
         filename: "invalid-foreign-try-safe.ts",
       },
+      {
+        code: invalidForeignResult,
+        errors: [{ messageId: "unprotectedAwait" }],
+        filename: "invalid-foreign-result.ts",
+      },
     ],
-    valid: [{ code: validSkapxdTrySafe, filename: "valid-skapxd-try-safe.ts" }],
+    valid: [
+      { code: validSkapxdTrySafe, filename: "valid-skapxd-try-safe.ts" },
+      { code: validAwaitedResult, filename: "valid-awaited-result.ts" },
+    ],
   },
 );
