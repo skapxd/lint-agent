@@ -8,7 +8,7 @@ const plugin = {
   // que `skapxd.configs.<preset>` sea accesible desde el config del consumidor.
   configs: {} as Record<string, any>,
   meta: {
-    name: "@skapxd/eslint-plugin",
+    name: "@skapxd/eslint-opinionated",
     version: "0.1.0",
   },
   rules,

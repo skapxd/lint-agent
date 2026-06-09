@@ -1,4 +1,4 @@
-# @skapxd/eslint-plugin
+# @skapxd/eslint-opinionated
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -6,7 +6,7 @@
 proyecto.**
 
 A diferencia de un prompt o una nota en el README (que el agente puede priorizar,
-reinterpretar o ignorar), `@skapxd/eslint-plugin` convierte tus opiniones de
+reinterpretar o ignorar), `@skapxd/eslint-opinionated` convierte tus opiniones de
 arquitectura en guardrails que se **ejecutan** y **fallan** cuando el código no
 respeta la forma del proyecto — lo haya escrito una persona, Claude, Codex,
 Cursor o Copilot.
@@ -126,7 +126,7 @@ if (!result.ok) {
 }
 ```
 
-`@skapxd/eslint-plugin` usa parser services y el TypeScript checker para aplicar
+`@skapxd/eslint-opinionated` usa parser services y el TypeScript checker para aplicar
 esas reglas sobre tipos reales, no solo sobre nombres de imports.
 
 ### Plugins de React, Next.js y Astro
@@ -183,11 +183,11 @@ puede fallar con un mensaje concreto.
 | `max-lines` / `complexity` | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ |
 | Codemods / search | ❌ | Parcial | Parcial | ✅ | Parcial | ❌ |
 | Prompt/instrucciones para agentes | ❌ | ❌ | Parcial | Parcial | Parcial | ❌ |
-| **`@skapxd/eslint-plugin`** | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **`@skapxd/eslint-opinionated`** | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 ### En resumen
 
-`@skapxd/eslint-plugin` existe para cubrir un hueco que ninguna de las anteriores
+`@skapxd/eslint-opinionated` existe para cubrir un hueco que ninguna de las anteriores
 cubre por sí sola: que un proyecto pueda **opinar de forma verificable** sobre
 cómo un agente escribe código — su forma de archivos, sus contratos de error, su
 manera de no perder la causa — y no solo sobre su estilo o su sintaxis.
@@ -202,11 +202,11 @@ comando que puede fallar y decir exactamente qué se rompió.
 ## 🚀 Uso rápido
 
 ```bash
-pnpm add -D @skapxd/eslint-plugin eslint typescript typescript-eslint
+pnpm add -D @skapxd/eslint-opinionated eslint typescript typescript-eslint
 ```
 
 ```js
-import skapxd from "@skapxd/eslint-plugin";
+import skapxd from "@skapxd/eslint-opinionated";
 
 export default [
   skapxd.configs.shared.base,
@@ -270,17 +270,17 @@ src/
 
 | Módulo | Propósito |
 | --- | --- |
-| `@skapxd/eslint-plugin/shared` | Reglas y presets comunes para backend, frontend y paquetes npm. |
-| `@skapxd/eslint-plugin/next` | Presets específicos para Next.js. |
-| `@skapxd/eslint-plugin/astro` | Presets específicos para Astro. |
-| `@skapxd/eslint-plugin` | Entry point principal con todas las reglas y configs. |
+| `@skapxd/eslint-opinionated/shared` | Reglas y presets comunes para backend, frontend y paquetes npm. |
+| `@skapxd/eslint-opinionated/next` | Presets específicos para Next.js. |
+| `@skapxd/eslint-opinionated/astro` | Presets específicos para Astro. |
+| `@skapxd/eslint-opinionated` | Entry point principal con todas las reglas y configs. |
 
 ## Presets
 
 ### Shared
 
 ```js
-import skapxd from "@skapxd/eslint-plugin";
+import skapxd from "@skapxd/eslint-opinionated";
 
 export default [
   skapxd.configs.shared.base,
@@ -292,7 +292,7 @@ export default [
 ### Backend
 
 ```js
-import skapxd from "@skapxd/eslint-plugin";
+import skapxd from "@skapxd/eslint-opinionated";
 
 export default [
   {
@@ -305,7 +305,7 @@ export default [
 ### Frontend
 
 ```js
-import skapxd from "@skapxd/eslint-plugin";
+import skapxd from "@skapxd/eslint-opinionated";
 
 export default [
   {
@@ -321,7 +321,7 @@ export default [
 import nextPlugin from "@next/eslint-plugin-next";
 import reactHooksPlugin from "eslint-plugin-react-hooks";
 import reactPlugin from "eslint-plugin-react";
-import skapxd from "@skapxd/eslint-plugin";
+import skapxd from "@skapxd/eslint-opinionated";
 import tseslint from "typescript-eslint";
 
 export default [
@@ -347,8 +347,8 @@ export default [
 También puedes importar solo el factory de Next.js:
 
 ```js
-import skapxd from "@skapxd/eslint-plugin";
-import { createNextConfigs } from "@skapxd/eslint-plugin/next";
+import skapxd from "@skapxd/eslint-opinionated";
+import { createNextConfigs } from "@skapxd/eslint-opinionated/next";
 
 export default [
   ...createNextConfigs(skapxd),
@@ -358,7 +358,7 @@ export default [
 ### Astro
 
 ```js
-import skapxd from "@skapxd/eslint-plugin";
+import skapxd from "@skapxd/eslint-opinionated";
 
 export default [
   ...skapxd.configs.astro,
@@ -368,8 +368,8 @@ export default [
 También puedes importar solo el factory de Astro:
 
 ```js
-import skapxd from "@skapxd/eslint-plugin";
-import { createAstroConfigs } from "@skapxd/eslint-plugin/astro";
+import skapxd from "@skapxd/eslint-opinionated";
+import { createAstroConfigs } from "@skapxd/eslint-opinionated/astro";
 
 export default [
   ...createAstroConfigs(skapxd),
@@ -379,7 +379,7 @@ export default [
 ### Paquete npm
 
 ```js
-import skapxd from "@skapxd/eslint-plugin";
+import skapxd from "@skapxd/eslint-opinionated";
 
 export default [
   {
@@ -397,7 +397,7 @@ hace que ESLint **ignore todas las directivas inline** en los archivos que cubre
 ningún `eslint-disable` surte efecto, así que las reglas no se pueden bypassear.
 
 ```js
-import skapxd from "@skapxd/eslint-plugin";
+import skapxd from "@skapxd/eslint-opinionated";
 
 export default [
   ...skapxd.configs.next,
