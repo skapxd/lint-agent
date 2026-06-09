@@ -9,7 +9,7 @@ const plugin = {
   configs: {} as Record<string, any>,
   meta: {
     name: "@skapxd/eslint-opinionated",
-    version: "0.2.0",
+    version: "0.3.0",
   },
   rules,
 };
