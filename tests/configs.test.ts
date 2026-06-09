@@ -27,6 +27,46 @@ describe("alias deprecado await-requires-try-safe", () => {
   });
 });
 
+describe("contrato de errores: await-requires-result manda", () => {
+  it("es obligatoria en todos los presets tipados", () => {
+    const typedPresets = [
+      plugin.configs.backend,
+      plugin.configs.frontend,
+      plugin.configs.next.find(
+        (config: { name: string }) => config.name === "skapxd/next/server",
+      ),
+      plugin.configs.astro.find(
+        (config: { name: string }) => config.name === "skapxd/astro/typescript",
+      ),
+    ];
+
+    for (const preset of typedPresets) {
+      expect(
+        preset.rules["skapxd/await-requires-result"],
+        preset.name,
+      ).toBe("error");
+    }
+  });
+
+  it("async-functions-return-result está apagada por defecto en todos los presets", () => {
+    const allPresets = [
+      plugin.configs.base,
+      plugin.configs.backend,
+      plugin.configs.frontend,
+      plugin.configs.package,
+      ...plugin.configs.next,
+      ...plugin.configs.astro,
+    ];
+
+    for (const preset of allPresets) {
+      expect(
+        preset.rules?.["skapxd/async-functions-return-result"],
+        preset.name,
+      ).toBeUndefined();
+    }
+  });
+});
+
 describe("severidades", () => {
   it("ningún preset usa warn: todas las reglas son error", () => {
     const presets = [

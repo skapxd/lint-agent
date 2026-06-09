@@ -13,13 +13,13 @@ export function createSharedConfigs(pluginReference: unknown) {
       plugins: { skapxd: pluginReference },
       rules: {
         ...baseRules,
-        "skapxd/async-functions-return-result": [
-          "error",
-          {
-            checkMissingReturnType: true,
-            resultTypeNames: ["Result", "ResultValue", "SafeResult"],
-          },
-        ],
+        // La regla obligatoria del sistema de errores es await-requires-result
+        // (todo await resuelve en Result). async-functions-return-result queda
+        // apagada por defecto: exigir la firma por decreto choca con los bordes
+        // del framework y bloquea la adopción incremental; la presión sobre los
+        // awaits produce el mismo estado final. Ver "¿Por qué está apagada por
+        // defecto?" en el README.
+        "skapxd/await-requires-result": "error",
       },
     },
     base: {

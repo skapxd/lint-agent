@@ -22,21 +22,11 @@ export function createNextConfigs(pluginReference: unknown) {
       plugins: { skapxd: pluginReference },
       rules: {
         ...baseRules,
-        "skapxd/async-functions-return-result": [
-          "error",
-          {
-            allowFilePatterns: [
-              "/(route|page|layout|template|loading|error|not-found)\\.tsx?$",
-            ],
-            allowNamePatterns: [
-              "^(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)$",
-              "^handle(Get|Post|Put|Patch|Delete|Head|Options)$",
-              "^start$",
-            ],
-            checkMissingReturnType: true,
-            resultTypeNames: ["Result", "ResultValue", "SafeResult"],
-          },
-        ],
+        // Obligatoria: todo await resuelve en Result. A diferencia de
+        // async-functions-return-result (apagada por defecto), no necesita
+        // excepciones para los entrypoints de Next: envolver un await en
+        // trySafe es compatible con cualquier firma que imponga el framework.
+        "skapxd/await-requires-result": "error",
       },
     },
     {

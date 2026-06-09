@@ -13,8 +13,9 @@ Cursor o Copilot.
 
 - **Una función por archivo:** un archivo con cinco helpers escondidos no pasa;
   la regla hasta te dibuja la carpeta sugerida con formato `tree`.
-- **Errores con `Result`:** una función `async` que puede fallar lo dice en su
-  tipo de retorno (`Promise<Result<...>>`), no en una convención oral.
+- **Errores con `Result`:** ningún `await` queda fuera del sistema de errores:
+  o llamas una función que retorna `Promise<Result<...>>` o envuelves la
+  operación en `trySafe`. Nada lanza sin que el tipo lo diga.
 - **Causa preservada:** al transformar un error de dominio, el `cause` original
   no puede desaparecer — type-aware, vía el checker de TypeScript.
 - **Hooks acotados:** un hook con demasiado estado deja de pasar como "solo un
@@ -251,6 +252,70 @@ hay errores, sale con código `1` (apto para CI). Como acota por **archivo
 completo**, también dispara las reglas estructurales (p. ej.
 `one-root-function-per-file`), que un filtrado por línea se perdería.
 
+## Cómo encaja todo: `@skapxd/result` + `ts-pattern`
+
+Este plugin no es una colección de reglas sueltas: es el guardián de un
+pipeline de errores donde cada pieza cierra un hueco que las otras dejan.
+
+```text
+excepción ──trySafe──▶ Result ──map con cause──▶ error de dominio ──match()──▶ UI/respuesta
+```
+
+| Pieza | Qué aporta | Regla que lo vigila |
+| --- | --- | --- |
+| `try/catch` prohibido | Los errores no viajan invisibles al tipo. | `skapxd/no-try-catch` |
+| `.then/.catch` prohibido | Una sola forma de asincronía: `await`. | `skapxd/no-promise-chain` |
+| `trySafe` (`@skapxd/result`) | La única puerta: lo que lanza se vuelve `Result`. | `skapxd/await-requires-result` |
+| Errores de dominio con `cause` | Al traducir un error técnico, la causa sobrevive. | `skapxd/result-error-requires-cause` |
+| Un solo contrato `Result` | Nada de `{ ok: ... }` caseros que fragmenten el sistema. | `skapxd/no-ad-hoc-ok-result` |
+| `match()` (`ts-pattern`) | Consumo exhaustivo: el compilador exige manejar cada error. | `skapxd/prefer-ts-pattern` |
+
+De punta a punta:
+
+```ts
+import { Result, trySafe } from "@skapxd/result";
+import { match } from "ts-pattern";
+
+type UserError =
+  | { type: "NETWORK"; message: string; cause: unknown }
+  | { type: "NOT_FOUND"; message: string };
+
+// 1. La frontera con el mundo que lanza: trySafe + errores de dominio.
+async function getUser(id: string): Promise<Result<User, UserError>> {
+  const response = await trySafe(() => fetch(`/users/${id}`));
+
+  if (!response.ok) {
+    return Result.err({
+      cause: response.error, // result-error-requires-cause vigila esto
+      message: "No pude cargar el usuario.",
+      type: "NETWORK",
+    });
+  }
+
+  if (response.value.status === 404) {
+    return Result.err({ message: "El usuario no existe.", type: "NOT_FOUND" });
+  }
+
+  return trySafe(() => response.value.json());
+}
+
+// 2. El consumo: el await ya resuelve en Result (await-requires-result pasa)
+//    y match() obliga a manejar cada variante (prefer-ts-pattern).
+const user = await getUser(id);
+
+const label = match(user)
+  .with({ ok: true }, ({ value }) => value.name)
+  .with({ ok: false, error: { type: "NOT_FOUND" } }, () => "No existe")
+  .with({ ok: false, error: { type: "NETWORK" } }, () => "Reintenta")
+  .exhaustive();
+```
+
+El resultado: ningún error puede escaparse (sin `try/catch` ni `.catch`, todo
+pasa por `trySafe`), ningún error pierde su origen (siempre hay `cause` hasta
+la excepción original), y ningún error queda sin manejar (el `.exhaustive()`
+de ts-pattern no compila si falta una variante). Legibilidad y manejo de
+errores dejan de depender de la disciplina del autor — humano o agente.
+
 ## Estructura del paquete
 
 ```text
@@ -298,6 +363,29 @@ export default [
   {
     files: ["src/server/**/*.{ts,tsx}", "src/app/api/**/*.{ts,tsx}"],
     ...skapxd.configs.shared.backend,
+  },
+];
+```
+
+El contrato del back es el mismo que el del front: todo `await` debe resolver
+en un `Result` (`skapxd/await-requires-result`). Exigir además la firma
+`Promise<Result<...>>` en cada función async
+(`skapxd/async-functions-return-result`) está **apagado por defecto** — los
+motivos están documentados en la sección de esa regla. Si quieres el contrato
+duro, actívala encima del preset:
+
+```js
+export default [
+  {
+    files: ["src/server/**/*.{ts,tsx}"],
+    ...skapxd.configs.shared.backend,
+    rules: {
+      ...skapxd.configs.shared.backend.rules,
+      "skapxd/async-functions-return-result": [
+        "error",
+        { checkMissingReturnType: true },
+      ],
+    },
   },
 ];
 ```
@@ -427,9 +515,9 @@ bloque con `linterOptions: { noInlineConfig: false }` para esos globs.
 | Regla | Qué protege |
 | --- | --- |
 | `skapxd/one-root-function-per-file` | Un archivo, una función top-level semántica. |
-| `skapxd/async-functions-return-result` | Funciones async de dominio deben retornar `Promise<Result<...>>`. |
+| `skapxd/async-functions-return-result` | Funciones async de dominio deben retornar `Promise<Result<...>>`. **Apagada por defecto; opt-in** (ver motivos en su sección). |
 | `skapxd/result-error-requires-cause` | Un `Result.err` derivado debe preservar `cause: result.error`. |
-| `skapxd/await-requires-result` | Todo `await` debe resolver en un `Result`: o la función llamada retorna `Promise<Result<...>>` (preferido) o se envuelve en `trySafe`. La activa `shared.frontend`. |
+| `skapxd/await-requires-result` | Todo `await` debe resolver en un `Result`: o la función llamada retorna `Promise<Result<...>>` (preferido) o se envuelve en `trySafe`. **Obligatoria en todos los presets tipados.** |
 | `skapxd/no-ad-hoc-ok-result` | Evita contratos `{ ok: ... }` hechos a mano en async exports. |
 | `skapxd/max-hook-size` | Marca hooks grandes o con demasiados `useState`. |
 | `skapxd/jsx-return-name-pascal-case` | Funciones que retornan JSX deben nombrarse como componentes. |
@@ -465,6 +553,39 @@ sugiere helpers al lado.
 
 ### `skapxd/async-functions-return-result`
 
+> **Apagada por defecto desde v0.5.0** — ningún preset la activa. La regla
+> obligatoria del sistema de errores es `skapxd/await-requires-result`.
+>
+> **Por qué se tomó esta decisión:**
+>
+> 1. **`await-requires-result` produce el mismo estado final con mejor
+>    ergonomía.** Si ningún `await` puede quedar sin `Result`, envolver con
+>    `trySafe` inline una y otra vez se vuelve incómodo rápido — la presión
+>    natural es extraer funciones que retornen `Promise<Result<...>>` con
+>    errores de dominio. Se llega a las mismas firmas que esta regla imponía,
+>    pero por gravedad, no por decreto.
+> 2. **Imponer la firma choca con los bordes del framework.** Los handlers
+>    `GET/POST` de Next, `page.tsx`, los callbacks de librerías: sus firmas no
+>    son tuyas. Esta regla necesitaba listas de excepciones
+>    (`allowFilePatterns`, `allowNamePatterns`) para convivir con eso;
+>    `await-requires-result` no necesita ninguna, porque envolver un `await`
+>    es compatible con cualquier firma.
+> 3. **Adopción incremental.** En un codebase existente, exigir la firma en
+>    cada función async lo rompe todo de golpe. Exigir `Result` en los `await`
+>    permite migrar llamada por llamada.
+>
+> Sigue disponible para quien quiera endurecer el contrato (p. ej. un backend
+> nuevo donde todas las firmas son tuyas):
+>
+> ```js
+> rules: {
+>   "skapxd/async-functions-return-result": ["error", {
+>     checkMissingReturnType: true,
+>     resultTypeNames: ["Result", "ResultValue", "SafeResult"],
+>   }],
+> }
+> ```
+
 Obliga a que funciones async en dominios configurados declaren un retorno como:
 
 ```ts
@@ -484,7 +605,8 @@ type Result<T, E> = ...;                                // ❌ Result ajeno
 async function no(): Promise<Result<number, Error>> {}  // se reporta
 ```
 
-> Requiere `projectService` (los presets `backend` y `next/server` ya lo activan).
+> Requiere `projectService` (actívalo en `languageOptions.parserOptions` o
+> apóyate en un preset tipado del plugin, que ya lo trae).
 > Sin información de tipos cae a una comprobación por nombre (`resultTypeNames`),
 > menos estricta.
 
@@ -509,10 +631,12 @@ el archivo.
 
 ### `skapxd/await-requires-result`
 
-> La activa el preset `shared.frontend` en todo el front: componentes, hooks,
-> handlers y servicios. El contrato queda así: ninguna función está obligada
-> a retornar `Result`, pero todo `await` debe **resolver** en uno. Para
-> activarla en otros globs, añádela tú mismo:
+> **Es la regla obligatoria del sistema de errores**: la activan todos los
+> presets tipados (`shared.frontend`, `shared.backend`, `next/server`,
+> `astro/typescript`). El contrato queda así: ninguna función está obligada
+> a retornar `Result` (eso es `async-functions-return-result`, apagada por
+> defecto), pero todo `await` debe **resolver** en uno. Para activarla en
+> otros globs, añádela tú mismo:
 >
 > ```js
 > rules: {
@@ -650,8 +774,9 @@ const result = await trySafe(() => client.execute(query)); // ✅
 if (!result.ok) return Result.err({ cause: result.error, type: "DB_FAILED" });
 ```
 
-Se complementa con `result-error-requires-cause` (preservar la causa) y, si la
-activas, con `await-requires-result` (que además exige que cada `await` resuelva en un `Result`).
+Se complementa con `result-error-requires-cause` (preservar la causa) y con
+`await-requires-result` (obligatoria en los presets tipados: cada `await`
+resuelve en un `Result`).
 
 ### `skapxd/no-promise-chain`
 

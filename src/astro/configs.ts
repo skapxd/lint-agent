@@ -30,6 +30,7 @@ export function createAstroConfigs(pluginReference: unknown) {
       name: "skapxd/astro/typescript",
       plugins: { skapxd: pluginReference },
       rules: {
+        "skapxd/await-requires-result": "error",
         "skapxd/result-error-requires-cause": "error",
       },
     },
