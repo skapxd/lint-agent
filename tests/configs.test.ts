@@ -7,6 +7,15 @@ describe("configs.strict", () => {
   });
 });
 
+describe("configs.frontend", () => {
+  it("obliga a trySafe en llamadas async sin exigir retornar Result", () => {
+    const config = plugin.configs.frontend;
+
+    expect(config.rules["skapxd/await-requires-try-safe"]).toBe("error");
+    expect(config.rules["skapxd/async-functions-return-result"]).toBeUndefined();
+  });
+});
+
 describe("configs.frontendServices", () => {
   it("obliga a trySafe en la capa de servicios del front", () => {
     const config = plugin.configs.frontendServices;

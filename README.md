@@ -437,7 +437,7 @@ bloque con `linterOptions: { noInlineConfig: false }` para esos globs.
 | `skapxd/one-root-function-per-file` | Un archivo, una función top-level semántica. |
 | `skapxd/async-functions-return-result` | Funciones async de dominio deben retornar `Promise<Result<...>>`. |
 | `skapxd/result-error-requires-cause` | Un `Result.err` derivado debe preservar `cause: result.error`. |
-| `skapxd/await-requires-try-safe` | Los `await` deben estar protegidos por `trySafe`. La activa el preset `shared.frontendServices` en la capa de servicios. |
+| `skapxd/await-requires-try-safe` | Los `await` deben estar protegidos por `trySafe`, salvo que lo awaiteado ya retorne `Result`. La activan `shared.frontend` y `shared.frontendServices`. |
 | `skapxd/no-ad-hoc-ok-result` | Evita contratos `{ ok: ... }` hechos a mano en async exports. |
 | `skapxd/max-hook-size` | Marca hooks grandes o con demasiados `useState`. |
 | `skapxd/jsx-return-name-pascal-case` | Funciones que retornan JSX deben nombrarse como componentes. |
@@ -517,10 +517,12 @@ el archivo.
 
 ### `skapxd/await-requires-try-safe`
 
-> Es la regla más agresiva del paquete (marca *todos* los `await` sin proteger),
-> así que solo la activa el preset `shared.frontendServices`, acotada a la capa
-> de servicios (`**/services/**`, `**/api/**`). Para activarla en otros globs,
-> añádela tú mismo:
+> La activan el preset `shared.frontend` (todo el front: componentes, hooks,
+> handlers) y `shared.frontendServices` (acotada a `**/services/**`,
+> `**/api/**`). El contrato del front queda así: ninguna función está obligada
+> a retornar `Result`, pero toda llamada asíncrona debe ir en `trySafe` — salvo
+> que lo llamado ya retorne `Result` (ver exención más abajo). Para activarla
+> en otros globs, añádela tú mismo:
 >
 > ```js
 > rules: {
