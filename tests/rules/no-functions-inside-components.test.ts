@@ -45,6 +45,25 @@ createRuleTester().run(
         filename: "test.tsx",
       },
       {
+        // flecha CON BLOQUE en .map: el cuerpo `{ return ... }` da pie a
+        // ifs y lógica — no califica como callback de expresión
+        code: "function List() { return <ul>{items.map((i) => { return <li key={i} />; })}</ul>; }",
+        errors: [{ messageId: "functionInsideComponent" }],
+        filename: "test.tsx",
+      },
+      {
+        // function expression en .map: siempre tiene bloque, nunca exenta
+        code: "function List() { return <ul>{items.map(function (i) { return <li key={i} />; })}</ul>; }",
+        errors: [{ messageId: "functionInsideComponent" }],
+        filename: "test.tsx",
+      },
+      {
+        // flecha con bloque como prop JSX: tampoco
+        code: "function Card() { return <button onClick={() => { save(); }} />; }",
+        errors: [{ messageId: "functionInsideComponent" }],
+        filename: "test.tsx",
+      },
+      {
         // modo ultraestricto: el consumidor apaga la exención de props JSX
         code: "function Card() { return <button onClick={() => save()} />; }",
         errors: [{ messageId: "functionInsideComponent" }],
@@ -68,10 +87,11 @@ createRuleTester().run(
       tsx("function useThing() { const f = () => {}; return f; }"),
       // helper en minúscula (no es componente)
       tsx("function build() { const f = () => 1; return f; }"),
-      // por defecto: callback anónimo como valor directo de una prop JSX
+      // por defecto: flecha de expresión como valor directo de una prop JSX
       tsx("function Card() { return <button onClick={() => save()} />; }"),
-      // por defecto: callback anónimo de .map en el render
+      // por defecto: flecha de expresión en .map (con o sin paréntesis)
       tsx("function List() { return <ul>{items.map((i) => <li key={i} />)}</ul>; }"),
+      tsx("function List() { return <ul>{items.map((i) => (<li key={i} />))}</ul>; }"),
     ],
   },
 );

@@ -2,8 +2,8 @@
 import { getContainingFunction } from "#/utils/get-containing-function";
 import { getFunctionName } from "#/utils/get-function-name";
 import { getNoFunctionsInsideComponentsOptions } from "#/utils/get-no-functions-inside-components-options";
-import { isAnonymousInlineFunction } from "#/utils/is-anonymous-inline-function";
 import { isArrayMapCallback } from "#/utils/is-array-map-callback";
+import { isExpressionArrowFunction } from "#/utils/is-expression-arrow-function";
 import { isFunctionNode } from "#/utils/is-function-node";
 import { isJsxAttributeCallback } from "#/utils/is-jsx-attribute-callback";
 import { isPascalCaseName } from "#/utils/is-pascal-case-name";
@@ -17,7 +17,7 @@ export const noFunctionsInsideComponents = {
     },
     messages: {
       functionInsideComponent:
-        "No definas funciones dentro del componente `{{component}}`: se recrean en cada render. Muevela a un hook (`useX`) o a un helper fuera del componente.",
+        "No definas funciones dentro del componente `{{component}}`: se recrean en cada render. Muevela a un hook (`useX`) o a un helper fuera del componente. Los callbacks inline de JSX y .map solo se permiten como flecha de expresion (sin cuerpo `{ }`): un bloque ya da pie a ifs y logica que pertenece fuera.",
     },
     schema: [
       {
@@ -38,7 +38,7 @@ export const noFunctionsInsideComponents = {
     }
 
     function isAllowedInlineCallback(node) {
-      if (!isAnonymousInlineFunction(node)) {
+      if (!isExpressionArrowFunction(node)) {
         return false;
       }
 

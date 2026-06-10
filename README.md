@@ -816,12 +816,20 @@ function Card() {
 helper en minúscula **sí** pueden tener funciones dentro — ahí es donde se mueve
 la lógica.
 
-**Opciones.** Las exenciones aplican **solo a funciones anónimas inline en esa
-posición exacta**: el valor directo de una prop JSX, o el primer argumento de
-`.map(...)`. Un handler con nombre en el cuerpo (`const onClick = () => ...`),
-un callback de `useEffect` o un `.forEach` siguen reportándose — la lógica con
-peso sigue viviendo fuera del componente. Para el modo ultraestricto (ninguna
-función inline, como en v0.6.0 y anteriores), apágalas explícitamente:
+**Opciones.** Las exenciones aplican solo a **flechas de expresión** (sin
+cuerpo `{ }`) en esa posición exacta: el valor directo de una prop JSX, o el
+primer argumento de `.map(...)`. La distinción importa: una flecha de expresión
+solo puede contener una expresión — es declarativa por construcción —, mientras
+que un bloque da pie a `if`s, variables y llamadas que pertenecen fuera:
+
+```tsx
+{items.map((i) => <li key={i} />)}              // ✅ flecha de expresión
+{items.map((i) => { return <li key={i} />; })}  // ❌ bloque: invita a meter lógica
+```
+
+Un handler con nombre en el cuerpo (`const onClick = () => ...`), un callback
+de `useEffect` o un `.forEach` siguen reportándose. Para el modo ultraestricto
+(ninguna función inline, como en v0.6.0 y anteriores), apágalas explícitamente:
 
 ```js
 "skapxd/no-functions-inside-components": ["error", {
