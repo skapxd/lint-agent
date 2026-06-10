@@ -754,13 +754,15 @@ exige, y la regla los reconoce en capas:
    `not-found`, `sitemap`, `robots`, `manifest`, `icon`, `opengraph-image`,
    etc. No hay que configurar nada.
 3. **`allowFilePatterns` (extensible):** si usas un framework o tool que la
-   regla aún no contempla, agrega su patrón. Los patrones propios se **suman**
-   a los integrados, no los reemplazan:
+   regla aún no contempla, agrega su glob. Los patrones propios se **suman**
+   a los integrados, no los reemplazan. Son globs legibles (`*` un segmento,
+   `**` cualquier profundidad, `{a,b}` alternativas) y un patrón sin prefijo
+   matchea en cualquier carpeta:
 
 ```js
 "skapxd/no-default-export": ["error", {
   // p. ej. SvelteKit exige default en +page.ts / +layout.ts
-  allowFilePatterns: ["\\+page\\.[jt]s$", "\\+layout\\.[jt]s$"],
+  allowFilePatterns: ["+page.ts", "+layout.ts"],
 }]
 ```
 

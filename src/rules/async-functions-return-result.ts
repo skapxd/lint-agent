@@ -8,6 +8,7 @@ import { getTypeContext } from "#/utils/get-type-context";
 import { isAnonymousGeneratedFunctionName } from "#/utils/is-anonymous-generated-function-name";
 import { isPromiseOfResultType } from "#/utils/is-promise-of-result-type";
 import { isSkapxdResultOrPromiseResultType } from "#/utils/is-skapxd-result-or-promise-result-type";
+import { matchesAnyGlob } from "#/utils/matches-any-glob";
 import { matchesAnyPattern } from "#/utils/matches-any-pattern";
 
 export const asyncFunctionsReturnResult = {
@@ -76,7 +77,7 @@ export const asyncFunctionsReturnResult = {
         }
 
         function reportIfInvalidAsyncReturn(node, name, reportNode = node) {
-          if (!node.async || matchesAnyPattern(filename, options.allowFilePatterns)) {
+          if (!node.async || matchesAnyGlob(filename, options.allowFilePatterns)) {
             return;
           }
 

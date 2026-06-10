@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import plugin from "../src/index";
+import { matchesAnyGlob } from "../src/utils/matches-any-glob";
 
 describe("configs.strict", () => {
   it("expone el preset endurecido con noInlineConfig", () => {
@@ -76,12 +77,12 @@ describe("no-default-export en el preset next", () => {
 
     expect(severity).toBe("error");
 
-    const pattern = new RegExp(options.allowFilePatterns[0]);
+    const globs = options.allowFilePatterns;
 
-    expect(pattern.test("src/app/dashboard/page.tsx")).toBe(true);
-    expect(pattern.test("src/app/layout.tsx")).toBe(true);
-    expect(pattern.test("src/app/sitemap.ts")).toBe(true);
-    expect(pattern.test("src/app/components/card.tsx")).toBe(false);
+    expect(matchesAnyGlob("src/app/dashboard/page.tsx", globs)).toBe(true);
+    expect(matchesAnyGlob("src/app/layout.tsx", globs)).toBe(true);
+    expect(matchesAnyGlob("src/app/sitemap.ts", globs)).toBe(true);
+    expect(matchesAnyGlob("src/app/components/card.tsx", globs)).toBe(false);
   });
 });
 

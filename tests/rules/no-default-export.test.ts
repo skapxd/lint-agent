@@ -15,11 +15,11 @@ createRuleTester().run("no-default-export", rules["no-default-export"], {
       filename: "src/x.ts",
     },
     {
-      // un patrón del consumidor no exime archivos que no matchean
+      // un glob del consumidor no exime archivos que no matchean
       code: "export default {};",
       errors: [{ messageId: "noDefaultExport" }],
       filename: "src/other.ts",
-      options: [{ allowFilePatterns: ["legacy[\\\\/]"] }],
+      options: [{ allowFilePatterns: ["legacy/**"] }],
     },
   ],
   valid: [
@@ -29,11 +29,11 @@ createRuleTester().run("no-default-export", rules["no-default-export"], {
     { code: "export default [];", filename: "eslint.config.mjs" },
     { code: "export default { title: 'Card' };", filename: "card.stories.tsx" },
     // extensible: el consumidor permite el entrypoint de un framework nuevo
-    // (los patrones propios se SUMAN a los integrados, no los reemplazan)
+    // con un glob legible (los propios se SUMAN a los integrados)
     {
       code: "export default function Page() { return null; }",
       filename: "src/routes/+page.ts",
-      options: [{ allowFilePatterns: ["\\+page\\.[jt]s$"] }],
+      options: [{ allowFilePatterns: ["+page.ts"] }],
     },
   ],
 });

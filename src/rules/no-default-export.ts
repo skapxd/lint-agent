@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { getNoDefaultExportOptions } from "#/utils/get-no-default-export-options";
-import { matchesAnyPattern } from "#/utils/matches-any-pattern";
+import { matchesAnyGlob } from "#/utils/matches-any-glob";
 
 export const noDefaultExport = {
   meta: {
@@ -11,7 +11,7 @@ export const noDefaultExport = {
     },
     messages: {
       noDefaultExport:
-        "No uses `export default`: un export nombrado hace el simbolo renombrable con el IDE, grepeable y estable en autoimports. Si este archivo es un entrypoint donde un framework o tool exige el default, agrega su patron en `allowFilePatterns` de skapxd/no-default-export.",
+        "No uses `export default`: un export nombrado hace el simbolo renombrable con el IDE, grepeable y estable en autoimports. Si este archivo es un entrypoint donde un framework o tool exige el default, agrega su glob en `allowFilePatterns` de skapxd/no-default-export (p. ej. \"+page.ts\").",
     },
     schema: [
       {
@@ -30,7 +30,7 @@ export const noDefaultExport = {
     const options = getNoDefaultExportOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
-    if (matchesAnyPattern(filename, options.allowFilePatterns)) {
+    if (matchesAnyGlob(filename, options.allowFilePatterns)) {
       return {};
     }
 

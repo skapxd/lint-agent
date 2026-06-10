@@ -7,7 +7,7 @@ import { getTypeContext } from "#/utils/get-type-context";
 import { isSkapxdResultOrPromiseResultExpression } from "#/utils/is-skapxd-result-or-promise-result-expression";
 import { isSymbolFromSkapxdResult } from "#/utils/is-symbol-from-skapxd-result";
 import { isTrySafeCall } from "#/utils/is-try-safe-call";
-import { matchesAnyPattern } from "#/utils/matches-any-pattern";
+import { matchesAnyGlob } from "#/utils/matches-any-glob";
 
 export const awaitRequiresResult = {
       meta: {
@@ -61,7 +61,7 @@ export const awaitRequiresResult = {
 
         return {
           AwaitExpression(node) {
-            if (matchesAnyPattern(filename, options.allowFilePatterns)) {
+            if (matchesAnyGlob(filename, options.allowFilePatterns)) {
               return;
             }
 

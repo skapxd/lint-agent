@@ -8,10 +8,10 @@ import {
 
 // Entrypoints donde Next exige `export default` (page, layout, sitemap, ...):
 // la regla no-default-export los exime automáticamente en este preset.
-const nextDefaultExportFilePattern = `(^|[\\\\/])(${[
+const nextDefaultExportFileGlob = `{${[
   ...nextAppRouteSegmentFileStems,
   ...nextAppMetadataFileStems,
-].join("|")})\\.[jt]sx?$`;
+].join(",")}}.{js,jsx,ts,tsx}`;
 
 export function createNextConfigs(pluginReference: unknown) {
   const baseLanguageOptions = createBaseLanguageOptions();
@@ -27,7 +27,7 @@ export function createNextConfigs(pluginReference: unknown) {
         "skapxd/no-default-export": [
           "error",
           {
-            allowFilePatterns: [nextDefaultExportFilePattern],
+            allowFilePatterns: [nextDefaultExportFileGlob],
           },
         ],
       },

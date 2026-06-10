@@ -26,7 +26,7 @@ export default [
       // `export default` por convención de plugins de ESLint.
       "skapxd/no-default-export": [
         "error",
-        { allowFilePatterns: ["[\\\\/]src[\\\\/]index\\.ts$"] },
+        { allowFilePatterns: ["src/index.ts"] },
       ],
     },
   },
