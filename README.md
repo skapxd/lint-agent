@@ -699,12 +699,56 @@ Sirve para código de pegamento, pero deja el error sin modelar (`Result<T,
 unknown>`). Cuando la misma operación se repite o el error importa, el mensaje
 de la regla empuja hacia el camino 1.
 
+### `skapxd/no-ad-hoc-ok-result`
+
+Prohíbe que una función async **exportada** retorne objetos literales con la
+forma `{ ok: ... }` armados a mano. Un contrato casero fragmenta el sistema:
+cada módulo inventa su variante, la exención type-aware de
+`await-requires-result` no lo reconoce, y `match()` pierde la exhaustividad.
+
+```ts
+export async function getUser(id: string) {
+  return { ok: false, message: "falló" };          // ❌ contrato inventado
+}
+
+export async function getUser(id: string): Promise<Result<User, UserError>> {
+  return Result.err({                               // ✅ el Result real
+    cause: error,
+    message: "No pude cargar el usuario.",
+    type: "USER_FETCH_FAILED",
+  });
+}
+```
+
+Solo mira funciones async exportadas: un helper interno con un objeto `ok`
+cualquiera no es un contrato público y no se reporta.
+
 ### `skapxd/max-hook-size`
 
 Marca hooks que crecen demasiado o acumulan muchos `useState`.
 
 La intención es empujar el diseño hacia `useReducer`, hooks más pequeños o
 módulos de transición de estado.
+
+### `skapxd/jsx-return-name-pascal-case`
+
+Si una función devuelve JSX, es un componente, y debe llamarse como tal:
+PascalCase. El mensaje sugiere el rename concreto.
+
+```tsx
+function renderUserCard(user: User) {  // ❌ "render*" devuelve JSX → es un componente
+  return <article>{user.name}</article>;
+}
+
+function UserCard({ user }: { user: User }) {  // ✅ nombre de componente + props
+  return <article>{user.name}</article>;
+}
+```
+
+Esta regla es la que mantiene honesto al resto del sistema React: las reglas
+de componentes detectan "componente" por nombre PascalCase, así que una
+función `renderX` que devuelve JSX escaparía de ellas. Esta la captura y
+fuerza el rename — y con el nombre corregido, las demás ya la ven.
 
 ### `skapxd/no-deep-relative-imports`
 
