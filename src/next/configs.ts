@@ -1,8 +1,17 @@
+import { nextAppMetadataFileStems } from "#/constants/next-app-metadata-file-stems";
+import { nextAppRouteSegmentFileStems } from "#/constants/next-app-route-segment-file-stems";
 import {
   baseRules,
   createBaseLanguageOptions,
   createTypedLanguageOptions,
 } from "#/shared/configs";
+
+// Entrypoints donde Next exige `export default` (page, layout, sitemap, ...):
+// la regla no-default-export los exime automáticamente en este preset.
+const nextDefaultExportFilePattern = `(^|[\\\\/])(${[
+  ...nextAppRouteSegmentFileStems,
+  ...nextAppMetadataFileStems,
+].join("|")})\\.[jt]sx?$`;
 
 export function createNextConfigs(pluginReference: unknown) {
   const baseLanguageOptions = createBaseLanguageOptions();
@@ -13,7 +22,15 @@ export function createNextConfigs(pluginReference: unknown) {
       languageOptions: baseLanguageOptions,
       name: "skapxd/next/base",
       plugins: { skapxd: pluginReference },
-      rules: baseRules,
+      rules: {
+        ...baseRules,
+        "skapxd/no-default-export": [
+          "error",
+          {
+            allowFilePatterns: [nextDefaultExportFilePattern],
+          },
+        ],
+      },
     },
     {
       files: ["src/app/api/**/*.{ts,tsx}", "src/server/**/*.{ts,tsx}"],

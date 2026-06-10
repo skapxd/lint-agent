@@ -20,6 +20,14 @@ export default [
     plugins: {
       skapxd,
     },
-    rules: skapxd.configs.shared.base.rules,
+    rules: {
+      ...skapxd.configs.shared.base.rules,
+      // Dogfood de la opción extensible: el entrypoint del plugin exige
+      // `export default` por convención de plugins de ESLint.
+      "skapxd/no-default-export": [
+        "error",
+        { allowFilePatterns: ["[\\\\/]src[\\\\/]index\\.ts$"] },
+      ],
+    },
   },
 ];

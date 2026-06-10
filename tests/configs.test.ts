@@ -67,6 +67,24 @@ describe("contrato de errores: await-requires-result manda", () => {
   });
 });
 
+describe("no-default-export en el preset next", () => {
+  it("exime automáticamente los entrypoints del App Router", () => {
+    const nextBase = plugin.configs.next.find(
+      (config: { name: string }) => config.name === "skapxd/next/base",
+    );
+    const [severity, options] = nextBase.rules["skapxd/no-default-export"];
+
+    expect(severity).toBe("error");
+
+    const pattern = new RegExp(options.allowFilePatterns[0]);
+
+    expect(pattern.test("src/app/dashboard/page.tsx")).toBe(true);
+    expect(pattern.test("src/app/layout.tsx")).toBe(true);
+    expect(pattern.test("src/app/sitemap.ts")).toBe(true);
+    expect(pattern.test("src/app/components/card.tsx")).toBe(false);
+  });
+});
+
 describe("severidades", () => {
   it("ningún preset usa warn: todas las reglas son error", () => {
     const presets = [

@@ -522,6 +522,7 @@ bloque con `linterOptions: { noInlineConfig: false }` para esos globs.
 | `skapxd/max-hook-size` | Marca hooks grandes o con demasiados `useState`. |
 | `skapxd/jsx-return-name-pascal-case` | Funciones que retornan JSX deben nombrarse como componentes. |
 | `skapxd/no-deep-relative-imports` | Limita la profundidad de los imports relativos (`../`). |
+| `skapxd/no-default-export` | Prohíbe `export default`; el nombre del símbolo es el contrato. Exime configs/stories y, en el preset `next`, los entrypoints del App Router. |
 | `skapxd/no-functions-inside-components` | Prohíbe definir funciones dentro de componentes React. |
 | `skapxd/no-try-catch` | Prohíbe `try/catch`; usa `trySafe` de `@skapxd/result`. |
 | `skapxd/no-promise-chain` | Prohíbe `.then/.catch/.finally`; usa `await` (+ `trySafe`). |
@@ -729,6 +730,46 @@ rules: {
 Revisa imports estáticos (`import`), re-exports (`export ... from`) e imports
 dinámicos (`import(...)`). El remedio habitual es un alias de ruta (`@/...`) o
 acercar el módulo a quien lo usa.
+
+### `skapxd/no-default-export`
+
+Prohíbe `export default` (incluida la forma `export { x as default }`). Con
+exports nombrados, el nombre del símbolo es el contrato del módulo: renombrar
+con el IDE actualiza todos los usos, `grep` encuentra definición y consumo, y
+los autoimports no inventan nombres distintos por archivo.
+
+```ts
+export default function getUser() {}   // ❌ cada import puede llamarlo distinto
+export function getUser() {}            // ✅ un solo nombre canónico
+```
+
+**Dónde sí se permite el default.** Hay entrypoints donde el ecosistema lo
+exige, y la regla los reconoce en capas:
+
+1. **Integrados (siempre activos):** configs de tooling (`*.config.{js,mjs,cjs,ts}`:
+   `next.config`, `tailwind.config`, `vitest.config`, `eslint.config`, ...) y
+   stories de Storybook (`*.stories.*`).
+2. **Preset `next` (automático):** los entrypoints del App Router donde Next
+   exige el default — `page`, `layout`, `template`, `error`, `loading`,
+   `not-found`, `sitemap`, `robots`, `manifest`, `icon`, `opengraph-image`,
+   etc. No hay que configurar nada.
+3. **`allowFilePatterns` (extensible):** si usas un framework o tool que la
+   regla aún no contempla, agrega su patrón. Los patrones propios se **suman**
+   a los integrados, no los reemplazan:
+
+```js
+"skapxd/no-default-export": ["error", {
+  // p. ej. SvelteKit exige default en +page.ts / +layout.ts
+  allowFilePatterns: ["\\+page\\.[jt]s$", "\\+layout\\.[jt]s$"],
+}]
+```
+
+Detalle útil con `React.lazy` (que espera `{ default }`): no hace falta volver
+al default export, basta mapear el named en el import dinámico:
+
+```ts
+const Card = lazy(() => import("./card").then((m) => ({ default: m.Card })));
+```
 
 ### `skapxd/no-functions-inside-components`
 
