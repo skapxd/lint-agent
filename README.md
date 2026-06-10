@@ -546,6 +546,7 @@ de cada regla):
 | `max-hook-size` | `maxLines`, `maxUseState` |
 | `no-deep-relative-imports` | `maxDepth` |
 | `no-default-export` | `allowFilePatterns` (globs, aditivos a los integrados) |
+| `no-emoji` | `allowFilePatterns` (globs) |
 | `no-functions-inside-components` | `allowJsxCallbacks`, `allowArrayMapCallbacks` (ambas `true` por defecto) |
 | `no-promise-chain` | `methods` |
 
@@ -567,6 +568,7 @@ matchea en cualquier carpeta). Las 7 reglas restantes no tienen opciones: su
 | `skapxd/jsx-return-name-pascal-case` | Funciones que retornan JSX deben nombrarse como componentes. |
 | `skapxd/no-deep-relative-imports` | Limita la profundidad de los imports relativos (`../`). |
 | `skapxd/no-default-export` | Prohíbe `export default`; el nombre del símbolo es el contrato. Exime configs/stories y, en el preset `next`, los entrypoints del App Router. |
+| `skapxd/no-emoji` | Prohíbe emojis en strings y JSX; cada sistema los renderiza distinto. Usa un icono SVG. |
 | `skapxd/no-functions-inside-components` | Prohíbe definir funciones dentro de componentes React. |
 | `skapxd/no-try-catch` | Prohíbe `try/catch`; usa `trySafe` de `@skapxd/result`. |
 | `skapxd/no-promise-chain` | Prohíbe `.then/.catch/.finally`; usa `await` (+ `trySafe`). |
@@ -882,6 +884,32 @@ al default export, basta mapear el named en el import dinámico:
 
 ```ts
 const Card = lazy(() => import("./card").then((m) => ({ default: m.Card })));
+```
+
+### `skapxd/no-emoji`
+
+Prohíbe emojis en strings, template literals y texto JSX. El problema no es
+estético: un emoji se renderiza con la fuente de emojis del **sistema del
+usuario** — Segoe UI Emoji en Windows, Apple Color Emoji en macOS, Noto en
+Android — así que el mismo carácter se ve distinto en cada plataforma, y en
+un Linux sin fuente de emojis directamente no se renderiza (sale el cuadro
+vacío □). Un SVG se ve idéntico en todas partes.
+
+```tsx
+<button>Enviar 🚀</button>                 // ❌ depende de la fuente del sistema
+<button>Enviar <Rocket /></button>         // ✅ lucide-react: idéntico en todas partes
+```
+
+Detecta por propiedad Unicode (`Extended_Pictographic`), así que los símbolos
+tipográficos normales no se tocan: `→`, `✓`, `©`, `·` pasan sin problema.
+
+No revisa comentarios: un emoji en un comentario no llega al navegador. Para
+eximir archivos completos (fixtures, seeds), usa `allowFilePatterns`:
+
+```js
+"skapxd/no-emoji": ["error", {
+  allowFilePatterns: ["tests/fixtures/**"],
+}]
 ```
 
 ### `skapxd/no-functions-inside-components`

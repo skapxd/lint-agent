@@ -8,6 +8,7 @@ import type { Rule } from "eslint";
 import { maxHookSize } from "#/rules/max-hook-size";
 import { noDeepRelativeImports } from "#/rules/no-deep-relative-imports";
 import { noDefaultExport } from "#/rules/no-default-export";
+import { noEmoji } from "#/rules/no-emoji";
 import { noFunctionsInsideComponents } from "#/rules/no-functions-inside-components";
 import { noTryCatch } from "#/rules/no-try-catch";
 import { preferTsPattern } from "#/rules/prefer-ts-pattern";
@@ -33,6 +34,7 @@ export const rules: Record<string, Rule.RuleModule> = {
   "max-hook-size": maxHookSize,
   "no-deep-relative-imports": noDeepRelativeImports,
   "no-default-export": noDefaultExport,
+  "no-emoji": noEmoji,
   "no-functions-inside-components": noFunctionsInsideComponents,
   "no-try-catch": noTryCatch,
   "prefer-ts-pattern": preferTsPattern,
