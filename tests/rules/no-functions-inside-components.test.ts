@@ -15,12 +15,6 @@ createRuleTester().run(
         filename: "test.tsx",
       },
       {
-        // callback inline en JSX
-        code: "function Card() { return <button onClick={() => save()} />; }",
-        errors: [{ messageId: "functionInsideComponent" }],
-        filename: "test.tsx",
-      },
-      {
         // function declaration anidada
         code: "function Card() { function helper() {} return <div />; }",
         errors: [{ messageId: "functionInsideComponent" }],
@@ -33,13 +27,7 @@ createRuleTester().run(
         filename: "test.tsx",
       },
       {
-        // callback de .map() en el render (prohibido: "absolutamente todo")
-        code: "function List() { return <ul>{items.map((i) => <li key={i} />)}</ul>; }",
-        errors: [{ messageId: "functionInsideComponent" }],
-        filename: "test.tsx",
-      },
-      {
-        // callback de useEffect dentro del componente
+        // callback de useEffect: no es JSX ni .map, se reporta siempre
         code: "function Card() { useEffect(() => {}, []); return <div />; }",
         errors: [{ messageId: "functionInsideComponent" }],
         filename: "test.tsx",
@@ -51,25 +39,24 @@ createRuleTester().run(
         filename: "test.tsx",
       },
       {
-        // con las opciones activas, un helper con nombre en el cuerpo sigue prohibido
-        code: "function Card() { const onClick = () => save(); return <button onClick={onClick} />; }",
-        errors: [{ messageId: "functionInsideComponent" }],
-        filename: "test.tsx",
-        options: [{ allowArrayMapCallbacks: true, allowJsxCallbacks: true }],
-      },
-      {
-        // allowJsxCallbacks no exime callbacks de useEffect ni de otros calls
-        code: "function Card() { useEffect(() => {}, []); return <div />; }",
-        errors: [{ messageId: "functionInsideComponent" }],
-        filename: "test.tsx",
-        options: [{ allowJsxCallbacks: true }],
-      },
-      {
-        // allowArrayMapCallbacks solo exime .map, no .forEach
+        // .forEach no es render: la exención de .map no aplica
         code: "function List() { items.forEach((i) => track(i)); return <div />; }",
         errors: [{ messageId: "functionInsideComponent" }],
         filename: "test.tsx",
-        options: [{ allowArrayMapCallbacks: true }],
+      },
+      {
+        // modo ultraestricto: el consumidor apaga la exención de props JSX
+        code: "function Card() { return <button onClick={() => save()} />; }",
+        errors: [{ messageId: "functionInsideComponent" }],
+        filename: "test.tsx",
+        options: [{ allowJsxCallbacks: false }],
+      },
+      {
+        // modo ultraestricto: el consumidor apaga la exención de .map
+        code: "function List() { return <ul>{items.map((i) => <li key={i} />)}</ul>; }",
+        errors: [{ messageId: "functionInsideComponent" }],
+        filename: "test.tsx",
+        options: [{ allowArrayMapCallbacks: false }],
       },
     ],
     valid: [
@@ -81,18 +68,10 @@ createRuleTester().run(
       tsx("function useThing() { const f = () => {}; return f; }"),
       // helper en minúscula (no es componente)
       tsx("function build() { const f = () => 1; return f; }"),
-      // allowJsxCallbacks: callback anónimo como valor directo de una prop JSX
-      {
-        code: "function Card() { return <button onClick={() => save()} />; }",
-        filename: "test.tsx",
-        options: [{ allowJsxCallbacks: true }],
-      },
-      // allowArrayMapCallbacks: callback anónimo de .map en el render
-      {
-        code: "function List() { return <ul>{items.map((i) => <li key={i} />)}</ul>; }",
-        filename: "test.tsx",
-        options: [{ allowArrayMapCallbacks: true }],
-      },
+      // por defecto: callback anónimo como valor directo de una prop JSX
+      tsx("function Card() { return <button onClick={() => save()} />; }"),
+      // por defecto: callback anónimo de .map en el render
+      tsx("function List() { return <ul>{items.map((i) => <li key={i} />)}</ul>; }"),
     ],
   },
 );
