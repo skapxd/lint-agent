@@ -1,10 +1,18 @@
 // @ts-nocheck
-import { globToRegExp } from "./glob-to-reg-exp";
+import picomatch from "picomatch";
 
-// Matching de rutas de archivo con globs. Normaliza los separadores de
-// Windows para que el mismo patrón funcione en cualquier sistema.
+// Matching de rutas con globs delegado a picomatch (el motor que usan
+// fast-glob, chokidar y vitest). Dos ergonomías propias:
+// - separadores de Windows normalizados, mismo glob en cualquier sistema;
+// - un patrón sin prefijo (`src/index.ts`, `*.config.*`) matchea en
+//   cualquier carpeta — se le antepone `**/`.
 export function matchesAnyGlob(filePath, globs) {
   const normalized = filePath.replaceAll("\\", "/");
 
-  return globs.some((glob) => globToRegExp(glob).test(normalized));
+  return globs.some((glob) => {
+    const anchored =
+      glob.startsWith("/") || glob.startsWith("**") ? glob : `**/${glob}`;
+
+    return picomatch(anchored)(normalized);
+  });
 }

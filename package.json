@@ -55,7 +55,8 @@
   "author": "skapxd",
   "license": "MIT",
   "dependencies": {
-    "@skapxd/result": "^1.0.1"
+    "@skapxd/result": "^1.0.1",
+    "picomatch": "^4.0.4"
   },
   "peerDependencies": {
     "eslint": ">=9",
