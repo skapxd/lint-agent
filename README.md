@@ -510,6 +510,50 @@ export default [
 Si necesitas una excepción puntual (p. ej. archivos generados), añade después un
 bloque con `linterOptions: { noInlineConfig: false }` para esos globs.
 
+## Configurar y sobrescribir reglas
+
+Los presets son flat configs normales de ESLint: **el último config que
+matchea un archivo gana**. Para ajustar una regla encima de un preset, esparce
+sus `rules` y sobrescribe la entrada:
+
+```js
+export default [
+  {
+    files: ["src/**/*.{ts,tsx}"],
+    ...skapxd.configs.shared.frontend,
+    rules: {
+      ...skapxd.configs.shared.frontend.rules,
+      // mismo id, nuevas opciones: esta entrada reemplaza a la del preset
+      "skapxd/no-deep-relative-imports": ["error", { maxDepth: 1 }],
+    },
+  },
+];
+```
+
+> Las opciones de una regla **se reemplazan completas**, no se mergean: si el
+> preset pasaba opciones y tú la redeclaras, incluye también las que quieras
+> conservar. (Excepción: los patrones *integrados* de `no-default-export` —
+> configs y stories — viven dentro de la regla y nunca se pierden; tus
+> `allowFilePatterns` se suman a ellos.)
+
+Referencia rápida de qué se puede configurar (detalle y defaults en la sección
+de cada regla):
+
+| Regla | Opciones |
+| --- | --- |
+| `async-functions-return-result` | `allowFilePatterns` (globs), `allowNamePatterns` (regex), `checkMissingReturnType`, `checkMissingReturnTypeWhenCallNames`, `requireCallNames`, `promiseTypeNames`, `resultTypeNames` |
+| `await-requires-result` | `allowFilePatterns` (globs), `trySafeCallNames` |
+| `max-hook-size` | `maxLines`, `maxUseState` |
+| `no-deep-relative-imports` | `maxDepth` |
+| `no-default-export` | `allowFilePatterns` (globs, aditivos a los integrados) |
+| `no-functions-inside-components` | `allowJsxCallbacks`, `allowArrayMapCallbacks` (ambas `true` por defecto) |
+| `no-promise-chain` | `methods` |
+
+Los `allowFilePatterns` de todas las reglas son **globs** (`*` un segmento,
+`**` cualquier profundidad, `{a,b}` alternativas; un patrón sin prefijo
+matchea en cualquier carpeta). Las 7 reglas restantes no tienen opciones: su
+única configuración es activarlas, apagarlas o cambiar la severidad.
+
 ## Reglas
 
 | Regla | Qué protege |
@@ -610,6 +654,20 @@ async function no(): Promise<Result<number, Error>> {}  // se reporta
 > apóyate en un preset tipado del plugin, que ya lo trae).
 > Sin información de tipos cae a una comprobación por nombre (`resultTypeNames`),
 > menos estricta.
+
+Todas las opciones, con sus defaults:
+
+```js
+"skapxd/async-functions-return-result": ["error", {
+  allowFilePatterns: [],       // globs de archivos exentos, p. ej. ["src/legacy/**"]
+  allowNamePatterns: [],       // regex de nombres exentos, p. ej. ["^(GET|POST)$"]
+  checkMissingReturnType: true, // reportar también funciones SIN anotación de retorno
+  checkMissingReturnTypeWhenCallNames: [], // ...o solo si el cuerpo llama a estos nombres
+  requireCallNames: [],        // acotar la regla a funciones que llamen a estos nombres
+  promiseTypeNames: ["Promise"],  // wrappers de promesa aceptados (fallback sin tipos)
+  resultTypeNames: ["Result"],    // nombres de Result aceptados (fallback sin tipos)
+}]
+```
 
 ### `skapxd/result-error-requires-cause`
 
@@ -729,6 +787,15 @@ Marca hooks que crecen demasiado o acumulan muchos `useState`.
 
 La intención es empujar el diseño hacia `useReducer`, hooks más pequeños o
 módulos de transición de estado.
+
+Opciones (los presets `frontend` y `next` usan `maxLines: 120`, `maxUseState: 1`):
+
+```js
+"skapxd/max-hook-size": ["error", {
+  maxLines: 120,   // líneas máximas del cuerpo del hook
+  maxUseState: 1,  // useState propios permitidos antes de exigir useReducer
+}]
+```
 
 ### `skapxd/jsx-return-name-pascal-case`
 
