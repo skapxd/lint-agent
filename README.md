@@ -274,6 +274,149 @@ hay errores, sale con código `1` (apto para CI). Como acota por **archivo
 completo**, también dispara las reglas estructurales (p. ej.
 `one-root-function-per-file`), que un filtrado por línea se perdería.
 
+## Adopción en proyectos legacy: de `off` a `error`, por olas
+
+El CLI de arriba acota **qué archivos** se juzgan. Este apartado acota **qué
+reglas** — el camino para meter el preset completo en un proyecto legacy
+escrito por humanos, sin que el primer `pnpm lint` escupa 2.000 errores y el
+equipo apague el linter para siempre.
+
+### Las reglas del juego
+
+1. **`off` o `error`, nunca `warn`.** Un warn se ignora desde el día dos y
+   solo entrena al equipo a ignorar amarillo. Una regla está adoptada
+   (`error`) o todavía no (`off`) — no hay estado intermedio.
+2. **Una regla a la vez, y a cero.** Se activa una regla, se arreglan TODOS
+   sus hallazgos, se mergea en verde. Nunca actives una regla con pendientes:
+   el CI rojo permanente es la ventana rota que normaliza ignorar el linter.
+3. **Ratchet: lo que se enciende no se apaga.** El bloque de `off` solo puede
+   encoger. El diff de ese bloque ES la métrica de progreso del equipo.
+4. **Mide antes de activar.** En una rama, borra el `off` de una regla y corre
+   el lint: el número de hallazgos es el precio. **Activa siempre la más
+   barata pendiente** — el momentum importa más que el orden perfecto.
+5. **Deja que el mensaje enseñe.** Los mensajes de error de estas reglas
+   explican el porqué y el cómo (qué patrón usar, cómo se llama, dónde va).
+   Para un equipo sin seniors, el linter es el code review que nadie tiene
+   tiempo de hacer: no resumas las reglas en un documento aparte — el
+   documento es el error en pantalla.
+
+### El mecanismo: la lista de pendientes
+
+El preset completo es la meta; un bloque posterior apaga lo que el equipo aún
+no cumple. **Adoptar una regla = borrar su línea y arreglar lo que aflore:**
+
+```js
+// eslint.config.js
+import skapxd from "@skapxd/eslint-opinionated";
+
+export default [
+  ...skapxd.configs.nest, // la meta: el preset completo, desde el día uno
+
+  // ─── Lista de pendientes ───────────────────────────────────────────
+  // Todo lo que el proyecto aún no cumple, apagado y a la vista.
+  // Este bloque SOLO ENCOGE: se borra una línea, se arregla, se mergea.
+  {
+    rules: {
+      "skapxd/await-requires-result": "off",
+      "skapxd/no-try-catch": "off",
+      // ...
+    },
+  },
+];
+```
+
+### El orden de las olas
+
+El orden no es arbitrario: va de "cada hallazgo es un bug que ya tienes" hacia
+"esto exige rediseñar tipos", y cada ola deja el suelo que la siguiente pisa.
+
+**Ola 1 — bugs gratis y fixes únicos.** Señal pura, arreglo puntual, cero
+rediseño. Aquí el equipo aprende que el linter encuentra cosas reales:
+
+- `@typescript-eslint/no-floating-promises` — cada hallazgo es un error que
+  hoy muere sin que nadie lo vea (en un backend real en producción: 12).
+- `skapxd/nest-requires-swagger-plugin` y `skapxd/nest-validation-pipe-config`
+  — un hallazgo por proyecto, un fix de configuración, y quedan vigiladas las
+  premisas de las olas siguientes.
+- `skapxd/requires-strict-tsconfig` con la exigencia mínima:
+  `{ requiredCompilerOptions: ["strict"] }`. Es el trinquete del tsconfig —
+  cada ola le sube un flag (ver abajo).
+- `skapxd/no-emoji`, `skapxd/no-deep-relative-imports` — fixes mecánicos.
+- `skapxd/prefer-abort-signal` (front) — cada hallazgo es un leak.
+
+**Ola 2 — la forma del código.** Refactors locales, archivo por archivo, sin
+tocar contratos. Es la ola que más enseña por repetición:
+
+- `skapxd/no-nested-if` y `skapxd/no-else` — guard clauses. El refactor más
+  formativo que existe para un junior: aplana la lógica o confiesa que la
+  función hace demasiado.
+- `skapxd/one-root-function-per-file` y `skapxd/no-default-export` — el árbol
+  de archivos empieza a contar la historia.
+- `skapxd/no-accessors`, `skapxd/max-public-methods` — clases con una
+  intención (partir un god-object es la cirugía mayor de esta ola: déjala de
+  última).
+- Front: `skapxd/jsx-return-name-pascal-case`, `skapxd/max-hook-size`,
+  `skapxd/no-functions-inside-components`, `skapxd/no-jsx-ternary-null`,
+  `skapxd/no-tunnel-props`.
+- Nest: `skapxd/nest-no-swagger-in-controllers`,
+  `skapxd/nest-dto-requires-api-property`,
+  `skapxd/nest-dto-requires-validation`,
+  `skapxd/nest-no-inline-query-params`,
+  `skapxd/nest-no-direct-instantiation` — mover decoradores y dependencias a
+  donde pertenecen.
+
+**Ola 3 — el contrato de errores.** La migración de paradigma
+(`@skapxd/result` + `ts-pattern`; ver "Cómo encaja todo" abajo). Aquí NO se va
+regla por regla sino **módulo por módulo**: las seis reglas entran juntas
+(son un solo sistema) pero acotadas por carpeta, y el primer módulo migrado se
+vuelve el ejemplo canónico que el resto copia:
+
+```js
+  // Ola 3: el pipeline de Result entra carpeta por carpeta.
+  {
+    files: ["src/modules/payments/**"],
+    rules: {
+      "skapxd/await-requires-result": "error",
+      "skapxd/no-try-catch": "error",
+      "skapxd/no-promise-chain": "error",
+      "skapxd/no-ad-hoc-ok-result": "error",
+      "skapxd/prefer-ts-pattern": "error",
+      "skapxd/result-error-requires-cause": "error",
+      "skapxd/result-error-requires-handling": "error",
+    },
+  },
+```
+
+(En Nest, suma `skapxd/nest-no-result-response` al grupo: el controller del
+módulo migrado traduce el Result, no lo serializa.) Cuando todos los módulos
+migraron, las líneas salen del bloque por-carpeta y entran globales: se borran
+de la lista de pendientes.
+
+**Ola 4 — el modelado de estados.** Lo más profundo: exige criterio de
+diseño, no solo disciplina. Para cuando el equipo ya vio el patrón en la ola 3:
+
+- `requires-strict-tsconfig` al máximo: `["strict", "noImplicitReturns",
+  "noUncheckedIndexedAccess"]`. Sube un flag a la vez — cada uno aflora
+  errores de compilación que son bugs latentes, no burocracia.
+- `@typescript-eslint/no-explicit-any`, `no-non-null-assertion` y
+  `ban-ts-comment` — se cierran las tres puertas de escape del compilador.
+- `skapxd/class-properties-require-readonly` — el cambio se modela con
+  instancias nuevas.
+- `skapxd/prefer-tagged-union-state` y `skapxd/no-runtime-state-guard` — los
+  booleanos co-dependientes se vuelven uniones etiquetadas.
+- `@typescript-eslint/no-unnecessary-condition` — **la última de todas**: solo
+  es sólida cuando el tsconfig ya está al máximo (sin
+  `noUncheckedIndexedAccess`, acusaría guards necesarios).
+
+### Los dos ejes se combinan
+
+Mientras la lista de pendientes encoge, `skapxd-lint-changed` aplica lo ya
+activado solo a los archivos tocados: el código nuevo nace cumpliendo y el
+legacy se corrige cuando alguien lo visita (regla del boy scout), no en un
+big-bang. Un proyecto mediano recorre las cuatro olas en semanas, no en
+trimestres — y cada semana el lint encuentra menos, porque el equipo ya
+escribe distinto.
+
 ## Cómo encaja todo: `@skapxd/result` + `ts-pattern`
 
 Este plugin no es una colección de reglas sueltas: es el guardián de un
