@@ -1,6 +1,6 @@
 {
   "name": "@skapxd/eslint-opinionated",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "description": "Reusable ESLint architectural rules for TypeScript, React, backend, frontend, and package projects",
   "packageManager": "pnpm@11.2.2",
   "main": "./dist/index.js",
