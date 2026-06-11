@@ -552,6 +552,7 @@ de cada regla):
 | `no-promise-chain` | `methods` |
 | `no-tunnel-props` | `allowFilePatterns` (globs), `allowPropPatterns` (regex) |
 | `prefer-abort-signal` | `allowFilePatterns` (globs), `effectNames` (default `["useEffect", "useLayoutEffect"]`) |
+| `result-error-requires-handling` | `allowFilePatterns` (globs) |
 
 Los `allowFilePatterns` de todas las reglas son **globs** (`*` un segmento,
 `**` cualquier profundidad, `{a,b}` alternativas; un patrón sin prefijo
@@ -565,6 +566,7 @@ matchea en cualquier carpeta). Las 7 reglas restantes no tienen opciones: su
 | `skapxd/one-root-function-per-file` | Un archivo, una función top-level semántica. |
 | `skapxd/async-functions-return-result` | Funciones async de dominio deben retornar `Promise<Result<...>>`. **Apagada por defecto; opt-in** (ver motivos en su sección). |
 | `skapxd/result-error-requires-cause` | Un `Result.err` derivado debe preservar `cause: result.error`. |
+| `skapxd/result-error-requires-handling` | Prohíbe descartar en silencio un Result fallido: el error se transforma o se entrega, nunca se ignora. |
 | `skapxd/await-requires-result` | Todo `await` debe resolver en un `Result`: o la función llamada retorna `Promise<Result<...>>` (preferido) o se envuelve en `trySafe`. **Obligatoria en todos los presets tipados.** |
 | `skapxd/no-ad-hoc-ok-result` | Evita contratos `{ ok: ... }` hechos a mano en async exports. |
 | `skapxd/max-hook-size` | Marca hooks grandes o con demasiados `useState`. |
@@ -704,6 +706,45 @@ valor del guard y `Result.err` vienen de `@skapxd/result`. Por eso funciona con
 aliases, re-exports y tipos inferidos, sin depender solo del nombre importado en
 el archivo. Su punto ciego histórico —el `Result.err` escondido en un `if`
 anidado— lo elimina `skapxd/no-nested-if` de raíz.
+
+### `skapxd/result-error-requires-handling`
+
+La hermana de la anterior cierra la última puerta de evasión: el **descarte
+silencioso**. Detectar el fallo y botarlo sin tocarlo es legal para
+`result-error-requires-cause` (no hay transformación que vigilar), pero deja
+morir información valiosa sin que nadie lo decidiera conscientemente:
+
+```ts
+const result = await copyTextToClipboard(text);
+if (!result.ok) return;            // ❌ el error muere aquí, en silencio
+```
+
+El contrato: dentro de un guard de Result fallido, `result.error` (o el
+result completo) debe **fluir a alguna parte**. Dos salidas:
+
+```ts
+// 1. Transformarlo (y result-error-requires-cause vigila el cause)
+if (!result.ok) {
+  return Result.err({ cause: result.error, message: "...", type: "COPY_FAILED" });
+}
+
+// 2. Entregárselo a alguien: telemetría, estado de error, log de dominio
+if (!result.ok) {
+  trackClipboardFailure(result.error);
+  return;
+}
+
+// (propagar el result completo también vale: `if (!result.ok) return result;`)
+```
+
+**No hay tercera salida.** `void result.error` no cuenta como manejo, y
+manejar sin tocar el error (`setFailed(true)`) tampoco — el detalle se perdió
+igual. Esto es deliberado: si darle seguimiento a un error es crítico o no,
+no puede depender de la interpretación de quien escribe; el camino por
+defecto nunca es ignorarlo.
+
+Type-aware como su hermana: solo aplica a Results reales de `@skapxd/result`,
+con las mismas cinco formas de guard.
 
 ### `skapxd/await-requires-result`
 

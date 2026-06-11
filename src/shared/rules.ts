@@ -4,6 +4,7 @@ import { asyncFunctionsReturnResult } from "#/rules/async-functions-return-resul
 import { noAdHocOkResult } from "#/rules/no-ad-hoc-ok-result";
 import { awaitRequiresResult } from "#/rules/await-requires-result";
 import { resultErrorRequiresCause } from "#/rules/result-error-requires-cause";
+import { resultErrorRequiresHandling } from "#/rules/result-error-requires-handling";
 import type { Rule } from "eslint";
 import { maxHookSize } from "#/rules/max-hook-size";
 import { noDeepRelativeImports } from "#/rules/no-deep-relative-imports";
@@ -34,6 +35,7 @@ export const rules: Record<string, Rule.RuleModule> = {
     },
   },
   "result-error-requires-cause": resultErrorRequiresCause,
+  "result-error-requires-handling": resultErrorRequiresHandling,
   "max-hook-size": maxHookSize,
   "no-deep-relative-imports": noDeepRelativeImports,
   "no-default-export": noDefaultExport,

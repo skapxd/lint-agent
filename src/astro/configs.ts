@@ -32,6 +32,7 @@ export function createAstroConfigs(pluginReference: unknown) {
       rules: {
         "skapxd/await-requires-result": "error",
         "skapxd/result-error-requires-cause": "error",
+        "skapxd/result-error-requires-handling": "error",
       },
     },
   ];

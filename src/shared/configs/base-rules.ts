@@ -9,4 +9,5 @@ export const baseRules = {
   "skapxd/one-root-function-per-file": "error",
   "skapxd/prefer-ts-pattern": "error",
   "skapxd/result-error-requires-cause": "error",
+  "skapxd/result-error-requires-handling": "error",
 };
