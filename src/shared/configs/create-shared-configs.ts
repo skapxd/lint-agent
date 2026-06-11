@@ -1,6 +1,8 @@
+import tseslint from "typescript-eslint";
 import { baseRules } from "./base-rules";
 import { createBaseLanguageOptions } from "./create-base-language-options";
 import { createTypedLanguageOptions } from "./create-typed-language-options";
+import { typeDrivenRules } from "./type-driven-rules";
 
 export function createSharedConfigs(pluginReference: unknown) {
   const baseLanguageOptions = createBaseLanguageOptions();
@@ -10,9 +12,13 @@ export function createSharedConfigs(pluginReference: unknown) {
     backend: {
       languageOptions: typedLanguageOptions,
       name: "skapxd/shared/backend",
-      plugins: { skapxd: pluginReference },
+      plugins: {
+        "@typescript-eslint": tseslint.plugin,
+        skapxd: pluginReference,
+      },
       rules: {
         ...baseRules,
+        ...typeDrivenRules,
         // La regla obligatoria del sistema de errores es await-requires-result
         // (todo await resuelve en Result). async-functions-return-result queda
         // apagada por defecto: exigir la firma por decreto choca con los bordes
@@ -31,9 +37,13 @@ export function createSharedConfigs(pluginReference: unknown) {
     frontend: {
       languageOptions: typedLanguageOptions,
       name: "skapxd/shared/frontend",
-      plugins: { skapxd: pluginReference },
+      plugins: {
+        "@typescript-eslint": tseslint.plugin,
+        skapxd: pluginReference,
+      },
       rules: {
         ...baseRules,
+        ...typeDrivenRules,
         // En el front no se obliga a retornar Result, pero todo await debe
         // resolver en uno: o la función llamada ya retorna Promise<Result>
         // (camino preferido: errores modelados en el dominio) o se envuelve

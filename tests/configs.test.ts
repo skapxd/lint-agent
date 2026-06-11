@@ -19,12 +19,12 @@ describe("configs.frontend", () => {
 
 describe("alias deprecado await-requires-try-safe", () => {
   it("sigue registrado, marcado como deprecado y apunta al nombre nuevo", () => {
-    const alias = plugin.rules["await-requires-try-safe"];
+    const alias = plugin.rules["await-requires-try-safe"]!;
 
     expect(alias).toBeDefined();
     expect(alias.meta?.deprecated).toBe(true);
     expect(alias.meta?.replacedBy).toContain("skapxd/await-requires-result");
-    expect(alias.create).toBe(plugin.rules["await-requires-result"].create);
+    expect(alias.create).toBe(plugin.rules["await-requires-result"]!.create);
   });
 });
 
@@ -125,6 +125,23 @@ describe("preset nest", () => {
     expect(nestBase.rules["skapxd/nest-no-result-response"]).toBe("error");
   });
 
+  it("inyecta los hooks del framework a la regla agnóstica max-public-methods", () => {
+    const nestBase = plugin.configs.nest.find(
+      (config: { name: string }) => config.name === "skapxd/nest/base",
+    );
+    const [severity, options] = nestBase.rules["skapxd/max-public-methods"];
+
+    expect(severity).toBe("error");
+    expect(options.ignore).toContain("onModuleInit");
+    expect(options.ignore).toContain("canActivate");
+
+    const controllers = plugin.configs.nest.find(
+      (config: { name: string }) => config.name === "skapxd/nest/controllers",
+    );
+
+    expect(controllers.rules["skapxd/max-public-methods"]).toBe("off");
+  });
+
   it("relaja en specs lo que los tests no pueden cumplir", () => {
     const nestTests = plugin.configs.nest.find(
       (config: { name: string }) => config.name === "skapxd/nest/tests",
@@ -133,6 +150,69 @@ describe("preset nest", () => {
     expect(nestTests.rules["skapxd/await-requires-result"]).toBe("off");
     expect(nestTests.rules["skapxd/no-try-catch"]).toBe("off");
     expect(nestTests.rules["skapxd/result-error-requires-handling"]).toBe("off");
+    // El ! sobre fixtures es el arrange del test, no una mentira al compilador.
+    expect(
+      nestTests.rules["@typescript-eslint/no-non-null-assertion"],
+    ).toBe("off");
+    // Pero un await olvidado en un spec es un falso verde: sigue activa.
+    expect(
+      nestTests.rules["@typescript-eslint/no-floating-promises"],
+    ).toBeUndefined();
+  });
+});
+
+describe("reglas type-driven de typescript-eslint en presets tipados", () => {
+  it("activa el set curado completo en backend, frontend y nest/base", () => {
+    const typedPresets = [
+      plugin.configs.backend,
+      plugin.configs.frontend,
+      plugin.configs.nest.find(
+        (config: { name: string }) => config.name === "skapxd/nest/base",
+      ),
+    ];
+
+    for (const preset of typedPresets) {
+      expect(
+        preset.rules["@typescript-eslint/no-explicit-any"],
+        preset.name,
+      ).toBe("error");
+      expect(
+        preset.rules["@typescript-eslint/no-floating-promises"],
+        preset.name,
+      ).toBe("error");
+      expect(
+        preset.rules["@typescript-eslint/no-non-null-assertion"],
+        preset.name,
+      ).toBe("error");
+      expect(
+        preset.rules["@typescript-eslint/no-unnecessary-condition"],
+        preset.name,
+      ).toBe("error");
+    }
+  });
+
+  it("prohíbe ts-ignore y ts-nocheck pero permite ts-expect-error descrito", () => {
+    const [severity, options] =
+      plugin.configs.backend.rules["@typescript-eslint/ban-ts-comment"];
+
+    expect(severity).toBe("error");
+    expect(options["ts-ignore"]).toBe(true);
+    expect(options["ts-nocheck"]).toBe(true);
+    expect(options["ts-expect-error"]).toBe("allow-with-description");
+  });
+
+  it("las ausencias son deliberadas: lo superado no se duplica", () => {
+    const backend = plugin.configs.backend;
+
+    // prefer-ts-pattern reemplaza al switch entero.
+    expect(
+      backend.rules["@typescript-eslint/switch-exhaustiveness-check"],
+    ).toBeUndefined();
+    // class-properties-require-readonly es más fuerte que prefer-readonly.
+    expect(backend.rules["@typescript-eslint/prefer-readonly"]).toBeUndefined();
+    expect(
+      backend.rules["@typescript-eslint/strict-boolean-expressions"],
+    ).toBeUndefined();
   });
 });
 

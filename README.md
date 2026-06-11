@@ -90,6 +90,28 @@ Quiero que un agente pueda generar código, pero que el proyecto le conteste:
 
 Eso es lo que estas reglas intentan proteger.
 
+## Los axiomas
+
+Las reglas no son una colección de gustos: se derivan de ocho axiomas. Si una
+regla nueva no es consecuencia de alguno, no entra. Si dos reglas chocan, gana
+la que defiende el axioma más fundamental (el orden es jerárquico).
+
+| # | Axioma | Reglas que lo ejecutan |
+| --- | --- | --- |
+| A1 | **Los estados imposibles son irrepresentables.** El tipo modela exactamente los estados válidos; lo inválido no compila. | `prefer-tagged-union-state`, `no-runtime-state-guard`, `requires-strict-tsconfig`, `@typescript-eslint/no-unnecessary-condition`, `no-explicit-any`, `consistent-type-definitions` |
+| A2 | **Ningún efecto es invisible al tipo.** Si una operación puede fallar, su firma lo confiesa — no una convención oral ni un `throw` sorpresa. | `await-requires-result`, `no-try-catch`, `no-promise-chain`, `no-ad-hoc-ok-result`, `@typescript-eslint/no-floating-promises` |
+| A3 | **La información no se destruye.** Un error que se transforma conserva su `cause`; uno que se detecta llega a alguien. Nadie decide "esto no importa" en silencio. | `result-error-requires-cause`, `result-error-requires-handling` |
+| A4 | **Una unidad, una responsabilidad, un nombre semántico.** El árbol de archivos cuenta una historia; una clase expone una intención. | `one-root-function-per-file`, `max-public-methods`, `no-default-export`, `jsx-return-name-pascal-case`, `max-hook-size` |
+| A5 | **Las decisiones se declaran, no se interpretan.** Cada rama es explícita y exhaustiva; un caso ignorado es una decisión visible, no un hueco. | `no-else`, `no-nested-if`, `prefer-ts-pattern`, `@typescript-eslint/ban-ts-comment`, el `void promesa()` de `no-floating-promises` |
+| A6 | **Evidencia sobre convención.** Una regla decide por lo que el type-checker o los imports demuestran, no por cómo se llama un archivo o un campo. | la implementación type-aware de las reglas de Result, `nest-no-direct-instantiation` (@Injectable resuelto por símbolo), la exención ORM por decorador de `class-properties-require-readonly` |
+| A7 | **Las fronteras son explícitas y únicas.** Lo que cruza una capa lo hace por un contrato, una sola vez, sin túneles. | `no-deep-relative-imports`, `no-tunnel-props`, `nest-no-result-response`, `nest-no-swagger-in-controllers`, `nest-no-inline-query-params` |
+| A8 | **Inmutable por defecto.** La mutación es la excepción que se pide con evidencia, no el estado natural de las cosas. | `class-properties-require-readonly`, `no-accessors` |
+
+A6 es distinto a los demás: no produce reglas, produce **cómo se implementan**
+todas. Por eso las reglas de este paquete prefieren parser services y
+provenance de imports antes que globs de nombres — el nombre es la evidencia
+más débil que aceptamos, y solo como último recurso.
+
 ## Por qué las alternativas no bastan
 
 ### ESLint core
@@ -508,12 +530,41 @@ Detalles del preset:
   quedan fuera a propósito: no son la app.
 - Los entrypoints (`main.ts`, `instrumentation.ts`, `app-cluster.ts`) están
   exentos de `await-requires-result`: el bootstrap debe crashear ruidoso.
+  Con `no-floating-promises` activa, el clásico `bootstrap();` del `main.ts`
+  se escribe `void bootstrap();` — fire-and-forget declarado.
 - Los specs colocados (`*.spec.ts`, `*.e2e-spec.ts`) relajan
-  `await-requires-result`, `no-try-catch` y `result-error-requires-handling`:
-  un test awaitea helpers libremente y descartar un Result en una aserción no
-  es perder un trace.
+  `await-requires-result`, `no-try-catch`, `result-error-requires-handling` y
+  `@typescript-eslint/no-non-null-assertion` (el `!` sobre un fixture es el
+  arrange del test): un test awaitea helpers libremente y descartar un Result
+  en una aserción no es perder un trace. `no-floating-promises` sigue activa
+  en specs: un `await` olvidado es un falso verde.
 - Activa `skapxd/nest-no-result-response` (ver su sección): un controller
   jamás retorna el Result crudo.
+- **El contrato Swagger vive en los DTOs, no en el controller.** El preset
+  asume el plugin `@nestjs/swagger` activo en `nest-cli.json` (introspecciona
+  query/params/body y tipo de retorno solo): `nest-dto-requires-api-property`
+  exige `@ApiProperty` en toda propiedad pública de un `*.dto.ts`, y
+  `nest-no-swagger-in-controllers` prohíbe los decoradores redundantes
+  (`@ApiOperation`, `@ApiResponse`, `@ApiParam`, ...) en los controllers —
+  solo se permiten los que el plugin no puede inferir: `ApiExcludeEndpoint`,
+  `ApiTags`, `ApiBearerAuth`, `ApiConsumes`/`ApiBody` (uploads multipart).
+- **Los DTOs de input validan en runtime**: `nest-dto-requires-validation`
+  exige class-validator en cada propiedad, coherencia `?` ↔ `@IsOptional`, y
+  `@Type` de class-transformer junto a `@ValidateNested`. Los DTOs de
+  respuesta (`out-*`, `*-response`, ...) quedan exentos.
+- **Una clase = una responsabilidad**: `max-public-methods` (de las reglas
+  base) corre con los hooks de Nest inyectados vía `ignore`, y se apaga en
+  `*.controller.ts`/`*.gateway.ts` donde el framework dicta la forma.
+  `nest-no-direct-instantiation` (dependencias por constructor, no `new`) en
+  `*.service.ts`; `nest-no-inline-query-params` en `*.controller.ts` (2+
+  query params → DTO consolidado).
+- **La configuración del proyecto también se lintea**: las premisas de las
+  que dependen las demás reglas se verifican, no se asumen.
+  `nest-requires-swagger-plugin` lee el `nest-cli.json` real (subiendo desde
+  `src/main.ts`) y exige el plugin `@nestjs/swagger`;
+  `nest-validation-pipe-config` exige `transform: true` (sin él, los `@Type`
+  de los DTOs no hacen nada) y `whitelist: true` (sin él, las props sin
+  decorador pasan crudas) en todo `new ValidationPipe`.
 
 ### Astro
 
@@ -610,15 +661,29 @@ de cada regla):
 | `async-functions-return-result` | `allowFilePatterns` (globs), `allowNamePatterns` (regex), `checkMissingReturnType`, `checkMissingReturnTypeWhenCallNames`, `requireCallNames`, `promiseTypeNames`, `resultTypeNames` |
 | `await-requires-result` | `allowFilePatterns` (globs), `trySafeCallNames` |
 | `max-hook-size` | `maxLines`, `maxUseState` |
+| `class-properties-require-readonly` | `allowFilePatterns` (globs), `allowPropertyPatterns` (regex), `ormModuleSources` (default `["@nestjs/mongoose", "typeorm"]`) |
+| `max-public-methods` | `allowFilePatterns` (globs), `max` (default `1`), `ignore` (aditivo a los hooks de Nest) |
+| `no-accessors` | `allowFilePatterns` (globs) |
+| `nest-dto-requires-api-property` | `allowFilePatterns` (globs), `dtoFilePatterns` (default `["*.dto.ts"]`), `apiPropertyDecoratorNames` |
+| `nest-dto-requires-validation` | `allowFilePatterns` (globs), `dtoFilePatterns`, `outputDtoFilePatterns`, `outputDtoClassPatterns` (regex), `optionalDecoratorNames` |
+| `nest-no-direct-instantiation` | `allowFilePatterns` (globs), `internalPatterns` (regex), `allowedPatterns` (regex), `allowedClassPatterns` (regex, default `(Error|Exception|Event)$`) |
+| `nest-no-inline-query-params` | `allowFilePatterns` (globs), `max` (default `1`) |
 | `nest-no-result-response` | `allowFilePatterns` (globs), `controllerDecoratorNames` (default `["Controller"]`) |
+| `nest-no-swagger-in-controllers` | `allowFilePatterns` (globs), `allowedDecoratorNames`, `controllerDecoratorNames` |
+| `nest-requires-swagger-plugin` | `allowFilePatterns` (globs), `mainFilePatterns` (default `["src/main.ts"]`) |
+| `nest-validation-pipe-config` | `allowFilePatterns` (globs), `requiredPipeOptions` (default `["transform", "whitelist"]`) |
 | `no-deep-relative-imports` | `maxDepth` |
 | `no-default-export` | `allowFilePatterns` (globs, aditivos a los integrados) |
+| `no-else` | `allowFilePatterns` (globs) |
 | `no-emoji` | `allowFilePatterns` (globs) |
 | `no-functions-inside-components` | `allowJsxCallbacks`, `allowArrayMapCallbacks` (ambas `true` por defecto) |
 | `no-nested-if` | `allowFilePatterns` (globs) |
 | `no-promise-chain` | `methods` |
+| `no-runtime-state-guard` | `allowFilePatterns` (globs) |
 | `no-tunnel-props` | `allowFilePatterns` (globs), `allowPropPatterns` (regex) |
 | `prefer-abort-signal` | `allowFilePatterns` (globs), `effectNames` (default `["useEffect", "useLayoutEffect"]`) |
+| `prefer-tagged-union-state` | `allowFilePatterns` (globs), `loadingPatterns` (regex, en minúsculas), `errorPatterns` (regex, en minúsculas) |
+| `requires-strict-tsconfig` | `allowFilePatterns` (globs), `anchorFilePatterns` (globs), `requiredCompilerOptions` |
 | `result-error-requires-handling` | `allowFilePatterns` (globs) |
 
 Los `allowFilePatterns` de todas las reglas son **globs** (`*` un segmento,
@@ -632,19 +697,33 @@ matchea en cualquier carpeta). Las 7 reglas restantes no tienen opciones: su
 | --- | --- |
 | `skapxd/one-root-function-per-file` | Un archivo, una función top-level semántica. |
 | `skapxd/async-functions-return-result` | Funciones async de dominio deben retornar `Promise<Result<...>>`. **Apagada por defecto; opt-in** (ver motivos en su sección). |
+| `skapxd/requires-strict-tsconfig` | El `tsconfig` debe ser implacable (`strict`, `noImplicitReturns`, `noUncheckedIndexedAccess`): sin ellos, el compilador no puede hacer irrepresentable lo inválido. |
 | `skapxd/result-error-requires-cause` | Un `Result.err` derivado debe preservar `cause: result.error`. |
 | `skapxd/result-error-requires-handling` | Prohíbe descartar en silencio un Result fallido: el error se transforma o se entrega, nunca se ignora. |
 | `skapxd/await-requires-result` | Todo `await` debe resolver en un `Result`: o la función llamada retorna `Promise<Result<...>>` (preferido) o se envuelve en `trySafe`. **Obligatoria en todos los presets tipados.** |
 | `skapxd/no-ad-hoc-ok-result` | Evita contratos `{ ok: ... }` hechos a mano en async exports. |
 | `skapxd/max-hook-size` | Marca hooks grandes o con demasiados `useState`. |
+| `skapxd/class-properties-require-readonly` | Toda propiedad de clase es `readonly`: el cambio se modela con instancias nuevas, no con mutación. |
+| `skapxd/max-public-methods` | Una clase, una responsabilidad: máximo N métodos públicos (default 1). Agnóstica al framework, en las reglas base; el preset `nest` le inyecta sus hooks. |
+| `skapxd/no-accessors` | Prohíbe `get`/`set`: un método explícito dice la verdad; el accessor esconde computación (y métodos disfrazados). |
 | `skapxd/jsx-return-name-pascal-case` | Funciones que retornan JSX deben nombrarse como componentes. |
+| `skapxd/nest-dto-requires-api-property` | Toda propiedad pública de un `*.dto.ts` lleva `@ApiProperty`: el contrato HTTP se documenta en el DTO. Preset `nest`. |
+| `skapxd/nest-dto-requires-validation` | Los DTOs de input validan en runtime: class-validator en cada propiedad, `@IsOptional` si hay `?`, `@Type` junto a `@ValidateNested`. Preset `nest`. |
+| `skapxd/nest-no-direct-instantiation` | Prohíbe `new` sobre imports internos en services: las dependencias entran por el constructor (DI). Preset `nest`. |
+| `skapxd/nest-no-inline-query-params` | Dos o más `@Query('x')`/`@ApiQuery` individuales son un DTO disfrazado: consolida en `@Query() filters: Dto`. Preset `nest`. |
 | `skapxd/nest-no-result-response` | Los métodos de un `@Controller` no retornan `Result`: el envelope se serializaría al cliente. La activa el preset `nest`. |
+| `skapxd/nest-no-swagger-in-controllers` | Los controllers no se llenan de decoradores de swagger; el plugin introspecciona los DTOs. Preset `nest`. |
+| `skapxd/nest-requires-swagger-plugin` | `nest-cli.json` debe tener el plugin `@nestjs/swagger`: la premisa de las reglas de swagger, verificada. Preset `nest`. |
+| `skapxd/nest-validation-pipe-config` | Todo `new ValidationPipe` configura `transform` y `whitelist`: la premisa de las reglas de DTOs. Preset `nest`. |
 | `skapxd/no-deep-relative-imports` | Limita la profundidad de los imports relativos (`../`). |
 | `skapxd/no-default-export` | Prohíbe `export default`; el nombre del símbolo es el contrato. Exime configs/stories y, en el preset `next`, los entrypoints del App Router. |
+| `skapxd/no-else` | Prohíbe `else`/`else if`: el else es el estado sin nombre. Retorno anticipado, ternario simple o `match()`. |
 | `skapxd/no-emoji` | Prohíbe emojis en strings y JSX; cada sistema los renderiza distinto. Usa un icono SVG. |
 | `skapxd/no-nested-if` | Prohíbe `if` anidados: retorno anticipado o `match()`. Menos carga cognitiva y sin puntos ciegos para las demás reglas. |
+| `skapxd/no-runtime-state-guard` | Prohíbe `if (this.x) throw` en métodos: el estado inválido se hace irrepresentable en el tipo, no se vigila en runtime. |
 | `skapxd/no-tunnel-props` | Ninguna prop viaja más de un nivel: quien la recibe no puede reenviarla a otro componente. Mata el prop drilling. |
 | `skapxd/prefer-abort-signal` | Listeners en efectos se limpian con `AbortController` (`{ signal }` + `abort()`), no con `removeEventListener`. |
+| `skapxd/prefer-tagged-union-state` | Prohíbe estados inconsistentes representables: flag de loading + campo de error independientes → unión etiquetada. |
 | `skapxd/no-functions-inside-components` | Prohíbe definir funciones dentro de componentes React. |
 | `skapxd/no-try-catch` | Prohíbe `try/catch`; usa `trySafe` de `@skapxd/result`. |
 | `skapxd/no-promise-chain` | Prohíbe `.then/.catch/.finally`; usa `await` (+ `trySafe`). |
@@ -745,6 +824,78 @@ Todas las opciones, con sus defaults:
   promiseTypeNames: ["Promise"],  // wrappers de promesa aceptados (fallback sin tipos)
   resultTypeNames: ["Result"],    // nombres de Result aceptados (fallback sin tipos)
 }]
+```
+
+### `skapxd/requires-strict-tsconfig`
+
+Todo el sistema descansa en que el compilador pueda hacer irrepresentables
+los estados inválidos — y eso exige un `tsconfig` implacable. Esta regla lee
+el `tsconfig.json` **real** del proyecto (con la API de TypeScript: soporta
+JSONC y resuelve la cadena de `extends`) y exige los flags, anclada a un
+entrypoint para reportar una vez por proyecto:
+
+- `strict` — sin él, el sistema de tipos está apagado a medias.
+- `noImplicitReturns` — una rama que sale sin valor deja de ser silenciosa
+  (la pareja en compilación de `no-else`).
+- `noUncheckedIndexedAccess` — `array[i]` y los accesos dinámicos confiesan
+  su `undefined` en vez de fingir.
+
+`strict: true` **no implica** los otros dos: hay que pedirlos explícitos.
+Fuera del default, a propósito: `exactOptionalPropertyTypes` y
+`strictPropertyInitialization` chocan con los DTOs de class-transformer y
+con muchas librerías — se agregan vía `requiredCompilerOptions` si el
+proyecto los soporta.
+
+Además, los **presets tipados activan reglas curadas de typescript-eslint**
+(que ya es peer dependency — no se reimplementan):
+
+- `@typescript-eslint/no-explicit-any` — `any` apaga el sistema de tipos:
+  todo el esfuerzo muere donde aparece uno.
+- `@typescript-eslint/consistent-type-definitions` con `type` — las uniones
+  discriminadas son types.
+- `@typescript-eslint/no-floating-promises` — cierra el hueco que
+  `await-requires-result` no ve: una llamada async **sin** `await` no produce
+  `AwaitExpression`, así que el rechazo muere sin pasar por `trySafe`
+  (medido: 12 promesas flotantes vivas en un backend Nest real). La única
+  salida es `void promesa()`: fire-and-forget declarado y greppeable.
+- `@typescript-eslint/no-non-null-assertion` — `!` es "cállate, yo sé más
+  que tú" dicho al compilador. Si no puede ser nulo, que lo diga el tipo.
+  (En `nest/tests` queda apagada: el `!` sobre un fixture cuya existencia el
+  propio test garantiza es el arrange, no una mentira.)
+- `@typescript-eslint/no-unnecessary-condition` — la generalización
+  type-aware de `no-runtime-state-guard`: si el tipo dice que un estado es
+  imposible, el guard defensivo sobra; si el guard hace falta, lo que está
+  mal es el tipo. Por eso esta regla y `requires-strict-tsconfig` van
+  juntas: sin `noUncheckedIndexedAccess`, `array[i]` miente y la regla
+  acusaría guards necesarios.
+- `@typescript-eslint/ban-ts-comment` — un error de tipos se arregla
+  modelando mejor, no silenciando la alarma: `@ts-ignore` y `@ts-nocheck`
+  prohibidos. `@ts-expect-error` **con descripción** queda permitido: es la
+  forma legítima de testear que un estado inválido de verdad no compila.
+
+Ausencias deliberadas, no olvidos:
+
+| Regla ausente | Por qué |
+| --- | --- |
+| `switch-exhaustiveness-check` | `prefer-ts-pattern` prohíbe el `switch` entero; `match().exhaustive()` da la misma garantía sin él. |
+| `prefer-readonly` | Superada por `class-properties-require-readonly`: exige `readonly` en la declaración, no solo en privados nunca reasignados. |
+| `strict-boolean-expressions` | Castiga narrowing legítimo por cientos (560 hallazgos en un backend real) sin hacer irrepresentable ningún estado nuevo. Ruido, no señal. |
+| `explicit-module-boundary-types` | Los contratos que importan ya están gobernados (`await-requires-result`, `nest-no-result-response`); anotar el resto es ceremonia (198 hallazgos) que la inferencia resuelve sin perder garantías. |
+| `prefer-readonly-parameter-types` | Impracticable con cualquier parámetro que venga de una librería externa. |
+
+Complemento recomendado (fuera del alcance de un linter): **tests a nivel de
+tipos**. Si el dominio vive en los tipos, los tipos también se testean — con
+[`expectTypeOf` de vitest](https://vitest.dev/guide/testing-types) (ya está en
+tu stack, sin instalar `tsd`) o con `@ts-expect-error` descrito, que es
+exactamente el caso que `ban-ts-comment` deja abierto:
+
+```ts
+import { expectTypeOf } from "vitest";
+
+test("un pedido cancelado no puede tener trackingId", () => {
+  expectTypeOf<Extract<Order, { status: "cancelled" }>>()
+    .not.toHaveProperty("trackingId");
+});
 ```
 
 ### `skapxd/result-error-requires-cause`
@@ -924,6 +1075,77 @@ Sirve para código de pegamento, pero deja el error sin modelar (`Result<T,
 unknown>`). Cuando la misma operación se repite o el error importa, el mensaje
 de la regla empuja hacia el camino 1.
 
+### `skapxd/nest-no-swagger-in-controllers`
+
+La contracara de la anterior: con el plugin de `@nestjs/swagger` activo en
+`nest-cli.json`, los decoradores de documentación en el controller son ruido
+redundante — el plugin ya introspecciona los DTOs de input y el tipo de
+retorno. Un controller lleno de `@ApiOperation`/`@ApiResponse`/`@ApiParam`
+entierra la lógica de la frontera bajo metadatos que viven mejor en el DTO:
+
+```ts
+@Controller("users")
+export class UsersController {
+  @ApiOperation({ summary: "Busca un usuario" })   // ❌ redundante con el plugin
+  @ApiResponse({ status: 200, type: UserDto })     // ❌ el tipo de retorno ya lo dice
+  @ApiParam({ name: "id" })                        // ❌ el DTO de params ya lo dice
+  @Get(":id")
+  findOne(@Param() params: FindUserParamsDto): Promise<UserDto> { ... }
+}
+```
+
+Solo se permiten los decoradores que el plugin **no puede inferir**
+(`allowedDecoratorNames`, configurable): `ApiExcludeEndpoint` (ocultar rutas
+internas), `ApiTags` (agrupación), `ApiBearerAuth` (auth), y
+`ApiConsumes`/`ApiBody` (uploads multipart, que la introspección no ve).
+
+La detección compara contra los **imports reales de `@nestjs/swagger`** del
+archivo: un decorador propio que se llame `ApiOperation` no se toca. Solo
+aplica dentro de clases `@Controller`.
+
+### `skapxd/nest-requires-swagger-plugin`
+
+Las reglas de swagger del preset (`nest-no-swagger-in-controllers`,
+`nest-dto-requires-api-property`) descansan sobre una premisa: el plugin
+`@nestjs/swagger` activo en `nest-cli.json`, que introspecciona DTOs y tipos
+de retorno. Esta regla **verifica la premisa en vez de asumirla**: anclada al
+entrypoint (`mainFilePatterns`, default `src/main.ts`, un reporte por
+proyecto), sube por las carpetas hasta el `nest-cli.json` real y exige:
+
+```jsonc
+// nest-cli.json
+{
+  "compilerOptions": {
+    "plugins": ["@nestjs/swagger"]   // ✅ (también acepta { "name": "..." })
+  }
+}
+```
+
+Sin el plugin, el swagger queda vacío — y como el preset prohíbe documentarlo
+a mano en los controllers, el error te lo dice en el primer lint, no en el
+primer deploy.
+
+### `skapxd/nest-validation-pipe-config`
+
+La otra premisa verificada: todo `new ValidationPipe(...)` (el real, importado
+de `@nestjs/common`) debe configurar las dos opciones que hacen reales los
+contratos de los DTOs:
+
+```ts
+app.useGlobalPipes(
+  new ValidationPipe({
+    transform: true,   // sin él, class-transformer no corre: los @Type no hacen NADA
+    whitelist: true,   // sin él, las props sin decorador pasan crudas al dominio
+    // ...el resto (exceptionFactory, transformOptions) es tuyo
+  }),
+);
+```
+
+`new ValidationPipe()` sin opciones, con una faltante o con `transform: false`
+se reporta. Si las opciones llegan como variable, se resuelve por scope; un
+identifier irresoluble o un spread reciben el beneficio de la duda.
+`requiredPipeOptions` es configurable (p. ej. añadir `forbidNonWhitelisted`).
+
 ### `skapxd/no-ad-hoc-ok-result`
 
 Prohíbe que una función async **exportada** retorne objetos literales con la
@@ -983,6 +1205,250 @@ Esta regla es la que mantiene honesto al resto del sistema React: las reglas
 de componentes detectan "componente" por nombre PascalCase, así que una
 función `renderX` que devuelve JSX escaparía de ellas. Esta la captura y
 fuerza el rename — y con el nombre corregido, las demás ya la ven.
+
+### `skapxd/no-accessors`
+
+Prohíbe `get`/`set` en clases y objetos literales. Un accessor es un método
+con sintaxis de propiedad: esconde computación tras un acceso que parece
+inocente (`config.token` que en realidad ejecuta código), y abre la puerta al
+**método disfrazado** — un `get sendMessage() { return (...) => ... }` que
+escapaba de `max-public-methods`:
+
+```ts
+class Connection {
+  get socket() { return this.current; }   // ❌ computación disfrazada de propiedad
+  socket() { return this.current; }       // ✅ el call site dice la verdad: socket()
+}
+```
+
+Si algo es un dato, es una propiedad `readonly`; si algo es comportamiento,
+es un método explícito que cuenta en la superficie pública. No hay tercera
+categoría.
+
+### `skapxd/class-properties-require-readonly`
+
+Toda propiedad de clase (incluidas las parameter properties del constructor)
+lleva `readonly`. El estado mutable es la raíz de los **estados
+inconsistentes** — la misma enfermedad del `useState` con `isLoading`,
+`error` y `value` llenos a la vez que motivó este paquete: si los campos
+pueden mutar por separado, las combinaciones imposibles se vuelven posibles.
+El cambio se modela creando instancias nuevas:
+
+```ts
+class Loan {
+  constructor(
+    readonly amount: number,            // ✅
+    private readonly term: number,      // ✅ parameter property también
+  ) {}
+
+  withAmount(amount: number): Loan {
+    return new Loan(amount, this.term); // el "cambio": una instancia nueva
+  }
+}
+
+class Cache {
+  private entries: string[] = [];       // ❌ private no exime: mutable es mutable
+}
+```
+
+La mutación inherente (la conexión de un socket que se reemplaza al
+reconectar) **se declara visible** en `allowPropertyPatterns: ["^currentSocket$"]`
+— una decisión en la config, greppeable, no un default silencioso.
+
+**Compatibilidad con NestJS, investigada y verificada:**
+
+- **DTOs ✅ sin fricción** (verificado empíricamente con class-transformer +
+  class-validator reales): `readonly` es chequeo de compilación que se borra
+  en runtime — `plainToInstance` asigna, `@Type` convierte, los anidados se
+  instancian y la validación corre igual. El issue conocido de
+  class-transformer ([typestack/class-transformer#250](https://github.com/typestack/class-transformer/issues/250))
+  es sobre `private readonly` detrás de *getters* (accessors) — patrón que
+  `no-accessors` ya prohíbe.
+- **Capa de persistencia ⚠️ exención POR PROPIEDAD, no por archivo**: una
+  propiedad decorada por el ORM (`@Prop` de `@nestjs/mongoose`, `@Column` y
+  compañía de `typeorm` — verificados contra los imports reales,
+  `ormModuleSources` configurable) le pertenece al ORM y a su modelo de
+  mutación (`doc.campo = x; await doc.save()` no compila contra readonly).
+  La precisión importa: una propiedad **sin** `@Prop` dentro de un
+  `*.schema.ts` es estado de clase normal (campos virtuales, caches) y sí
+  exige `readonly` — la exención por nombre de archivo la habría silenciado.
+- **Cuidado con los TIPOS array readonly** (`tags: readonly string[]`,
+  `ReadonlyArray<T>`): el plugin de `@nestjs/swagger` degrada su inferencia
+  con ellos ([nestjs/swagger#2413](https://github.com/nestjs/swagger/issues/2413)).
+  Esta regla exige el modificador en la *propiedad* (`readonly tags: string[]`),
+  que es inocuo para el plugin — no uses los tipos array readonly en DTOs.
+
+### `skapxd/max-public-methods`
+
+El `one-root-function-per-file` del mundo de clases: **una clase, una
+responsabilidad** — máximo `max` métodos públicos (default `1`). Es la regla
+que convierte un `loans.service.ts` de 1965 líneas en una carpeta de casos de
+uso (`find-apc-score.service.ts`, `create-signature.service.ts`, ...).
+
+Es **agnóstica al framework** y vive en las reglas base: una clase en Nest,
+Astro, Next o un proyecto Vite responde al mismo contrato. El conocimiento
+del framework lo inyecta cada preset vía `ignore` — la regla en sí no sabe
+qué es NestJS.
+
+```ts
+// ❌ dos casos de uso conviviendo
+export class ApcService {
+  async getScore(id: string) { ... }
+  async refreshScore(id: string) { ... }
+}
+
+// ✅ un caso de uso con su séquito privado
+export class FindApcScoreService {
+  constructor(private readonly repository: ApcRepository) {}
+  async execute(id: string) { return this.normalize(...); }
+  private normalize(raw: unknown) { ... }
+}
+```
+
+No cuentan: constructor, getters/setters, `private`/`protected`, `#privados`
+y el prefijo `_`. `ignore` exime nombres por opción — así el **preset `nest`**
+inyecta sus hooks (`onModuleInit`, `onApplicationBootstrap`, `canActivate`,
+`intercept`, `transform`, `catch`, `use`, ...): callbacks que el framework
+llama, no superficie pública. Fuera de Nest esos nombres no significan nada y
+cuentan como cualquier método.
+
+El preset `nest` además la **apaga en `*.controller.ts` y `*.gateway.ts`**:
+ahí la forma la dicta el framework (un método por ruta/evento) y el límite no
+aporta semántica. El mensaje de error es un playbook de refactor completo
+(nombres semánticos, extracción de estado compartido, actualización del
+módulo y los imports) pensado para que un agente lo ejecute solo.
+
+### `skapxd/nest-dto-requires-api-property`
+
+El contrato HTTP — query, params, body y respuesta — se documenta en el DTO,
+no en el controller. Toda propiedad **pública de instancia** de una clase en
+un `*.dto.ts` debe llevar `@ApiProperty` o `@ApiPropertyOptional`:
+
+```ts
+// create-user.dto.ts
+export class CreateUserDto {
+  @ApiProperty({ description: "Nombre legal completo", example: "Ana Pérez" })
+  name: string;                       // ✅
+
+  email: string;                      // ❌ sin documentar
+
+  @IsString()
+  phone: string;                      // ❌ class-validator no documenta
+}
+```
+
+El plugin de `@nestjs/swagger` infiere el **tipo**, pero la `description` y el
+`example` son intención tuya — y son lo que convierte el swagger en un
+contrato legible (y en un buen cliente generado). Las propiedades `private`,
+`protected`, `#privadas` y `static` no se exigen: swagger no las serializa.
+`dtoFilePatterns` ajusta la convención de archivos si no usas `*.dto.ts`.
+
+### `skapxd/nest-dto-requires-validation`
+
+El tipo de TypeScript desaparece en runtime: un DTO de input sin
+class-validator es un contrato de mentira — el `ValidationPipe` deja pasar
+cualquier cosa (o la descarta en silencio con `whitelist`). Tres contratos en
+una regla:
+
+```ts
+export class CreateLoanDto {
+  @ApiProperty()
+  @IsNumber()                 // 1. ✅ toda propiedad valida en runtime
+  @IsNotEmpty()
+  amount: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()               // 2. ✅ el `?` del tipo y el runtime coinciden
+  @IsNumber()
+  termMonths?: number;
+
+  @ApiProperty()
+  @ValidateNested()
+  @Type(() => AddressDto)     // 3. ✅ sin @Type, la validación anidada NO corre
+  address: AddressDto;
+}
+```
+
+1. **Toda propiedad pública** lleva al menos un decorador de class-validator.
+2. **`?` exige `@IsOptional`** (o `@ValidateIf`): si el tipo dice opcional y el
+   runtime la exige, el contrato miente.
+3. **`@ValidateNested` exige `@Type(() => Clase)`** de class-transformer: sin
+   él, el objeto anidado llega como plain object y la validación anidada no
+   corre — el bug silencioso clásico (esta regla lo encontró en producción).
+
+Los **DTOs de respuesta quedan exentos** por dos vías: nombre de archivo
+(`outputDtoFilePatterns`: `out-*`, `output-*`, `*-response`, `*-result`,
+`*-output`) y **nombre de clase** (`outputDtoClassPatterns`, regex, default
+`(Response|Result|Output)(Dto)?$`) — porque un `UploadDocumentResponseDto`
+puede vivir en un archivo de nombre neutro (`upload-document.dto.ts`) o
+compartir archivo con DTOs de input, y la exención de la clase no contagia a
+sus vecinas. El server los produce, no los recibe. La detección compara
+contra los imports reales de `class-validator`/`class-transformer`, así que
+un decorador casero homónimo no engaña a la regla.
+
+**El caso Multer** queda cubierto por el conjunto: el archivo llega como
+parámetro (`@UploadedFiles() files: Express.Multer.File[]`), nunca en un DTO
+validable; el schema multipart se documenta inline en el controller con
+`@ApiConsumes` + `@ApiBody` (permitidos por `nest-no-swagger-in-controllers`:
+la introspección no ve multipart); y el DTO de respuesta del upload queda
+exento por nombre de clase. La validación del archivo en sí (tamaño, mimetype)
+va donde Nest la diseñó: `ParseFilePipe` en el parámetro, no class-validator.
+
+### `skapxd/nest-no-direct-instantiation`
+
+En un service, `new FooService()` sobre un import **interno del proyecto**
+esquiva el contenedor de DI: NestJS no resuelve sus dependencias, no
+participa del lifecycle, y la clase deja de ser testeable con mocks. Las
+dependencias entran por el constructor:
+
+```ts
+import { FooService } from "#/modules/foo/foo.service";
+
+const foo = new FooService();                            // ❌ esquiva la DI
+
+constructor(private readonly fooService: FooService) {}  // ✅ NestJS resuelve
+```
+
+La robustez viene en capas:
+
+1. **Los globals del runtime nunca se marcan** (`new Date()`, `new Map()`,
+   `new AbortController()`): la regla parte de los **imports internos**
+   (`internalPatterns`: alias `#/`, `@/` y relativos), y un global no se
+   importa. Las librerías externas (`new Logger(...)`) también libres, y los
+   `import type` no cuentan.
+2. **Exención por nombre de clase** (`allowedClassPatterns`, default
+   `(Error|Exception|Event)$`): errores, excepciones y eventos de dominio se
+   construyen, no se inyectan — vivan en el archivo que vivan.
+3. **La capa type-aware** (con `projectService`, que el preset trae): la
+   regla resuelve el símbolo de la clase importada y pregunta por el
+   decorador `@Injectable`. Sin el decorador es una clase de valor (un DTO,
+   un mapper puro) y el `new` es legítimo; con él, pertenece al contenedor y
+   se reporta. Irresoluble → conservador, se reporta. En un proyecto real
+   esta capa eliminó el 100% de los falsos positivos restantes.
+
+`allowedPatterns` (regex de sources) sigue disponible para convenciones
+propias. El preset la activa en `*.service.ts`.
+
+### `skapxd/nest-no-inline-query-params`
+
+Dos o más `@Query('x')` individuales (o `@ApiQuery` sueltos) en un handler
+son un DTO disfrazado — sin validación automática, sin tipos de verdad y con
+el controller enterrado en decoradores:
+
+```ts
+// ❌ cada query a mano
+findAll(@Query("status") status?: string, @Query("clientName") name?: string) {}
+
+// ✅ el DTO consolidado: ValidationPipe valida, swagger documenta, el tipo es real
+findAll(@Query() filters: ListLoansDto) {}
+```
+
+`@Query()` sin argumento (el DTO completo) y un único `@Query('id')` son
+legítimos (`max` configurable). El mensaje trae el playbook de migración:
+propiedades `?` + `@IsOptional` + validador + `@ApiPropertyOptional`, y
+`@Transform`/`@Type` para convertir los strings del query al tipo real.
+Conecta con `nest-dto-requires-validation`: el DTO que crees ya queda
+vigilado. Solo el `Query`/`ApiQuery` importados de Nest cuentan.
 
 ### `skapxd/nest-no-result-response`
 
@@ -1117,6 +1583,37 @@ al default export, basta mapear el named en el import dinámico:
 const Card = lazy(() => import("./card").then((m) => ({ default: m.Card })));
 ```
 
+### `skapxd/no-else`
+
+El `if` maneja una condición *nombrada*; el `else` maneja "todo lo demás" —
+un complemento anónimo cuyo significado el lector deduce negando la
+condición. Es el último rincón donde un camino vive sin etiqueta, y donde la
+no-exhaustividad se esconde: una cadena `if/else if/else` sobre flags maneja
+2 de 4 combinaciones y deja el resto cayendo en un cajón que nadie auditó.
+
+```ts
+// ❌ ¿qué ES el else? el lector lo deduce; el compilador no audita nada
+if (s === "a") { runA(); } else if (s === "b") { runB(); } else { runC(); }
+
+// ✅ guards: cada salida declara su condición y termina
+if (!user) return Result.err({ ... });
+return Result.ok(buildProfile(user));
+
+// ✅ match: cada variante nombrada y exhaustividad verificada
+match(state)
+  .with({ status: "a" }, runA)
+  .with({ status: "b" }, runB)
+  .exhaustive();
+```
+
+Las salidas: **retorno anticipado** para flujo, **ternario simple** para
+decisiones de valor (los anidados ya los prohíbe `prefer-ts-pattern`), y
+**`match().exhaustive()`** para variantes. La única fricción real — dos
+ramas de efectos en medio de una función — se resuelve extrayendo la función
+que `one-root-function-per-file` ya pedía. Complementa a `no-nested-if`
+(profundidad) y a `prefer-tagged-union-state` (este ataca la *declaración*
+del estado sin nombre; `no-else` ataca su *consumo*).
+
 ### `skapxd/no-emoji`
 
 Prohíbe emojis en strings, template literals y texto JSX. El problema no es
@@ -1142,6 +1639,40 @@ eximir archivos completos (fixtures, seeds), usa `allowFilePatterns`:
   allowFilePatterns: ["tests/fixtures/**"],
 }]
 ```
+
+### `skapxd/no-runtime-state-guard`
+
+El compañero de `prefer-tagged-union-state` para el comportamiento: cuando un
+método protege su estado con una comprobación en runtime, la máquina de
+estados vive en `if` + `throw` — requiere tests para cada ruta inválida y el
+compilador no puede ayudar (*make invalid states unrepresentable*):
+
+```ts
+// ❌ el guard en runtime: probable con tests, invisible para el compilador
+class Socket {
+  private isConnected = false;
+  emit(event: string) {
+    if (!this.isConnected) throw new Error("Cannot emit: not connected");
+  }
+}
+
+// ✅ cada estado es un tipo: emit NO EXISTE en el socket desconectado
+class DisconnectedSocket {
+  connect(): ConnectedSocket { ... }       // la transición retorna el estado nuevo
+}
+class ConnectedSocket {
+  emit(event: string): void { ... }        // sin guard: el compilador lo garantiza
+  disconnect(): DisconnectedSocket { ... }
+}
+```
+
+(La variante funcional: la unión discriminada de `prefer-tagged-union-state`,
+consumida con `match()`.) Solo aplica al **estado propio** (`this.<prop>`) en
+métodos de clase — validar argumentos o inputs externos es otro territorio
+(DTOs, `Result`). Un `if` sobre `this` que retorna temprano sin lanzar
+tampoco se toca. Nota la sinergia con `class-properties-require-readonly`:
+el flag mutable que este guard necesita ya era ilegal — las dos reglas
+empujan juntas hacia las transiciones que retornan instancias nuevas.
 
 ### `skapxd/no-tunnel-props`
 
@@ -1296,6 +1827,80 @@ métodos se prohíben (por defecto los tres):
 // solo prohibir .catch, permitir .then/.finally
 "skapxd/no-promise-chain": ["error", { methods: ["catch"] }]
 ```
+
+### `skapxd/prefer-tagged-union-state`
+
+La regla temática del paquete: el estado inconsistente que motivó todo esto,
+ahora prohibido en su origen. Detecta las dos formas de la enfermedad:
+
+**Forma A — el tipo enfermo**: un flag boolean de "en proceso" conviviendo
+con un campo de error como propiedades independientes. Las combinaciones
+imposibles (cargando Y con error, error Y con valor) son *representables*:
+
+```ts
+// ❌ 2³ combinaciones; solo 3 tienen sentido
+type RequestState = { isLoading: boolean; error?: Error; value?: Data };
+
+// ✅ los estados imposibles no se pueden NI ESCRIBIR
+type RequestState =
+  | { status: "idle" }
+  | { status: "loading" }
+  | { status: "error"; error: Error }
+  | { status: "ok"; value: Data };
+```
+
+La forma A aplica **igual en el back**: la clase de un job con
+`private isProcessing = false; private lastError?: Error` es la versión OOP
+de la máquina repartida, y un schema de Mongoose con `@Prop() isSyncing` +
+`@Prop() syncError` es la versión más grave — **la inconsistencia se
+persiste en la base de datos**. La regla revisa tipos, interfaces y cuerpos
+de clase por igual, con verbos de ambos mundos (`loading`, `submitting`,
+`deploying`, `migrating`, `retrying`, ...).
+
+**Forma B — la máquina repartida** (front): varios `useState` que en realidad
+son una sola máquina de estados. Cada transición toca varios setters y los
+renders intermedios ven combinaciones imposibles:
+
+```ts
+// ❌ tres setters para una transición: el render del medio ve mentiras
+const [isLoading, setIsLoading] = useState(false);
+const [error, setError] = useState<Error | null>(null);
+const [user, setUser] = useState<User | null>(null);
+
+// ✅ UN estado, transición atómica, match() exhaustivo
+const [state, setState] = useState<RequestState>({ status: "idle" });
+```
+
+**Forma C — la transición repartida (evidencia ESTRUCTURAL, sin depender de
+nombres)**: los setters de `useState` se identifican por *posición en el
+destructuring* (`const [x, setX] = useState()` — el segundo elemento, se
+llame como se llame). Si una misma función llama a dos setters distintos,
+eso **prueba** que esos estados son una sola máquina — entre setter y setter,
+los renders intermedios ven mentiras:
+
+```ts
+const cargar = (respuesta, fallo) => {
+  setDatos(respuesta);   // ❌ dos setters en una transición: una máquina
+  setError(fallo);       //    repartida, aunque `datos` no se llame "loading"
+};
+```
+
+Este detector caza lo que los nombres no ven (estados con nombres exóticos o
+en español ya cubiertos: `cargando`, `procesando`, `fallo`, ...). El filtro
+de precisión: al menos uno de los estados co-actualizados debe ser
+loading/error-ish — resetear dos campos independientes de un formulario no
+es una máquina.
+
+Sobre la detección por nombres (formas A y B): es deliberadamente el
+escalón más bajo de evidencia del paquete — para un tipo *declarado* no hay
+comportamiento que observar y el nombre es la única señal disponible. El
+**tipo del campo de error no importa** (`Error`, `string`, código numérico,
+otro boolean — `isSyncing` + `hasError` es la peor forma): la enfermedad es
+la coexistencia. Los **callbacks** quedan excluidos (`onError?: (e) => void`,
+miembros de tipo función): un handler no es estado.
+`loadingPatterns`/`errorPatterns` ajustan las convenciones. Cierra el círculo con el resto del paquete: la unión etiquetada
+es a los estados lo que `Result` es a los errores, y `prefer-ts-pattern` te
+espera con el `match().exhaustive()` al otro lado.
 
 ### `skapxd/prefer-ts-pattern`
 

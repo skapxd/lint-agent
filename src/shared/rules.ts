@@ -5,22 +5,38 @@ import { noAdHocOkResult } from "#/rules/no-ad-hoc-ok-result";
 import { awaitRequiresResult } from "#/rules/await-requires-result";
 import { resultErrorRequiresCause } from "#/rules/result-error-requires-cause";
 import { resultErrorRequiresHandling } from "#/rules/result-error-requires-handling";
+import { classPropertiesRequireReadonly } from "#/rules/class-properties-require-readonly";
+import { noAccessors } from "#/rules/no-accessors";
 import type { Rule } from "eslint";
 import { maxHookSize } from "#/rules/max-hook-size";
+import { maxPublicMethods } from "#/rules/max-public-methods";
+import { nestDtoRequiresApiProperty } from "#/rules/nest-dto-requires-api-property";
+import { nestDtoRequiresValidation } from "#/rules/nest-dto-requires-validation";
+import { nestNoDirectInstantiation } from "#/rules/nest-no-direct-instantiation";
+import { nestNoInlineQueryParams } from "#/rules/nest-no-inline-query-params";
 import { nestNoResultResponse } from "#/rules/nest-no-result-response";
+import { nestNoSwaggerInControllers } from "#/rules/nest-no-swagger-in-controllers";
+import { nestRequiresSwaggerPlugin } from "#/rules/nest-requires-swagger-plugin";
+import { nestValidationPipeConfig } from "#/rules/nest-validation-pipe-config";
 import { noDeepRelativeImports } from "#/rules/no-deep-relative-imports";
 import { noDefaultExport } from "#/rules/no-default-export";
+import { noElse } from "#/rules/no-else";
 import { noEmoji } from "#/rules/no-emoji";
 import { noTunnelProps } from "#/rules/no-tunnel-props";
 import { noFunctionsInsideComponents } from "#/rules/no-functions-inside-components";
 import { noTryCatch } from "#/rules/no-try-catch";
 import { preferAbortSignal } from "#/rules/prefer-abort-signal";
+import { preferTaggedUnionState } from "#/rules/prefer-tagged-union-state";
+import { requiresStrictTsconfig } from "#/rules/requires-strict-tsconfig";
 import { preferTsPattern } from "#/rules/prefer-ts-pattern";
 import { noJsxTernaryNull } from "#/rules/no-jsx-ternary-null";
 import { noNestedIf } from "#/rules/no-nested-if";
 import { noPromiseChain } from "#/rules/no-promise-chain";
+import { noRuntimeStateGuard } from "#/rules/no-runtime-state-guard";
 
 export const rules: Record<string, Rule.RuleModule> = {
+  "class-properties-require-readonly": classPropertiesRequireReadonly,
+  "no-accessors": noAccessors,
   "one-root-function-per-file": oneRootFunctionPerFile,
   "jsx-return-name-pascal-case": jsxReturnNamePascalCase,
   "async-functions-return-result": asyncFunctionsReturnResult,
@@ -38,16 +54,28 @@ export const rules: Record<string, Rule.RuleModule> = {
   "result-error-requires-cause": resultErrorRequiresCause,
   "result-error-requires-handling": resultErrorRequiresHandling,
   "max-hook-size": maxHookSize,
+  "max-public-methods": maxPublicMethods,
+  "nest-dto-requires-api-property": nestDtoRequiresApiProperty,
+  "nest-dto-requires-validation": nestDtoRequiresValidation,
+  "nest-no-direct-instantiation": nestNoDirectInstantiation,
+  "nest-no-inline-query-params": nestNoInlineQueryParams,
   "nest-no-result-response": nestNoResultResponse,
+  "nest-no-swagger-in-controllers": nestNoSwaggerInControllers,
+  "nest-requires-swagger-plugin": nestRequiresSwaggerPlugin,
+  "nest-validation-pipe-config": nestValidationPipeConfig,
   "no-deep-relative-imports": noDeepRelativeImports,
   "no-default-export": noDefaultExport,
+  "no-else": noElse,
   "no-emoji": noEmoji,
   "no-tunnel-props": noTunnelProps,
   "no-functions-inside-components": noFunctionsInsideComponents,
   "no-try-catch": noTryCatch,
   "prefer-abort-signal": preferAbortSignal,
+  "prefer-tagged-union-state": preferTaggedUnionState,
   "prefer-ts-pattern": preferTsPattern,
+  "requires-strict-tsconfig": requiresStrictTsconfig,
   "no-jsx-ternary-null": noJsxTernaryNull,
   "no-nested-if": noNestedIf,
   "no-promise-chain": noPromiseChain,
+  "no-runtime-state-guard": noRuntimeStateGuard,
 } as unknown as Record<string, Rule.RuleModule>;
