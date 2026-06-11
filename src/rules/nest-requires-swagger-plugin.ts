@@ -1,0 +1,72 @@
+// @ts-nocheck
+import { readFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { trySafe } from "@skapxd/result";
+import { findProjectFile } from "#/utils/find-project-file";
+import { getNestSwaggerPluginOptions } from "#/utils/get-nest-swagger-plugin-options";
+import { matchesAnyGlob } from "#/utils/matches-any-glob";
+import { nestCliHasSwaggerPlugin } from "#/utils/nest-cli-has-swagger-plugin";
+
+export const nestRequiresSwaggerPlugin = {
+  meta: {
+    type: "problem",
+    docs: {
+      description:
+        "El proyecto Nest debe tener el plugin @nestjs/swagger en nest-cli.json: es la premisa de las reglas de swagger.",
+    },
+    messages: {
+      missingNestCli:
+        "No encontre un nest-cli.json legible en el proyecto. El preset nest asume el plugin @nestjs/swagger activo (introspecciona DTOs y tipos de retorno); sin nest-cli.json esa premisa no se puede verificar.",
+      missingSwaggerPlugin:
+        "nest-cli.json no tiene el plugin @nestjs/swagger. Sin el, los DTOs y tipos de retorno NO se introspeccionan y el swagger queda vacio (las reglas del preset prohiben documentarlo a mano en los controllers). Agrega en compilerOptions: `\"plugins\": [\"@nestjs/swagger\"]`.",
+    },
+    schema: [
+      {
+        additionalProperties: false,
+        properties: {
+          allowFilePatterns: {
+            items: { type: "string" },
+            type: "array",
+          },
+          mainFilePatterns: {
+            items: { type: "string" },
+            type: "array",
+          },
+        },
+        type: "object",
+      },
+    ],
+  },
+  create(context) {
+    const options = getNestSwaggerPluginOptions(context.options[0]);
+    const filename = context.filename ?? context.getFilename();
+
+    if (
+      matchesAnyGlob(filename, options.allowFilePatterns) ||
+      !matchesAnyGlob(filename, options.mainFilePatterns)
+    ) {
+      return {};
+    }
+
+    return {
+      Program(node) {
+        const absoluteFilename = resolve(context.cwd ?? process.cwd(), filename);
+        const nestCliPath = findProjectFile(dirname(absoluteFilename), "nest-cli.json");
+
+        const nestCliConfig = trySafe(() =>
+          JSON.parse(readFileSync(nestCliPath, "utf8")),
+        );
+
+        if (!nestCliPath || !nestCliConfig.ok) {
+          context.report({ messageId: "missingNestCli", node });
+
+          return;
+        }
+
+        if (!nestCliHasSwaggerPlugin(nestCliConfig.value)) {
+          context.report({ messageId: "missingSwaggerPlugin", node });
+        }
+      },
+    };
+  },
+};
