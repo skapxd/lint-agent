@@ -353,6 +353,9 @@ src/
 │   ├── rules.ts
 │   ├── configs/
 │   └── index.ts
+├── nest/
+│   ├── configs.ts
+│   └── index.ts
 ├── next/
 │   ├── configs.ts
 │   └── index.ts
@@ -365,6 +368,7 @@ src/
 | Módulo | Propósito |
 | --- | --- |
 | `@skapxd/eslint-opinionated/shared` | Reglas y presets comunes para backend, frontend y paquetes npm. |
+| `@skapxd/eslint-opinionated/nest` | Presets específicos para NestJS. |
 | `@skapxd/eslint-opinionated/next` | Presets específicos para Next.js. |
 | `@skapxd/eslint-opinionated/astro` | Presets específicos para Astro. |
 | `@skapxd/eslint-opinionated` | Entry point principal con todas las reglas y configs. |
@@ -478,6 +482,39 @@ export default [
 ];
 ```
 
+### NestJS
+
+```js
+import skapxd from "@skapxd/eslint-opinionated";
+
+export default [
+  ...skapxd.configs.nest,
+];
+```
+
+Nest trae un modelo de errores por excepciones (`HttpException` + exception
+filters). El preset no pelea contra eso: asigna a cada capa su rol en el
+pipeline de Result:
+
+| Capa Nest | Rol | Contrato |
+| --- | --- | --- |
+| Services / use-cases | El dominio puro | Todo retorna `Promise<Result<T, DomainError>>`; `trySafe` en la frontera con Mongoose/Prisma/HTTP |
+| Controllers | La frontera | Consumen el Result con `match()`: rama ok → DTO, rama err → `throw new HttpException(...)`. El `throw` aquí es el idioma del framework, no una fuga |
+| Exception filter global | **El suelo del sistema** | Recibe todo lo que escapó, con el `cause` completo → telemetría/log (ver "El suelo del sistema") |
+
+Detalles del preset:
+
+- Aplica a `src/**/*.ts` — `dev/`, `scripts/`, `e2e/` e `integration-test/`
+  quedan fuera a propósito: no son la app.
+- Los entrypoints (`main.ts`, `instrumentation.ts`, `app-cluster.ts`) están
+  exentos de `await-requires-result`: el bootstrap debe crashear ruidoso.
+- Los specs colocados (`*.spec.ts`, `*.e2e-spec.ts`) relajan
+  `await-requires-result`, `no-try-catch` y `result-error-requires-handling`:
+  un test awaitea helpers libremente y descartar un Result en una aserción no
+  es perder un trace.
+- Activa `skapxd/nest-no-result-response` (ver su sección): un controller
+  jamás retorna el Result crudo.
+
 ### Astro
 
 ```js
@@ -573,6 +610,7 @@ de cada regla):
 | `async-functions-return-result` | `allowFilePatterns` (globs), `allowNamePatterns` (regex), `checkMissingReturnType`, `checkMissingReturnTypeWhenCallNames`, `requireCallNames`, `promiseTypeNames`, `resultTypeNames` |
 | `await-requires-result` | `allowFilePatterns` (globs), `trySafeCallNames` |
 | `max-hook-size` | `maxLines`, `maxUseState` |
+| `nest-no-result-response` | `allowFilePatterns` (globs), `controllerDecoratorNames` (default `["Controller"]`) |
 | `no-deep-relative-imports` | `maxDepth` |
 | `no-default-export` | `allowFilePatterns` (globs, aditivos a los integrados) |
 | `no-emoji` | `allowFilePatterns` (globs) |
@@ -600,6 +638,7 @@ matchea en cualquier carpeta). Las 7 reglas restantes no tienen opciones: su
 | `skapxd/no-ad-hoc-ok-result` | Evita contratos `{ ok: ... }` hechos a mano en async exports. |
 | `skapxd/max-hook-size` | Marca hooks grandes o con demasiados `useState`. |
 | `skapxd/jsx-return-name-pascal-case` | Funciones que retornan JSX deben nombrarse como componentes. |
+| `skapxd/nest-no-result-response` | Los métodos de un `@Controller` no retornan `Result`: el envelope se serializaría al cliente. La activa el preset `nest`. |
 | `skapxd/no-deep-relative-imports` | Limita la profundidad de los imports relativos (`../`). |
 | `skapxd/no-default-export` | Prohíbe `export default`; el nombre del símbolo es el contrato. Exime configs/stories y, en el preset `next`, los entrypoints del App Router. |
 | `skapxd/no-emoji` | Prohíbe emojis en strings y JSX; cada sistema los renderiza distinto. Usa un icono SVG. |
@@ -944,6 +983,43 @@ Esta regla es la que mantiene honesto al resto del sistema React: las reglas
 de componentes detectan "componente" por nombre PascalCase, así que una
 función `renderX` que devuelve JSX escaparía de ellas. Esta la captura y
 fuerza el rename — y con el nombre corregido, las demás ya la ven.
+
+### `skapxd/nest-no-result-response`
+
+El footgun silencioso de mezclar Result con Nest: si un método de un
+`@Controller` retorna el `Result` crudo, Nest lo serializa tal cual y el
+cliente recibe `{ ok: false, error: {...} }` con tus internals — tipos de
+error de dominio, causas, stack traces. Esta regla lo hace imposible:
+
+```ts
+@Controller("users")
+export class UsersController {
+  // ❌ el envelope completo viaja al cliente
+  @Get(":id")
+  async findOne(@Param("id") id: string): Promise<Result<User, UserError>> {
+    return this.usersService.findOne(id);
+  }
+
+  // ✅ el controller es la frontera: match() traduce
+  @Get(":id")
+  async findOne(@Param("id") id: string): Promise<UserDto> {
+    const user = await this.usersService.findOne(id);
+
+    return match(user)
+      .with({ ok: true }, ({ value }) => toUserDto(value))
+      .with({ ok: false, error: { type: "NOT_FOUND" } }, () => {
+        throw new NotFoundException();
+      })
+      .exhaustive();
+  }
+}
+```
+
+Es **type-aware**: resuelve el tipo de retorno real del método (anotado o
+inferido) hasta el `Result` de `@skapxd/result`, así que devolver el Result
+por indirección tampoco escapa. Solo aplica a clases con `@Controller`
+(configurable con `controllerDecoratorNames` para decoradores propios); los
+services retornan Result con orgullo — ese es el dominio.
 
 ### `skapxd/no-deep-relative-imports`
 

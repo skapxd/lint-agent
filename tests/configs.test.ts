@@ -87,12 +87,13 @@ describe("no-default-export en el preset next", () => {
 });
 
 describe("severidades", () => {
-  it("ningún preset usa warn: todas las reglas son error", () => {
+  it("ningún preset usa warn: error, u off por scoping deliberado", () => {
     const presets = [
       plugin.configs.base,
       plugin.configs.backend,
       plugin.configs.frontend,
       plugin.configs.package,
+      ...plugin.configs.nest,
       ...plugin.configs.next,
       ...plugin.configs.astro,
     ];
@@ -101,9 +102,37 @@ describe("severidades", () => {
       for (const [rule, entry] of Object.entries(preset.rules ?? {})) {
         const severity = Array.isArray(entry) ? entry[0] : entry;
 
-        expect(severity, `${preset.name} → ${rule}`).toBe("error");
+        expect(severity, `${preset.name} → ${rule}`).not.toBe("warn");
       }
     }
+  });
+});
+
+describe("preset nest", () => {
+  it("exime los entrypoints del bootstrap en await-requires-result", () => {
+    const nestBase = plugin.configs.nest.find(
+      (config: { name: string }) => config.name === "skapxd/nest/base",
+    );
+    const [severity, options] =
+      nestBase.rules["skapxd/await-requires-result"];
+
+    expect(severity).toBe("error");
+    expect(nestBase.languageOptions?.parser).toBeDefined();
+    expect(matchesAnyGlob("src/main.ts", options.allowFilePatterns)).toBe(true);
+    expect(
+      matchesAnyGlob("src/modules/loan/loan.service.ts", options.allowFilePatterns),
+    ).toBe(false);
+    expect(nestBase.rules["skapxd/nest-no-result-response"]).toBe("error");
+  });
+
+  it("relaja en specs lo que los tests no pueden cumplir", () => {
+    const nestTests = plugin.configs.nest.find(
+      (config: { name: string }) => config.name === "skapxd/nest/tests",
+    );
+
+    expect(nestTests.rules["skapxd/await-requires-result"]).toBe("off");
+    expect(nestTests.rules["skapxd/no-try-catch"]).toBe("off");
+    expect(nestTests.rules["skapxd/result-error-requires-handling"]).toBe("off");
   });
 });
 

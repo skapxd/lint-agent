@@ -7,6 +7,7 @@ import { resultErrorRequiresCause } from "#/rules/result-error-requires-cause";
 import { resultErrorRequiresHandling } from "#/rules/result-error-requires-handling";
 import type { Rule } from "eslint";
 import { maxHookSize } from "#/rules/max-hook-size";
+import { nestNoResultResponse } from "#/rules/nest-no-result-response";
 import { noDeepRelativeImports } from "#/rules/no-deep-relative-imports";
 import { noDefaultExport } from "#/rules/no-default-export";
 import { noEmoji } from "#/rules/no-emoji";
@@ -37,6 +38,7 @@ export const rules: Record<string, Rule.RuleModule> = {
   "result-error-requires-cause": resultErrorRequiresCause,
   "result-error-requires-handling": resultErrorRequiresHandling,
   "max-hook-size": maxHookSize,
+  "nest-no-result-response": nestNoResultResponse,
   "no-deep-relative-imports": noDeepRelativeImports,
   "no-default-export": noDefaultExport,
   "no-emoji": noEmoji,

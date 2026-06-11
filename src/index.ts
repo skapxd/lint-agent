@@ -1,4 +1,5 @@
 import { createAstroConfigs } from "./astro";
+import { createNestConfigs } from "./nest";
 import { createNextConfigs } from "./next";
 import { createSharedConfigs, rules, strictConfig } from "./shared";
 
@@ -15,12 +16,14 @@ const plugin = {
 };
 
 const sharedConfigs = createSharedConfigs(plugin);
+const nestConfigs = createNestConfigs(plugin);
 const nextConfigs = createNextConfigs(plugin);
 const astroConfigs = createAstroConfigs(plugin);
 
 plugin.configs = {
   ...sharedConfigs,
   astro: astroConfigs,
+  nest: nestConfigs,
   next: nextConfigs,
   shared: sharedConfigs,
   strict: strictConfig,

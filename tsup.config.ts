@@ -6,6 +6,7 @@ export default defineConfig({
   entry: [
     "src/index.ts",
     "src/astro/index.ts",
+    "src/nest/index.ts",
     "src/next/index.ts",
     "src/shared/index.ts",
     "src/cli.ts",

@@ -20,6 +20,11 @@
       "import": "./dist/astro/index.mjs",
       "require": "./dist/astro/index.js"
     },
+    "./nest": {
+      "types": "./dist/nest/index.d.ts",
+      "import": "./dist/nest/index.mjs",
+      "require": "./dist/nest/index.js"
+    },
     "./next": {
       "types": "./dist/next/index.d.ts",
       "import": "./dist/next/index.mjs",
