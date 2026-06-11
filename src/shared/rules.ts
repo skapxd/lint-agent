@@ -12,6 +12,7 @@ import { noEmoji } from "#/rules/no-emoji";
 import { noTunnelProps } from "#/rules/no-tunnel-props";
 import { noFunctionsInsideComponents } from "#/rules/no-functions-inside-components";
 import { noTryCatch } from "#/rules/no-try-catch";
+import { preferAbortSignal } from "#/rules/prefer-abort-signal";
 import { preferTsPattern } from "#/rules/prefer-ts-pattern";
 import { noJsxTernaryNull } from "#/rules/no-jsx-ternary-null";
 import { noPromiseChain } from "#/rules/no-promise-chain";
@@ -39,6 +40,7 @@ export const rules: Record<string, Rule.RuleModule> = {
   "no-tunnel-props": noTunnelProps,
   "no-functions-inside-components": noFunctionsInsideComponents,
   "no-try-catch": noTryCatch,
+  "prefer-abort-signal": preferAbortSignal,
   "prefer-ts-pattern": preferTsPattern,
   "no-jsx-ternary-null": noJsxTernaryNull,
   "no-promise-chain": noPromiseChain,

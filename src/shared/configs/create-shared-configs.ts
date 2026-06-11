@@ -45,6 +45,9 @@ export function createSharedConfigs(pluginReference: unknown) {
         // estado y acciones a un store global o custom hook.
         "skapxd/no-functions-inside-components": "error",
         "skapxd/no-tunnel-props": "error",
+        // Listeners en efectos: un AbortController por efecto, cleanup con
+        // un solo abort() en vez de removeEventListener por listener.
+        "skapxd/prefer-abort-signal": "error",
         "skapxd/no-jsx-ternary-null": "error",
         "skapxd/max-hook-size": [
           "error",

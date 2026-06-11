@@ -550,6 +550,7 @@ de cada regla):
 | `no-functions-inside-components` | `allowJsxCallbacks`, `allowArrayMapCallbacks` (ambas `true` por defecto) |
 | `no-promise-chain` | `methods` |
 | `no-tunnel-props` | `allowFilePatterns` (globs), `allowPropPatterns` (regex) |
+| `prefer-abort-signal` | `allowFilePatterns` (globs), `effectNames` (default `["useEffect", "useLayoutEffect"]`) |
 
 Los `allowFilePatterns` de todas las reglas son **globs** (`*` un segmento,
 `**` cualquier profundidad, `{a,b}` alternativas; un patrón sin prefijo
@@ -571,6 +572,7 @@ matchea en cualquier carpeta). Las 7 reglas restantes no tienen opciones: su
 | `skapxd/no-default-export` | Prohíbe `export default`; el nombre del símbolo es el contrato. Exime configs/stories y, en el preset `next`, los entrypoints del App Router. |
 | `skapxd/no-emoji` | Prohíbe emojis en strings y JSX; cada sistema los renderiza distinto. Usa un icono SVG. |
 | `skapxd/no-tunnel-props` | Ninguna prop viaja más de un nivel: quien la recibe no puede reenviarla a otro componente. Mata el prop drilling. |
+| `skapxd/prefer-abort-signal` | Listeners en efectos se limpian con `AbortController` (`{ signal }` + `abort()`), no con `removeEventListener`. |
 | `skapxd/no-functions-inside-components` | Prohíbe definir funciones dentro de componentes React. |
 | `skapxd/no-try-catch` | Prohíbe `try/catch`; usa `trySafe` de `@skapxd/result`. |
 | `skapxd/no-promise-chain` | Prohíbe `.then/.catch/.finally`; usa `await` (+ `trySafe`). |
@@ -1084,6 +1086,42 @@ const label = match(status)
   .with("paused", () => "y")
   .exhaustive();
 ```
+
+### `skapxd/prefer-abort-signal`
+
+Dentro de un `useEffect`/`useLayoutEffect`, los listeners se limpian con
+`AbortController`, no con `removeEventListener` manual:
+
+```ts
+// ❌ registro y limpieza espejados a mano
+useEffect(() => {
+  const media = window.matchMedia("(prefers-color-scheme: dark)");
+  media.addEventListener("change", onSystemChange);
+  return () => media.removeEventListener("change", onSystemChange);
+}, [settings]);
+
+// ✅ un AbortController por efecto
+useEffect(() => {
+  const controller = new AbortController();
+  const media = window.matchMedia("(prefers-color-scheme: dark)");
+  media.addEventListener("change", onSystemChange, { signal: controller.signal });
+  return () => controller.abort();
+}, [settings]);
+```
+
+Por qué: un solo `abort()` limpia **todos** los listeners del efecto (no hay
+que espejar cada `add` con su `remove`), y elimina el bug clásico de pasar una
+referencia distinta a `removeEventListener` (un `.bind()` o una arrow nueva)
+que deja el listener vivo para siempre.
+
+Reporta dos cosas dentro del callback del efecto (incluidas sus funciones
+anidadas y el cleanup): `addEventListener` sin `signal` en las options, y
+cualquier `removeEventListener`. Fuera de un efecto la regla no opina. Si las
+options llegan como variable (`addEventListener("x", fn, listenerOptions)`),
+se da el beneficio de la duda.
+
+`effectNames` permite cubrir wrappers propios (`["useEffect",
+"useLayoutEffect", "useIsomorphicEffect"]`).
 
 ### `skapxd/no-jsx-ternary-null`
 
