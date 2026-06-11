@@ -546,11 +546,10 @@ de cada regla):
 | `max-hook-size` | `maxLines`, `maxUseState` |
 | `no-deep-relative-imports` | `maxDepth` |
 | `no-default-export` | `allowFilePatterns` (globs, aditivos a los integrados) |
-| `no-callback-props` | `allowFilePatterns` (globs), `allowPropPatterns` (regex) |
 | `no-emoji` | `allowFilePatterns` (globs) |
 | `no-functions-inside-components` | `allowJsxCallbacks`, `allowArrayMapCallbacks` (ambas `true` por defecto) |
 | `no-promise-chain` | `methods` |
-| `no-tunnel-props` | `allowFilePatterns` (globs), `maxPassThroughProps` (default `2`) |
+| `no-tunnel-props` | `allowFilePatterns` (globs), `allowPropPatterns` (regex) |
 
 Los `allowFilePatterns` de todas las reglas son **globs** (`*` un segmento,
 `**` cualquier profundidad, `{a,b}` alternativas; un patrón sin prefijo
@@ -571,8 +570,7 @@ matchea en cualquier carpeta). Las 7 reglas restantes no tienen opciones: su
 | `skapxd/no-deep-relative-imports` | Limita la profundidad de los imports relativos (`../`). |
 | `skapxd/no-default-export` | Prohíbe `export default`; el nombre del símbolo es el contrato. Exime configs/stories y, en el preset `next`, los entrypoints del App Router. |
 | `skapxd/no-emoji` | Prohíbe emojis en strings y JSX; cada sistema los renderiza distinto. Usa un icono SVG. |
-| `skapxd/no-tunnel-props` | Prohíbe componentes-túnel (props que solo pasan de largo). Estado/acciones a un store o custom hook, o composición. |
-| `skapxd/no-callback-props` | Prohíbe pasar funciones como props entre componentes propios; los handlers de elementos nativos sí. |
+| `skapxd/no-tunnel-props` | Ninguna prop viaja más de un nivel: quien la recibe no puede reenviarla a otro componente. Mata el prop drilling. |
 | `skapxd/no-functions-inside-components` | Prohíbe definir funciones dentro de componentes React. |
 | `skapxd/no-try-catch` | Prohíbe `try/catch`; usa `trySafe` de `@skapxd/result`. |
 | `skapxd/no-promise-chain` | Prohíbe `.then/.catch/.finally`; usa `await` (+ `trySafe`). |
@@ -918,64 +916,55 @@ eximir archivos completos (fixtures, seeds), usa `allowFilePatterns`:
 
 ### `skapxd/no-tunnel-props`
 
-Ataca el **prop drilling** con un invariante local: ningún componente puede ser
-una tubería. El drilling es una propiedad de una cadena (`A → B → C` donde los
-intermedios solo reenvían), y ESLint no ve el árbol completo — pero si cada
-componente tiene prohibido ser túnel, la cadena no puede formarse. Misma
-estrategia que `one-root-function-per-file` con la arquitectura de archivos.
-
-Reporta dos formas de túnel:
+**Ninguna prop viaja más de un nivel.** El contrato de saltos: quien **crea**
+un valor (estado de un hook, acción de un store, dato calculado) puede pasarlo
+a UN hijo; quien lo **recibe** como prop no puede reenviarlo a otro
+componente. Eso prohíbe exactamente la cadena `abuelo → padre → hijo` — el
+prop drilling — sin tocar el paso legítimo de un nivel.
 
 ```tsx
-// ❌ 2+ props que solo pasan de largo hacia otros componentes
-const Middle = ({ game, variant }) => (
-  <Child game={game} variant={variant} />
-);
+// ✅ primer salto: el abuelo CREA la acción y la baja un nivel
+const Abuelo = () => {
+  const onSelect = useTranscriptStore((s) => s.select);
+  return <Padre onSelect={onSelect} />;
+};
 
-// ❌ el túnel puro: reenviar todo con spread
-const Middle = ({ ...props }) => <Child {...props} />;
+// ❌ segundo salto: el padre la RECIBE y la reenvía
+const Padre = ({ onSelect }) => <Hijo onSelect={onSelect} />;
+
+// ❌ el rename no lo esconde, y usarla localmente no autoriza el reenvío
+const Padre = ({ onSelect }) => <Hijo handler={onSelect} />;
+
+// ❌ el túnel puro
+const Padre = ({ ...props }) => <Hijo {...props} />;
 ```
 
-Las salidas que sugiere el mensaje, en orden de preferencia:
+La detección es local y exacta: si el identifier que pones en una prop de otro
+componente viene de tus **props destructuradas**, no lo creaste tú — es su
+segundo salto.
 
-1. **Store global o custom hook**: el estado y las acciones viven en un store
-   (p. ej. [zustand](https://github.com/pmndrs/zustand)) o en un hook, y cada
-   componente consume lo que necesita donde lo necesita — la cadena desaparece.
-2. **Composición**: el padre arma el JSX y el intermedio recibe `children`; el
-   dato viaja dentro del JSX, no por props.
+Las salidas que sugiere el mensaje:
 
-No cuenta como túnel: usar la prop además de reenviarla, reenviarla a un
-elemento nativo (`value={value}` en un `<input>` es uso real), o reenviar una
-sola prop (eso es composición normal — el umbral `maxPassThroughProps` es
-configurable, default `2`). Para wrappers legítimos (design system), exime con
-`allowFilePatterns`.
+1. **Store global o custom hook**: la acción/estado vive en un store (p. ej.
+   [zustand](https://github.com/pmndrs/zustand)) o un hook, y el componente
+   que la necesita la consume directo — la cadena desaparece:
 
-### `skapxd/no-callback-props`
+   ```tsx
+   function Hijo({ entry }: { entry: Entry }) {
+     const select = useTranscriptStore((s) => s.select);
+     return <button onClick={() => select(entry.id)}>…</button>;
+   }
+   ```
 
-El complemento del anterior: prohíbe el **vector** del prop drilling, que es
-pasar funciones como props entre componentes propios (PascalCase). Detecta
-props con nombre de handler (`on[A-Z]...`) y props con función inline:
+2. **Composición**: el padre arma el JSX y el intermedio recibe `children` —
+   el dato viaja dentro del JSX, no por props. (`children` nunca cuenta como
+   túnel: es la alternativa.)
 
-```tsx
-<TranscriptOption onSelect={handleSelect} />        // ❌ callback viajando
-<List renderItem={(x) => <li>{x}</li>} />           // ❌ función inline como prop
-
-<button onClick={() => save()} />                   // ✅ elemento nativo: frontera DOM
-<input onChange={handleChange} />                   // ✅
-```
-
-La alternativa: la acción vive en un store global (p. ej. zustand) o en un
-custom hook, y el componente que la necesita la llama directo:
-
-```tsx
-function TranscriptOption({ entry }: { entry: Entry }) {
-  const selectTranscript = useTranscriptStore((s) => s.selectTranscript);
-  return <button onClick={() => selectTranscript(entry.id)}>…</button>;
-}
-```
-
-Para render props de librerías de terceros usa `allowPropPatterns`
-(`["^render"]`), y para wrappers de UI completos, `allowFilePatterns`.
+No cuenta como reenvío: usar la prop (`<h2>{title}</h2>`), derivar datos
+(`title={game.title}`), o pasarla a un elemento **nativo** (`value={value}`
+en un `<input>` es la frontera con el DOM). Para wrappers legítimos de un
+design system, exime props por nombre (`allowPropPatterns: ["^className$"]`)
+o archivos completos (`allowFilePatterns`).
 
 ### `skapxd/no-functions-inside-components`
 

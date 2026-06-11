@@ -53,7 +53,6 @@ export function createNextConfigs(pluginReference: unknown) {
       plugins: { skapxd: pluginReference },
       rules: {
         "skapxd/jsx-return-name-pascal-case": "error",
-        "skapxd/no-callback-props": "error",
         "skapxd/no-functions-inside-components": "error",
         "skapxd/no-tunnel-props": "error",
         "skapxd/no-jsx-ternary-null": "error",

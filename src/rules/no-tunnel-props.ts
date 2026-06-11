@@ -7,17 +7,18 @@ import { isForwardedPropReference } from "#/utils/is-forwarded-prop-reference";
 import { isPascalCaseJsxElement } from "#/utils/is-pascal-case-jsx-element";
 import { isPascalCaseName } from "#/utils/is-pascal-case-name";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
+import { matchesAnyPattern } from "#/utils/matches-any-pattern";
 
 export const noTunnelProps = {
   meta: {
     type: "problem",
     docs: {
       description:
-        "Prohibe componentes-tunel: props que solo pasan de largo hacia otros componentes.",
+        "Ninguna prop viaja mas de un nivel: quien la recibe no puede reenviarla a otro componente.",
     },
     messages: {
-      tunnelProps:
-        "{{count}} props de `{{component}}` solo pasan de largo hacia otros componentes ({{props}}). Esto es prop drilling: mueve ese estado/acciones a un store global (p. ej. zustand) o a un custom hook y consumelo donde se usa, o invierte la estructura con composicion (`children`).",
+      forwardedProp:
+        "La prop `{{prop}}` que `{{component}}` recibe se reenvia a otro componente: ya va por su segundo salto (abuelo -> padre -> hijo). Quien CREA un valor puede pasarlo UN nivel; quien lo recibe no lo reenvia. Mueve el estado/accion a un store global (p. ej. zustand) o a un custom hook y consumelo donde se usa, o deja que el padre componga el JSX (`children`).",
       spreadTunnel:
         "`{{component}}` reenvia TODAS sus props con `{...{{name}}}` a otro componente: es un tunel puro. Mueve el estado a un store global (p. ej. zustand) o a un custom hook, o deja que el padre componga el JSX (`children`).",
     },
@@ -29,7 +30,10 @@ export const noTunnelProps = {
             items: { type: "string" },
             type: "array",
           },
-          maxPassThroughProps: { type: "number" },
+          allowPropPatterns: {
+            items: { type: "string" },
+            type: "array",
+          },
         },
         type: "object",
       },
@@ -59,15 +63,22 @@ export const noTunnelProps = {
       }
     }
 
-    function getPassThroughProps(node, propNames) {
-      return propNames.filter((propName) => {
-        const usages = collectIdentifiersNamed(node.body, propName);
+    function reportForwardedProps(node, componentName, propNames) {
+      for (const propName of propNames) {
+        if (matchesAnyPattern(propName, options.allowPropPatterns)) {
+          continue;
+        }
 
-        return (
-          usages.length > 0 &&
-          usages.every((usage) => isForwardedPropReference(usage, propName))
-        );
-      });
+        for (const usage of collectIdentifiersNamed(node.body, propName)) {
+          if (isForwardedPropReference(usage)) {
+            context.report({
+              data: { component: componentName, prop: propName },
+              messageId: "forwardedProp",
+              node: usage.parent.parent,
+            });
+          }
+        }
+      }
     }
 
     function reportIfTunnelComponent(node) {
@@ -83,21 +94,7 @@ export const noTunnelProps = {
         reportSpreadTunnel(node, componentName, restName);
       }
 
-      const passThroughProps = getPassThroughProps(node, propNames);
-
-      if (passThroughProps.length < options.maxPassThroughProps) {
-        return;
-      }
-
-      context.report({
-        data: {
-          component: componentName,
-          count: String(passThroughProps.length),
-          props: passThroughProps.map((name) => `\`${name}\``).join(", "),
-        },
-        messageId: "tunnelProps",
-        node: node.params[0],
-      });
+      reportForwardedProps(node, componentName, propNames);
     }
 
     return {

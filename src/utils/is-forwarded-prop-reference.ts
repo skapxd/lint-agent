@@ -1,10 +1,11 @@
 // @ts-nocheck
 import { isPascalCaseJsxElement } from "./is-pascal-case-jsx-element";
 
-// `game={game}` hacia un componente PascalCase: la referencia es el valor
-// directo de una prop con el MISMO nombre. Reenviar a un elemento nativo
-// (`value={value}` en un <input>) cuenta como uso real, no como túnel.
-export function isForwardedPropReference(identifier, propName) {
+// La referencia es el valor directo de una prop hacia un componente
+// PascalCase (`game={game}`, `handler={onSelect}`): un reenvío, sin importar
+// el nombre del atributo. Reenviar a un elemento nativo (`value={value}` en
+// un <input>) es uso real, no reenvío.
+export function isForwardedPropReference(identifier) {
   const container = identifier.parent;
 
   if (container?.type !== "JSXExpressionContainer") {
@@ -13,7 +14,7 @@ export function isForwardedPropReference(identifier, propName) {
 
   const attribute = container.parent;
 
-  if (attribute?.type !== "JSXAttribute" || attribute.name?.name !== propName) {
+  if (attribute?.type !== "JSXAttribute") {
     return false;
   }
 
