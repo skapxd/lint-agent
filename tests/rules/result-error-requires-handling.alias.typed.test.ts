@@ -71,6 +71,51 @@ export function transform(input: Result<number, Error>): void {
 declare function track(error: unknown): void;
 `;
 
+// Proyectar no es manejar: leer .message pierde el cause en la última milla.
+const invalidProjectionOnly = `
+import { Result } from "@skapxd/result";
+
+export function transform(input: Result<number, Error>): void {
+  if (!input.ok) {
+    setFeedback(input.error.message);
+    return;
+  }
+}
+
+declare function setFeedback(message: string): void;
+`;
+
+// La proyección vía alias tampoco: el alias ES el error, y .message lo proyecta.
+const invalidAliasProjection = `
+import { Result } from "@skapxd/result";
+
+export function transform(input: Result<number, Error>): void {
+  if (!input.ok) {
+    const e = input.error;
+    setFeedback(e.message);
+    return;
+  }
+}
+
+declare function setFeedback(message: string): void;
+`;
+
+// Proyección para la UI + entrega del objeto completo al trace: el contrato.
+const validProjectionPlusDelivery = `
+import { Result } from "@skapxd/result";
+
+export function transform(input: Result<number, Error>): void {
+  if (!input.ok) {
+    reportDomainError(input.error);
+    setFeedback(input.error.message);
+    return;
+  }
+}
+
+declare function reportDomainError(error: unknown): void;
+declare function setFeedback(message: string): void;
+`;
+
 const ruleTester = createTypedRuleTester();
 type RuleArg = Parameters<typeof ruleTester.run>[1];
 
@@ -94,12 +139,26 @@ ruleTester.run(
         errors: [{ messageId: "unhandledResultError" }],
         filename: "invalid-unused-destructuring.ts",
       },
+      {
+        code: invalidProjectionOnly,
+        errors: [{ messageId: "unhandledResultError" }],
+        filename: "invalid-projection-only.ts",
+      },
+      {
+        code: invalidAliasProjection,
+        errors: [{ messageId: "unhandledResultError" }],
+        filename: "invalid-alias-projection.ts",
+      },
     ],
     valid: [
       { code: validConsumedAlias, filename: "valid-consumed-alias.ts" },
       {
         code: validConsumedDestructuring,
         filename: "valid-consumed-destructuring.ts",
+      },
+      {
+        code: validProjectionPlusDelivery,
+        filename: "valid-projection-plus-delivery.ts",
       },
     ],
   },

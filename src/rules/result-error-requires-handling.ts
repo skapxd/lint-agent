@@ -16,7 +16,7 @@ export const resultErrorRequiresHandling = {
     },
     messages: {
       unhandledResultError:
-        "El guard detecta que `{{name}}` fallo, pero `{{name}}.error` muere aqui sin seguimiento. Transformalo (`Result.err({ cause: {{name}}.error, ... })`), entregaselo a alguien (telemetria, estado de error, log de dominio) o propaga el result completo. Si darle seguimiento es critico o no, no es una interpretacion: todo error fluye a alguna parte.",
+        "El guard detecta que `{{name}}` fallo, pero `{{name}}.error` no fluye COMPLETO a ninguna parte. Transformalo (`Result.err({ cause: {{name}}.error, ... })`), entrega el objeto entero a alguien (`reportDomainError({{name}}.error)`) o propaga el result completo. Una proyeccion (`{{name}}.error.message`) no basta: el `cause` se pierde justo en la ultima milla. La UI puede leer el mensaje, pero ADEMAS el error entero debe salir hacia el trace.",
     },
     schema: [
       {

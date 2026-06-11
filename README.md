@@ -316,6 +316,35 @@ la excepción original), y ningún error queda sin manejar (el `.exhaustive()`
 de ts-pattern no compila si falta una variante). Legibilidad y manejo de
 errores dejan de depender de la disciplina del autor — humano o agente.
 
+### El suelo del sistema: el trace global
+
+Toda cadena de errores necesita exactamente **un punto de aterrizaje** — el
+módulo donde la inducción termina. Si el volcadero de errores reportara sus
+propios fallos al volcadero, tendrías recursión infinita; la solución (la
+misma que usa el SDK de Sentry) es que el fallback del suelo sea síncrono e
+infalible — console o un buffer local — nunca el propio suelo:
+
+```ts
+// trace-global.ts — el ÚNICO punto donde la cadena aterriza
+export async function reportDomainError(error: DomainError): Promise<void> {
+  const sent = await trySafe(() => sendToTelemetry(error));
+
+  if (!sent.ok) {
+    // El pararrayos: console recibe AMBOS errores completos. No hay
+    // recursión: console es síncrono, no retorna Result y no falla.
+    console.error("telemetry_failed", { cause: sent.error, dropped: error });
+  }
+}
+```
+
+Fíjate que este módulo **pasa todas las reglas sin exenciones**: el `await`
+resuelve en Result, y `console.error` recibiendo el error completo es una
+entrega válida para `result-error-requires-handling`. Reglas prácticas para
+el suelo: una sola función pública, sin reintentos hacia sí mismo (si quieres
+resiliencia: buffer local + `navigator.sendBeacon` al cerrar), y si tu setup
+tiene `no-console`, la exención por archivo para *este único módulo* es
+legítima y auditable — es la definición misma del suelo.
+
 ## Estructura del paquete
 
 ```text
@@ -758,6 +787,31 @@ if (!result.ok) {
   return Result.err({ cause, message: "..." });  // ✅ el alias se consumió
 }
 ```
+
+**Proyectar no es manejar** (desde v0.13.0). Leer `result.error.message` para
+la UI está bien — pero si eso es lo ÚNICO que sale del guard, el `cause` murió
+en la última milla: diste feedback de que ocurrió un error sin que el *porqué*
+llegara a ninguna parte. El error debe fluir **completo** (el objeto entero,
+con su cadena de causas adentro):
+
+```ts
+if (!result.ok) {
+  setFeedback(result.error.message);    // ❌ solo la proyección: el cause se pierde
+  return;
+}
+
+if (!result.ok) {
+  reportDomainError(result.error);      // ✅ el objeto entero → al trace
+  setFeedback(result.error.message);    //    y la proyección para la UI, ahora sí
+  return;
+}
+```
+
+Lo mismo vía alias (`const e = result.error; setFeedback(e.message)` no
+basta) y vía result (`console.log(result.ok)` no es manejo). Las formas que
+mantienen la información completa: `result.error` entero como argumento /
+retorno / propiedad, el result completo (`return result`), o la
+transformación con `cause`.
 
 Type-aware como su hermana: solo aplica a Results reales de `@skapxd/result`,
 con las mismas cinco formas de guard.
