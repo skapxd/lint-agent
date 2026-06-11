@@ -57,7 +57,11 @@ export const resultErrorRequiresHandling = {
           resultGuard.name,
         );
 
-        if (references.some(isConsumedResultReference)) {
+        if (
+          references.some((reference) =>
+            isConsumedResultReference(reference, node.consequent),
+          )
+        ) {
           return;
         }
 

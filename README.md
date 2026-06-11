@@ -743,6 +743,22 @@ igual. Esto es deliberado: si darle seguimiento a un error es crítico o no,
 no puede depender de la interpretación de quien escribe; el camino por
 defecto nunca es ignorarlo.
 
+**El alias tampoco es escape.** Asignar no es consumir: la regla sigue los
+alias (y los encadenados, y el destructuring) hasta verificar que alguno se
+consume de verdad:
+
+```ts
+if (!result.ok) {
+  const e = result.error;   // ❌ transferencia sin destino: se reporta
+  return;
+}
+
+if (!result.ok) {
+  const cause = result.error;
+  return Result.err({ cause, message: "..." });  // ✅ el alias se consumió
+}
+```
+
 Type-aware como su hermana: solo aplica a Results reales de `@skapxd/result`,
 con las mismas cinco formas de guard.
 
