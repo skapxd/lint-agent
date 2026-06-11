@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { getPreferAbortSignalOptions } from "#/utils/get-prefer-abort-signal-options";
+import { getTypeContext } from "#/utils/get-type-context";
 import { hasAbortSignalOption } from "#/utils/has-abort-signal-option";
 import { isInsideEffectCallback } from "#/utils/is-inside-effect-callback";
 import { isMemberPropertyNamed } from "#/utils/is-member-property-named";
@@ -38,6 +39,8 @@ export const preferAbortSignal = {
   create(context) {
     const options = getPreferAbortSignalOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
+    const sourceCode = context.sourceCode ?? context.getSourceCode();
+    const typeContext = getTypeContext(context);
 
     if (matchesAnyGlob(filename, options.allowFilePatterns)) {
       return {};
@@ -65,7 +68,7 @@ export const preferAbortSignal = {
           return;
         }
 
-        if (!hasAbortSignalOption(node)) {
+        if (!hasAbortSignalOption(node, sourceCode, typeContext)) {
           context.report({ messageId: "addWithoutSignal", node });
         }
       },

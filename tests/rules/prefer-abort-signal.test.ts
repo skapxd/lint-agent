@@ -45,6 +45,18 @@ createRuleTester().run("prefer-abort-signal", rules["prefer-abort-signal"], {
       errors: [{ messageId: "addWithoutSignal" }],
       filename: "use-scroll.ts",
     },
+    {
+      // identifier resuelto por scope: el inicializador no trae signal
+      code: 'useEffect(() => { const opts = { passive: true }; window.addEventListener("resize", onResize, opts); }, []);',
+      errors: [{ messageId: "addWithoutSignal" }],
+      filename: "use-resize.ts",
+    },
+    {
+      // el boolean de capture nunca puede traer signal
+      code: 'useEffect(() => { window.addEventListener("scroll", onScroll, true); }, []);',
+      errors: [{ messageId: "addWithoutSignal" }],
+      filename: "use-scroll.ts",
+    },
   ],
   valid: [
     // el patrón objetivo completo
@@ -54,7 +66,12 @@ createRuleTester().run("prefer-abort-signal", rules["prefer-abort-signal"], {
       code: 'function attach() { window.addEventListener("resize", onResize); }',
       filename: "attach.ts",
     },
-    // options como identifier: beneficio de la duda (puede traer signal)
+    // identifier resuelto por scope: el inicializador SÍ trae signal
+    {
+      code: 'useEffect(() => { const controller = new AbortController(); const opts = { signal: controller.signal }; window.addEventListener("resize", onResize, opts); }, []);',
+      filename: "use-resize.ts",
+    },
+    // identifier irresoluble y sin tipos: beneficio de la duda
     {
       code: 'useEffect(() => { window.addEventListener("resize", onResize, listenerOptions); }, []);',
       filename: "use-resize.ts",
