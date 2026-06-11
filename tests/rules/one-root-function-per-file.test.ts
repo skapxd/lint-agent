@@ -3,7 +3,7 @@ import { createRuleTester } from "../rule-tester";
 
 createRuleTester().run(
   "one-root-function-per-file",
-  rules["one-root-function-per-file"],
+  rules["one-root-function-per-file"]!,
   {
     invalid: [
       {

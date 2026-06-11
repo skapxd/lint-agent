@@ -3,7 +3,7 @@ import { createRuleTester } from "../rule-tester";
 
 createRuleTester().run(
   "async-functions-return-result",
-  rules["async-functions-return-result"],
+  rules["async-functions-return-result"]!,
   {
     invalid: [
       {

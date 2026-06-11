@@ -5,7 +5,7 @@ const tsx = (code: string) => ({ code, filename: "test.tsx" });
 
 createRuleTester().run(
   "no-functions-inside-components",
-  rules["no-functions-inside-components"],
+  rules["no-functions-inside-components"]!,
   {
     invalid: [
       {

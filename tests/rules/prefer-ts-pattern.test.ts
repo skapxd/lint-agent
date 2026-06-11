@@ -1,7 +1,7 @@
 import { rules } from "../../src/shared/rules";
 import { createRuleTester } from "../rule-tester";
 
-createRuleTester().run("prefer-ts-pattern", rules["prefer-ts-pattern"], {
+createRuleTester().run("prefer-ts-pattern", rules["prefer-ts-pattern"]!, {
   invalid: [
     {
       code: "switch (x) { case 1: break; default: break; }",

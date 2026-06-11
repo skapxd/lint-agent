@@ -1,7 +1,7 @@
 import { rules } from "../../src/shared/rules";
 import { createRuleTester } from "../rule-tester";
 
-createRuleTester().run("no-default-export", rules["no-default-export"], {
+createRuleTester().run("no-default-export", rules["no-default-export"]!, {
   invalid: [
     {
       code: "export default function helper() {}",

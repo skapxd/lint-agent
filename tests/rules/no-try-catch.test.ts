@@ -1,7 +1,7 @@
 import { rules } from "../../src/shared/rules";
 import { createRuleTester } from "../rule-tester";
 
-createRuleTester().run("no-try-catch", rules["no-try-catch"], {
+createRuleTester().run("no-try-catch", rules["no-try-catch"]!, {
   invalid: [
     {
       code: "try { doThing(); } catch (e) {}",

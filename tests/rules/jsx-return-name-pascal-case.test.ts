@@ -3,7 +3,7 @@ import { createRuleTester } from "../rule-tester";
 
 createRuleTester().run(
   "jsx-return-name-pascal-case",
-  rules["jsx-return-name-pascal-case"],
+  rules["jsx-return-name-pascal-case"]!,
   {
     invalid: [
       {

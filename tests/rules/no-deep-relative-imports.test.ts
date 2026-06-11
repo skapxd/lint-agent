@@ -3,7 +3,7 @@ import { createRuleTester } from "../rule-tester";
 
 createRuleTester().run(
   "no-deep-relative-imports",
-  rules["no-deep-relative-imports"],
+  rules["no-deep-relative-imports"]!,
   {
     invalid: [
       {

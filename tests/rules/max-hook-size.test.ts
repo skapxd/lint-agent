@@ -1,7 +1,7 @@
 import { rules } from "../../src/shared/rules";
 import { createRuleTester } from "../rule-tester";
 
-createRuleTester().run("max-hook-size", rules["max-hook-size"], {
+createRuleTester().run("max-hook-size", rules["max-hook-size"]!, {
   invalid: [
     {
       code: "function useThing() { const [a] = useState(); const [b] = useState(); }",

@@ -1,7 +1,7 @@
 import { rules } from "../../src/shared/rules";
 import { createRuleTester } from "../rule-tester";
 
-createRuleTester().run("no-promise-chain", rules["no-promise-chain"], {
+createRuleTester().run("no-promise-chain", rules["no-promise-chain"]!, {
   invalid: [
     {
       code: "fetchData().then(handle);",

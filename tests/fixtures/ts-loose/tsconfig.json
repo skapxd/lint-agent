@@ -1,0 +1,6 @@
+{
+  // comentario JSONC a propósito: el parser de TS lo soporta
+  "compilerOptions": {
+    "strict": true
+  }
+}

@@ -1,7 +1,7 @@
 import { rules } from "../../src/shared/rules";
 import { createRuleTester } from "../rule-tester";
 
-createRuleTester().run("no-emoji", rules["no-emoji"], {
+createRuleTester().run("no-emoji", rules["no-emoji"]!, {
   invalid: [
     {
       code: 'const label = "Listo 🚀";',

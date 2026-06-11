@@ -1,7 +1,7 @@
 import { rules } from "../../src/shared/rules";
 import { createRuleTester } from "../rule-tester";
 
-createRuleTester().run("no-nested-if", rules["no-nested-if"], {
+createRuleTester().run("no-nested-if", rules["no-nested-if"]!, {
   invalid: [
     {
       // if dentro del consecuente de otro if

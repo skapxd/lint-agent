@@ -1,7 +1,7 @@
 import { rules } from "../../src/shared/rules";
 import { createRuleTester } from "../rule-tester";
 
-createRuleTester().run("no-ad-hoc-ok-result", rules["no-ad-hoc-ok-result"], {
+createRuleTester().run("no-ad-hoc-ok-result", rules["no-ad-hoc-ok-result"]!, {
   invalid: [
     {
       code: "export async function f() { return { ok: true }; }",

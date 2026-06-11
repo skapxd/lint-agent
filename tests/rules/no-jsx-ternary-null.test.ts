@@ -1,7 +1,7 @@
 import { rules } from "../../src/shared/rules";
 import { createRuleTester } from "../rule-tester";
 
-createRuleTester().run("no-jsx-ternary-null", rules["no-jsx-ternary-null"], {
+createRuleTester().run("no-jsx-ternary-null", rules["no-jsx-ternary-null"]!, {
   invalid: [
     {
       code: "const C = () => <div>{cond ? <span /> : null}</div>;",

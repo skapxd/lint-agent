@@ -1,7 +1,7 @@
 import { rules } from "../../src/shared/rules";
 import { createRuleTester } from "../rule-tester";
 
-createRuleTester().run("no-tunnel-props", rules["no-tunnel-props"], {
+createRuleTester().run("no-tunnel-props", rules["no-tunnel-props"]!, {
   invalid: [
     {
       // segundo salto: el padre recibe la prop y la reenvía al hijo

@@ -22,7 +22,7 @@ useEffect(() => {
 }, [settings]);
 `;
 
-createRuleTester().run("prefer-abort-signal", rules["prefer-abort-signal"], {
+createRuleTester().run("prefer-abort-signal", rules["prefer-abort-signal"]!, {
   invalid: [
     {
       // dos reportes: el add sin signal y el remove manual

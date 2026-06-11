@@ -3,7 +3,7 @@ import { createRuleTester } from "../rule-tester";
 
 createRuleTester().run(
   "await-requires-result",
-  rules["await-requires-result"],
+  rules["await-requires-result"]!,
   {
     invalid: [
       {
