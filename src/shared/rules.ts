@@ -7,8 +7,10 @@ import { resultErrorRequiresCause } from "#/rules/result-error-requires-cause";
 import type { Rule } from "eslint";
 import { maxHookSize } from "#/rules/max-hook-size";
 import { noDeepRelativeImports } from "#/rules/no-deep-relative-imports";
+import { noCallbackProps } from "#/rules/no-callback-props";
 import { noDefaultExport } from "#/rules/no-default-export";
 import { noEmoji } from "#/rules/no-emoji";
+import { noTunnelProps } from "#/rules/no-tunnel-props";
 import { noFunctionsInsideComponents } from "#/rules/no-functions-inside-components";
 import { noTryCatch } from "#/rules/no-try-catch";
 import { preferTsPattern } from "#/rules/prefer-ts-pattern";
@@ -33,8 +35,10 @@ export const rules: Record<string, Rule.RuleModule> = {
   "result-error-requires-cause": resultErrorRequiresCause,
   "max-hook-size": maxHookSize,
   "no-deep-relative-imports": noDeepRelativeImports,
+  "no-callback-props": noCallbackProps,
   "no-default-export": noDefaultExport,
   "no-emoji": noEmoji,
+  "no-tunnel-props": noTunnelProps,
   "no-functions-inside-components": noFunctionsInsideComponents,
   "no-try-catch": noTryCatch,
   "prefer-ts-pattern": preferTsPattern,

@@ -40,7 +40,11 @@ export function createSharedConfigs(pluginReference: unknown) {
         // en trySafe en el sitio.
         "skapxd/await-requires-result": "error",
         "skapxd/jsx-return-name-pascal-case": "error",
+        // Anti prop-drilling: ni componentes-túnel ni callbacks viajando
+        // como props — estado y acciones a un store global o custom hook.
+        "skapxd/no-callback-props": "error",
         "skapxd/no-functions-inside-components": "error",
+        "skapxd/no-tunnel-props": "error",
         "skapxd/no-jsx-ternary-null": "error",
         "skapxd/max-hook-size": [
           "error",
