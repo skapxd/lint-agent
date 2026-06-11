@@ -49,12 +49,14 @@ export const noPromiseChain = {
 
         // type-aware: solo si el receptor es una promesa. Sin info de tipos
         // (projectService apagado) cae a verificación por nombre.
-        if (typeContext) {
-          const type = typeContext.services.getTypeAtLocation(callee.object);
-
-          if (!isPromiseType(type, typeContext)) {
-            return;
-          }
+        if (
+          typeContext &&
+          !isPromiseType(
+            typeContext.services.getTypeAtLocation(callee.object),
+            typeContext,
+          )
+        ) {
+          return;
         }
 
         context.report({

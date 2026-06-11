@@ -548,6 +548,7 @@ de cada regla):
 | `no-default-export` | `allowFilePatterns` (globs, aditivos a los integrados) |
 | `no-emoji` | `allowFilePatterns` (globs) |
 | `no-functions-inside-components` | `allowJsxCallbacks`, `allowArrayMapCallbacks` (ambas `true` por defecto) |
+| `no-nested-if` | `allowFilePatterns` (globs) |
 | `no-promise-chain` | `methods` |
 | `no-tunnel-props` | `allowFilePatterns` (globs), `allowPropPatterns` (regex) |
 | `prefer-abort-signal` | `allowFilePatterns` (globs), `effectNames` (default `["useEffect", "useLayoutEffect"]`) |
@@ -571,6 +572,7 @@ matchea en cualquier carpeta). Las 7 reglas restantes no tienen opciones: su
 | `skapxd/no-deep-relative-imports` | Limita la profundidad de los imports relativos (`../`). |
 | `skapxd/no-default-export` | Prohíbe `export default`; el nombre del símbolo es el contrato. Exime configs/stories y, en el preset `next`, los entrypoints del App Router. |
 | `skapxd/no-emoji` | Prohíbe emojis en strings y JSX; cada sistema los renderiza distinto. Usa un icono SVG. |
+| `skapxd/no-nested-if` | Prohíbe `if` anidados: retorno anticipado o `match()`. Menos carga cognitiva y sin puntos ciegos para las demás reglas. |
 | `skapxd/no-tunnel-props` | Ninguna prop viaja más de un nivel: quien la recibe no puede reenviarla a otro componente. Mata el prop drilling. |
 | `skapxd/prefer-abort-signal` | Listeners en efectos se limpian con `AbortController` (`{ signal }` + `abort()`), no con `removeEventListener`. |
 | `skapxd/no-functions-inside-components` | Prohíbe definir funciones dentro de componentes React. |
@@ -689,10 +691,19 @@ if (!result.ok) {
 }
 ```
 
+Reconoce todas las formas del guard de Result fallido — `!result.ok`,
+`result.ok === false`, `result.ok !== true`, `Result.isErr(result)` y
+`if (result.error)` — y dentro del guard exige el `cause` en todo
+`Result.err(...)`. Un `Result.err()` **sin argumentos** también se reporta:
+descartar el error por completo es el peor caso, no una exención. Y un `cause`
+con otro valor (`cause: new Error(...)`) no cuenta: tiene que ser literalmente
+el `result.error` del guard.
+
 Esta regla es type-aware. Usa TypeScript parser services para confirmar que el
 valor del guard y `Result.err` vienen de `@skapxd/result`. Por eso funciona con
 aliases, re-exports y tipos inferidos, sin depender solo del nombre importado en
-el archivo.
+el archivo. Su punto ciego histórico —el `Result.err` escondido en un `if`
+anidado— lo elimina `skapxd/no-nested-if` de raíz.
 
 ### `skapxd/await-requires-result`
 
@@ -847,6 +858,35 @@ rules: {
 Revisa imports estáticos (`import`), re-exports (`export ... from`) e imports
 dinámicos (`import(...)`). El remedio habitual es un alias de ruta (`@/...`) o
 acercar el módulo a quien lo usa.
+
+### `skapxd/no-nested-if`
+
+Prohíbe un `if` dentro de otro `if` (en la misma función). Cada nivel de
+anidación suma carga cognitiva para quien lee — y además crea puntos ciegos
+para las demás reglas: un `Result.err` dentro de un if anidado quedaba fuera
+del alcance de `result-error-requires-cause`. Esta regla elimina la categoría
+completa de evasión en vez de parchear cada caso.
+
+```ts
+// ❌ anidado: el lector mantiene dos condiciones en la cabeza
+if (!response.ok) {
+  if (shouldReport) {
+    return Result.err({ cause: response.error, message: "...", type: "X" });
+  }
+}
+
+// ✅ retorno anticipado: una condición a la vez, camino feliz sin sangría
+if (!response.ok && shouldReport) {
+  return Result.err({ cause: response.error, message: "...", type: "X" });
+}
+
+// ✅ o match() si son variantes de un mismo valor
+```
+
+No cuenta como anidación: la cadena `else if` (es secuencia, no anidación), y
+una función definida dentro del `if` (unidad cognitiva aparte). El propio
+código de este plugin se aplanó con retorno anticipado al activar la regla —
+cinco casos, todos quedaron más legibles.
 
 ### `skapxd/no-default-export`
 

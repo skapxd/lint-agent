@@ -15,6 +15,7 @@ import { noTryCatch } from "#/rules/no-try-catch";
 import { preferAbortSignal } from "#/rules/prefer-abort-signal";
 import { preferTsPattern } from "#/rules/prefer-ts-pattern";
 import { noJsxTernaryNull } from "#/rules/no-jsx-ternary-null";
+import { noNestedIf } from "#/rules/no-nested-if";
 import { noPromiseChain } from "#/rules/no-promise-chain";
 
 export const rules: Record<string, Rule.RuleModule> = {
@@ -43,5 +44,6 @@ export const rules: Record<string, Rule.RuleModule> = {
   "prefer-abort-signal": preferAbortSignal,
   "prefer-ts-pattern": preferTsPattern,
   "no-jsx-ternary-null": noJsxTernaryNull,
+  "no-nested-if": noNestedIf,
   "no-promise-chain": noPromiseChain,
 } as unknown as Record<string, Rule.RuleModule>;

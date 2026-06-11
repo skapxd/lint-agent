@@ -23,15 +23,13 @@ export function hasAbortSignalOption(callExpression, sourceCode, typeContext) {
     return objectExpressionHasSignal(options);
   }
 
-  if (options.type === "Identifier") {
-    const initializer = getVariableInitializer(
-      options,
-      sourceCode.getScope(options),
-    );
+  const initializer =
+    options.type === "Identifier"
+      ? getVariableInitializer(options, sourceCode.getScope(options))
+      : null;
 
-    if (initializer?.type === "ObjectExpression") {
-      return objectExpressionHasSignal(initializer);
-    }
+  if (initializer?.type === "ObjectExpression") {
+    return objectExpressionHasSignal(initializer);
   }
 
   if (typeContext) {

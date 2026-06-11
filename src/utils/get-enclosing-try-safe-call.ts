@@ -8,21 +8,18 @@ export function getEnclosingTrySafeCall(node, trySafeCallNames) {
   let currentNode = node.parent;
 
   while (currentNode) {
-    if (isFunctionNode(currentNode)) {
-      const parent = currentNode.parent;
-
-      if (
-        parent?.type === "CallExpression" &&
-        parent.arguments.includes(currentNode) &&
-        isCalleeNamed(parent.callee, trySafeCallNames)
-      ) {
-        return parent;
-      }
-
-      return null;
+    if (!isFunctionNode(currentNode)) {
+      currentNode = currentNode.parent;
+      continue;
     }
 
-    currentNode = currentNode.parent;
+    const parent = currentNode.parent;
+    const isTrySafeArgument =
+      parent?.type === "CallExpression" &&
+      parent.arguments.includes(currentNode) &&
+      isCalleeNamed(parent.callee, trySafeCallNames);
+
+    return isTrySafeArgument ? parent : null;
   }
 
   return null;

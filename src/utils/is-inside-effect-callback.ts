@@ -8,16 +8,14 @@ export function isInsideEffectCallback(node, effectNames) {
   let current = node.parent;
 
   while (current) {
-    if (isFunctionNode(current)) {
-      const call = current.parent;
+    const call = isFunctionNode(current) ? current.parent : null;
 
-      if (
-        call?.type === "CallExpression" &&
-        call.arguments[0] === current &&
-        isCalleeNamed(call.callee, effectNames)
-      ) {
-        return true;
-      }
+    if (
+      call?.type === "CallExpression" &&
+      call.arguments[0] === current &&
+      isCalleeNamed(call.callee, effectNames)
+    ) {
+      return true;
     }
 
     current = current.parent;

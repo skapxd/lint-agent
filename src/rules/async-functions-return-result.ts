@@ -99,19 +99,21 @@ export const asyncFunctionsReturnResult = {
           }
 
           const returnType = node.returnType?.typeAnnotation;
+          const missingReturnTypeIsReportable =
+            options.checkMissingReturnType ||
+            containsCallNamed(node.body, options.checkMissingReturnTypeWhenCallNames);
+
+          if (!returnType && missingReturnTypeIsReportable) {
+            context.report({
+              data: { name: functionName },
+              messageId: "missingReturnType",
+              node: reportNode,
+            });
+
+            return;
+          }
 
           if (!returnType) {
-            if (
-              options.checkMissingReturnType ||
-              containsCallNamed(node.body, options.checkMissingReturnTypeWhenCallNames)
-            ) {
-              context.report({
-                data: { name: functionName },
-                messageId: "missingReturnType",
-                node: reportNode,
-              });
-            }
-
             return;
           }
 

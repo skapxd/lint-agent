@@ -41,11 +41,12 @@ export const resultErrorRequiresCause = {
                 continue;
               }
 
-              if (resultErrCall.arguments.length === 0) {
-                continue;
-              }
-
-              if (resultErrPreservesCause(resultErrCall.arguments[0], resultGuard.name)) {
+              // `Result.err()` sin argumentos descarta el error por completo:
+              // es el peor caso, no una exención.
+              if (
+                resultErrCall.arguments.length > 0 &&
+                resultErrPreservesCause(resultErrCall.arguments[0], resultGuard.name)
+              ) {
                 continue;
               }
 
