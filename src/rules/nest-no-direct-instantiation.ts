@@ -1,7 +1,7 @@
 import { getInternalValueImports } from "#/utils/get-internal-value-imports";
 import { getNestDirectInstantiationOptions } from "#/utils/options/get-nest-direct-instantiation-options";
 import { getTypeContext } from "#/utils/get-type-context";
-import { hasInjectableDecorator } from "#/utils/has-injectable-decorator";
+import { hasInjectableDecorator } from "#/utils/nest/has-injectable-decorator";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import { matchesAnyPattern } from "#/utils/matching/matches-any-pattern";
 import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";

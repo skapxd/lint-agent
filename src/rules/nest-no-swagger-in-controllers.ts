@@ -1,7 +1,7 @@
-import { getDecoratorName } from "#/utils/get-decorator-name";
+import { getDecoratorName } from "#/utils/nest/get-decorator-name";
 import { getImportedLocalNames } from "#/utils/get-imported-local-names";
 import { getNestSwaggerControllerOptions } from "#/utils/options/get-nest-swagger-controller-options";
-import { hasClassDecoratorNamed } from "#/utils/has-class-decorator-named";
+import { hasClassDecoratorNamed } from "#/utils/nest/has-class-decorator-named";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 

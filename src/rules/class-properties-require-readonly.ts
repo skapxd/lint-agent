@@ -1,4 +1,4 @@
-import { getDecoratorName } from "#/utils/get-decorator-name";
+import { getDecoratorName } from "#/utils/nest/get-decorator-name";
 import { getImportedLocalNames } from "#/utils/get-imported-local-names";
 import { getReadonlyPropertiesOptions } from "#/utils/options/get-readonly-properties-options";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";

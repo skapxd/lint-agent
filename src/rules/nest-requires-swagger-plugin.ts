@@ -4,7 +4,7 @@ import { trySafe } from "@skapxd/result";
 import { findProjectFile } from "#/utils/project/find-project-file";
 import { getNestSwaggerPluginOptions } from "#/utils/options/get-nest-swagger-plugin-options";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
-import { nestCliHasSwaggerPlugin } from "#/utils/nest-cli-has-swagger-plugin";
+import { nestCliHasSwaggerPlugin } from "#/utils/nest/nest-cli-has-swagger-plugin";
 import type { RuleNode, RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const nestRequiresSwaggerPlugin: RuleModule = {

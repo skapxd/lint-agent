@@ -1,8 +1,8 @@
-import { getDecoratorName } from "#/utils/get-decorator-name";
+import { getDecoratorName } from "#/utils/nest/get-decorator-name";
 import { getImportedLocalNames } from "#/utils/get-imported-local-names";
 import { getNestInlineQueryOptions } from "#/utils/options/get-nest-inline-query-options";
 import { isAstNode } from "#/utils/is-ast-node";
-import { isQueryWithStringArg } from "#/utils/is-query-with-string-arg";
+import { isQueryWithStringArg } from "#/utils/nest/is-query-with-string-arg";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 

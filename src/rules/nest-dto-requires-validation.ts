@@ -1,5 +1,5 @@
 import { getContainingClassName } from "#/utils/get-containing-class-name";
-import { getDecoratorName } from "#/utils/get-decorator-name";
+import { getDecoratorName } from "#/utils/nest/get-decorator-name";
 import { getImportedLocalNames } from "#/utils/get-imported-local-names";
 import { getNestDtoValidationOptions } from "#/utils/options/get-nest-dto-validation-options";
 import { isPublicInstanceProperty } from "#/utils/is-public-instance-property";

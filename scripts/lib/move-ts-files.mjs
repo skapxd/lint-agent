@@ -122,7 +122,11 @@ function replacementSpecifier(importerPath, specifier, destinationPath) {
     return moduleSpecifierForAlias(destinationPath);
   }
 
-  return relativeSpecifier(importerPath, destinationPath);
+  const nextSpecifier = relativeSpecifier(importerPath, destinationPath);
+
+  return nextSpecifier.startsWith("../")
+    ? moduleSpecifierForAlias(destinationPath)
+    : nextSpecifier;
 }
 
 function collectUpdates(repoRoot, filePath, moveMap) {

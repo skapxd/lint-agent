@@ -1,6 +1,6 @@
 import type { RuleNode, TypeContext } from "#/utils/rule-authoring/rule-types";
 import ts from "typescript";
-import { resolveAliasSymbol } from "./resolve-alias-symbol";
+import { resolveAliasSymbol } from "#/utils/resolve-alias-symbol";
 
 // ¿La clase a la que apunta este identifier está decorada con @Injectable?
 // - true: pertenece al contenedor de DI — instanciarla a mano lo esquiva.

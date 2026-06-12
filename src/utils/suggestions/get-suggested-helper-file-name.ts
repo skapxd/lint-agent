@@ -1,4 +1,4 @@
-import { isHttpRouteMethod } from "#/utils/is-http-route-method";
+import { isHttpRouteMethod } from "#/utils/nest/is-http-route-method";
 import { toKebabCase } from "#/utils/naming/to-kebab-case";
 
 type SuggestedHelperFileNameInput = {

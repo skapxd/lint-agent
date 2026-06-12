@@ -1,6 +1,6 @@
 import { getNestNoResultResponseOptions } from "#/utils/options/get-nest-no-result-response-options";
 import { getTypeContext } from "#/utils/get-type-context";
-import { hasClassDecoratorNamed } from "#/utils/has-class-decorator-named";
+import { hasClassDecoratorNamed } from "#/utils/nest/has-class-decorator-named";
 import { isAstNode } from "#/utils/is-ast-node";
 import { isSkapxdResultOrPromiseResultType } from "#/utils/is-skapxd-result-or-promise-result-type";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
