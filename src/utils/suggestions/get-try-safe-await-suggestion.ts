@@ -1,5 +1,5 @@
 import type { RuleNode, RuleSourceCode } from "#/utils/rule-authoring/rule-types";
-import { containsAwaitExpression } from "#/utils/contains-await-expression";
+import { containsAwaitExpression } from "#/utils/async/contains-await-expression";
 import { getAwaitedOperationExample } from "./get-awaited-operation-example";
 
 export function getTrySafeAwaitSuggestion(
