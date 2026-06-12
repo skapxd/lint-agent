@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { wrapTseslintRule } from "#/utils/wrap-tseslint-rule";
 
 // @typescript-eslint/no-unnecessary-condition bajo un nombre que dice lo que

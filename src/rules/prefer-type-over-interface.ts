@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { wrapTseslintRule } from "#/utils/wrap-tseslint-rule";
 
 // @typescript-eslint/consistent-type-definitions bajo un nombre que declara

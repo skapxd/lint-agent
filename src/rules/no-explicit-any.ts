@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { wrapTseslintRule } from "#/utils/wrap-tseslint-rule";
 
 // @typescript-eslint/no-explicit-any con mensajes que ensenan la alternativa

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { wrapTseslintRule } from "#/utils/wrap-tseslint-rule";
 
 // @typescript-eslint/ban-ts-comment bajo un nombre que dice lo que defiende
