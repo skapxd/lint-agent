@@ -70,6 +70,7 @@
     "lint": "tsup && eslint src",
     "lint:fix": "tsup && eslint src --fix",
     "lint:changed": "tsup && node dist/cli.js",
+    "test:peer-minimum": "pnpm build && node scripts/check-peer-minimum.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit"
@@ -91,7 +92,7 @@
   "peerDependencies": {
     "eslint": ">=9",
     "typescript": ">=5",
-    "typescript-eslint": ">=8"
+    "typescript-eslint": ">=8.31"
   },
   "devDependencies": {
     "@types/node": "25.0.10",

@@ -42,6 +42,20 @@ Esto hace el lint un poco más lento, pero reduce falsos positivos importantes:
 por ejemplo, distinguir un `Result` real de `@skapxd/result` de otro objeto que
 casualmente también tenga propiedades `ok` y `error`.
 
+## Contrato mínimo de `typescript-eslint`
+
+Los presets type-aware se publican como contrato: si una regla u opción entra
+al preset, el `peerDependency` debe declarar la versión mínima real que la
+soporta. El script `pnpm test:peer-minimum` construye el paquete, lo instala en
+un proyecto temporal con los peers mínimos exactos y carga cada preset tipado
+con ESLint.
+
+| Requisito del catálogo | Versión mínima de `typescript-eslint` | Por qué importa |
+| --- | --- | --- |
+| Wrappers `no-unsafe-*`, `no-floating-promises`, `no-non-null-assertion`, `ban-ts-comment`, `consistent-type-definitions`, `no-unnecessary-condition` | `8.15.0` | Cubre la familia envuelta y deja disponible `no-unsafe-type-assertion` para la siguiente regla del cluster. |
+| `allowConstantLoopConditions: "only-allowed-literals"` en `skapxd/no-impossible-branch` | `8.31.0` | El contrato publicado fija este corte para que el guardrail valide el schema real del peer declarado. |
+| Mínimo declarado del paquete | `>=8.31` | Es el mínimo combinado que hace honestos los presets tipados actuales. |
+
 ## Licencia
 
 MIT
