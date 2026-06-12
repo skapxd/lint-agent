@@ -2,7 +2,7 @@ import { containsThrowStatement } from "#/utils/contains-throw-statement";
 import { getContainingFunction } from "#/utils/get-containing-function";
 import { getNoRuntimeStateGuardOptions } from "#/utils/options/get-no-runtime-state-guard-options";
 import { getThisPropertyInTest } from "#/utils/get-this-property-in-test";
-import { matchesAnyGlob } from "#/utils/matches-any-glob";
+import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const noRuntimeStateGuard: RuleModule = {

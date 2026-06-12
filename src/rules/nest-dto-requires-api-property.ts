@@ -1,7 +1,7 @@
 import { getDecoratorName } from "#/utils/get-decorator-name";
 import { getNestDtoApiPropertyOptions } from "#/utils/options/get-nest-dto-api-property-options";
 import { isPublicInstanceProperty } from "#/utils/is-public-instance-property";
-import { matchesAnyGlob } from "#/utils/matches-any-glob";
+import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const nestDtoRequiresApiProperty: RuleModule = {

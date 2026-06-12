@@ -4,7 +4,7 @@ import { trySafe } from "@skapxd/result";
 import { findProjectFile } from "#/utils/find-project-file";
 import { getTypedExportsOptions } from "#/utils/options/get-typed-exports-options";
 import { getUntypedExportConditions } from "#/utils/get-untyped-export-conditions";
-import { matchesAnyGlob } from "#/utils/matches-any-glob";
+import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import type { RuleNode, RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 const kindMessages = {

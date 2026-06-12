@@ -1,5 +1,5 @@
 import { getUntrustedModuleOptions } from "#/utils/options/get-untrusted-module-options";
-import { matchesAnyGlob } from "#/utils/matches-any-glob";
+import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 // La frontera anticorrupcion como guardrail (axioma A7): cuando los tipos de

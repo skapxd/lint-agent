@@ -1,5 +1,5 @@
 import type { RuleNode } from "#/utils/rule-authoring/rule-types";
-import { matchesAnyPattern } from "./matches-any-pattern";
+import { matchesAnyPattern } from "./matching/matches-any-pattern";
 
 // Mapa nombre local → source de los imports DE VALOR (no type) que vienen de
 // código interno del proyecto y no están en la lista de permitidos.

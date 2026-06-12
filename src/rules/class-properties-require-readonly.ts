@@ -1,8 +1,8 @@
 import { getDecoratorName } from "#/utils/get-decorator-name";
 import { getImportedLocalNames } from "#/utils/get-imported-local-names";
 import { getReadonlyPropertiesOptions } from "#/utils/options/get-readonly-properties-options";
-import { matchesAnyGlob } from "#/utils/matches-any-glob";
-import { matchesAnyPattern } from "#/utils/matches-any-pattern";
+import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
+import { matchesAnyPattern } from "#/utils/matching/matches-any-pattern";
 import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const classPropertiesRequireReadonly: RuleModule = {

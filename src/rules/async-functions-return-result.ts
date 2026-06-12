@@ -7,8 +7,8 @@ import { getTypeContext } from "#/utils/get-type-context";
 import { isAnonymousGeneratedFunctionName } from "#/utils/is-anonymous-generated-function-name";
 import { isPromiseOfResultType } from "#/utils/is-promise-of-result-type";
 import { isSkapxdResultOrPromiseResultType } from "#/utils/is-skapxd-result-or-promise-result-type";
-import { matchesAnyGlob } from "#/utils/matches-any-glob";
-import { matchesAnyPattern } from "#/utils/matches-any-pattern";
+import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
+import { matchesAnyPattern } from "#/utils/matching/matches-any-pattern";
 import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const asyncFunctionsReturnResult: RuleModule = {

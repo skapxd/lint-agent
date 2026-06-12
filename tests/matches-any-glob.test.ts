@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { matchesAnyGlob } from "../src/utils/matches-any-glob";
+import { matchesAnyGlob } from "../src/utils/matching/matches-any-glob";
 
 describe("matchesAnyGlob", () => {
   it("un patrón sin prefijo matchea en cualquier carpeta", () => {

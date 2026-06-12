@@ -1,5 +1,5 @@
 import type { RuleNode } from "#/utils/rule-authoring/rule-types";
-import { matchesAnyPattern } from "./matches-any-pattern";
+import { matchesAnyPattern } from "./matching/matches-any-pattern";
 import { memberIsBoolean } from "./member-is-boolean";
 
 // Analiza los miembros de un tipo, interface o CLASE buscando la forma

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import plugin from "../src/index";
-import { matchesAnyGlob } from "../src/utils/matches-any-glob";
+import { matchesAnyGlob } from "../src/utils/matching/matches-any-glob";
 
 type AllowFilePatternsOptions = {
   allowFilePatterns: readonly string[];

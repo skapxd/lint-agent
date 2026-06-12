@@ -1,5 +1,5 @@
 import { getNoElseOptions } from "#/utils/options/get-no-else-options";
-import { matchesAnyGlob } from "#/utils/matches-any-glob";
+import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const noElse: RuleModule = {

@@ -3,7 +3,7 @@ import { dirname, resolve } from "node:path";
 import { trySafe } from "@skapxd/result";
 import { findProjectFile } from "#/utils/find-project-file";
 import { getNestSwaggerPluginOptions } from "#/utils/options/get-nest-swagger-plugin-options";
-import { matchesAnyGlob } from "#/utils/matches-any-glob";
+import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import { nestCliHasSwaggerPlugin } from "#/utils/nest-cli-has-swagger-plugin";
 import type { RuleNode, RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 

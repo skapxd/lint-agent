@@ -3,7 +3,7 @@ import { getTypeContext } from "#/utils/get-type-context";
 import { hasAbortSignalOption } from "#/utils/has-abort-signal-option";
 import { isInsideEffectCallback } from "#/utils/is-inside-effect-callback";
 import { isMemberPropertyNamed } from "#/utils/is-member-property-named";
-import { matchesAnyGlob } from "#/utils/matches-any-glob";
+import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const preferAbortSignal: RuleModule = {

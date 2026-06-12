@@ -3,7 +3,7 @@ import { getImportedLocalNames } from "#/utils/get-imported-local-names";
 import { getNestInlineQueryOptions } from "#/utils/options/get-nest-inline-query-options";
 import { isAstNode } from "#/utils/is-ast-node";
 import { isQueryWithStringArg } from "#/utils/is-query-with-string-arg";
-import { matchesAnyGlob } from "#/utils/matches-any-glob";
+import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const nestNoInlineQueryParams: RuleModule = {

@@ -6,7 +6,7 @@ import { getTypeContext } from "#/utils/get-type-context";
 import { isSkapxdResultOrPromiseResultExpression } from "#/utils/is-skapxd-result-or-promise-result-expression";
 import { isSymbolFromSkapxdResult } from "#/utils/is-symbol-from-skapxd-result";
 import { isTrySafeCall } from "#/utils/is-try-safe-call";
-import { matchesAnyGlob } from "#/utils/matches-any-glob";
+import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const awaitRequiresResult: RuleModule = {

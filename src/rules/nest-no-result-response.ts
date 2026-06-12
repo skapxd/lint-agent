@@ -3,7 +3,7 @@ import { getTypeContext } from "#/utils/get-type-context";
 import { hasClassDecoratorNamed } from "#/utils/has-class-decorator-named";
 import { isAstNode } from "#/utils/is-ast-node";
 import { isSkapxdResultOrPromiseResultType } from "#/utils/is-skapxd-result-or-promise-result-type";
-import { matchesAnyGlob } from "#/utils/matches-any-glob";
+import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 import type ts from "typescript";
 
