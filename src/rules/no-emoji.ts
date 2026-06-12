@@ -1,4 +1,4 @@
-import { containsEmoji } from "#/utils/contains-emoji";
+import { containsEmoji } from "#/utils/text/contains-emoji";
 import { getNoEmojiOptions } from "#/utils/options/get-no-emoji-options";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
