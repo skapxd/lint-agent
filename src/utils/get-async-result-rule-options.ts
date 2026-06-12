@@ -1,4 +1,5 @@
-import { booleanOption, stringArrayOption } from "#/utils/rule-types";
+import { booleanOption } from "#/utils/boolean-option";
+import { stringArrayOption } from "#/utils/string-array-option";
 import type { RuleOptions } from "#/utils/rule-types";
 export function getAsyncResultRuleOptions(options: RuleOptions = {}) {
   return {

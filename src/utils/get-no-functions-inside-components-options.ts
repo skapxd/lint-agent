@@ -1,4 +1,4 @@
-import { booleanOption } from "#/utils/rule-types";
+import { booleanOption } from "#/utils/boolean-option";
 import type { RuleOptions } from "#/utils/rule-types";
 // Los callbacks inline de JSX y de .map son React idiomático: permitidos por
 // defecto. El modo ultraestricto se activa pasando `false` explícito.

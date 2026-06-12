@@ -77,38 +77,6 @@ export type RuleNode = {
 
 export type RuleOptions = Record<string, unknown>;
 
-export function booleanOption(
-  options: RuleOptions,
-  key: string,
-  fallback: boolean,
-): boolean {
-  const value = options[key];
-
-  return typeof value === "boolean" ? value : fallback;
-}
-
-export function numberOption(
-  options: RuleOptions,
-  key: string,
-  fallback: number,
-): number {
-  const value = options[key];
-
-  return typeof value === "number" ? value : fallback;
-}
-
-export function stringArrayOption(
-  options: RuleOptions,
-  key: string,
-  fallback: string[] = [],
-): string[] {
-  const value = options[key];
-
-  return Array.isArray(value) && value.every((item) => typeof item === "string")
-    ? value
-    : fallback;
-}
-
 export type RuleSourceCode = {
   getScope?: (node: RuleNode) => RuleScope;
   getText: (node?: RuleNode) => string;

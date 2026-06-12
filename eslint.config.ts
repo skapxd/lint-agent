@@ -40,11 +40,4 @@ export default [
       "skapxd/no-impossible-branch": "off",
     },
   },
-  {
-    files: ["src/utils/rule-types.ts"],
-    rules: {
-      // Archivo de frontera de tipos + helpers de lectura de opciones.
-      "skapxd/one-root-function-per-file": "off",
-    },
-  },
 ];

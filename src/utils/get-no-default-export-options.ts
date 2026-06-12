@@ -1,4 +1,4 @@
-import { stringArrayOption } from "#/utils/rule-types";
+import { stringArrayOption } from "#/utils/string-array-option";
 import type { RuleOptions } from "#/utils/rule-types";
 import { defaultExportAllowedFilePatterns } from "#/constants/default-export-allowed-file-patterns";
 

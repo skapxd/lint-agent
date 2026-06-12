@@ -1,4 +1,5 @@
-import { numberOption, stringArrayOption } from "#/utils/rule-types";
+import { numberOption } from "#/utils/number-option";
+import { stringArrayOption } from "#/utils/string-array-option";
 import type { RuleOptions } from "#/utils/rule-types";
 export function getNestInlineQueryOptions(options: RuleOptions = {}) {
   return {

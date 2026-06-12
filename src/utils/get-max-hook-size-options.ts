@@ -1,4 +1,4 @@
-import { numberOption } from "#/utils/rule-types";
+import { numberOption } from "#/utils/number-option";
 import type { RuleOptions } from "#/utils/rule-types";
 export function getMaxHookSizeOptions(options: RuleOptions = {}) {
   return {

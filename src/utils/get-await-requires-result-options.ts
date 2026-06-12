@@ -1,4 +1,4 @@
-import { stringArrayOption } from "#/utils/rule-types";
+import { stringArrayOption } from "#/utils/string-array-option";
 import type { RuleOptions } from "#/utils/rule-types";
 export function getAwaitRequiresResultOptions(options: RuleOptions = {}) {
   return {
