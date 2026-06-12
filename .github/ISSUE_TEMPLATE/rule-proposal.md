@@ -33,6 +33,25 @@ Codigo esperado:
 - Si puede tener autofix seguro.
 - Que opciones necesita, si alguna.
 
+## Estrategia de implementacion
+
+Explica que evidencia usara la regla y por que ese nivel de evidencia alcanza:
+
+- **AST-only:** que puede decidir mirando solo la sintaxis.
+- **Type-aware:** si necesita parser services, simbolos, tipos, imports
+  resueltos o `package.json` del simbolo origen.
+- **Por nombre / convencion:** que nombres, patrones de archivo o globs usara,
+  y por que no hay una evidencia mas fuerte disponible.
+- **Paquete de terceros:** si conviene envolver una regla existente, sumar una
+  dependencia o copiar una lista de referencia. Incluye costo de dependencia,
+  compatibilidad y mantenimiento.
+- **Runtime / filesystem:** si necesita leer archivos del proyecto
+  (`tsconfig`, `package.json`, configs de framework), define desde donde se
+  resuelve y que pasa si faltan.
+
+Si hay varias rutas, compara la version barata contra la version correcta y
+propone con cual empezar.
+
 ## Complicaciones / trade-offs
 
 Enumera los casos donde la regla podria confundirse, ser demasiado invasiva o
@@ -61,5 +80,7 @@ de activarla por defecto.
 
 - [ ] Regla implementada con tests de casos validos e invalidos.
 - [ ] Autofix testeado, si aplica.
+- [ ] Estrategia de implementacion validada: AST-only, type-aware, por nombre,
+      paquete de terceros o lectura de archivos.
 - [ ] README actualizado con el contrato y los limites de la regla.
 - [ ] Presets decididos explicitamente antes de publicar.

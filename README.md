@@ -882,6 +882,9 @@ La issue debe contestar, como mínimo:
   la sostiene.
 - **Ejemplos:** código que debería fallar y código esperado.
 - **Diseño:** patrones reportados, exenciones, opciones y si hay autofix seguro.
+- **Estrategia de implementación:** si la regla decide por AST, por tipos, por
+  nombres/convenciones, leyendo archivos del proyecto o apoyándose en un paquete
+  de terceros.
 - **Complicaciones:** falsos positivos, fricción con frameworks/runtimes,
   límites de TypeScript y choques con reglas existentes.
 - **Encaje en presets:** si nace en `shared`, `backend`, `frontend`, `nest`,
