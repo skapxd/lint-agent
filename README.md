@@ -868,6 +868,36 @@ Los `allowFilePatterns` de todas las reglas son **globs** (`*` un segmento,
 matchea en cualquier carpeta). Las 7 reglas restantes no tienen opciones: su
 única configuración es activarlas, apagarlas o cambiar la severidad.
 
+## Crear propuestas de reglas
+
+Las reglas nuevas no empiezan como código: empiezan como una propuesta que deja
+claro qué contrato arquitectónico se quiere volver ejecutable y qué costo trae.
+Usa el template
+[`.github/ISSUE_TEMPLATE/rule-proposal.md`](.github/ISSUE_TEMPLATE/rule-proposal.md)
+para abrir cualquier idea de regla nueva o cambio de política del catálogo.
+
+La issue debe contestar, como mínimo:
+
+- **Por qué existe:** qué desviación real quiere impedir y qué axioma del README
+  la sostiene.
+- **Ejemplos:** código que debería fallar y código esperado.
+- **Diseño:** patrones reportados, exenciones, opciones y si hay autofix seguro.
+- **Complicaciones:** falsos positivos, fricción con frameworks/runtimes,
+  límites de TypeScript y choques con reglas existentes.
+- **Encaje en presets:** si nace en `shared`, `backend`, `frontend`, `nest`,
+  `next`, `astro`, `package` u opt-in.
+- **Validación:** medición de solo lectura antes de activar la regla por defecto.
+
+Desde GitHub, elige **New issue → Propuesta de regla**. Desde la CLI:
+
+```bash
+gh issue create --template rule-proposal.md
+```
+
+Si la propuesta todavía necesita decisión de diseño, usa los labels
+`regla-nueva` y `decision-pendiente`. Cuando el problema sea deuda del propio
+repo o documentación, usa labels más específicos en vez de forzar este template.
+
 ## Reglas
 
 | Regla | Qué protege |
