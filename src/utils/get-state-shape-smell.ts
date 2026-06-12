@@ -1,4 +1,4 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-types";
 import { matchesAnyPattern } from "./matches-any-pattern";
 import { memberIsBoolean } from "./member-is-boolean";
 
@@ -7,9 +7,17 @@ import { memberIsBoolean } from "./member-is-boolean";
 // como miembros independientes. Devuelve { flag, error } o null. Aplica
 // igual en front (estado de UI) y en back (clases de jobs, schemas que
 // PERSISTEN la inconsistencia).
-export function getStateShapeSmell(members: LegacyAstNode, options: LegacyAstNode) {
-  let flag = null;
-  let error = null;
+type StateShapeOptions = {
+  errorPatterns: readonly string[];
+  loadingPatterns: readonly string[];
+};
+
+export function getStateShapeSmell(
+  members: readonly RuleNode[],
+  options: StateShapeOptions,
+) {
+  let flag: string | null = null;
+  let error: string | null = null;
 
   for (const member of members) {
     const isShapeMember =

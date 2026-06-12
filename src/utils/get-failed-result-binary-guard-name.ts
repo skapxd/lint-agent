@@ -1,9 +1,9 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-types";
 import { getBooleanLiteralValue } from "./get-boolean-literal-value";
 import { getOkMemberObject } from "./get-ok-member-object";
 import { isFailedOkComparison } from "./is-failed-ok-comparison";
 
-export function getFailedResultBinaryGuardName(node: LegacyAstNode) {
+export function getFailedResultBinaryGuardName(node: RuleNode) {
   const leftResult = getOkMemberObject(node.left);
   const rightResult = getOkMemberObject(node.right);
   const leftBoolean = getBooleanLiteralValue(node.left);

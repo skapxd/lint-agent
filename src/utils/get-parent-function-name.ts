@@ -1,9 +1,9 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-types";
 import { getFunctionNodeName } from "./get-function-node-name";
 import { getPropertyName } from "./get-property-name";
 import { getVariableDeclaratorName } from "./get-variable-declarator-name";
 
-export function getParentFunctionName(node: LegacyAstNode) {
+export function getParentFunctionName(node: RuleNode) {
   const parent = node.parent;
 
   if (parent?.type === "VariableDeclarator") {

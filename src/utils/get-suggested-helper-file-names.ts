@@ -1,10 +1,19 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
 import { getSuggestedHelperFileName } from "./get-suggested-helper-file-name";
 
-export function getSuggestedHelperFileNames({ extension, fileStem, functionNames }: LegacyAstNode) {
+type SuggestedHelperFileNamesInput = {
+  extension: string;
+  fileStem: string;
+  functionNames: readonly string[];
+};
+
+export function getSuggestedHelperFileNames({
+  extension,
+  fileStem,
+  functionNames,
+}: SuggestedHelperFileNamesInput) {
   return [
     ...new Set(
-      functionNames.map((functionName: LegacyAstNode) =>
+      functionNames.map((functionName: string) =>
         getSuggestedHelperFileName({
           extension,
           fileStem,

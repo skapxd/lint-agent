@@ -3,7 +3,7 @@ import { getImportedLocalNames } from "#/utils/get-imported-local-names";
 import { getReadonlyPropertiesOptions } from "#/utils/get-readonly-properties-options";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
 import { matchesAnyPattern } from "#/utils/matches-any-pattern";
-import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
+import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-types";
 
 export const classPropertiesRequireReadonly: RuleModule = {
   meta: {
@@ -37,7 +37,7 @@ export const classPropertiesRequireReadonly: RuleModule = {
       },
     ],
   },
-  create(context: LegacyAstNode) {
+  create(context: RuleContext) {
     const options = getReadonlyPropertiesOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
@@ -45,15 +45,17 @@ export const classPropertiesRequireReadonly: RuleModule = {
       return {};
     }
 
-    let ormNames = new Set();
+    let ormNames = new Set<string>();
 
-    function isOrmManagedProperty(node: LegacyAstNode) {
-      return (node.decorators ?? []).some((decorator: LegacyAstNode) =>
-        ormNames.has(getDecoratorName(decorator)),
-      );
+    function isOrmManagedProperty(node: RuleNode) {
+      return (node.decorators ?? []).some((decorator: RuleNode) => {
+        const decoratorName = getDecoratorName(decorator);
+
+        return Boolean(decoratorName && ormNames.has(decoratorName));
+      });
     }
 
-    function reportIfMutable(node: LegacyAstNode, name: LegacyAstNode) {
+    function reportIfMutable(node: RuleNode, name: string | null | undefined) {
       if (node.readonly) {
         return;
       }
@@ -70,14 +72,14 @@ export const classPropertiesRequireReadonly: RuleModule = {
     }
 
     return {
-      Program(node: LegacyAstNode) {
+      Program(node: RuleNode) {
         ormNames = new Set(
-          options.ormModuleSources.flatMap((source: LegacyAstNode) => [
+          options.ormModuleSources.flatMap((source: string) => [
             ...getImportedLocalNames(node, source),
           ]),
         );
       },
-      PropertyDefinition(node: LegacyAstNode) {
+      PropertyDefinition(node: RuleNode) {
         // Una propiedad decorada por el ORM (@Prop, @Column) le pertenece
         // al ORM: su modelo de mutación (doc.campo = x; doc.save()) no es
         // asunto de este lint. La exención es por propiedad, no por archivo.
@@ -88,7 +90,7 @@ export const classPropertiesRequireReadonly: RuleModule = {
         reportIfMutable(node, node.key?.name);
       },
       // constructor(private foo: X) también es una propiedad de la clase.
-      TSParameterProperty(node: LegacyAstNode) {
+      TSParameterProperty(node: RuleNode) {
         reportIfMutable(node, node.parameter?.name);
       },
     };

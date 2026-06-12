@@ -1,10 +1,21 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
 import { getDirectoryName } from "./get-directory-name";
 import { getSuggestedHelperFileName } from "./get-suggested-helper-file-name";
 import { isNextConventionFile } from "./is-next-convention-file";
 import { toKebabCase } from "./to-kebab-case";
 
-export function getSuggestedHelperPath({ extension, fileStem, filename, functionName }: LegacyAstNode) {
+type SuggestedHelperPathInput = {
+  extension: string;
+  fileStem: string;
+  filename: string;
+  functionName: string;
+};
+
+export function getSuggestedHelperPath({
+  extension,
+  fileStem,
+  filename,
+  functionName,
+}: SuggestedHelperPathInput) {
   const helperFileName = getSuggestedHelperFileName({
     extension,
     fileStem,

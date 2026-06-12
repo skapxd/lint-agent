@@ -1,14 +1,19 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
-export function getTypeContext(context: LegacyAstNode) {
+import type { RuleContext, TypeContext } from "#/utils/rule-types";
+
+export function getTypeContext(context: RuleContext): TypeContext | null {
   const sourceCode = context.sourceCode ?? context.getSourceCode();
   const parserServices = sourceCode.parserServices;
 
-  if (!parserServices?.program) {
+  const program = parserServices?.program;
+
+  if (!program) {
     return null;
   }
 
+  const services = parserServices as TypeContext["services"];
+
   return {
-    checker: parserServices.program.getTypeChecker(),
-    services: parserServices,
+    checker: program.getTypeChecker(),
+    services,
   };
 }

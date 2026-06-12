@@ -4,7 +4,7 @@ import { getStrictTsconfigOptions } from "#/utils/get-strict-tsconfig-options";
 import { isAnchorlessCheckRedundant } from "#/utils/is-anchorless-check-redundant";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
 import { readResolvedTsconfig } from "#/utils/read-resolved-tsconfig";
-import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
+import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-types";
 
 export const requiresStrictTsconfig: RuleModule = {
   meta: {
@@ -40,7 +40,7 @@ export const requiresStrictTsconfig: RuleModule = {
       },
     ],
   },
-  create(context: LegacyAstNode) {
+  create(context: RuleContext) {
     const options = getStrictTsconfigOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
@@ -51,7 +51,7 @@ export const requiresStrictTsconfig: RuleModule = {
     const isAnchor = matchesAnyGlob(filename, options.anchorFilePatterns);
 
     return {
-      Program(node: LegacyAstNode) {
+      Program(node: RuleNode) {
         const absoluteFilename = resolve(context.cwd ?? process.cwd(), filename);
         const tsconfigPath = findProjectFile(
           dirname(absoluteFilename),
@@ -84,12 +84,12 @@ export const requiresStrictTsconfig: RuleModule = {
         }
 
         const missing = options.requiredCompilerOptions.filter(
-          (flag: LegacyAstNode) => compilerOptions[flag] !== true,
+          (flag: string) => compilerOptions[flag] !== true,
         );
 
         if (missing.length > 0) {
           context.report({
-            data: { missing: missing.map((flag: LegacyAstNode) => `\`${flag}\``).join(", ") },
+            data: { missing: missing.map((flag: string) => `\`${flag}\``).join(", ") },
             messageId: "missingStrictFlags",
             node,
           });

@@ -1,7 +1,8 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
-export function getNestNoResultResponseOptions(options: LegacyAstNode = {}) {
+import { stringArrayOption } from "#/utils/rule-types";
+import type { RuleOptions } from "#/utils/rule-types";
+export function getNestNoResultResponseOptions(options: RuleOptions = {}) {
   return {
-    allowFilePatterns: options.allowFilePatterns ?? [],
-    controllerDecoratorNames: options.controllerDecoratorNames ?? ["Controller"],
+    allowFilePatterns: stringArrayOption(options, "allowFilePatterns", []),
+    controllerDecoratorNames: stringArrayOption(options, "controllerDecoratorNames", ["Controller"]),
   };
 }

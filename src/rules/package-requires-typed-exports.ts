@@ -5,13 +5,13 @@ import { findProjectFile } from "#/utils/find-project-file";
 import { getTypedExportsOptions } from "#/utils/get-typed-exports-options";
 import { getUntypedExportConditions } from "#/utils/get-untyped-export-conditions";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
-import type { LegacyAstNode, RuleModule } from "#/utils/rule-types";
+import type { RuleNode, RuleModule, RuleContext } from "#/utils/rule-types";
 
-const kindMessages: Record<string, string> = {
+const kindMessages = {
   "missing-file": "missingTypesFile",
   untyped: "untypedCondition",
   "wrong-flavor": "wrongTypesFlavor",
-};
+} as const;
 
 export const packageRequiresTypedExports: RuleModule = {
   meta: {
@@ -49,7 +49,7 @@ export const packageRequiresTypedExports: RuleModule = {
       },
     ],
   },
-  create(context: LegacyAstNode) {
+  create(context: RuleContext) {
     const options = getTypedExportsOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
@@ -61,7 +61,7 @@ export const packageRequiresTypedExports: RuleModule = {
     }
 
     return {
-      Program(node: LegacyAstNode) {
+      Program(node: RuleNode) {
         const absoluteFilename = resolve(context.cwd ?? process.cwd(), filename);
         const packageJsonPath = findProjectFile(
           dirname(absoluteFilename),
@@ -84,14 +84,18 @@ export const packageRequiresTypedExports: RuleModule = {
 
         const exportsField = parsed.value.exports;
 
-        if (!exportsField || typeof exportsField !== "object") {
+        if (
+          !exportsField ||
+          typeof exportsField !== "object" ||
+          Array.isArray(exportsField)
+        ) {
           context.report({ messageId: "missingExports", node });
 
           return;
         }
 
         const violations = getUntypedExportConditions(
-          exportsField,
+          exportsField as Record<string, unknown>,
           dirname(packageJsonPath),
         );
 

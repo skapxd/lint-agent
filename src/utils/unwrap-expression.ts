@@ -1,5 +1,5 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
-export function unwrapExpression(node: LegacyAstNode) {
+import type { RuleNode } from "#/utils/rule-types";
+export function unwrapExpression(node: RuleNode) {
   if (
     node.type === "ChainExpression" ||
     node.type === "TSAsExpression" ||

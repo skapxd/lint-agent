@@ -1,8 +1,8 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
+import type { RuleNode, TypeContext } from "#/utils/rule-types";
 import { getTypeReferenceParameters } from "./get-type-reference-parameters";
 import { isTypeReferenceNamed } from "./is-type-reference-named";
 
-export function isPromiseOfResultType(node: LegacyAstNode, options: LegacyAstNode) {
+export function isPromiseOfResultType(node: RuleNode, options: { promiseTypeNames: readonly string[]; resultTypeNames: readonly string[] }) {
   if (node.type !== "TSTypeReference") {
     return false;
   }

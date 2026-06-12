@@ -1,8 +1,8 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-types";
 import { isMemberPropertyNamed } from "./is-member-property-named";
 import { unwrapExpression } from "./unwrap-expression";
 
-export function getOkMemberObject(node: LegacyAstNode) {
+export function getOkMemberObject(node: RuleNode) {
   const unwrappedNode = unwrapExpression(node);
 
   if (

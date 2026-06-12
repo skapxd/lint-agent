@@ -1,7 +1,8 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
-export function getMaxHookSizeOptions(options: LegacyAstNode = {}) {
+import { numberOption } from "#/utils/rule-types";
+import type { RuleOptions } from "#/utils/rule-types";
+export function getMaxHookSizeOptions(options: RuleOptions = {}) {
   return {
-    maxLines: options.maxLines ?? 120,
-    maxUseState: options.maxUseState ?? 1,
+    maxLines: numberOption(options, "maxLines", 120),
+    maxUseState: numberOption(options, "maxUseState", 1),
   };
 }

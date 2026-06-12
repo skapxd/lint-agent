@@ -1,4 +1,4 @@
-import type { LegacyAstNode, RuleModule } from "#/utils/rule-types";
+import type { RuleNode, RuleModule, RuleContext } from "#/utils/rule-types";
 export const noTryCatch: RuleModule = {
   meta: {
     type: "suggestion",
@@ -12,9 +12,9 @@ export const noTryCatch: RuleModule = {
     },
     schema: [],
   },
-  create(context: LegacyAstNode) {
+  create(context: RuleContext) {
     return {
-      TryStatement(node: LegacyAstNode) {
+      TryStatement(node: RuleNode) {
         context.report({
           messageId: "noTryCatch",
           node,

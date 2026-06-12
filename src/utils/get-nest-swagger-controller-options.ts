@@ -1,17 +1,18 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
-export function getNestSwaggerControllerOptions(options: LegacyAstNode = {}) {
+import { stringArrayOption } from "#/utils/rule-types";
+import type { RuleOptions } from "#/utils/rule-types";
+export function getNestSwaggerControllerOptions(options: RuleOptions = {}) {
   return {
-    allowFilePatterns: options.allowFilePatterns ?? [],
+    allowFilePatterns: stringArrayOption(options, "allowFilePatterns", []),
     // Lo único que un controller necesita de swagger cuando el plugin
     // @nestjs/swagger está activo: ocultar endpoints internos, agrupar,
     // declarar auth y documentar uploads multipart (no introspeccionables).
-    allowedDecoratorNames: options.allowedDecoratorNames ?? [
+    allowedDecoratorNames: stringArrayOption(options, "allowedDecoratorNames", [
       "ApiBearerAuth",
       "ApiBody",
       "ApiConsumes",
       "ApiExcludeEndpoint",
       "ApiTags",
-    ],
-    controllerDecoratorNames: options.controllerDecoratorNames ?? ["Controller"],
+    ]),
+    controllerDecoratorNames: stringArrayOption(options, "controllerDecoratorNames", ["Controller"]),
   };
 }

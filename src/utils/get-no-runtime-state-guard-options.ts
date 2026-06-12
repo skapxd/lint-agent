@@ -1,6 +1,7 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
-export function getNoRuntimeStateGuardOptions(options: LegacyAstNode = {}) {
+import { stringArrayOption } from "#/utils/rule-types";
+import type { RuleOptions } from "#/utils/rule-types";
+export function getNoRuntimeStateGuardOptions(options: RuleOptions = {}) {
   return {
-    allowFilePatterns: options.allowFilePatterns ?? [],
+    allowFilePatterns: stringArrayOption(options, "allowFilePatterns", []),
   };
 }

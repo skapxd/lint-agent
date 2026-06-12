@@ -1,16 +1,17 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
-export function getReadonlyPropertiesOptions(options: LegacyAstNode = {}) {
+import { stringArrayOption } from "#/utils/rule-types";
+import type { RuleOptions } from "#/utils/rule-types";
+export function getReadonlyPropertiesOptions(options: RuleOptions = {}) {
   return {
-    allowFilePatterns: options.allowFilePatterns ?? [],
+    allowFilePatterns: stringArrayOption(options, "allowFilePatterns", []),
     // Regex de nombres de propiedad con mutación inherente (la conexión de
     // un socket, un buffer): la excepción se declara visible en la config.
-    allowPropertyPatterns: options.allowPropertyPatterns ?? [],
+    allowPropertyPatterns: stringArrayOption(options, "allowPropertyPatterns", []),
     // Una propiedad decorada por el ORM (@Prop de @nestjs/mongoose, @Column
     // de typeorm) le pertenece al ORM y a su modelo de mutación — la
     // exención es por PROPIEDAD, no por nombre de archivo.
-    ormModuleSources: options.ormModuleSources ?? [
+    ormModuleSources: stringArrayOption(options, "ormModuleSources", [
       "@nestjs/mongoose",
       "typeorm",
-    ],
+    ]),
   };
 }

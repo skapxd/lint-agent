@@ -1,5 +1,5 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
-export function isPropertyKeyNamed(property: LegacyAstNode, propertyName: LegacyAstNode) {
+import type { RuleNode } from "#/utils/rule-types";
+export function isPropertyKeyNamed(property: RuleNode, propertyName: string) {
   if (property.key.type === "Identifier") {
     return property.key.name === propertyName;
   }

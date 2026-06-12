@@ -1,8 +1,8 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-types";
 // Detección por propiedad Unicode: Extended_Pictographic cubre los emojis y
 // pictogramas (🚀, ✅, 😄) sin tocar símbolos de texto normales (→, ✓, ©).
 const emojiPattern = /\p{Extended_Pictographic}/u;
 
-export function containsEmoji(value: LegacyAstNode) {
+export function containsEmoji(value: string) {
   return emojiPattern.test(value);
 }

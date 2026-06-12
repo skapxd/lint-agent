@@ -1,11 +1,11 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-types";
 import { isPascalCaseJsxElement } from "./is-pascal-case-jsx-element";
 
 // La referencia es el valor directo de una prop hacia un componente
 // PascalCase (`game={game}`, `handler={onSelect}`): un reenvío, sin importar
 // el nombre del atributo. Reenviar a un elemento nativo (`value={value}` en
 // un <input>) es uso real, no reenvío.
-export function isForwardedPropReference(identifier: LegacyAstNode) {
+export function isForwardedPropReference(identifier: RuleNode) {
   const container = identifier.parent;
 
   if (container?.type !== "JSXExpressionContainer") {

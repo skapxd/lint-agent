@@ -1,7 +1,7 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-types";
 import { unwrapExpression } from "./unwrap-expression";
 
-export function getBooleanLiteralValue(node: LegacyAstNode) {
+export function getBooleanLiteralValue(node: RuleNode) {
   const unwrappedNode = unwrapExpression(node);
 
   return unwrappedNode.type === "Literal" && typeof unwrappedNode.value === "boolean"

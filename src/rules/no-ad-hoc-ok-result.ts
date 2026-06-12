@@ -3,7 +3,7 @@ import { getFunctionName } from "#/utils/get-function-name";
 import { getReturnedObjectExpression } from "#/utils/get-returned-object-expression";
 import { hasBooleanOkProperty } from "#/utils/has-boolean-ok-property";
 import { isExportedFunction } from "#/utils/is-exported-function";
-import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
+import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-types";
 
 export const noAdHocOkResult: RuleModule = {
       meta: {
@@ -18,9 +18,9 @@ export const noAdHocOkResult: RuleModule = {
         },
         schema: [],
       },
-      create(context: LegacyAstNode) {
+      create(context: RuleContext) {
         return {
-          ReturnStatement(node: LegacyAstNode) {
+          ReturnStatement(node: RuleNode) {
             const returnedObject = getReturnedObjectExpression(node.argument);
 
             if (!returnedObject || !hasBooleanOkProperty(returnedObject)) {

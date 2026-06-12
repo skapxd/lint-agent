@@ -1,9 +1,10 @@
 import { getDecoratorName } from "#/utils/get-decorator-name";
 import { getImportedLocalNames } from "#/utils/get-imported-local-names";
 import { getNestInlineQueryOptions } from "#/utils/get-nest-inline-query-options";
+import { isAstNode } from "#/utils/is-ast-node";
 import { isQueryWithStringArg } from "#/utils/is-query-with-string-arg";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
-import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
+import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-types";
 
 export const nestNoInlineQueryParams: RuleModule = {
   meta: {
@@ -33,7 +34,7 @@ export const nestNoInlineQueryParams: RuleModule = {
       },
     ],
   },
-  create(context: LegacyAstNode) {
+  create(context: RuleContext) {
     const options = getNestInlineQueryOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
@@ -45,24 +46,25 @@ export const nestNoInlineQueryParams: RuleModule = {
     let swaggerNames = new Set();
 
     return {
-      Program(node: LegacyAstNode) {
+      Program(node: RuleNode) {
         commonNames = getImportedLocalNames(node, "@nestjs/common");
         swaggerNames = getImportedLocalNames(node, "@nestjs/swagger");
       },
-      MethodDefinition(node: LegacyAstNode) {
+      MethodDefinition(node: RuleNode) {
         if (node.kind !== "method") {
           return;
         }
 
         const apiQueryCount = (node.decorators ?? []).filter(
-          (decorator: LegacyAstNode) =>
+          (decorator: RuleNode) =>
             getDecoratorName(decorator) === "ApiQuery" &&
             swaggerNames.has("ApiQuery"),
         ).length;
 
-        const inlineQueryCount = (node.value.params ?? []).filter((param: LegacyAstNode) =>
+        const methodValue = isAstNode(node.value) ? node.value : null;
+        const inlineQueryCount = (methodValue?.params ?? []).filter((param: RuleNode) =>
           (param.decorators ?? []).some(
-            (decorator: LegacyAstNode) =>
+            (decorator: RuleNode) =>
               isQueryWithStringArg(decorator) && commonNames.has("Query"),
           ),
         ).length;

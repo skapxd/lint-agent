@@ -1,6 +1,6 @@
 import { getNoElseOptions } from "#/utils/get-no-else-options";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
-import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
+import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-types";
 
 export const noElse: RuleModule = {
   meta: {
@@ -26,7 +26,7 @@ export const noElse: RuleModule = {
       },
     ],
   },
-  create(context: LegacyAstNode) {
+  create(context: RuleContext) {
     const options = getNoElseOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
@@ -35,7 +35,7 @@ export const noElse: RuleModule = {
     }
 
     return {
-      IfStatement(node: LegacyAstNode) {
+      IfStatement(node: RuleNode) {
         if (node.alternate) {
           context.report({ messageId: "noElse", node: node.alternate });
         }

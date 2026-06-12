@@ -1,10 +1,10 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-types";
 import { getNodeChildren } from "./get-node-children";
 import { isFunctionNode } from "./is-function-node";
 
 // ¿El nodo contiene un throw propio? No cruza funciones anidadas: un throw
 // dentro de un callback es de ese callback.
-export function containsThrowStatement(node: LegacyAstNode): LegacyAstNode {
+export function containsThrowStatement(node: RuleNode | null): boolean {
   if (node?.type === "ThrowStatement") {
     return true;
   }
@@ -13,5 +13,5 @@ export function containsThrowStatement(node: LegacyAstNode): LegacyAstNode {
     return false;
   }
 
-  return getNodeChildren(node).some((child: LegacyAstNode) => containsThrowStatement(child));
+  return getNodeChildren(node).some((child: RuleNode) => containsThrowStatement(child));
 }

@@ -1,5 +1,7 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
-export function isFailedOkComparison(operator: LegacyAstNode, comparedValue: LegacyAstNode) {
+export function isFailedOkComparison(
+  operator: string,
+  comparedValue: boolean | null | undefined,
+) {
   return (
     (operator === "===" && comparedValue === false) ||
     (operator === "!==" && comparedValue === true)

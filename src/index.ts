@@ -3,14 +3,59 @@ import { createNestConfigs } from "./nest";
 import { createNextConfigs } from "./next";
 import { createSharedConfigs, rules, strictConfig } from "./shared";
 
-const plugin = {
-  // Diccionario dinámico de configs (cada entrada es un flat config o un array
-  // de ellos). Se tipa laxo, como es convención en los plugins de ESLint, para
-  // que `skapxd.configs.<preset>` sea accesible desde el config del consumidor:
-  // con `unknown`, spreadear `...skapxd.configs.backend.rules` no compila en
-  // los eslint.config.ts de los consumidores. Excepción declarada, no trampa.
-  // eslint-disable-next-line skapxd/no-explicit-any -- DX del consumidor: ver arriba
-  configs: {} as Record<string, any>,
+type RuleEntry = [string, Record<string, unknown>];
+
+type OpinionatedFlatConfig = {
+  files: string[];
+  languageOptions: Record<string, unknown>;
+  linterOptions: Record<string, unknown>;
+  name: string;
+  plugins: Record<string, unknown>;
+  rules: Record<string, RuleEntry>;
+};
+
+type OpinionatedConfigList = OpinionatedFlatConfig[] & {
+  [index: number]: OpinionatedFlatConfig;
+  filter(
+    predicate: (
+      value: OpinionatedFlatConfig,
+      index: number,
+      array: OpinionatedFlatConfig[],
+    ) => unknown,
+  ): OpinionatedConfigList;
+  find(
+    predicate: (
+      value: OpinionatedFlatConfig,
+      index: number,
+      array: OpinionatedFlatConfig[],
+    ) => unknown,
+  ): OpinionatedFlatConfig;
+};
+
+type SharedConfigs = Record<
+  "backend" | "base" | "frontend" | "package",
+  OpinionatedFlatConfig
+>;
+
+type PluginConfigs = SharedConfigs & {
+  astro: OpinionatedConfigList;
+  nest: OpinionatedConfigList;
+  next: OpinionatedConfigList;
+  shared: SharedConfigs;
+  strict: OpinionatedFlatConfig;
+};
+
+type Plugin = {
+  configs: PluginConfigs;
+  meta: {
+    name: string;
+    version: string;
+  };
+  rules: typeof rules;
+};
+
+const plugin: Plugin = {
+  configs: {} as PluginConfigs,
   meta: {
     name: "@skapxd/eslint-opinionated",
     version: "2.0.0",
@@ -24,13 +69,13 @@ const nextConfigs = createNextConfigs(plugin);
 const astroConfigs = createAstroConfigs(plugin);
 
 plugin.configs = {
-  ...sharedConfigs,
-  astro: astroConfigs,
-  nest: nestConfigs,
-  next: nextConfigs,
-  shared: sharedConfigs,
-  strict: strictConfig,
-};
+  ...(sharedConfigs as unknown as SharedConfigs),
+  astro: astroConfigs as unknown as OpinionatedConfigList,
+  nest: nestConfigs as unknown as OpinionatedConfigList,
+  next: nextConfigs as unknown as OpinionatedConfigList,
+  shared: sharedConfigs as unknown as SharedConfigs,
+  strict: strictConfig as unknown as OpinionatedFlatConfig,
+} satisfies PluginConfigs;
 
 export const configs = plugin.configs;
 export { rules };

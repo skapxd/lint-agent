@@ -1,8 +1,8 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-types";
 import { getNodeChildren } from "./get-node-children";
 import { isAstNode } from "./is-ast-node";
 
-export function containsJsx(node: LegacyAstNode): LegacyAstNode {
+export function containsJsx(node: RuleNode): boolean {
   if (!isAstNode(node)) {
     return false;
   }
@@ -11,5 +11,5 @@ export function containsJsx(node: LegacyAstNode): LegacyAstNode {
     return true;
   }
 
-  return getNodeChildren(node).some((child: LegacyAstNode) => containsJsx(child));
+  return getNodeChildren(node).some((child: RuleNode) => containsJsx(child));
 }

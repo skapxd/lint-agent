@@ -1,4 +1,4 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-types";
 import { collectIdentifiersNamed } from "./collect-identifiers-named";
 import { getDeclaredAliasTargets } from "./get-declared-alias-targets";
 import { isInsideNode } from "./is-inside-node";
@@ -14,11 +14,11 @@ import { isMemberPropertyNamed } from "./is-member-property-named";
 // - Descartes no cuentan: `void x`, expresión suelta, alias nunca consumido
 //   (se siguen recursivamente, destructuring incluido).
 export function isConsumedResultReference(
-  identifier: LegacyAstNode,
-  searchRoot: LegacyAstNode,
-  represents: LegacyAstNode = "result",
-  visited: LegacyAstNode = new Set(),
-) {
+  identifier: RuleNode,
+  searchRoot: RuleNode | null,
+  represents: "error" | "result" = "result",
+  visited: Set<string> = new Set(),
+): boolean {
   const member =
     identifier.parent?.type === "MemberExpression" &&
     identifier.parent.object === identifier
@@ -57,15 +57,15 @@ export function isConsumedResultReference(
   }
 
   const targets = getDeclaredAliasTargets(parent.id, referenceRepresents).filter(
-    (target: LegacyAstNode) => !visited.has(target.name),
+    (target) => !visited.has(target.name),
   );
 
-  return targets.some((target: LegacyAstNode) => {
+  return targets.some((target) => {
     visited.add(target.name);
 
     return collectIdentifiersNamed(searchRoot, target.name)
-      .filter((aliasReference: LegacyAstNode) => !isInsideNode(aliasReference, parent.id))
-      .some((aliasReference: LegacyAstNode) =>
+      .filter((aliasReference: RuleNode) => !isInsideNode(aliasReference, parent.id))
+      .some((aliasReference: RuleNode) =>
         isConsumedResultReference(
           aliasReference,
           searchRoot,

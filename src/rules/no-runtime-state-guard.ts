@@ -3,7 +3,7 @@ import { getContainingFunction } from "#/utils/get-containing-function";
 import { getNoRuntimeStateGuardOptions } from "#/utils/get-no-runtime-state-guard-options";
 import { getThisPropertyInTest } from "#/utils/get-this-property-in-test";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
-import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
+import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-types";
 
 export const noRuntimeStateGuard: RuleModule = {
   meta: {
@@ -29,7 +29,7 @@ export const noRuntimeStateGuard: RuleModule = {
       },
     ],
   },
-  create(context: LegacyAstNode) {
+  create(context: RuleContext) {
     const options = getNoRuntimeStateGuardOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
@@ -38,7 +38,7 @@ export const noRuntimeStateGuard: RuleModule = {
     }
 
     return {
-      IfStatement(node: LegacyAstNode) {
+      IfStatement(node: RuleNode) {
         const containingFunction = getContainingFunction(node);
 
         // Solo el guard del ESTADO PROPIO en metodos de clase: validar

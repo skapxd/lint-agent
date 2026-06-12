@@ -1,12 +1,17 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
+import type ts from "typescript";
+import type { TypeContext } from "#/utils/rule-types";
 import { isSkapxdResultType } from "./is-skapxd-result-type";
 
-export function isSkapxdResultOrPromiseResultType(type: LegacyAstNode, typeContext: LegacyAstNode) {
+export function isSkapxdResultOrPromiseResultType(type: ts.Type, typeContext: TypeContext) {
   if (isSkapxdResultType(type, typeContext)) {
     return true;
   }
 
-  const promisedType = typeContext.checker.getPromisedTypeOfPromise(type);
+  const promisedType = typeContext.checker.getAwaitedType(type);
 
-  return Boolean(promisedType && isSkapxdResultType(promisedType, typeContext));
+  return Boolean(
+    promisedType &&
+      promisedType !== type &&
+      isSkapxdResultType(promisedType, typeContext),
+  );
 }

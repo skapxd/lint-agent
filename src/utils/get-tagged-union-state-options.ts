@@ -1,13 +1,14 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
-export function getTaggedUnionStateOptions(options: LegacyAstNode = {}) {
+import { stringArrayOption } from "#/utils/rule-types";
+import type { RuleOptions } from "#/utils/rule-types";
+export function getTaggedUnionStateOptions(options: RuleOptions = {}) {
   return {
-    allowFilePatterns: options.allowFilePatterns ?? [],
+    allowFilePatterns: stringArrayOption(options, "allowFilePatterns", []),
     // Nombres que delatan el flag de "estado en proceso". Se exige además
     // que el tipo sea boolean (en la forma de tipos) para mantener precisión.
-    loadingPatterns: options.loadingPatterns ?? [
+    loadingPatterns: stringArrayOption(options, "loadingPatterns", [
       "^(is|was|esta|estaba)?(loading|fetching|pending|submitting|saving|processing|syncing|refreshing|running|deploying|executing|sending|uploading|downloading|importing|exporting|migrating|polling|connecting|retrying|busy|inprogress|working|cargando|enviando|procesando|guardando|sincronizando|subiendo|descargando|reintentando|consultando|firmando)",
-    ],
+    ]),
     // Nombres que delatan el campo de error conviviendo con el flag.
-    errorPatterns: options.errorPatterns ?? ["(error|failure|failed|fallo|falla)"],
+    errorPatterns: stringArrayOption(options, "errorPatterns", ["(error|failure|failed|fallo|falla)"]),
   };
 }

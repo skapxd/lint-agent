@@ -1,5 +1,5 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
-export function getPropertyName(node: LegacyAstNode) {
+import type { RuleNode } from "#/utils/rule-types";
+export function getPropertyName(node: RuleNode) {
   if (!node) {
     return "anonymous";
   }

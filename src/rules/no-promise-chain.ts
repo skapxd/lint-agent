@@ -1,7 +1,7 @@
 import { getTypeContext } from "#/utils/get-type-context";
 import { isMemberPropertyNamed } from "#/utils/is-member-property-named";
 import { isPromiseType } from "#/utils/is-promise-type";
-import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
+import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-types";
 
 const defaultMethods = ["catch", "finally", "then"];
 
@@ -29,19 +29,26 @@ export const noPromiseChain: RuleModule = {
       },
     ],
   },
-  create(context: LegacyAstNode) {
-    const methods = context.options[0]?.methods ?? defaultMethods;
+  create(context: RuleContext) {
+    const methodsOption = context.options[0]?.methods;
+    const methods =
+      Array.isArray(methodsOption) &&
+      methodsOption.every((method) => typeof method === "string")
+        ? methodsOption
+        : defaultMethods;
     const typeContext = getTypeContext(context);
 
     return {
-      CallExpression(node: LegacyAstNode) {
+      CallExpression(node: RuleNode) {
         const callee = node.callee;
 
         if (callee.type !== "MemberExpression") {
           return;
         }
 
-        const method = methods.find((name: LegacyAstNode) => isMemberPropertyNamed(callee, name));
+        const method = methods.find((name: string) =>
+          isMemberPropertyNamed(callee, name),
+        );
 
         if (!method) {
           return;

@@ -1,8 +1,8 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
+import type { RuleNode, TypeContext } from "#/utils/rule-types";
 import { isResultErrCall } from "./is-result-err-call";
 import { isSymbolFromSkapxdResult } from "./is-symbol-from-skapxd-result";
 
-export function isSkapxdResultErrCall(node: LegacyAstNode, typeContext: LegacyAstNode) {
+export function isSkapxdResultErrCall(node: RuleNode, typeContext: TypeContext) {
   if (!isResultErrCall(node)) {
     return false;
   }

@@ -1,4 +1,3 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
 import picomatch from "picomatch";
 
 // Matching de rutas con globs delegado a picomatch (el motor que usan
@@ -6,10 +5,10 @@ import picomatch from "picomatch";
 // - separadores de Windows normalizados, mismo glob en cualquier sistema;
 // - un patrón sin prefijo (`src/index.ts`, `*.config.*`) matchea en
 //   cualquier carpeta — se le antepone `**/`.
-export function matchesAnyGlob(filePath: LegacyAstNode, globs: LegacyAstNode) {
+export function matchesAnyGlob(filePath: string, globs: readonly string[]) {
   const normalized = filePath.replaceAll("\\", "/");
 
-  return globs.some((glob: LegacyAstNode) => {
+  return globs.some((glob) => {
     const anchored =
       glob.startsWith("/") || glob.startsWith("**") ? glob : `**/${glob}`;
 

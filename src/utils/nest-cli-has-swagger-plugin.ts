@@ -1,10 +1,16 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
 // nest-cli.json admite plugins como string o como objeto { name, options }.
-export function nestCliHasSwaggerPlugin(nestCliConfig: LegacyAstNode) {
+type NestCliConfig = {
+  compilerOptions?: {
+    plugins?: Array<string | { name?: string }>;
+  };
+};
+
+export function nestCliHasSwaggerPlugin(nestCliConfig: NestCliConfig) {
   const plugins = nestCliConfig?.compilerOptions?.plugins ?? [];
 
-  return plugins.some(
-    (plugin: LegacyAstNode) =>
-      plugin === "@nestjs/swagger" || plugin?.name === "@nestjs/swagger",
+  return plugins.some((plugin: string | { name?: string }) =>
+    typeof plugin === "string"
+      ? plugin === "@nestjs/swagger"
+      : plugin.name === "@nestjs/swagger",
   );
 }

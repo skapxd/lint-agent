@@ -1,7 +1,7 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-types";
 // `items.map((item) => <Item ... />)`: la función es el primer argumento de
 // una llamada `.map(...)`.
-export function isArrayMapCallback(node: LegacyAstNode) {
+export function isArrayMapCallback(node: RuleNode) {
   const parent = node.parent;
 
   if (parent?.type !== "CallExpression" || parent.arguments[0] !== node) {

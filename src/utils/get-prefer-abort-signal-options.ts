@@ -1,7 +1,8 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
-export function getPreferAbortSignalOptions(options: LegacyAstNode = {}) {
+import { stringArrayOption } from "#/utils/rule-types";
+import type { RuleOptions } from "#/utils/rule-types";
+export function getPreferAbortSignalOptions(options: RuleOptions = {}) {
   return {
-    allowFilePatterns: options.allowFilePatterns ?? [],
-    effectNames: options.effectNames ?? ["useEffect", "useLayoutEffect"],
+    allowFilePatterns: stringArrayOption(options, "allowFilePatterns", []),
+    effectNames: stringArrayOption(options, "effectNames", ["useEffect", "useLayoutEffect"]),
   };
 }

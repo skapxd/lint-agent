@@ -1,6 +1,6 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-types";
 import { getPackageName } from "./get-package-name";
 
-export function isSkapxdResultSourceFile(fileName: LegacyAstNode) {
+export function isSkapxdResultSourceFile(fileName: string) {
   return getPackageName(fileName) === "@skapxd/result";
 }

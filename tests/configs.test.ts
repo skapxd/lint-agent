@@ -2,6 +2,16 @@ import { describe, expect, it } from "vitest";
 import plugin from "../src/index";
 import { matchesAnyGlob } from "../src/utils/matches-any-glob";
 
+type AllowFilePatternsOptions = {
+  allowFilePatterns: readonly string[];
+};
+
+type SilencedCompilerOptions = {
+  "ts-expect-error": string;
+  "ts-ignore": boolean;
+  "ts-nocheck": boolean;
+};
+
 describe("configs.strict", () => {
   it("expone el preset endurecido con noInlineConfig", () => {
     expect(plugin.configs.strict.linterOptions.noInlineConfig).toBe(true);
@@ -30,10 +40,10 @@ describe("contrato de errores: await-requires-result manda", () => {
       plugin.configs.frontend,
       plugin.configs.next.find(
         (config: { name: string }) => config.name === "skapxd/next/server",
-      ),
+      )!,
       plugin.configs.astro.find(
         (config: { name: string }) => config.name === "skapxd/astro/typescript",
-      ),
+      )!,
     ];
 
     for (const preset of typedPresets) {
@@ -85,12 +95,12 @@ describe("no-default-export en el preset next", () => {
   it("exime automáticamente los entrypoints del App Router", () => {
     const nextBase = plugin.configs.next.find(
       (config: { name: string }) => config.name === "skapxd/next/base",
-    );
-    const [severity, options] = nextBase.rules["skapxd/no-default-export"];
+    )!;
+    const [severity, options] = nextBase.rules["skapxd/no-default-export"]!;
 
     expect(severity).toBe("error");
 
-    const globs = options.allowFilePatterns;
+    const globs = (options as AllowFilePatternsOptions).allowFilePatterns;
 
     expect(matchesAnyGlob("src/app/dashboard/page.tsx", globs)).toBe(true);
     expect(matchesAnyGlob("src/app/layout.tsx", globs)).toBe(true);
@@ -125,15 +135,20 @@ describe("preset nest", () => {
   it("exime los entrypoints del bootstrap en await-requires-result", () => {
     const nestBase = plugin.configs.nest.find(
       (config: { name: string }) => config.name === "skapxd/nest/base",
-    );
+    )!;
     const [severity, options] =
-      nestBase.rules["skapxd/await-requires-result"];
+      nestBase.rules["skapxd/await-requires-result"]!;
 
     expect(severity).toBe("error");
     expect(nestBase.languageOptions?.parser).toBeDefined();
-    expect(matchesAnyGlob("src/main.ts", options.allowFilePatterns)).toBe(true);
+    const allowOptions = options as AllowFilePatternsOptions;
+
+    expect(matchesAnyGlob("src/main.ts", allowOptions.allowFilePatterns)).toBe(true);
     expect(
-      matchesAnyGlob("src/modules/loan/loan.service.ts", options.allowFilePatterns),
+      matchesAnyGlob(
+        "src/modules/loan/loan.service.ts",
+        allowOptions.allowFilePatterns,
+      ),
     ).toBe(false);
     expect(nestBase.rules["skapxd/nest-no-result-response"]).toBe("error");
   });
@@ -141,8 +156,8 @@ describe("preset nest", () => {
   it("inyecta los hooks del framework a la regla agnóstica max-public-methods", () => {
     const nestBase = plugin.configs.nest.find(
       (config: { name: string }) => config.name === "skapxd/nest/base",
-    );
-    const [severity, options] = nestBase.rules["skapxd/max-public-methods"];
+    )!;
+    const [severity, options] = nestBase.rules["skapxd/max-public-methods"]!;
 
     expect(severity).toBe("error");
     expect(options.ignore).toContain("onModuleInit");
@@ -150,7 +165,7 @@ describe("preset nest", () => {
 
     const controllers = plugin.configs.nest.find(
       (config: { name: string }) => config.name === "skapxd/nest/controllers",
-    );
+    )!;
 
     expect(controllers.rules["skapxd/max-public-methods"]).toBe("off");
   });
@@ -158,7 +173,7 @@ describe("preset nest", () => {
   it("relaja en specs lo que los tests no pueden cumplir", () => {
     const nestTests = plugin.configs.nest.find(
       (config: { name: string }) => config.name === "skapxd/nest/tests",
-    );
+    )!;
 
     expect(nestTests.rules["skapxd/await-requires-result"]).toBe("off");
     expect(nestTests.rules["skapxd/no-try-catch"]).toBe("off");
@@ -188,7 +203,7 @@ describe("reglas type-driven (wrappers de typescript-eslint) en presets tipados"
       plugin.configs.package,
       plugin.configs.nest.find(
         (config: { name: string }) => config.name === "skapxd/nest/base",
-      ),
+      )!,
     ];
 
     for (const preset of typedPresets) {
@@ -256,17 +271,18 @@ describe("reglas type-driven (wrappers de typescript-eslint) en presets tipados"
 
   it("prohíbe ts-ignore y ts-nocheck pero permite ts-expect-error descrito", () => {
     const [severity, options] =
-      plugin.configs.backend.rules["skapxd/no-silenced-compiler"];
+      plugin.configs.backend.rules["skapxd/no-silenced-compiler"]!;
+    const compilerOptions = options as SilencedCompilerOptions;
 
     expect(severity).toBe("error");
-    expect(options["ts-ignore"]).toBe(true);
-    expect(options["ts-nocheck"]).toBe(true);
-    expect(options["ts-expect-error"]).toBe("allow-with-description");
+    expect(compilerOptions["ts-ignore"]).toBe(true);
+    expect(compilerOptions["ts-nocheck"]).toBe(true);
+    expect(compilerOptions["ts-expect-error"]).toBe("allow-with-description");
   });
 
   it("prefer-type-over-interface fuerza la opción type (el default upstream es interface)", () => {
     const [severity, mode] =
-      plugin.configs.backend.rules["skapxd/prefer-type-over-interface"];
+      plugin.configs.backend.rules["skapxd/prefer-type-over-interface"]!;
 
     expect(severity).toBe("error");
     expect(mode).toBe("type");
@@ -308,7 +324,7 @@ describe("parser de TypeScript en los presets", () => {
   it("el bloque de .astro no impone parser (lo aporta eslint-plugin-astro)", () => {
     const astroFiles = plugin.configs.astro.find(
       (config: { name: string }) => config.name === "skapxd/astro/astro-files",
-    );
+    )!;
 
     expect(astroFiles).toBeDefined();
     expect(astroFiles.languageOptions).toBeUndefined();

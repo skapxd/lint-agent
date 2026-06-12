@@ -1,8 +1,9 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-types";
+import { isAstNode } from "./is-ast-node";
 // Extrae los nombres de props destructuradas del primer parámetro de un
 // componente: `({ game, variant, ...rest })` → { propNames, restName }.
 // Solo cuenta los shorthand (`{ game }`); un rename (`{ game: g }`) se omite.
-export function getObjectPatternPropNames(pattern: LegacyAstNode) {
+export function getObjectPatternPropNames(pattern: RuleNode) {
   // Anotado a mano: el tipo inferido del literal mentia (restName quedaba
   // como `null` para siempre y propNames como never[]).
   const result: { propNames: string[]; restName: string | null } = {
@@ -23,6 +24,7 @@ export function getObjectPatternPropNames(pattern: LegacyAstNode) {
     if (
       property.type === "Property" &&
       property.key.type === "Identifier" &&
+      isAstNode(property.value) &&
       property.value.type === "Identifier" &&
       property.key.name === property.value.name
     ) {

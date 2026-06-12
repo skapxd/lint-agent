@@ -1,13 +1,13 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-types";
 // Un método que expande la superficie pública de la clase: descarta
 // constructor, getters/setters, private/protected, #privados y el prefijo
 // `_` (la convención de privado suave).
-export function isPublicClassMethod(member: LegacyAstNode) {
+export function isPublicClassMethod(member: RuleNode) {
   if (member.type !== "MethodDefinition") {
     return false;
   }
 
-  if (["constructor", "get", "set"].includes(member.kind)) {
+  if (["constructor", "get", "set"].includes(String(member.kind))) {
     return false;
   }
 

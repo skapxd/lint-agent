@@ -5,7 +5,7 @@ import { getMaxHookSizeOptions } from "#/utils/get-max-hook-size-options";
 import { getParentFunctionName } from "#/utils/get-parent-function-name";
 import { getParentFunctionReportNode } from "#/utils/get-parent-function-report-node";
 import { isHookName } from "#/utils/is-hook-name";
-import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
+import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-types";
 
 export const maxHookSize: RuleModule = {
       meta: {
@@ -31,23 +31,28 @@ export const maxHookSize: RuleModule = {
           },
         ],
       },
-      create(context: LegacyAstNode) {
+      create(context: RuleContext) {
         const options = getMaxHookSizeOptions(context.options[0]);
 
-        function reportIfOversizedHook(node: LegacyAstNode, name: LegacyAstNode, reportNode: LegacyAstNode = node) {
+        function reportIfOversizedHook(
+          node: RuleNode,
+          name: string | null | undefined,
+          reportNode: RuleNode = node,
+        ) {
           if (!isHookName(name)) {
             return;
           }
 
           const lines = getFunctionLineCount(node);
           const useStateCount = countOwnUseStateCalls(node);
+          const reportName = name ?? "anonymous";
 
           if (lines > options.maxLines) {
             context.report({
               data: {
                 lines: String(lines),
                 maxLines: String(options.maxLines),
-                name,
+                name: reportName,
               },
               messageId: "tooLargeHook",
               node: reportNode,
@@ -58,7 +63,7 @@ export const maxHookSize: RuleModule = {
             context.report({
               data: {
                 maxUseState: String(options.maxUseState),
-                name,
+                name: reportName,
                 useStateCount: String(useStateCount),
               },
               messageId: "tooManyUseState",
@@ -68,17 +73,17 @@ export const maxHookSize: RuleModule = {
         }
 
         return {
-          ArrowFunctionExpression(node: LegacyAstNode) {
+          ArrowFunctionExpression(node: RuleNode) {
             reportIfOversizedHook(
               node,
               getParentFunctionName(node),
               getParentFunctionReportNode(node),
             );
           },
-          FunctionDeclaration(node: LegacyAstNode) {
+          FunctionDeclaration(node: RuleNode) {
             reportIfOversizedHook(node, node.id?.name, node.id ?? node);
           },
-          FunctionExpression(node: LegacyAstNode) {
+          FunctionExpression(node: RuleNode) {
             reportIfOversizedHook(
               node,
               getFunctionExpressionName(node),

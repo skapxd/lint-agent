@@ -1,9 +1,10 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
+import { booleanOption } from "#/utils/rule-types";
+import type { RuleOptions } from "#/utils/rule-types";
 // Los callbacks inline de JSX y de .map son React idiomático: permitidos por
 // defecto. El modo ultraestricto se activa pasando `false` explícito.
-export function getNoFunctionsInsideComponentsOptions(options: LegacyAstNode = {}) {
+export function getNoFunctionsInsideComponentsOptions(options: RuleOptions = {}) {
   return {
-    allowArrayMapCallbacks: options.allowArrayMapCallbacks ?? true,
-    allowJsxCallbacks: options.allowJsxCallbacks ?? true,
+    allowArrayMapCallbacks: booleanOption(options, "allowArrayMapCallbacks", true),
+    allowJsxCallbacks: booleanOption(options, "allowJsxCallbacks", true),
   };
 }

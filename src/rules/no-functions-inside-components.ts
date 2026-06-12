@@ -6,7 +6,7 @@ import { isExpressionArrowFunction } from "#/utils/is-expression-arrow-function"
 import { isFunctionNode } from "#/utils/is-function-node";
 import { isJsxAttributeCallback } from "#/utils/is-jsx-attribute-callback";
 import { isPascalCaseName } from "#/utils/is-pascal-case-name";
-import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
+import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-types";
 
 export const noFunctionsInsideComponents: RuleModule = {
   meta: {
@@ -30,14 +30,14 @@ export const noFunctionsInsideComponents: RuleModule = {
       },
     ],
   },
-  create(context: LegacyAstNode) {
+  create(context: RuleContext) {
     const options = getNoFunctionsInsideComponentsOptions(context.options[0]);
 
-    function isComponentFunction(node: LegacyAstNode) {
+    function isComponentFunction(node: RuleNode) {
       return isFunctionNode(node) && isPascalCaseName(getFunctionName(node));
     }
 
-    function isAllowedInlineCallback(node: LegacyAstNode) {
+    function isAllowedInlineCallback(node: RuleNode) {
       if (!isExpressionArrowFunction(node)) {
         return false;
       }
@@ -49,7 +49,7 @@ export const noFunctionsInsideComponents: RuleModule = {
       return options.allowArrayMapCallbacks && isArrayMapCallback(node);
     }
 
-    function reportIfInsideComponent(node: LegacyAstNode) {
+    function reportIfInsideComponent(node: RuleNode) {
       const enclosingFunction = getContainingFunction(node);
 
       if (!enclosingFunction || !isComponentFunction(enclosingFunction)) {

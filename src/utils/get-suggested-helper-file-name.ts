@@ -1,8 +1,17 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
 import { isHttpRouteMethod } from "./is-http-route-method";
 import { toKebabCase } from "./to-kebab-case";
 
-export function getSuggestedHelperFileName({ extension, fileStem, functionName }: LegacyAstNode) {
+type SuggestedHelperFileNameInput = {
+  extension: string;
+  fileStem: string;
+  functionName: string;
+};
+
+export function getSuggestedHelperFileName({
+  extension,
+  fileStem,
+  functionName,
+}: SuggestedHelperFileNameInput) {
   const helperFunctionName =
     fileStem === "route" && isHttpRouteMethod(functionName)
       ? `handle${functionName}`

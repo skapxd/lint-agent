@@ -1,6 +1,6 @@
 import { getNoAccessorsOptions } from "#/utils/get-no-accessors-options";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
-import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
+import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-types";
 
 export const noAccessors: RuleModule = {
   meta: {
@@ -26,7 +26,7 @@ export const noAccessors: RuleModule = {
       },
     ],
   },
-  create(context: LegacyAstNode) {
+  create(context: RuleContext) {
     const options = getNoAccessorsOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
@@ -34,7 +34,7 @@ export const noAccessors: RuleModule = {
       return {};
     }
 
-    function reportIfAccessor(node: LegacyAstNode) {
+    function reportIfAccessor(node: RuleNode) {
       if (node.kind !== "get" && node.kind !== "set") {
         return;
       }

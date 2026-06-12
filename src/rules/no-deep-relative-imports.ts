@@ -1,5 +1,5 @@
 import { countParentSegments } from "#/utils/count-parent-segments";
-import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
+import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-types";
 
 export const noDeepRelativeImports: RuleModule = {
   meta: {
@@ -22,10 +22,11 @@ export const noDeepRelativeImports: RuleModule = {
       },
     ],
   },
-  create(context: LegacyAstNode) {
-    const maxDepth = context.options[0]?.maxDepth ?? 0;
+  create(context: RuleContext) {
+    const maxDepthOption = context.options[0]?.maxDepth;
+    const maxDepth = typeof maxDepthOption === "number" ? maxDepthOption : 0;
 
-    function reportIfTooDeep(source: LegacyAstNode) {
+    function reportIfTooDeep(source: RuleNode) {
       if (!source || typeof source.value !== "string") {
         return;
       }
@@ -48,16 +49,16 @@ export const noDeepRelativeImports: RuleModule = {
     }
 
     return {
-      ExportAllDeclaration(node: LegacyAstNode) {
+      ExportAllDeclaration(node: RuleNode) {
         reportIfTooDeep(node.source);
       },
-      ExportNamedDeclaration(node: LegacyAstNode) {
+      ExportNamedDeclaration(node: RuleNode) {
         reportIfTooDeep(node.source);
       },
-      ImportDeclaration(node: LegacyAstNode) {
+      ImportDeclaration(node: RuleNode) {
         reportIfTooDeep(node.source);
       },
-      ImportExpression(node: LegacyAstNode) {
+      ImportExpression(node: RuleNode) {
         reportIfTooDeep(node.source);
       },
     };

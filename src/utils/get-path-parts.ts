@@ -1,4 +1,3 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
-export function getPathParts(filename: LegacyAstNode) {
+export function getPathParts(filename: string) {
   return filename.split(/[\\/]/).filter(Boolean);
 }

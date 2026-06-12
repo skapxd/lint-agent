@@ -1,9 +1,9 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-types";
 import { getNodeChildren } from "./get-node-children";
 
 // Busca en la condición de un if una referencia a `this.<propiedad>`
 // (directa, negada o comparada) y devuelve el nombre de la propiedad.
-export function getThisPropertyInTest(node: LegacyAstNode): LegacyAstNode {
+export function getThisPropertyInTest(node: RuleNode): string | null {
   if (
     node?.type === "MemberExpression" &&
     node.object?.type === "ThisExpression" &&
@@ -12,7 +12,7 @@ export function getThisPropertyInTest(node: LegacyAstNode): LegacyAstNode {
     return node.property.name;
   }
 
-  for (const child of getNodeChildren(node ?? {})) {
+  for (const child of getNodeChildren(node)) {
     const found = getThisPropertyInTest(child);
 
     if (found) {

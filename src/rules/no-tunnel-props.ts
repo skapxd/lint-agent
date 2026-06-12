@@ -7,7 +7,7 @@ import { isPascalCaseJsxElement } from "#/utils/is-pascal-case-jsx-element";
 import { isPascalCaseName } from "#/utils/is-pascal-case-name";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
 import { matchesAnyPattern } from "#/utils/matches-any-pattern";
-import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
+import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-types";
 
 export const noTunnelProps: RuleModule = {
   meta: {
@@ -39,7 +39,7 @@ export const noTunnelProps: RuleModule = {
       },
     ],
   },
-  create(context: LegacyAstNode) {
+  create(context: RuleContext) {
     const options = getNoTunnelPropsOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
@@ -47,23 +47,33 @@ export const noTunnelProps: RuleModule = {
       return {};
     }
 
-    function reportSpreadTunnel(node: LegacyAstNode, componentName: LegacyAstNode, restName: LegacyAstNode) {
+    function reportSpreadTunnel(
+      node: RuleNode,
+      componentName: string,
+      restName: string,
+    ) {
       const spreads = collectIdentifiersNamed(node.body, restName).filter(
-        (identifier: LegacyAstNode) =>
+        (identifier: RuleNode) =>
           identifier.parent?.type === "JSXSpreadAttribute" &&
           isPascalCaseJsxElement(identifier.parent.parent),
       );
 
-      if (spreads.length > 0) {
+      const spread = spreads[0];
+
+      if (spread) {
         context.report({
           data: { component: componentName, name: restName },
           messageId: "spreadTunnel",
-          node: spreads[0].parent,
+          node: spread.parent,
         });
       }
     }
 
-    function reportForwardedProps(node: LegacyAstNode, componentName: LegacyAstNode, propNames: LegacyAstNode) {
+    function reportForwardedProps(
+      node: RuleNode,
+      componentName: string,
+      propNames: readonly string[],
+    ) {
       for (const propName of propNames) {
         if (matchesAnyPattern(propName, options.allowPropPatterns)) {
           continue;
@@ -81,14 +91,20 @@ export const noTunnelProps: RuleModule = {
       }
     }
 
-    function reportIfTunnelComponent(node: LegacyAstNode) {
+    function reportIfTunnelComponent(node: RuleNode) {
       const componentName = getFunctionName(node);
 
       if (!isPascalCaseName(componentName)) {
         return;
       }
 
-      const { propNames, restName } = getObjectPatternPropNames(node.params[0]);
+      const firstParameter = node.params[0];
+
+      if (!firstParameter) {
+        return;
+      }
+
+      const { propNames, restName } = getObjectPatternPropNames(firstParameter);
 
       if (restName) {
         reportSpreadTunnel(node, componentName, restName);

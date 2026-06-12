@@ -1,7 +1,7 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-types";
 import { isFunctionNode } from "./is-function-node";
 
-export function getContainingFunction(node: LegacyAstNode) {
+export function getContainingFunction(node: RuleNode) {
   let currentNode = node.parent;
 
   while (currentNode) {

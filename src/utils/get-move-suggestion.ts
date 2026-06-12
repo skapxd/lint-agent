@@ -1,11 +1,15 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
 import { getFileName } from "./get-file-name";
 import { getSourceExtension } from "./get-source-extension";
 import { getSuggestedHelperPath } from "./get-suggested-helper-path";
 import { isHttpRouteMethod } from "./is-http-route-method";
 import { isNextConventionFile } from "./is-next-convention-file";
 
-export function getMoveSuggestion({ filename, functionName }: LegacyAstNode) {
+type MoveSuggestionInput = {
+  filename: string;
+  functionName: string;
+};
+
+export function getMoveSuggestion({ filename, functionName }: MoveSuggestionInput) {
   const fileName = getFileName(filename);
   const extension = getSourceExtension(fileName);
   const fileStem = fileName.slice(0, -extension.length);

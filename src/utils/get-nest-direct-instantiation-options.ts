@@ -1,22 +1,23 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
-export function getNestDirectInstantiationOptions(options: LegacyAstNode = {}) {
+import { stringArrayOption } from "#/utils/rule-types";
+import type { RuleOptions } from "#/utils/rule-types";
+export function getNestDirectInstantiationOptions(options: RuleOptions = {}) {
   return {
-    allowFilePatterns: options.allowFilePatterns ?? [],
+    allowFilePatterns: stringArrayOption(options, "allowFilePatterns", []),
     // Regex de NOMBRES de clase que se construyen, no se inyectan: errores,
     // excepciones y eventos de dominio, vivan en el archivo que vivan.
-    allowedClassPatterns: options.allowedClassPatterns ?? [
+    allowedClassPatterns: stringArrayOption(options, "allowedClassPatterns", [
       "(Error|Exception|Event)$",
-    ],
+    ]),
     // Regex de sources internos donde SÍ se permite instanciar (value
     // objects, errores de dominio, DTOs construidos a mano).
-    allowedPatterns: options.allowedPatterns ?? [],
+    allowedPatterns: stringArrayOption(options, "allowedPatterns", []),
     // Regex que identifican imports internos del proyecto: alias (#/, @/)
     // y relativos. Lo externo (librerías) se instancia libre.
-    internalPatterns: options.internalPatterns ?? [
+    internalPatterns: stringArrayOption(options, "internalPatterns", [
       "^#/",
       "^@/",
       "^\\./",
       "^\\.\\./",
-    ],
+    ]),
   };
 }

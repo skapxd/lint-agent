@@ -1,4 +1,4 @@
-import type { LegacyAstNode, RuleModule } from "#/utils/rule-types";
+import type { RuleNode, RuleModule, RuleContext } from "#/utils/rule-types";
 export const noJsxTernaryNull: RuleModule = {
   meta: {
     type: "suggestion",
@@ -12,13 +12,13 @@ export const noJsxTernaryNull: RuleModule = {
     },
     schema: [],
   },
-  create(context: LegacyAstNode) {
-    function isNullLiteral(node: LegacyAstNode) {
+  create(context: RuleContext) {
+    function isNullLiteral(node: RuleNode | null) {
       return node?.type === "Literal" && node.value === null;
     }
 
     return {
-      ConditionalExpression(node: LegacyAstNode) {
+      ConditionalExpression(node: RuleNode) {
         const container = node.parent;
 
         if (container?.type !== "JSXExpressionContainer") {

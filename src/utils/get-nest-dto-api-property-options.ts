@@ -1,11 +1,12 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
-export function getNestDtoApiPropertyOptions(options: LegacyAstNode = {}) {
+import { stringArrayOption } from "#/utils/rule-types";
+import type { RuleOptions } from "#/utils/rule-types";
+export function getNestDtoApiPropertyOptions(options: RuleOptions = {}) {
   return {
-    allowFilePatterns: options.allowFilePatterns ?? [],
-    apiPropertyDecoratorNames: options.apiPropertyDecoratorNames ?? [
+    allowFilePatterns: stringArrayOption(options, "allowFilePatterns", []),
+    apiPropertyDecoratorNames: stringArrayOption(options, "apiPropertyDecoratorNames", [
       "ApiProperty",
       "ApiPropertyOptional",
-    ],
-    dtoFilePatterns: options.dtoFilePatterns ?? ["*.dto.ts"],
+    ]),
+    dtoFilePatterns: stringArrayOption(options, "dtoFilePatterns", ["*.dto.ts"]),
   };
 }

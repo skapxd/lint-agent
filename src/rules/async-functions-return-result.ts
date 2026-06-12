@@ -9,7 +9,7 @@ import { isPromiseOfResultType } from "#/utils/is-promise-of-result-type";
 import { isSkapxdResultOrPromiseResultType } from "#/utils/is-skapxd-result-or-promise-result-type";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
 import { matchesAnyPattern } from "#/utils/matches-any-pattern";
-import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
+import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-types";
 
 export const asyncFunctionsReturnResult: RuleModule = {
       meta: {
@@ -58,7 +58,7 @@ export const asyncFunctionsReturnResult: RuleModule = {
           },
         ],
       },
-      create(context: LegacyAstNode) {
+      create(context: RuleContext) {
         const options = getAsyncResultRuleOptions(context.options[0]);
         const filename = context.filename ?? context.getFilename();
         const typeContext = getTypeContext(context);
@@ -66,7 +66,7 @@ export const asyncFunctionsReturnResult: RuleModule = {
         // Verifica que el tipo de retorno sea un Result de @skapxd/result.
         // Con información de tipos (projectService) resuelve el símbolo hasta
         // el paquete; sin ella, cae a una comprobación por nombre.
-        function isSkapxdResultReturnType(annotation: LegacyAstNode) {
+        function isSkapxdResultReturnType(annotation: RuleNode) {
           if (typeContext) {
             const type = typeContext.services.getTypeFromTypeNode(annotation);
 
@@ -76,7 +76,11 @@ export const asyncFunctionsReturnResult: RuleModule = {
           return isPromiseOfResultType(annotation, options);
         }
 
-        function reportIfInvalidAsyncReturn(node: LegacyAstNode, name: LegacyAstNode, reportNode: LegacyAstNode = node) {
+        function reportIfInvalidAsyncReturn(
+          node: RuleNode,
+          name: string | null | undefined,
+          reportNode: RuleNode = node,
+        ) {
           if (!node.async || matchesAnyGlob(filename, options.allowFilePatterns)) {
             return;
           }
@@ -129,17 +133,17 @@ export const asyncFunctionsReturnResult: RuleModule = {
         }
 
         return {
-          ArrowFunctionExpression(node: LegacyAstNode) {
+          ArrowFunctionExpression(node: RuleNode) {
             reportIfInvalidAsyncReturn(
               node,
               getParentFunctionName(node),
               getParentFunctionReportNode(node),
             );
           },
-          FunctionDeclaration(node: LegacyAstNode) {
+          FunctionDeclaration(node: RuleNode) {
             reportIfInvalidAsyncReturn(node, node.id?.name, node.id ?? node);
           },
-          FunctionExpression(node: LegacyAstNode) {
+          FunctionExpression(node: RuleNode) {
             reportIfInvalidAsyncReturn(
               node,
               getFunctionExpressionName(node),

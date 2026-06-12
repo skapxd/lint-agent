@@ -1,8 +1,9 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
-export function getNestInlineQueryOptions(options: LegacyAstNode = {}) {
+import { numberOption, stringArrayOption } from "#/utils/rule-types";
+import type { RuleOptions } from "#/utils/rule-types";
+export function getNestInlineQueryOptions(options: RuleOptions = {}) {
   return {
-    allowFilePatterns: options.allowFilePatterns ?? [],
+    allowFilePatterns: stringArrayOption(options, "allowFilePatterns", []),
     // Un @Query('name') suelto es legítimo; desde 2 ya es un DTO disfrazado.
-    max: options.max ?? 1,
+    max: numberOption(options, "max", 1),
   };
 }

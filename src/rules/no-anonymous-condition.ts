@@ -26,7 +26,7 @@ type RuleContext = {
     node: unknown;
   }) => void;
   sourceCode?: {
-    parserServices?: Parameters<typeof callHasTypePredicate>[1];
+    parserServices?: unknown;
   };
 };
 
@@ -101,7 +101,12 @@ export const noAnonymousCondition: RuleModule = {
         const isProvenTypeGuard =
           condition.type === "CallExpression" &&
           options.allowTypePredicates &&
-          callHasTypePredicate(condition, context.sourceCode?.parserServices);
+          callHasTypePredicate(
+            condition,
+            context.sourceCode?.parserServices as Parameters<
+              typeof callHasTypePredicate
+            >[1],
+          );
 
         if (isProvenTypeGuard) {
           return;

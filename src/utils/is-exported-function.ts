@@ -1,5 +1,5 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
-export function isExportedFunction(node: LegacyAstNode) {
+import type { RuleNode } from "#/utils/rule-types";
+export function isExportedFunction(node: RuleNode) {
   const parent = node.parent;
 
   if (

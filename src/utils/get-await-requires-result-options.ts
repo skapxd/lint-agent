@@ -1,7 +1,8 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
-export function getAwaitRequiresResultOptions(options: LegacyAstNode = {}) {
+import { stringArrayOption } from "#/utils/rule-types";
+import type { RuleOptions } from "#/utils/rule-types";
+export function getAwaitRequiresResultOptions(options: RuleOptions = {}) {
   return {
-    allowFilePatterns: options.allowFilePatterns ?? [],
-    trySafeCallNames: options.trySafeCallNames ?? ["trySafe"],
+    allowFilePatterns: stringArrayOption(options, "allowFilePatterns", []),
+    trySafeCallNames: stringArrayOption(options, "trySafeCallNames", ["trySafe"]),
   };
 }

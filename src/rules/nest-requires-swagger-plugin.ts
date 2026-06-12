@@ -5,7 +5,7 @@ import { findProjectFile } from "#/utils/find-project-file";
 import { getNestSwaggerPluginOptions } from "#/utils/get-nest-swagger-plugin-options";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
 import { nestCliHasSwaggerPlugin } from "#/utils/nest-cli-has-swagger-plugin";
-import type { LegacyAstNode, RuleModule } from "#/utils/rule-types";
+import type { RuleNode, RuleModule, RuleContext } from "#/utils/rule-types";
 
 export const nestRequiresSwaggerPlugin: RuleModule = {
   meta: {
@@ -37,7 +37,7 @@ export const nestRequiresSwaggerPlugin: RuleModule = {
       },
     ],
   },
-  create(context: LegacyAstNode) {
+  create(context: RuleContext) {
     const options = getNestSwaggerPluginOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
@@ -49,7 +49,7 @@ export const nestRequiresSwaggerPlugin: RuleModule = {
     }
 
     return {
-      Program(node: LegacyAstNode) {
+      Program(node: RuleNode) {
         const absoluteFilename = resolve(context.cwd ?? process.cwd(), filename);
         const nestCliPath = findProjectFile(dirname(absoluteFilename), "nest-cli.json");
 

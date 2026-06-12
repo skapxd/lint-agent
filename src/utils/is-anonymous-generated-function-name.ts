@@ -1,4 +1,3 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
-export function isAnonymousGeneratedFunctionName(name: LegacyAstNode) {
+export function isAnonymousGeneratedFunctionName(name: string | null | undefined) {
   return name === "anonymous" || name === "helper";
 }

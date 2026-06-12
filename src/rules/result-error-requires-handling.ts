@@ -5,7 +5,7 @@ import { getTypeContext } from "#/utils/get-type-context";
 import { isConsumedResultReference } from "#/utils/is-consumed-result-reference";
 import { isSkapxdResultExpression } from "#/utils/is-skapxd-result-expression";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
-import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
+import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-types";
 
 export const resultErrorRequiresHandling: RuleModule = {
   meta: {
@@ -31,7 +31,7 @@ export const resultErrorRequiresHandling: RuleModule = {
       },
     ],
   },
-  create(context: LegacyAstNode) {
+  create(context: RuleContext) {
     const options = getResultErrorRequiresHandlingOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
     const typeContext = getTypeContext(context);
@@ -41,7 +41,7 @@ export const resultErrorRequiresHandling: RuleModule = {
     }
 
     return {
-      IfStatement(node: LegacyAstNode) {
+      IfStatement(node: RuleNode) {
         const resultGuard = getFailedResultGuard(node.test);
 
         if (
@@ -58,7 +58,7 @@ export const resultErrorRequiresHandling: RuleModule = {
         );
 
         if (
-          references.some((reference: LegacyAstNode) =>
+          references.some((reference: RuleNode) =>
             isConsumedResultReference(reference, node.consequent),
           )
         ) {

@@ -1,9 +1,11 @@
 import { getNestNoResultResponseOptions } from "#/utils/get-nest-no-result-response-options";
 import { getTypeContext } from "#/utils/get-type-context";
 import { hasClassDecoratorNamed } from "#/utils/has-class-decorator-named";
+import { isAstNode } from "#/utils/is-ast-node";
 import { isSkapxdResultOrPromiseResultType } from "#/utils/is-skapxd-result-or-promise-result-type";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
-import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
+import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-types";
+import type ts from "typescript";
 
 const typescriptCallSignatureKind = 0;
 
@@ -35,7 +37,7 @@ export const nestNoResultResponse: RuleModule = {
       },
     ],
   },
-  create(context: LegacyAstNode) {
+  create(context: RuleContext) {
     const options = getNestNoResultResponseOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
     const typeContext = getTypeContext(context);
@@ -46,14 +48,18 @@ export const nestNoResultResponse: RuleModule = {
 
     const activeTypeContext = typeContext;
 
-    function methodReturnsResult(node: LegacyAstNode) {
+    function methodReturnsResult(node: RuleNode) {
+      if (!isAstNode(node.value)) {
+        return false;
+      }
+
       const methodType = activeTypeContext.services.getTypeAtLocation(node.value);
       const signatures = activeTypeContext.checker.getSignaturesOfType(
         methodType,
         typescriptCallSignatureKind,
       );
 
-      return signatures.some((signature: LegacyAstNode) =>
+      return signatures.some((signature: ts.Signature) =>
         isSkapxdResultOrPromiseResultType(
           activeTypeContext.checker.getReturnTypeOfSignature(signature),
           activeTypeContext,
@@ -62,7 +68,7 @@ export const nestNoResultResponse: RuleModule = {
     }
 
     return {
-      MethodDefinition(node: LegacyAstNode) {
+      MethodDefinition(node: RuleNode) {
         if (node.kind !== "method") {
           return;
         }

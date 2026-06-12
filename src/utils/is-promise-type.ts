@@ -1,4 +1,8 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
-export function isPromiseType(type: LegacyAstNode, typeContext: LegacyAstNode) {
-  return typeContext.checker.getPromisedTypeOfPromise(type) !== undefined;
+import type ts from "typescript";
+import type { TypeContext } from "#/utils/rule-types";
+
+export function isPromiseType(type: ts.Type, typeContext: TypeContext) {
+  const awaited = typeContext.checker.getAwaitedType(type);
+
+  return Boolean(awaited && awaited !== type);
 }

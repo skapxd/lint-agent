@@ -1,5 +1,4 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
-export function toKebabCase(value: LegacyAstNode) {
+export function toKebabCase(value: string) {
   return value
     .replace(/OEmbed/g, "Oembed")
     .replace(/([a-z0-9])([A-Z])/g, "$1-$2")

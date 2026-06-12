@@ -1,8 +1,11 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
+import type { RuleNode, RuleSourceCode } from "#/utils/rule-types";
 import { getCallExpressionExample } from "./get-call-expression-example";
 import { unwrapExpression } from "./unwrap-expression";
 
-export function getAwaitedOperationExample(node: LegacyAstNode, sourceCode: LegacyAstNode) {
+export function getAwaitedOperationExample(
+  node: RuleNode,
+  sourceCode: RuleSourceCode,
+) {
   const unwrappedNode = unwrapExpression(node);
 
   if (unwrappedNode.type === "CallExpression") {

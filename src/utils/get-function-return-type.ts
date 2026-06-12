@@ -1,5 +1,5 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
-export function getFunctionReturnType(node: LegacyAstNode, typeContext: LegacyAstNode) {
+import type { RuleNode, TypeContext } from "#/utils/rule-types";
+export function getFunctionReturnType(node: RuleNode, typeContext: TypeContext) {
   if (node.returnType?.typeAnnotation) {
     return typeContext.services.getTypeFromTypeNode(node.returnType.typeAnnotation);
   }

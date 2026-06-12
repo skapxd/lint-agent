@@ -1,13 +1,14 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
-export function getNestValidationPipeOptions(options: LegacyAstNode = {}) {
+import { stringArrayOption } from "#/utils/rule-types";
+import type { RuleOptions } from "#/utils/rule-types";
+export function getNestValidationPipeOptions(options: RuleOptions = {}) {
   return {
-    allowFilePatterns: options.allowFilePatterns ?? [],
+    allowFilePatterns: stringArrayOption(options, "allowFilePatterns", []),
     // Las opciones que sostienen el contrato de los DTOs:
     // - transform: sin él, class-transformer no corre y @Type no hace nada;
     // - whitelist: sin él, las props sin decorador pasan crudas al dominio.
-    requiredPipeOptions: options.requiredPipeOptions ?? [
+    requiredPipeOptions: stringArrayOption(options, "requiredPipeOptions", [
       "transform",
       "whitelist",
-    ],
+    ]),
   };
 }

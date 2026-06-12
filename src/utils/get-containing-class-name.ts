@@ -1,5 +1,5 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
-export function getContainingClassName(node: LegacyAstNode) {
+import type { RuleNode } from "#/utils/rule-types";
+export function getContainingClassName(node: RuleNode) {
   let current = node.parent;
 
   while (current) {

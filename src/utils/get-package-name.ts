@@ -1,4 +1,4 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-types";
 import { trySafe } from "@skapxd/result";
 import fs from "node:fs";
 import path from "node:path";
@@ -12,7 +12,7 @@ const packageNameByDir = new Map();
 // Resuelve el `name` del package.json más cercano hacia arriba desde un archivo.
 // Robusto ante cualquier layout (node_modules, pnpm, workspace link, monorepo):
 // se basa en la identidad real del paquete, no en la forma de la ruta.
-export function getPackageName(fileName: LegacyAstNode) {
+export function getPackageName(fileName: string) {
   const visited = [];
   let dir = path.dirname(fileName);
 

@@ -1,7 +1,7 @@
 import { containsEmoji } from "#/utils/contains-emoji";
 import { getNoEmojiOptions } from "#/utils/get-no-emoji-options";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
-import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
+import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-types";
 
 export const noEmoji: RuleModule = {
   meta: {
@@ -27,7 +27,7 @@ export const noEmoji: RuleModule = {
       },
     ],
   },
-  create(context: LegacyAstNode) {
+  create(context: RuleContext) {
     const options = getNoEmojiOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
@@ -35,21 +35,21 @@ export const noEmoji: RuleModule = {
       return {};
     }
 
-    function reportIfEmoji(node: LegacyAstNode, value: LegacyAstNode) {
+    function reportIfEmoji(node: RuleNode, value: unknown) {
       if (typeof value === "string" && containsEmoji(value)) {
         context.report({ messageId: "noEmoji", node });
       }
     }
 
     return {
-      JSXText(node: LegacyAstNode) {
+      JSXText(node: RuleNode) {
         reportIfEmoji(node, node.value);
       },
-      Literal(node: LegacyAstNode) {
+      Literal(node: RuleNode) {
         reportIfEmoji(node, node.value);
       },
-      TemplateElement(node: LegacyAstNode) {
-        reportIfEmoji(node, node.value.raw);
+      TemplateElement(node: RuleNode) {
+        reportIfEmoji(node, typeof node.value === "object" ? node.value?.raw : null);
       },
     };
   },

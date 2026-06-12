@@ -1,5 +1,5 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
-export function getParentFunctionReportNode(node: LegacyAstNode) {
+import type { RuleNode } from "#/utils/rule-types";
+export function getParentFunctionReportNode(node: RuleNode) {
   const parent = node.parent;
 
   if (parent?.type === "VariableDeclarator" && parent.id.type === "Identifier") {

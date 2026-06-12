@@ -1,5 +1,5 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
-export function isFunctionNode(node: LegacyAstNode) {
+import type { RuleNode } from "#/utils/rule-types";
+export function isFunctionNode(node: RuleNode) {
   return (
     node?.type === "FunctionDeclaration" ||
     node?.type === "FunctionExpression" ||

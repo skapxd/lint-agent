@@ -3,7 +3,7 @@ import { getNestValidationPipeOptions } from "#/utils/get-nest-validation-pipe-o
 import { getObjectKeysSetToTrue } from "#/utils/get-object-keys-set-to-true";
 import { getVariableInitializer } from "#/utils/get-variable-initializer";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
-import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
+import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-types";
 
 export const nestValidationPipeConfig: RuleModule = {
   meta: {
@@ -33,7 +33,7 @@ export const nestValidationPipeConfig: RuleModule = {
       },
     ],
   },
-  create(context: LegacyAstNode) {
+  create(context: RuleContext) {
     const options = getNestValidationPipeOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
     const sourceCode = context.sourceCode ?? context.getSourceCode();
@@ -42,9 +42,9 @@ export const nestValidationPipeConfig: RuleModule = {
       return {};
     }
 
-    let commonNames = new Set();
+    let commonNames = new Set<string>();
 
-    function resolvePipeOptionsObject(argument: LegacyAstNode) {
+    function resolvePipeOptionsObject(argument: RuleNode | undefined) {
       if (!argument) {
         return null;
       }
@@ -57,19 +57,22 @@ export const nestValidationPipeConfig: RuleModule = {
         return undefined;
       }
 
-      const initializer = getVariableInitializer(
-        argument,
-        sourceCode.getScope(argument),
-      );
+      const scope = sourceCode.getScope?.(argument);
+
+      if (!scope) {
+        return undefined;
+      }
+
+      const initializer = getVariableInitializer(argument, scope);
 
       return initializer?.type === "ObjectExpression" ? initializer : undefined;
     }
 
     return {
-      Program(node: LegacyAstNode) {
+      Program(node: RuleNode) {
         commonNames = getImportedLocalNames(node, "@nestjs/common");
       },
-      NewExpression(node: LegacyAstNode) {
+      NewExpression(node: RuleNode) {
         if (
           node.callee?.type !== "Identifier" ||
           node.callee.name !== "ValidationPipe" ||
@@ -87,7 +90,7 @@ export const nestValidationPipeConfig: RuleModule = {
 
         const hasSpread =
           pipeOptions?.properties.some(
-            (property: LegacyAstNode) => property.type === "SpreadElement",
+            (property: RuleNode) => property.type === "SpreadElement",
           ) ?? false;
 
         if (hasSpread) {
@@ -98,12 +101,12 @@ export const nestValidationPipeConfig: RuleModule = {
           ? getObjectKeysSetToTrue(pipeOptions, options.requiredPipeOptions)
           : [];
         const missing = options.requiredPipeOptions.filter(
-          (key: LegacyAstNode) => !present.includes(key),
+          (key: string) => !present.includes(key),
         );
 
         if (missing.length > 0) {
           context.report({
-            data: { missing: missing.map((key: LegacyAstNode) => `\`${key}: true\``).join(", ") },
+            data: { missing: missing.map((key: string) => `\`${key}: true\``).join(", ") },
             messageId: "missingPipeOptions",
             node,
           });

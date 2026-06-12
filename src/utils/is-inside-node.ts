@@ -1,5 +1,5 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
-export function isInsideNode(node: LegacyAstNode, ancestor: LegacyAstNode) {
+import type { RuleNode } from "#/utils/rule-types";
+export function isInsideNode(node: RuleNode, ancestor: RuleNode) {
   let current = node;
 
   while (current) {

@@ -1,13 +1,14 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
-export function getAsyncResultRuleOptions(options: LegacyAstNode = {}) {
+import { booleanOption, stringArrayOption } from "#/utils/rule-types";
+import type { RuleOptions } from "#/utils/rule-types";
+export function getAsyncResultRuleOptions(options: RuleOptions = {}) {
   return {
-    allowFilePatterns: options.allowFilePatterns ?? [],
-    allowNamePatterns: options.allowNamePatterns ?? [],
-    checkMissingReturnType: options.checkMissingReturnType ?? true,
+    allowFilePatterns: stringArrayOption(options, "allowFilePatterns", []),
+    allowNamePatterns: stringArrayOption(options, "allowNamePatterns", []),
+    checkMissingReturnType: booleanOption(options, "checkMissingReturnType", true),
     checkMissingReturnTypeWhenCallNames:
-      options.checkMissingReturnTypeWhenCallNames ?? [],
-    promiseTypeNames: options.promiseTypeNames ?? ["Promise"],
-    requireCallNames: options.requireCallNames ?? [],
-    resultTypeNames: options.resultTypeNames ?? ["Result"],
+      stringArrayOption(options, "checkMissingReturnTypeWhenCallNames", []),
+    promiseTypeNames: stringArrayOption(options, "promiseTypeNames", ["Promise"]),
+    requireCallNames: stringArrayOption(options, "requireCallNames", []),
+    resultTypeNames: stringArrayOption(options, "resultTypeNames", ["Result"]),
   };
 }

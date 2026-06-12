@@ -4,7 +4,7 @@ import { hasAbortSignalOption } from "#/utils/has-abort-signal-option";
 import { isInsideEffectCallback } from "#/utils/is-inside-effect-callback";
 import { isMemberPropertyNamed } from "#/utils/is-member-property-named";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
-import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
+import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-types";
 
 export const preferAbortSignal: RuleModule = {
   meta: {
@@ -36,7 +36,7 @@ export const preferAbortSignal: RuleModule = {
       },
     ],
   },
-  create(context: LegacyAstNode) {
+  create(context: RuleContext) {
     const options = getPreferAbortSignalOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
     const sourceCode = context.sourceCode ?? context.getSourceCode();
@@ -47,7 +47,7 @@ export const preferAbortSignal: RuleModule = {
     }
 
     return {
-      CallExpression(node: LegacyAstNode) {
+      CallExpression(node: RuleNode) {
         if (node.callee?.type !== "MemberExpression") {
           return;
         }

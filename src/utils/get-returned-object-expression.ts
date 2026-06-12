@@ -1,5 +1,5 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
-export function getReturnedObjectExpression(node: LegacyAstNode) {
+import type { RuleNode } from "#/utils/rule-types";
+export function getReturnedObjectExpression(node: RuleNode) {
   if (!node) {
     return null;
   }

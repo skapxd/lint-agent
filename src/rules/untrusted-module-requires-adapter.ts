@@ -1,6 +1,6 @@
 import { getUntrustedModuleOptions } from "#/utils/get-untrusted-module-options";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
-import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
+import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-types";
 
 // La frontera anticorrupcion como guardrail (axioma A7): cuando los tipos de
 // un paquete de terceros mienten (el clasico @types desfasado del runtime
@@ -40,7 +40,7 @@ export const untrustedModuleRequiresAdapter: RuleModule = {
       },
     ],
   },
-  create(context: LegacyAstNode) {
+  create(context: RuleContext) {
     const options = getUntrustedModuleOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
@@ -53,10 +53,15 @@ export const untrustedModuleRequiresAdapter: RuleModule = {
     }
 
     return {
-      ImportDeclaration(node: LegacyAstNode) {
+      ImportDeclaration(node: RuleNode) {
         const source = node.source.value;
+
+        if (typeof source !== "string") {
+          return;
+        }
+
         const isUntrusted = options.modules.some(
-          (moduleName: LegacyAstNode) =>
+          (moduleName: string) =>
             source === moduleName || source.startsWith(`${moduleName}/`),
         );
 

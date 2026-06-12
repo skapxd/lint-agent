@@ -2,7 +2,7 @@ import { getDecoratorName } from "#/utils/get-decorator-name";
 import { getNestDtoApiPropertyOptions } from "#/utils/get-nest-dto-api-property-options";
 import { isPublicInstanceProperty } from "#/utils/is-public-instance-property";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
-import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
+import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-types";
 
 export const nestDtoRequiresApiProperty: RuleModule = {
   meta: {
@@ -36,7 +36,7 @@ export const nestDtoRequiresApiProperty: RuleModule = {
       },
     ],
   },
-  create(context: LegacyAstNode) {
+  create(context: RuleContext) {
     const options = getNestDtoApiPropertyOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
@@ -48,15 +48,20 @@ export const nestDtoRequiresApiProperty: RuleModule = {
     }
 
     return {
-      PropertyDefinition(node: LegacyAstNode) {
+      PropertyDefinition(node: RuleNode) {
         // Swagger solo serializa propiedades públicas de instancia.
         if (!isPublicInstanceProperty(node)) {
           return;
         }
 
-        const hasApiProperty = (node.decorators ?? []).some((decorator: LegacyAstNode) =>
-          options.apiPropertyDecoratorNames.includes(getDecoratorName(decorator)),
-        );
+        const hasApiProperty = (node.decorators ?? []).some((decorator: RuleNode) => {
+          const decoratorName = getDecoratorName(decorator);
+
+          return Boolean(
+            decoratorName &&
+              options.apiPropertyDecoratorNames.includes(decoratorName),
+          );
+        });
 
         if (!hasApiProperty) {
           context.report({

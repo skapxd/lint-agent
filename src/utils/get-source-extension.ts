@@ -1,4 +1,3 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
-export function getSourceExtension(fileName: LegacyAstNode) {
+export function getSourceExtension(fileName: string) {
   return fileName.endsWith(".tsx") ? ".tsx" : ".ts";
 }

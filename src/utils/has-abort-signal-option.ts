@@ -1,4 +1,4 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
+import type { RuleNode, RuleSourceCode, TypeContext } from "#/utils/rule-types";
 import { getVariableInitializer } from "./get-variable-initializer";
 import { objectExpressionHasSignal } from "./object-expression-has-signal";
 
@@ -7,7 +7,11 @@ import { objectExpressionHasSignal } from "./object-expression-has-signal";
 // se sigue hasta su inicializador en el scope; sin inicializador → el type
 // checker pregunta si el TIPO declara `signal` (si ni el tipo la tiene, es
 // imposible que llegue); sin tipos → beneficio de la duda.
-export function hasAbortSignalOption(callExpression: LegacyAstNode, sourceCode: LegacyAstNode, typeContext: LegacyAstNode) {
+export function hasAbortSignalOption(
+  callExpression: RuleNode,
+  sourceCode: RuleSourceCode,
+  typeContext: TypeContext | null,
+) {
   const options = callExpression.arguments[2];
 
   if (!options) {
@@ -23,10 +27,9 @@ export function hasAbortSignalOption(callExpression: LegacyAstNode, sourceCode: 
     return objectExpressionHasSignal(options);
   }
 
-  const initializer =
-    options.type === "Identifier"
-      ? getVariableInitializer(options, sourceCode.getScope(options))
-      : null;
+  const scope =
+    options.type === "Identifier" ? sourceCode.getScope?.(options) : null;
+  const initializer = scope ? getVariableInitializer(options, scope) : null;
 
   if (initializer?.type === "ObjectExpression") {
     return objectExpressionHasSignal(initializer);

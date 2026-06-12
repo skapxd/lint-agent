@@ -1,8 +1,8 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-types";
 // `const [error, setError] = useState(...)` → "setError". El setter se
 // identifica por POSICIÓN en el destructuring, no por su nombre: la
 // evidencia es estructural y un rename no la esquiva.
-export function getUseStateSetterName(callExpression: LegacyAstNode) {
+export function getUseStateSetterName(callExpression: RuleNode) {
   const declarator = callExpression.parent;
 
   if (

@@ -1,10 +1,10 @@
-import type { LegacyAstNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-types";
 import { getNodeChildren } from "./get-node-children";
 import { isAstNode } from "./is-ast-node";
 import { isCalleeNamed } from "./is-callee-named";
 import { isFunctionNode } from "./is-function-node";
 
-export function countOwnUseStateCallsInNode(node: LegacyAstNode) {
+export function countOwnUseStateCallsInNode(node: RuleNode): number {
   if (!isAstNode(node)) {
     return 0;
   }
@@ -19,7 +19,7 @@ export function countOwnUseStateCallsInNode(node: LegacyAstNode) {
       : 0;
 
   return ownCount + getNodeChildren(node).reduce(
-    (total: LegacyAstNode, child: LegacyAstNode) => total + countOwnUseStateCallsInNode(child),
+    (total: number, child: RuleNode) => total + countOwnUseStateCallsInNode(child),
     0,
   );
 }
