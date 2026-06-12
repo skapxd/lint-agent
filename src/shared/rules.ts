@@ -39,6 +39,7 @@ import { preferTypeOverInterface } from "#/rules/prefer-type-over-interface";
 import { noFunctionsInsideComponents } from "#/rules/no-functions-inside-components";
 import { noTryCatch } from "#/rules/no-try-catch";
 import { preferAbortSignal } from "#/rules/prefer-abort-signal";
+import { preferSchemaValidation } from "#/rules/prefer-schema-validation";
 import { preferTaggedUnionState } from "#/rules/prefer-tagged-union-state";
 import { requiresStrictTsconfig } from "#/rules/requires-strict-tsconfig";
 import { preferTsPattern } from "#/rules/prefer-ts-pattern";
@@ -92,6 +93,7 @@ export const rules: Record<string, Rule.RuleModule> = {
   "no-functions-inside-components": noFunctionsInsideComponents,
   "no-try-catch": noTryCatch,
   "prefer-abort-signal": preferAbortSignal,
+  "prefer-schema-validation": preferSchemaValidation,
   "prefer-tagged-union-state": preferTaggedUnionState,
   "prefer-ts-pattern": preferTsPattern,
   "requires-strict-tsconfig": requiresStrictTsconfig,
