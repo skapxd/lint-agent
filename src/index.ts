@@ -14,23 +14,7 @@ type OpinionatedFlatConfig = {
   rules: Record<string, RuleEntry>;
 };
 
-type OpinionatedConfigList = OpinionatedFlatConfig[] & {
-  [index: number]: OpinionatedFlatConfig;
-  filter(
-    predicate: (
-      value: OpinionatedFlatConfig,
-      index: number,
-      array: OpinionatedFlatConfig[],
-    ) => unknown,
-  ): OpinionatedConfigList;
-  find(
-    predicate: (
-      value: OpinionatedFlatConfig,
-      index: number,
-      array: OpinionatedFlatConfig[],
-    ) => unknown,
-  ): OpinionatedFlatConfig;
-};
+type OpinionatedConfigList = OpinionatedFlatConfig[];
 
 type SharedConfigs = Record<
   "backend" | "base" | "frontend" | "package",
