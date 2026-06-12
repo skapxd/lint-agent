@@ -7,6 +7,17 @@ import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import { matchesAnyPattern } from "#/utils/matching/matches-any-pattern";
 import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 
+type StateMachineEntry = {
+  errorNames: string[];
+  loadingNames: string[];
+  reportNode: RuleNode;
+};
+
+type TransitionEntry = {
+  reportNode: RuleNode;
+  states: Map<string, string>;
+};
+
 export const preferTaggedUnionState: RuleModule = {
   meta: {
     type: "problem",
@@ -53,12 +64,12 @@ export const preferTaggedUnionState: RuleModule = {
     }
 
     // useState repartidos, agrupados por función contenedora.
-    const stateMachines = new Map();
+    const stateMachines = new Map<RuleNode, StateMachineEntry>();
     // setter → nombre del estado que gobierna (identificado por POSICIÓN
     // en el destructuring, no por nombre: evidencia estructural).
-    const settersToState = new Map();
+    const settersToState = new Map<string, string>();
     // transiciones: función → setters distintos que llama.
-    const transitions = new Map();
+    const transitions = new Map<RuleNode, TransitionEntry>();
 
     function reportIfSmellyShape(node: RuleNode, members: readonly RuleNode[]) {
       const smell = getStateShapeSmell(members, options);

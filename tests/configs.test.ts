@@ -189,6 +189,11 @@ describe("preset nest", () => {
 const wrappedRules = {
   "no-explicit-any": "no-explicit-any",
   "no-floating-promises": "no-floating-promises",
+  "no-unsafe-argument": "no-unsafe-argument",
+  "no-unsafe-assignment": "no-unsafe-assignment",
+  "no-unsafe-call": "no-unsafe-call",
+  "no-unsafe-member-access": "no-unsafe-member-access",
+  "no-unsafe-return": "no-unsafe-return",
   "no-impossible-branch": "no-unnecessary-condition",
   "no-non-null-assertion": "no-non-null-assertion",
   "no-silenced-compiler": "ban-ts-comment",
@@ -259,6 +264,9 @@ describe("reglas type-driven (wrappers de typescript-eslint) en presets tipados"
     // (prohibidos por no-promise-chain).
     expect(messageOf("no-floating-promises", "floatingVoid")).toContain(
       "no-promise-chain",
+    );
+    expect(messageOf("no-unsafe-assignment", "anyAssignment")).toContain(
+      "`any` invisible",
     );
     expect(messageOf("no-silenced-compiler", "tsDirectiveComment")).toContain(
       "No silencies al compilador",

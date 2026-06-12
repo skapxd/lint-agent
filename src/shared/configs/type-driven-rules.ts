@@ -28,6 +28,14 @@ export const typeDrivenRules = {
   // (Era no-floating-promises; el mensaje upstream recomendaba .then/.catch,
   // que no-promise-chain prohíbe — el nuestro corrige el consejo.)
   "skapxd/no-floating-promises": "error",
+  // Familia indivisible: cierra el `any` invisible que no-explicit-any no ve
+  // (JSON.parse, response.json, libs sin tipos). La salida legal es unknown
+  // en la frontera y narrowing con evidencia antes de tocarlo.
+  "skapxd/no-unsafe-assignment": "error",
+  "skapxd/no-unsafe-member-access": "error",
+  "skapxd/no-unsafe-call": "error",
+  "skapxd/no-unsafe-return": "error",
+  "skapxd/no-unsafe-argument": "error",
   // La generalización type-aware de no-runtime-state-guard: si el tipo dice
   // que un estado es imposible, el guard defensivo sobra — y si el guard
   // hace falta, lo que está mal es el tipo. Requiere el tsconfig de

@@ -52,7 +52,7 @@ export const nestNoDirectInstantiation: RuleModule = {
       return {};
     }
 
-    let internalImports = new Map();
+    let internalImports = new Map<string, string>();
 
     return {
       Program(node: RuleNode) {

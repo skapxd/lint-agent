@@ -1,0 +1,2 @@
+export const unsafeAnyMessage =
+  "Este valor es `any` — probablemente un `any` invisible (JSON.parse y response.json devuelven any sin que nadie lo escriba). Usarlo apaga el sistema de tipos rio abajo. Declaralo `unknown` y estrechalo con evidencia: un schema (zod/valibot: `Schema.parse(data)` valida, tipa y produce errores con detalle) o un type predicate honesto. En Nest, el body ya llega validado si el DTO cumple nest-dto-requires-validation.";

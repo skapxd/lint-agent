@@ -98,8 +98,8 @@ la que defiende el axioma más fundamental (el orden es jerárquico).
 
 | # | Axioma | Reglas que lo ejecutan |
 | --- | --- | --- |
-| A1 | **Los estados imposibles son irrepresentables.** El tipo modela exactamente los estados válidos; lo inválido no compila. | `prefer-tagged-union-state`, `no-runtime-state-guard`, `requires-strict-tsconfig`, `no-impossible-branch`, `no-explicit-any`, `prefer-type-over-interface` |
-| A2 | **Ningún efecto es invisible al tipo.** Si una operación puede fallar, su firma lo confiesa — no una convención oral ni un `throw` sorpresa. | `await-requires-result`, `no-try-catch`, `no-promise-chain`, `no-ad-hoc-ok-result`, `no-floating-promises` |
+| A1 | **Los estados imposibles son irrepresentables.** El tipo modela exactamente los estados válidos; lo inválido no compila. | `prefer-tagged-union-state`, `no-runtime-state-guard`, `requires-strict-tsconfig`, `no-impossible-branch`, `no-explicit-any`, `no-unsafe-*`, `prefer-type-over-interface` |
+| A2 | **Ningún efecto es invisible al tipo.** Si una operación puede fallar, su firma lo confiesa — no una convención oral ni un `throw` sorpresa. | `await-requires-result`, `no-try-catch`, `no-promise-chain`, `no-ad-hoc-ok-result`, `no-floating-promises`, `no-unsafe-*` |
 | A3 | **La información no se destruye.** Un error que se transforma conserva su `cause`; uno que se detecta llega a alguien. Nadie decide "esto no importa" en silencio. | `result-error-requires-cause`, `result-error-requires-handling` |
 | A4 | **Una unidad, una responsabilidad, un nombre semántico.** El árbol de archivos cuenta una historia; una clase expone una intención. | `one-root-function-per-file`, `max-public-methods`, `no-default-export`, `jsx-return-name-pascal-case`, `max-hook-size` |
 | A5 | **Las decisiones se declaran, no se interpretan.** Cada rama es explícita y exhaustiva; un caso ignorado es una decisión visible, no un hueco. | `no-else`, `no-nested-if`, `prefer-ts-pattern`, `no-silenced-compiler`, el `void promesa()` de `no-floating-promises` |
@@ -848,6 +848,11 @@ de cada regla):
 | `no-emoji` | `allowFilePatterns` (globs) |
 | `no-explicit-any` | las de la regla original de typescript-eslint (`fixToUnknown`, ...) |
 | `no-floating-promises` | las de la regla original de typescript-eslint (`ignoreVoid`, `allowList`, ...) |
+| `no-unsafe-assignment` | las de la regla original de typescript-eslint |
+| `no-unsafe-member-access` | las de la regla original de typescript-eslint |
+| `no-unsafe-call` | las de la regla original de typescript-eslint |
+| `no-unsafe-return` | las de la regla original de typescript-eslint |
+| `no-unsafe-argument` | las de la regla original de typescript-eslint |
 | `no-impossible-branch` | las de la regla original de typescript-eslint (`allowConstantLoopConditions`, ...) |
 | `no-silenced-compiler` | las de `ban-ts-comment` (`ts-expect-error`, `ts-ignore`, `ts-nocheck`, `minimumDescriptionLength`) |
 | `prefer-type-over-interface` | la de `consistent-type-definitions` (`"type"` o `"interface"`; los presets pasan `"type"`) |
@@ -932,6 +937,7 @@ repo o documentación, usa labels más específicos en vez de forzar este templa
 | `skapxd/no-emoji` | Prohíbe emojis en strings y JSX; cada sistema los renderiza distinto. Usa un icono SVG. |
 | `skapxd/no-explicit-any` | Prohíbe `any`: apaga el sistema de tipos donde más se necesita. `unknown` para lo desconocido, el tipo real para lo demás. Wrapper de typescript-eslint. |
 | `skapxd/no-floating-promises` | Promesas sin `await` ni `void`: el rechazo muere sin pasar por trySafe. El mensaje corrige el consejo upstream (`.then/.catch` aquí están prohibidos). Wrapper de typescript-eslint. |
+| `skapxd/no-unsafe-*` | Familia type-aware que cierra el `any` invisible de `JSON.parse()`/`response.json()`: no se asigna, toca, invoca, retorna ni pasa como argumento sin `unknown` + schema/predicate. Wrappers de typescript-eslint. |
 | `skapxd/no-impossible-branch` | Condiciones que el type-checker demuestra constantes: la pregunta ya tiene respuesta. Es `@typescript-eslint/no-unnecessary-condition` con nombre semántico y mensajes que enseñan el fix. |
 | `skapxd/no-nested-if` | Prohíbe `if` anidados: retorno anticipado o `match()`. Menos carga cognitiva y sin puntos ciegos para las demás reglas. |
 | `skapxd/no-non-null-assertion` | Prohíbe el `!`: es "cállate, yo sé más que tú" dicho al compilador. Modela el tipo o maneja la duda. Wrapper de typescript-eslint. |
@@ -2039,6 +2045,37 @@ Bajo el capó es `@typescript-eslint/no-explicit-any`
 re-registrada bajo nuestro namespace con mensajes que enseñan (ver
 `skapxd/no-impossible-branch` para el patrón). Los presets tipados activan
 este nombre, no el original.
+
+### `skapxd/no-unsafe-*`
+
+Familia indivisible de wrappers sobre `@typescript-eslint/no-unsafe-*`:
+`no-unsafe-assignment`, `no-unsafe-member-access`, `no-unsafe-call`,
+`no-unsafe-return` y `no-unsafe-argument`. Cierra el hueco que
+`no-explicit-any` no puede ver: el `any` invisible que aparece sin escribir
+`any`, por ejemplo en `JSON.parse()` y `response.json()`.
+
+```ts
+const data = await response.json();
+console.log(data.user.name); // any invisible propagado
+return data;
+```
+
+La salida legal es declarar la frontera como desconocida y estrechar con
+evidencia runtime:
+
+```ts
+const data: unknown = await response.json();
+const user = UserSchema.parse(data);
+console.log(user.name);
+```
+
+El punto no es ordenar zod, valibot o class-validator como dependencia. El
+punto es cerrar las salidas ilegales hasta que un schema o un type predicate
+honesto sean el camino barato: `res.json()`/`JSON.parse()` producen `any`,
+`no-unsafe-*` impide tocarlo, `unknown` obliga a estrechar, y las reglas de
+ramificación/casts hacen caro fingir evidencia. En Nest, un `req.body` ya
+validado por DTO pertenece a otra frontera: la regla no pelea con
+`nest-dto-requires-validation`; depende de esa premisa.
 
 ### `skapxd/no-floating-promises`
 

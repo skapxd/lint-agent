@@ -25,6 +25,11 @@ import { noElse } from "#/rules/no-else";
 import { noEmoji } from "#/rules/no-emoji";
 import { noExplicitAny } from "#/rules/no-explicit-any";
 import { noFloatingPromises } from "#/rules/no-floating-promises";
+import { noUnsafeArgument } from "#/rules/no-unsafe-argument";
+import { noUnsafeAssignment } from "#/rules/no-unsafe-assignment";
+import { noUnsafeCall } from "#/rules/no-unsafe-call";
+import { noUnsafeMemberAccess } from "#/rules/no-unsafe-member-access";
+import { noUnsafeReturn } from "#/rules/no-unsafe-return";
 import { noImpossibleBranch } from "#/rules/no-impossible-branch";
 import { noNonNullAssertion } from "#/rules/no-non-null-assertion";
 import { noSilencedCompiler } from "#/rules/no-silenced-compiler";
@@ -72,6 +77,11 @@ export const rules: Record<string, Rule.RuleModule> = {
   // mensajes propios (ver src/utils/wrap-tseslint-rule.ts):
   "no-explicit-any": noExplicitAny,
   "no-floating-promises": noFloatingPromises,
+  "no-unsafe-argument": noUnsafeArgument,
+  "no-unsafe-assignment": noUnsafeAssignment,
+  "no-unsafe-call": noUnsafeCall,
+  "no-unsafe-member-access": noUnsafeMemberAccess,
+  "no-unsafe-return": noUnsafeReturn,
   "no-impossible-branch": noImpossibleBranch,
   "no-non-null-assertion": noNonNullAssertion,
   "no-silenced-compiler": noSilencedCompiler,
