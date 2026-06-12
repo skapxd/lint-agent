@@ -1,9 +1,9 @@
 import { dirname, resolve } from "node:path";
-import { findProjectFile } from "#/utils/find-project-file";
+import { findProjectFile } from "#/utils/project/find-project-file";
 import { getStrictTsconfigOptions } from "#/utils/options/get-strict-tsconfig-options";
-import { isAnchorlessCheckRedundant } from "#/utils/is-anchorless-check-redundant";
+import { isAnchorlessCheckRedundant } from "#/utils/project/is-anchorless-check-redundant";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
-import { readResolvedTsconfig } from "#/utils/read-resolved-tsconfig";
+import { readResolvedTsconfig } from "#/utils/project/read-resolved-tsconfig";
 import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const requiresStrictTsconfig: RuleModule = {

@@ -1,5 +1,5 @@
 import { dirname } from "node:path";
-import { anchorFileExists } from "#/utils/anchor-file-exists";
+import { anchorFileExists } from "#/utils/project/anchor-file-exists";
 
 // Raices de proyecto ya revisadas por la via del fallback (proyectos sin
 // archivo ancla, como Astro o librerias): el primer archivo del run reporta

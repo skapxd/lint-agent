@@ -1,9 +1,9 @@
-import { getDirectoryName } from "./get-directory-name";
-import { getFileName } from "./get-file-name";
-import { getSourceExtension } from "./get-source-extension";
+import { getDirectoryName } from "./project/get-directory-name";
+import { getFileName } from "./project/get-file-name";
+import { getSourceExtension } from "./project/get-source-extension";
 import { getSuggestedHelperFileNames } from "./get-suggested-helper-file-names";
 import { getTreeChildLines } from "./get-tree-child-lines";
-import { isNextConventionFile } from "./is-next-convention-file";
+import { isNextConventionFile } from "./project/is-next-convention-file";
 import { toKebabCase } from "./to-kebab-case";
 
 type StructureSuggestionInput = {

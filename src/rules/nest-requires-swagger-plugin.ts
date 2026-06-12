@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { trySafe } from "@skapxd/result";
-import { findProjectFile } from "#/utils/find-project-file";
+import { findProjectFile } from "#/utils/project/find-project-file";
 import { getNestSwaggerPluginOptions } from "#/utils/options/get-nest-swagger-plugin-options";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import { nestCliHasSwaggerPlugin } from "#/utils/nest-cli-has-swagger-plugin";

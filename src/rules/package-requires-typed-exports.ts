@@ -1,9 +1,9 @@
 import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { trySafe } from "@skapxd/result";
-import { findProjectFile } from "#/utils/find-project-file";
+import { findProjectFile } from "#/utils/project/find-project-file";
 import { getTypedExportsOptions } from "#/utils/options/get-typed-exports-options";
-import { getUntypedExportConditions } from "#/utils/get-untyped-export-conditions";
+import { getUntypedExportConditions } from "#/utils/project/get-untyped-export-conditions";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import type { RuleNode, RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 
