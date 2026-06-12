@@ -38,6 +38,7 @@ Cada ficha vive en un archivo propio. El indice conserva la descripcion corta de
 | [`skapxd/no-unsafe-call`](./no-unsafe-call.md) | Impide invocar valores `any`: antes de llamar hay que probar el tipo real con evidencia runtime. Wrapper de typescript-eslint. |
 | [`skapxd/no-unsafe-member-access`](./no-unsafe-member-access.md) | Impide leer propiedades sobre `any`: `JSON.parse()`/`response.json()` pasan por `unknown` + schema/predicate antes de tocar campos. Wrapper de typescript-eslint. |
 | [`skapxd/no-unsafe-return`](./no-unsafe-return.md) | Impide retornar `any` desde una funcion tipada: el dato externo se estrecha antes de salir de la frontera. Wrapper de typescript-eslint. |
+| [`skapxd/no-unverified-cast`](./no-unverified-cast.md) | Prohíbe casts `as` que estrechan sin evidencia: schema, type predicate honesto o tipo de origen mejor modelado. Wrapper de typescript-eslint. |
 | [`skapxd/no-impossible-branch`](./no-impossible-branch.md) | Condiciones que el type-checker demuestra constantes: la pregunta ya tiene respuesta. Es `@typescript-eslint/no-unnecessary-condition` con nombre semántico y mensajes que enseñan el fix. |
 | [`skapxd/no-nested-if`](./no-nested-if.md) | Prohíbe `if` anidados: retorno anticipado o `match()`. Menos carga cognitiva y sin puntos ciegos para las demás reglas. |
 | [`skapxd/no-non-null-assertion`](./no-non-null-assertion.md) | Prohíbe el `!`: es "cállate, yo sé más que tú" dicho al compilador. Modela el tipo o maneja la duda. Wrapper de typescript-eslint. |
