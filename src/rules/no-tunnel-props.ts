@@ -1,3 +1,4 @@
+import type { TSESTree } from "@typescript-eslint/utils";
 import { collectIdentifiersNamed } from "#/utils/ast/collect-identifiers-named";
 import { getFunctionName } from "#/utils/ast/get-function-name";
 import { getNoTunnelPropsOptions } from "#/utils/options/get-no-tunnel-props-options";
@@ -7,7 +8,8 @@ import { isPascalCaseJsxElement } from "#/utils/react/is-pascal-case-jsx-element
 import { isPascalCaseName } from "#/utils/naming/is-pascal-case-name";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import { matchesAnyPattern } from "#/utils/matching/matches-any-pattern";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
+import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
+import type { FunctionNode } from "#/utils/ast/is-function-node";
 
 export const noTunnelProps: RuleModule = {
   meta: {
@@ -49,14 +51,20 @@ export const noTunnelProps: RuleModule = {
     }
 
     function reportSpreadTunnel(
-      node: RuleNode,
+      node: FunctionNode,
       componentName: string,
       restName: string,
     ) {
       const spreads = collectIdentifiersNamed(node.body, restName).filter(
-        (identifier: RuleNode) =>
-          identifier.parent?.type === "JSXSpreadAttribute" &&
-          isPascalCaseJsxElement(identifier.parent.parent),
+        (identifier) => {
+          const parent = identifier.parent;
+          const hasSpreadParent = parent?.type === "JSXSpreadAttribute";
+          if (!hasSpreadParent) {
+            return false;
+          }
+
+          return isPascalCaseJsxElement(parent.parent);
+        },
       );
 
       const spread = spreads[0];
@@ -65,13 +73,13 @@ export const noTunnelProps: RuleModule = {
         context.report({
           data: { component: componentName, name: restName },
           messageId: "spreadTunnel",
-          node: spread.parent,
+          node: spread.parent ?? spread,
         });
       }
     }
 
     function reportForwardedProps(
-      node: RuleNode,
+      node: FunctionNode,
       componentName: string,
       propNames: readonly string[],
     ) {
@@ -84,17 +92,19 @@ export const noTunnelProps: RuleModule = {
         for (const usage of collectIdentifiersNamed(node.body, propName)) {
           const isForwardedPropReferenceUsage = isForwardedPropReference(usage);
           if (isForwardedPropReferenceUsage) {
+            const reportNode = usage.parent?.parent ?? usage;
+
             context.report({
               data: { component: componentName, prop: propName },
               messageId: "forwardedProp",
-              node: usage.parent.parent,
+              node: reportNode,
             });
           }
         }
       }
     }
 
-    function reportIfTunnelComponent(node: RuleNode) {
+    function reportIfTunnelComponent(node: FunctionNode) {
       const componentName = getFunctionName(node);
 
       const isComponentFunctionName = isPascalCaseName(componentName);

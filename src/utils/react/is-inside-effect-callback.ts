@@ -1,11 +1,11 @@
-import type { RuleNode } from "#/utils/rule-authoring/rule-types";
+import type { TSESTree } from "@typescript-eslint/utils";
 import { isCalleeNamed } from "#/utils/ast/is-callee-named";
 import { isFunctionNode } from "#/utils/ast/is-function-node";
 
 // ¿El nodo vive dentro del callback de un useEffect/useLayoutEffect?
 // Cubre también las funciones anidadas (handlers y el cleanup retornado).
 export function isInsideEffectCallback(
-  node: RuleNode,
+  node: TSESTree.Node,
   effectNames: readonly string[],
 ) {
   let current = node.parent;

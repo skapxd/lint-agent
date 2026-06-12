@@ -1,11 +1,11 @@
-import type { RuleNode } from "#/utils/rule-authoring/rule-types";
+import type { TSESTree } from "@typescript-eslint/utils";
 import { getErrorMemberObject } from "./get-error-member-object";
 import { getFailedResultBinaryGuardName } from "./get-failed-result-binary-guard-name";
 import { getOkMemberObject } from "./get-ok-member-object";
 import { getResultCheckArgument } from "./get-result-check-argument";
 import { unwrapExpression } from "#/utils/ast/unwrap-expression";
 
-export function getFailedResultGuard(node: RuleNode) {
+export function getFailedResultGuard(node: TSESTree.Node) {
   const unwrappedNode = unwrapExpression(node);
 
   // `result.error` como condición (truthiness del error)

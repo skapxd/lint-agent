@@ -1,7 +1,7 @@
-import type { RuleNode } from "#/utils/rule-authoring/rule-types";
+import type { TSESTree } from "@typescript-eslint/utils";
 import { isAstNode } from "./is-ast-node";
 
-export function getNodeChildren(node: RuleNode): RuleNode[] {
+export function getNodeChildren(node: TSESTree.Node): TSESTree.Node[] {
   return Object.entries(node).flatMap(([key, value]: [string, unknown]) => {
     const includesParentLocRangeTokensComments = ["parent", "loc", "range", "tokens", "comments"].includes(key);
     if (includesParentLocRangeTokensComments) {

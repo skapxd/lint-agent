@@ -1,7 +1,8 @@
+import type { TSESTree } from "@typescript-eslint/utils";
 import { getTypeContext } from "#/utils/type-aware/get-type-context";
 import { isMemberPropertyNamed } from "#/utils/ast/is-member-property-named";
 import { isPromiseType } from "#/utils/type-aware/is-promise-type";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
+import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 const defaultMethods = ["catch", "finally", "then"];
 
@@ -39,7 +40,7 @@ export const noPromiseChain: RuleModule = {
     const typeContext = getTypeContext(context);
 
     return {
-      CallExpression(node: RuleNode) {
+      CallExpression(node: TSESTree.CallExpression) {
         const callee = node.callee;
 
         const hasMemberCallee = callee.type === "MemberExpression";

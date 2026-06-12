@@ -1,10 +1,12 @@
+import type { TSESTree } from "@typescript-eslint/utils";
 import { getDecoratorName } from "#/utils/nest/get-decorator-name";
 import { getImportedLocalNames } from "#/utils/imports/get-imported-local-names";
 import { getNestInlineQueryOptions } from "#/utils/options/get-nest-inline-query-options";
+import { getPropertyName } from "#/utils/ast/get-property-name";
 import { isAstNode } from "#/utils/ast/is-ast-node";
 import { isQueryWithStringArg } from "#/utils/nest/is-query-with-string-arg";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
+import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const nestNoInlineQueryParams: RuleModule = {
   meta: {
@@ -47,26 +49,25 @@ export const nestNoInlineQueryParams: RuleModule = {
     let swaggerNames = new Set();
 
     return {
-      Program(node: RuleNode) {
+      Program(node: TSESTree.Program) {
         commonNames = getImportedLocalNames(node, "@nestjs/common");
         swaggerNames = getImportedLocalNames(node, "@nestjs/swagger");
       },
-      MethodDefinition(node: RuleNode) {
+      MethodDefinition(node: TSESTree.MethodDefinition) {
         const isMethodMember = node.kind === "method";
         if (!isMethodMember) {
           return;
         }
 
-        const apiQueryCount = (node.decorators ?? []).filter(
-          (decorator: RuleNode) =>
+        const apiQueryCount = node.decorators.filter(
+          (decorator) =>
             getDecoratorName(decorator) === "ApiQuery" &&
             swaggerNames.has("ApiQuery"),
         ).length;
 
-        const methodValue = isAstNode(node.value) ? node.value : null;
-        const inlineQueryCount = (methodValue?.params ?? []).filter((param: RuleNode) =>
-          (param.decorators ?? []).some(
-            (decorator: RuleNode) =>
+        const inlineQueryCount = node.value.params.filter((param) =>
+          param.decorators.some(
+            (decorator) =>
               isQueryWithStringArg(decorator) && commonNames.has("Query"),
           ),
         ).length;
@@ -82,10 +83,10 @@ export const nestNoInlineQueryParams: RuleModule = {
           data: {
             count: String(total),
             max: String(options.max),
-            methodName: node.key?.name ?? "anonymous",
+            methodName: getPropertyName(node.key),
           },
           messageId: "tooManyInlineQueryParams",
-          node: node.key ?? node,
+          node: node.key,
         });
       },
     };

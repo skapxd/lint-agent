@@ -1,7 +1,7 @@
-import type { RuleNode } from "#/utils/rule-authoring/rule-types";
+import type { TSESTree } from "@typescript-eslint/utils";
 // Nombre de un decorador, con llamada (`@ApiProperty({...})`) o sin ella
 // (`@ApiExcludeEndpoint`).
-export function getDecoratorName(decorator: RuleNode) {
+export function getDecoratorName(decorator: TSESTree.Decorator) {
   const expression = decorator.expression;
   const callee =
     expression.type === "CallExpression" ? expression.callee : expression;

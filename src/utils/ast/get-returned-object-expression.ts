@@ -1,5 +1,5 @@
-import type { RuleNode } from "#/utils/rule-authoring/rule-types";
-export function getReturnedObjectExpression(node: RuleNode) {
+import type { TSESTree } from "@typescript-eslint/utils";
+export function getReturnedObjectExpression(node: TSESTree.Node | null) {
   if (!node) {
     return null;
   }

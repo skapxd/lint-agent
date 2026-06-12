@@ -1,4 +1,5 @@
-import type { RuleNode, TypeContext } from "#/utils/rule-authoring/rule-types";
+import type { TSESTree } from "@typescript-eslint/utils";
+import type { TypeContext } from "#/utils/rule-authoring/rule-types";
 import ts from "typescript";
 import { resolveAliasSymbol } from "#/utils/type-aware/resolve-alias-symbol";
 
@@ -6,7 +7,7 @@ import { resolveAliasSymbol } from "#/utils/type-aware/resolve-alias-symbol";
 // - true: pertenece al contenedor de DI — instanciarla a mano lo esquiva.
 // - false: clase de valor (DTO, mapper, error) — el `new` es legítimo.
 // - null: no se pudo resolver el símbolo hasta una declaración de clase.
-export function hasInjectableDecorator(identifier: RuleNode, typeContext: TypeContext) {
+export function hasInjectableDecorator(identifier: TSESTree.Node, typeContext: TypeContext) {
   const symbol = typeContext.services.getSymbolAtLocation(identifier);
 
   if (!symbol) {

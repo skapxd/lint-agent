@@ -1,3 +1,4 @@
+import type { TSESTree } from "@typescript-eslint/utils";
 import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { trySafe } from "@skapxd/result";
@@ -5,7 +6,7 @@ import { findProjectFile } from "#/utils/project/find-project-file";
 import { getNestSwaggerPluginOptions } from "#/utils/options/get-nest-swagger-plugin-options";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import { nestCliHasSwaggerPlugin } from "#/utils/nest/nest-cli-has-swagger-plugin";
-import type { RuleNode, RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
+import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const nestRequiresSwaggerPlugin: RuleModule = {
   meta: {
@@ -50,7 +51,7 @@ export const nestRequiresSwaggerPlugin: RuleModule = {
     }
 
     return {
-      Program(node: RuleNode) {
+      Program(node: TSESTree.Program) {
         const absoluteFilename = resolve(context.cwd ?? process.cwd(), filename);
         const nestCliPath = findProjectFile(dirname(absoluteFilename), "nest-cli.json");
 

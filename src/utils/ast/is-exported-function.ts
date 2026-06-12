@@ -1,10 +1,11 @@
-import type { RuleNode } from "#/utils/rule-authoring/rule-types";
-export function isExportedFunction(node: RuleNode) {
+import type { FunctionNode } from "./is-function-node";
+
+export function isExportedFunction(node: FunctionNode) {
   const parent = node.parent;
 
   const isExportedFunctionDeclaration = node.type === "FunctionDeclaration" &&
-    (parent?.type === "ExportNamedDeclaration" ||
-      parent?.type === "ExportDefaultDeclaration");
+    (parent.type === "ExportNamedDeclaration" ||
+      parent.type === "ExportDefaultDeclaration");
   if (
     isExportedFunctionDeclaration
   ) {
@@ -13,8 +14,8 @@ export function isExportedFunction(node: RuleNode) {
 
   const isExportedFunctionValue = (node.type === "ArrowFunctionExpression" ||
       node.type === "FunctionExpression") &&
-    parent?.type === "VariableDeclarator" &&
-    parent.parent?.parent?.type === "ExportNamedDeclaration";
+    parent.type === "VariableDeclarator" &&
+    parent.parent.parent.type === "ExportNamedDeclaration";
   if (
     isExportedFunctionValue
   ) {

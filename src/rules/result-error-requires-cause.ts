@@ -1,3 +1,4 @@
+import type { TSESTree } from "@typescript-eslint/utils";
 import { getFailedResultGuard } from "#/utils/result/get-failed-result-guard";
 import { getOwnResultErrCalls } from "#/utils/result/get-own-result-err-calls";
 import { getTypeContext } from "#/utils/type-aware/get-type-context";
@@ -5,7 +6,7 @@ import { isInsideSkapxdResultReturningFunction } from "#/utils/result/is-inside-
 import { isSkapxdResultErrCall } from "#/utils/result/is-skapxd-result-err-call";
 import { isSkapxdResultExpression } from "#/utils/result/is-skapxd-result-expression";
 import { resultErrPreservesCause } from "#/utils/result/result-err-preserves-cause";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
+import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const resultErrorRequiresCause: RuleModule = {
       meta: {
@@ -24,7 +25,7 @@ export const resultErrorRequiresCause: RuleModule = {
         const typeContext = getTypeContext(context);
 
         return {
-          IfStatement(node: RuleNode) {
+          IfStatement(node: TSESTree.IfStatement) {
             const resultGuard = getFailedResultGuard(node.test);
 
             const lacksResultErrorContext = !typeContext ||

@@ -1,10 +1,10 @@
-import type { RuleNode } from "#/utils/rule-authoring/rule-types";
+import type { TSESTree } from "@typescript-eslint/utils";
 // `@Query('name')` cuenta como query param inline. `@Query()` (recibe el DTO
 // completo) y `@Query(MyPipe)` (un solo param consolidado) están bien.
-export function isQueryWithStringArg(decorator: RuleNode) {
+export function isQueryWithStringArg(decorator: TSESTree.Decorator) {
   const expression = decorator.expression;
 
-  const lacksQueryCallArgument = expression?.type !== "CallExpression" ||
+  const lacksQueryCallArgument = expression.type !== "CallExpression" ||
     expression.callee.type !== "Identifier" ||
     expression.callee.name !== "Query" ||
     expression.arguments.length === 0;

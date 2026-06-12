@@ -1,8 +1,10 @@
+import type { TSESTree } from "@typescript-eslint/utils";
+import { getPropertyName } from "#/utils/ast/get-property-name";
 import { getDecoratorName } from "#/utils/nest/get-decorator-name";
 import { getNestDtoApiPropertyOptions } from "#/utils/options/get-nest-dto-api-property-options";
 import { isPublicInstanceProperty } from "#/utils/ast/is-public-instance-property";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
+import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const nestDtoRequiresApiProperty: RuleModule = {
   meta: {
@@ -49,14 +51,14 @@ export const nestDtoRequiresApiProperty: RuleModule = {
     }
 
     return {
-      PropertyDefinition(node: RuleNode) {
+      PropertyDefinition(node: TSESTree.PropertyDefinition) {
         // Swagger solo serializa propiedades públicas de instancia.
         const isPublicInstancePropertyNode = isPublicInstanceProperty(node);
         if (!isPublicInstancePropertyNode) {
           return;
         }
 
-        const hasApiProperty = (node.decorators ?? []).some((decorator: RuleNode) => {
+        const hasApiProperty = node.decorators.some((decorator) => {
           const decoratorName = getDecoratorName(decorator);
 
           return Boolean(
@@ -67,9 +69,9 @@ export const nestDtoRequiresApiProperty: RuleModule = {
 
         if (!hasApiProperty) {
           context.report({
-            data: { name: node.key?.name ?? "anonymous" },
+            data: { name: getPropertyName(node.key) },
             messageId: "missingApiProperty",
-            node: node.key ?? node,
+            node: node.key,
           });
         }
       },

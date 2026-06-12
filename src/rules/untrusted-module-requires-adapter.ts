@@ -1,6 +1,7 @@
+import type { TSESTree } from "@typescript-eslint/utils";
 import { getUntrustedModuleOptions } from "#/utils/options/get-untrusted-module-options";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
+import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 // La frontera anticorrupcion como guardrail (axioma A7): cuando los tipos de
 // un paquete de terceros mienten (el clasico @types desfasado del runtime
@@ -54,7 +55,7 @@ export const untrustedModuleRequiresAdapter: RuleModule = {
     }
 
     return {
-      ImportDeclaration(node: RuleNode) {
+      ImportDeclaration(node: TSESTree.ImportDeclaration) {
         const source = node.source.value;
 
         const hasStringImportSource = typeof source === "string";

@@ -1,4 +1,4 @@
-import type { RuleNode } from "#/utils/rule-authoring/rule-types";
+import type { TSESTree } from "@typescript-eslint/utils";
 import { collectIdentifiersNamed } from "#/utils/ast/collect-identifiers-named";
 import { getDeclaredAliasTargets } from "#/utils/imports/get-declared-alias-targets";
 import { isInsideNode } from "#/utils/ast/is-inside-node";
@@ -14,8 +14,8 @@ import { isMemberPropertyNamed } from "#/utils/ast/is-member-property-named";
 // - Descartes no cuentan: `void x`, expresión suelta, alias nunca consumido
 //   (se siguen recursivamente, destructuring incluido).
 export function isConsumedResultReference(
-  identifier: RuleNode,
-  searchRoot: RuleNode | null,
+  identifier: TSESTree.Node,
+  searchRoot: TSESTree.Node | null,
   represents: "error" | "result" = "result",
   visited: Set<string> = new Set(),
 ): boolean {
@@ -70,8 +70,8 @@ export function isConsumedResultReference(
     visited.add(target.name);
 
     return collectIdentifiersNamed(searchRoot, target.name)
-      .filter((aliasReference: RuleNode) => !isInsideNode(aliasReference, parent.id))
-      .some((aliasReference: RuleNode) =>
+      .filter((aliasReference: TSESTree.Node) => !isInsideNode(aliasReference, parent.id))
+      .some((aliasReference: TSESTree.Node) =>
         isConsumedResultReference(
           aliasReference,
           searchRoot,

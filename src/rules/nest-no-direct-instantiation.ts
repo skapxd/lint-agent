@@ -1,10 +1,11 @@
+import type { TSESTree } from "@typescript-eslint/utils";
 import { getInternalValueImports } from "#/utils/imports/get-internal-value-imports";
 import { getNestDirectInstantiationOptions } from "#/utils/options/get-nest-direct-instantiation-options";
 import { getTypeContext } from "#/utils/type-aware/get-type-context";
 import { hasInjectableDecorator } from "#/utils/nest/has-injectable-decorator";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import { matchesAnyPattern } from "#/utils/matching/matches-any-pattern";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
+import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const nestNoDirectInstantiation: RuleModule = {
   meta: {
@@ -55,20 +56,21 @@ export const nestNoDirectInstantiation: RuleModule = {
     let internalImports = new Map<string, string>();
 
     return {
-      Program(node: RuleNode) {
+      Program(node: TSESTree.Program) {
         internalImports = getInternalValueImports(
           node,
           options.internalPatterns,
           options.allowedPatterns,
         );
       },
-      NewExpression(node: RuleNode) {
-        const hasIdentifierCallee = node.callee.type === "Identifier";
+      NewExpression(node: TSESTree.NewExpression) {
+        const callee = node.callee;
+        const hasIdentifierCallee = callee.type === "Identifier";
         if (!hasIdentifierCallee) {
           return;
         }
 
-        const name = node.callee.name;
+        const name = callee.name;
         const source = internalImports.get(name);
 
         if (!source) {
@@ -85,7 +87,7 @@ export const nestNoDirectInstantiation: RuleModule = {
         // pertenece al contenedor. Una clase de valor (DTO, mapper) sin el
         // decorador se instancia legítimamente. Irresoluble → conservador.
         const hasNoInjectableDecorator = typeContext &&
-          hasInjectableDecorator(node.callee, typeContext) === false;
+          hasInjectableDecorator(callee, typeContext) === false;
         if (
           hasNoInjectableDecorator
         ) {

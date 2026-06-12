@@ -1,7 +1,8 @@
+import type { TSESTree } from "@typescript-eslint/utils";
 import { containsEmoji } from "#/utils/text/contains-emoji";
 import { getNoEmojiOptions } from "#/utils/options/get-no-emoji-options";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
+import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const noEmoji: RuleModule = {
   meta: {
@@ -36,7 +37,7 @@ export const noEmoji: RuleModule = {
       return {};
     }
 
-    function reportIfEmoji(node: RuleNode, value: unknown) {
+    function reportIfEmoji(node: TSESTree.Node, value: unknown) {
       const containsEmojiText = typeof value === "string" && containsEmoji(value);
       if (containsEmojiText) {
         context.report({ messageId: "noEmoji", node });
@@ -44,14 +45,14 @@ export const noEmoji: RuleModule = {
     }
 
     return {
-      JSXText(node: RuleNode) {
+      JSXText(node: TSESTree.JSXText) {
         reportIfEmoji(node, node.value);
       },
-      Literal(node: RuleNode) {
+      Literal(node: TSESTree.Literal) {
         reportIfEmoji(node, node.value);
       },
-      TemplateElement(node: RuleNode) {
-        reportIfEmoji(node, typeof node.value === "object" ? node.value?.raw : null);
+      TemplateElement(node: TSESTree.TemplateElement) {
+        reportIfEmoji(node, typeof node.value === "object" ? node.value.raw : null);
       },
     };
   },

@@ -1,4 +1,5 @@
-import type { RuleNode, RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
+import type { TSESTree } from "@typescript-eslint/utils";
+import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 export const noJsxTernaryNull: RuleModule = {
   meta: {
     type: "suggestion",
@@ -13,22 +14,22 @@ export const noJsxTernaryNull: RuleModule = {
     schema: [],
   },
   create(context: RuleContext) {
-    function isNullLiteral(node: RuleNode | null) {
+    function isNullLiteral(node: TSESTree.Node | null) {
       return node?.type === "Literal" && node.value === null;
     }
 
     return {
-      ConditionalExpression(node: RuleNode) {
+      ConditionalExpression(node: TSESTree.ConditionalExpression) {
         const container = node.parent;
 
-        const isJsxExpressionContainer = container?.type === "JSXExpressionContainer";
+        const isJsxExpressionContainer = container.type === "JSXExpressionContainer";
         if (!isJsxExpressionContainer) {
           return;
         }
 
         const host = container.parent;
 
-        const lacksJsxHost = host?.type !== "JSXElement" && host?.type !== "JSXFragment";
+        const lacksJsxHost = host.type !== "JSXElement" && host.type !== "JSXFragment";
         if (lacksJsxHost) {
           return;
         }

@@ -1,4 +1,4 @@
-import type { RuleNode } from "#/utils/rule-authoring/rule-types";
-export function getTypeReferenceParameters(node: RuleNode) {
-  return node.typeArguments?.params ?? node.typeParameters?.params ?? [];
+import type { TSESTree } from "@typescript-eslint/utils";
+export function getTypeReferenceParameters(node: TSESTree.TSTypeReference) {
+  return node.typeArguments?.params ?? [];
 }

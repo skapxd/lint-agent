@@ -1,9 +1,10 @@
+import type { TSESTree } from "@typescript-eslint/utils";
 import { getContainingFunction } from "#/utils/ast/get-containing-function";
 import { getFunctionName } from "#/utils/ast/get-function-name";
 import { getReturnedObjectExpression } from "#/utils/ast/get-returned-object-expression";
 import { hasBooleanOkProperty } from "#/utils/result/has-boolean-ok-property";
 import { isExportedFunction } from "#/utils/ast/is-exported-function";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
+import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const noAdHocOkResult: RuleModule = {
       meta: {
@@ -20,7 +21,7 @@ export const noAdHocOkResult: RuleModule = {
       },
       create(context: RuleContext) {
         return {
-          ReturnStatement(node: RuleNode) {
+          ReturnStatement(node: TSESTree.ReturnStatement) {
             const returnedObject = getReturnedObjectExpression(node.argument);
 
             const lacksBooleanOkReturn = !returnedObject || !hasBooleanOkProperty(returnedObject);

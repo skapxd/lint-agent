@@ -1,9 +1,14 @@
-import type { RuleNode } from "#/utils/rule-authoring/rule-types";
+import type { TSESTree } from "@typescript-eslint/utils";
 import { getFunctionNodeName } from "./get-function-node-name";
 import { getVariableDeclaratorName } from "./get-variable-declarator-name";
-import { isFunctionNode } from "./is-function-node";
+import { isFunctionNode, type FunctionNode } from "./is-function-node";
 
-export function getRootFunctionEntries(statement: RuleNode) {
+type RootFunctionEntry = {
+  name: string;
+  node: FunctionNode;
+};
+
+export function getRootFunctionEntries(statement: TSESTree.Node): RootFunctionEntry[] {
   const declaration =
     statement.type === "ExportNamedDeclaration" ||
     statement.type === "ExportDefaultDeclaration"
@@ -29,10 +34,18 @@ export function getRootFunctionEntries(statement: RuleNode) {
     return [];
   }
 
-  return declaration.declarations
-    .filter((variableDeclarator: RuleNode) => isFunctionNode(variableDeclarator.init))
-    .map((variableDeclarator: RuleNode) => ({
+  const entries: RootFunctionEntry[] = [];
+
+  for (const variableDeclarator of declaration.declarations) {
+    if (!isFunctionNode(variableDeclarator.init)) {
+      continue;
+    }
+
+    entries.push({
       name: getVariableDeclaratorName(variableDeclarator),
       node: variableDeclarator.init,
-    }));
+    });
+  }
+
+  return entries;
 }

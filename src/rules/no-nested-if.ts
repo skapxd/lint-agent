@@ -1,7 +1,8 @@
+import type { TSESTree } from "@typescript-eslint/utils";
 import { getNoNestedIfOptions } from "#/utils/options/get-no-nested-if-options";
 import { isNestedIfStatement } from "#/utils/ast/is-nested-if-statement";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
+import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const noNestedIf: RuleModule = {
   meta: {
@@ -37,7 +38,7 @@ export const noNestedIf: RuleModule = {
     }
 
     return {
-      IfStatement(node: RuleNode) {
+      IfStatement(node: TSESTree.IfStatement) {
         const isNestedIf = isNestedIfStatement(node);
         if (isNestedIf) {
           context.report({ messageId: "noNestedIf", node });

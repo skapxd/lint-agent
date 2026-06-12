@@ -1,9 +1,10 @@
-import type { RuleNode, RuleSourceCode } from "#/utils/rule-authoring/rule-types";
+import type { TSESTree } from "@typescript-eslint/utils";
+import type { RuleSourceCode } from "#/utils/rule-authoring/rule-types";
 import { getCallExpressionExample } from "./get-call-expression-example";
 import { unwrapExpression } from "#/utils/ast/unwrap-expression";
 
 export function getAwaitedOperationExample(
-  node: RuleNode,
+  node: TSESTree.Node,
   sourceCode: RuleSourceCode,
 ) {
   const unwrappedNode = unwrapExpression(node);

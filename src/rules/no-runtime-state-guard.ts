@@ -1,9 +1,10 @@
+import type { TSESTree } from "@typescript-eslint/utils";
 import { containsThrowStatement } from "#/utils/ast/contains-throw-statement";
 import { getContainingFunction } from "#/utils/ast/get-containing-function";
 import { getNoRuntimeStateGuardOptions } from "#/utils/options/get-no-runtime-state-guard-options";
 import { getThisPropertyInTest } from "#/utils/ast/get-this-property-in-test";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
+import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const noRuntimeStateGuard: RuleModule = {
   meta: {
@@ -39,12 +40,12 @@ export const noRuntimeStateGuard: RuleModule = {
     }
 
     return {
-      IfStatement(node: RuleNode) {
+      IfStatement(node: TSESTree.IfStatement) {
         const containingFunction = getContainingFunction(node);
 
         // Solo el guard del ESTADO PROPIO en metodos de clase: validar
         // argumentos o inputs externos es otro territorio (DTOs, Result).
-        const hasMethodDefinitionParent = containingFunction?.parent?.type === "MethodDefinition";
+        const hasMethodDefinitionParent = containingFunction?.parent.type === "MethodDefinition";
         if (!hasMethodDefinitionParent) {
           return;
         }

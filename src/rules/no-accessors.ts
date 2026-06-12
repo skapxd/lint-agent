@@ -1,6 +1,8 @@
+import type { TSESTree } from "@typescript-eslint/utils";
+import { getPropertyName } from "#/utils/ast/get-property-name";
 import { getNoAccessorsOptions } from "#/utils/options/get-no-accessors-options";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
+import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const noAccessors: RuleModule = {
   meta: {
@@ -38,7 +40,7 @@ export const noAccessors: RuleModule = {
       return {};
     }
 
-    function reportIfAccessor(node: RuleNode) {
+    function reportIfAccessor(node: TSESTree.MethodDefinition | TSESTree.Property) {
       const isAccessorMember = node.kind === "get" || node.kind === "set";
       if (!isAccessorMember) {
         return;
@@ -47,10 +49,10 @@ export const noAccessors: RuleModule = {
       context.report({
         data: {
           kind: String(node.kind),
-          name: node.key?.name ?? "anonymous",
+          name: getPropertyName(node.key),
         },
         messageId: "noAccessor",
-        node: node.key ?? node,
+        node: node.key,
       });
     }
 

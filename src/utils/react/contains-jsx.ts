@@ -1,8 +1,8 @@
-import type { RuleNode } from "#/utils/rule-authoring/rule-types";
+import type { TSESTree } from "@typescript-eslint/utils";
 import { getNodeChildren } from "#/utils/ast/get-node-children";
 import { isAstNode } from "#/utils/ast/is-ast-node";
 
-export function containsJsx(node: RuleNode): boolean {
+export function containsJsx(node: TSESTree.Node): boolean {
   if (!isAstNode(node)) {
     return false;
   }
@@ -12,5 +12,5 @@ export function containsJsx(node: RuleNode): boolean {
     return true;
   }
 
-  return getNodeChildren(node).some((child: RuleNode) => containsJsx(child));
+  return getNodeChildren(node).some((child: TSESTree.Node) => containsJsx(child));
 }

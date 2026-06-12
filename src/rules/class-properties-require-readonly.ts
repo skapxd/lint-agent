@@ -1,9 +1,11 @@
+import type { TSESTree } from "@typescript-eslint/utils";
+import { getPropertyName } from "#/utils/ast/get-property-name";
 import { getDecoratorName } from "#/utils/nest/get-decorator-name";
 import { getImportedLocalNames } from "#/utils/imports/get-imported-local-names";
 import { getReadonlyPropertiesOptions } from "#/utils/options/get-readonly-properties-options";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import { matchesAnyPattern } from "#/utils/matching/matches-any-pattern";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
+import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const classPropertiesRequireReadonly: RuleModule = {
   meta: {
@@ -48,15 +50,18 @@ export const classPropertiesRequireReadonly: RuleModule = {
 
     let ormNames = new Set<string>();
 
-    function isOrmManagedProperty(node: RuleNode) {
-      return (node.decorators ?? []).some((decorator: RuleNode) => {
+    function isOrmManagedProperty(node: TSESTree.PropertyDefinition) {
+      return node.decorators.some((decorator) => {
         const decoratorName = getDecoratorName(decorator);
 
         return Boolean(decoratorName && ormNames.has(decoratorName));
       });
     }
 
-    function reportIfMutable(node: RuleNode, name: string | null | undefined) {
+    function reportIfMutable(
+      node: TSESTree.PropertyDefinition | TSESTree.TSParameterProperty,
+      name: string | null | undefined,
+    ) {
       if (node.readonly) {
         return;
       }
@@ -74,14 +79,14 @@ export const classPropertiesRequireReadonly: RuleModule = {
     }
 
     return {
-      Program(node: RuleNode) {
+      Program(node: TSESTree.Program) {
         ormNames = new Set(
           options.ormModuleSources.flatMap((source: string) => [
             ...getImportedLocalNames(node, source),
           ]),
         );
       },
-      PropertyDefinition(node: RuleNode) {
+      PropertyDefinition(node: TSESTree.PropertyDefinition) {
         // Una propiedad decorada por el ORM (@Prop, @Column) le pertenece
         // al ORM: su modelo de mutación (doc.campo = x; doc.save()) no es
         // asunto de este lint. La exención es por propiedad, no por archivo.
@@ -90,11 +95,16 @@ export const classPropertiesRequireReadonly: RuleModule = {
           return;
         }
 
-        reportIfMutable(node, node.key?.name);
+        reportIfMutable(node, getPropertyName(node.key));
       },
       // constructor(private foo: X) también es una propiedad de la clase.
-      TSParameterProperty(node: RuleNode) {
-        reportIfMutable(node, node.parameter?.name);
+      TSParameterProperty(node: TSESTree.TSParameterProperty) {
+        const parameter = node.parameter;
+        const parameterName = parameter.type === "Identifier"
+          ? parameter.name
+          : parameter.left.name;
+
+        reportIfMutable(node, parameterName);
       },
     };
   },

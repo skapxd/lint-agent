@@ -1,4 +1,4 @@
-import type { RuleNode } from "#/utils/rule-authoring/rule-types";
+import type { TSESTree } from "@typescript-eslint/utils";
 import { isAstNode } from "#/utils/ast/is-ast-node";
 import { isPropertyKeyNamed } from "#/utils/ast/is-property-key-named";
 
@@ -13,7 +13,7 @@ type AliasTarget = {
 };
 
 export function getDeclaredAliasTargets(
-  id: RuleNode,
+  id: TSESTree.BindingName,
   represents: "error" | "result",
 ): AliasTarget[] {
   const isIdentifierNode = id.type === "Identifier";
@@ -26,14 +26,18 @@ export function getDeclaredAliasTargets(
     return [];
   }
 
-  return id.properties.flatMap((property: RuleNode): AliasTarget[] => {
-    const isRestResultAlias = property.type === "RestElement" && property.argument.type === "Identifier";
-    if (isRestResultAlias) {
-      return [{ name: property.argument.name, represents: "result" }];
+  return id.properties.flatMap((property): AliasTarget[] => {
+    const isRestElement = property.type === "RestElement";
+    if (isRestElement) {
+      const argument = property.argument;
+      const hasIdentifierArgument = argument.type === "Identifier";
+
+      return hasIdentifierArgument
+        ? [{ name: argument.name, represents: "result" }]
+        : [];
     }
 
-    const isErrorProperty =
-      property.type === "Property" && isPropertyKeyNamed(property, "error");
+    const isErrorProperty = isPropertyKeyNamed(property, "error");
     if (!isErrorProperty) {
       return [];
     }

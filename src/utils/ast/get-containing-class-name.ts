@@ -1,13 +1,11 @@
-import type { RuleNode } from "#/utils/rule-authoring/rule-types";
-export function getContainingClassName(node: RuleNode) {
-  let current = node.parent;
+import type { TSESTree } from "@typescript-eslint/utils";
+import { isClassBoundary } from "./is-class-boundary";
+
+export function getContainingClassName(node: TSESTree.Node) {
+  let current: TSESTree.Node | undefined = node.parent;
 
   while (current) {
-    const isClassBoundary = current.type === "ClassDeclaration" ||
-      current.type === "ClassExpression";
-    if (
-      isClassBoundary
-    ) {
+    if (isClassBoundary(current)) {
       return current.id?.name ?? null;
     }
 

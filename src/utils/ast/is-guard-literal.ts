@@ -1,13 +1,9 @@
-type LiteralNode = {
-  type: string;
-  name?: string;
-  value?: unknown;
-};
+import type { TSESTree } from "@typescript-eslint/utils";
 
 // Literales de guard: true/false/null (Literal) y `undefined` (que en el AST
 // es un Identifier, no un Literal). Compararse contra ellos es la escritura
 // explicita de la afirmacion/negacion/presencia de un valor.
-export function isGuardLiteral(node: LiteralNode): boolean {
+export function isGuardLiteral(node: TSESTree.Node): boolean {
   const isLiteralNode = node.type === "Literal";
   if (isLiteralNode) {
     return typeof node.value === "boolean" || node.value === null;

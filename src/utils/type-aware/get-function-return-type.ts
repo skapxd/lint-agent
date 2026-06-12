@@ -1,5 +1,7 @@
-import type { RuleNode, TypeContext } from "#/utils/rule-authoring/rule-types";
-export function getFunctionReturnType(node: RuleNode, typeContext: TypeContext) {
+import type { TypeContext } from "#/utils/rule-authoring/rule-types";
+import type { FunctionNode } from "#/utils/ast/is-function-node";
+
+export function getFunctionReturnType(node: FunctionNode, typeContext: TypeContext) {
   if (node.returnType?.typeAnnotation) {
     return typeContext.services.getTypeFromTypeNode(node.returnType.typeAnnotation);
   }

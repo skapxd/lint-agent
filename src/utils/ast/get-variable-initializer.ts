@@ -1,8 +1,9 @@
-import type { RuleNode, RuleScope, RuleScopeVariable } from "#/utils/rule-authoring/rule-types";
+import type { TSESTree } from "@typescript-eslint/utils";
+import type { RuleScope, RuleScopeVariable } from "#/utils/rule-authoring/rule-types";
 // Resuelve un Identifier hasta el inicializador de su declaración subiendo
 // por la cadena de scopes (`const opts = {...}` → el ObjectExpression).
 // Devuelve null si la variable no se declara aquí (parámetro, import).
-export function getVariableInitializer(identifier: RuleNode, scope: RuleScope) {
+export function getVariableInitializer(identifier: TSESTree.Identifier, scope: RuleScope) {
   let current: RuleScope | null | undefined = scope;
 
   while (current) {

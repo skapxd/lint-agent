@@ -1,3 +1,4 @@
+import type { TSESTree } from "@typescript-eslint/utils";
 import { getContainingFunction } from "#/utils/ast/get-containing-function";
 import { getStateShapeSmell } from "#/utils/react/get-state-shape-smell";
 import { getTaggedUnionStateOptions } from "#/utils/options/get-tagged-union-state-options";
@@ -5,16 +6,16 @@ import { getUseStateSetterName } from "#/utils/react/get-use-state-setter-name";
 import { getUseStateVariableName } from "#/utils/react/get-use-state-variable-name";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import { matchesAnyPattern } from "#/utils/matching/matches-any-pattern";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
+import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 type StateMachineEntry = {
   errorNames: string[];
   loadingNames: string[];
-  reportNode: RuleNode;
+  reportNode: TSESTree.Node;
 };
 
 type TransitionEntry = {
-  reportNode: RuleNode;
+  reportNode: TSESTree.Node;
   states: Map<string, string>;
 };
 
@@ -64,14 +65,14 @@ export const preferTaggedUnionState: RuleModule = {
     }
 
     // useState repartidos, agrupados por función contenedora.
-    const stateMachines = new Map<RuleNode, StateMachineEntry>();
+    const stateMachines = new Map<TSESTree.Node, StateMachineEntry>();
     // setter → nombre del estado que gobierna (identificado por POSICIÓN
     // en el destructuring, no por nombre: evidencia estructural).
     const settersToState = new Map<string, string>();
     // transiciones: función → setters distintos que llama.
-    const transitions = new Map<RuleNode, TransitionEntry>();
+    const transitions = new Map<TSESTree.Node, TransitionEntry>();
 
-    function reportIfSmellyShape(node: RuleNode, members: readonly RuleNode[]) {
+    function reportIfSmellyShape(node: TSESTree.Node, members: readonly TSESTree.Node[]) {
       const smell = getStateShapeSmell(members, options);
 
       if (smell) {
@@ -83,8 +84,14 @@ export const preferTaggedUnionState: RuleModule = {
       }
     }
 
-    function trackTransition(node: RuleNode) {
-      const stateName = settersToState.get(node.callee?.name);
+    function trackTransition(node: TSESTree.CallExpression) {
+      const callee = node.callee;
+      const hasIdentifierCallee = callee.type === "Identifier";
+      if (!hasIdentifierCallee) {
+        return;
+      }
+
+      const stateName = settersToState.get(callee.name);
       const containingFunction = getContainingFunction(node);
 
       const lacksTrackedStateOwner = !stateName || !containingFunction;
@@ -97,18 +104,19 @@ export const preferTaggedUnionState: RuleModule = {
         states: new Map(),
       };
 
-      entry.states.set(node.callee.name, stateName);
+      entry.states.set(callee.name, stateName);
       entry.reportNode = node;
       transitions.set(containingFunction, entry);
     }
 
-    function classifyUseState(node: RuleNode) {
-      const hasIdentifierCallee = node.callee?.type === "Identifier";
+    function classifyUseState(node: TSESTree.CallExpression) {
+      const callee = node.callee;
+      const hasIdentifierCallee = callee.type === "Identifier";
       if (!hasIdentifierCallee) {
         return;
       }
 
-      const callsUseState = node.callee.name === "useState";
+      const callsUseState = callee.name === "useState";
       if (!callsUseState) {
         trackTransition(node);
 
@@ -199,13 +207,13 @@ export const preferTaggedUnionState: RuleModule = {
       // La versión OOP de la máquina repartida: una clase con el flag y el
       // error como propiedades (un job runner, un schema de Mongoose que
       // persiste la inconsistencia).
-      ClassBody(node: RuleNode) {
+      ClassBody(node: TSESTree.ClassBody) {
         reportIfSmellyShape(node.parent, node.body);
       },
-      TSInterfaceBody(node: RuleNode) {
+      TSInterfaceBody(node: TSESTree.TSInterfaceBody) {
         reportIfSmellyShape(node.parent, node.body);
       },
-      TSTypeLiteral(node: RuleNode) {
+      TSTypeLiteral(node: TSESTree.TSTypeLiteral) {
         reportIfSmellyShape(node, node.members);
       },
     };

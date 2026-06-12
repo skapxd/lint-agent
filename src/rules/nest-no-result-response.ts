@@ -1,10 +1,12 @@
+import type { TSESTree } from "@typescript-eslint/utils";
+import { getPropertyName } from "#/utils/ast/get-property-name";
 import { getNestNoResultResponseOptions } from "#/utils/options/get-nest-no-result-response-options";
 import { getTypeContext } from "#/utils/type-aware/get-type-context";
 import { hasClassDecoratorNamed } from "#/utils/nest/has-class-decorator-named";
 import { isAstNode } from "#/utils/ast/is-ast-node";
 import { isSkapxdResultOrPromiseResultType } from "#/utils/result/is-skapxd-result-or-promise-result-type";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
+import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 import type ts from "typescript";
 
 const typescriptCallSignatureKind = 0;
@@ -49,7 +51,7 @@ export const nestNoResultResponse: RuleModule = {
 
     const activeTypeContext = typeContext;
 
-    function methodReturnsResult(node: RuleNode) {
+    function methodReturnsResult(node: TSESTree.MethodDefinition) {
       if (!isAstNode(node.value)) {
         return false;
       }
@@ -69,16 +71,15 @@ export const nestNoResultResponse: RuleModule = {
     }
 
     return {
-      MethodDefinition(node: RuleNode) {
+      MethodDefinition(node: TSESTree.MethodDefinition) {
         const isMethodMember = node.kind === "method";
         if (!isMethodMember) {
           return;
         }
 
-        const classNode = node.parent?.parent;
+        const classNode = node.parent.parent;
 
-        const lacksControllerClass = !classNode ||
-          !hasClassDecoratorNamed(classNode, options.controllerDecoratorNames);
+        const lacksControllerClass = !hasClassDecoratorNamed(classNode, options.controllerDecoratorNames);
         if (
           lacksControllerClass
         ) {
@@ -88,9 +89,9 @@ export const nestNoResultResponse: RuleModule = {
         const returnsResultValue = methodReturnsResult(node);
         if (returnsResultValue) {
           context.report({
-            data: { name: node.key?.name ?? "anonymous" },
+            data: { name: getPropertyName(node.key) },
             messageId: "nestNoResultResponse",
-            node: node.key ?? node,
+            node: node.key,
           });
         }
       },

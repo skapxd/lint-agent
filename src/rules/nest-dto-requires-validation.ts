@@ -1,11 +1,13 @@
+import type { TSESTree } from "@typescript-eslint/utils";
 import { getContainingClassName } from "#/utils/ast/get-containing-class-name";
+import { getPropertyName } from "#/utils/ast/get-property-name";
 import { getDecoratorName } from "#/utils/nest/get-decorator-name";
 import { getImportedLocalNames } from "#/utils/imports/get-imported-local-names";
 import { getNestDtoValidationOptions } from "#/utils/options/get-nest-dto-validation-options";
 import { isPublicInstanceProperty } from "#/utils/ast/is-public-instance-property";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import { matchesAnyPattern } from "#/utils/matching/matches-any-pattern";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
+import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const nestDtoRequiresValidation: RuleModule = {
   meta: {
@@ -68,11 +70,11 @@ export const nestDtoRequiresValidation: RuleModule = {
     let transformerNames = new Set();
 
     return {
-      Program(node: RuleNode) {
+      Program(node: TSESTree.Program) {
         validatorNames = getImportedLocalNames(node, "class-validator");
         transformerNames = getImportedLocalNames(node, "class-transformer");
       },
-      PropertyDefinition(node: RuleNode) {
+      PropertyDefinition(node: TSESTree.PropertyDefinition) {
         const isPublicInstancePropertyNode = isPublicInstanceProperty(node);
         if (!isPublicInstancePropertyNode) {
           return;
@@ -90,8 +92,8 @@ export const nestDtoRequiresValidation: RuleModule = {
           return;
         }
 
-        const propertyName = node.key?.name ?? "anonymous";
-        const decoratorNames = (node.decorators ?? []).map(getDecoratorName);
+        const propertyName = getPropertyName(node.key);
+        const decoratorNames = node.decorators.map(getDecoratorName);
         const validators = decoratorNames.filter(
           (name: string | null): name is string =>
             Boolean(name && validatorNames.has(name)),
@@ -102,7 +104,7 @@ export const nestDtoRequiresValidation: RuleModule = {
           context.report({
             data: { name: propertyName },
             messageId: "missingValidator",
-            node: node.key ?? node,
+            node: node.key,
           });
 
           return;
@@ -120,7 +122,7 @@ export const nestDtoRequiresValidation: RuleModule = {
           context.report({
             data: { name: propertyName },
             messageId: "optionalRequiresIsOptional",
-            node: node.key ?? node,
+            node: node.key,
           });
         }
 
@@ -137,7 +139,7 @@ export const nestDtoRequiresValidation: RuleModule = {
           context.report({
             data: { name: propertyName },
             messageId: "validateNestedRequiresType",
-            node: node.key ?? node,
+            node: node.key,
           });
         }
       },

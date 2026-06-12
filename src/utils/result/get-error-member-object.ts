@@ -1,22 +1,24 @@
-import type { RuleNode } from "#/utils/rule-authoring/rule-types";
+import type { TSESTree } from "@typescript-eslint/utils";
 import { isMemberPropertyNamed } from "#/utils/ast/is-member-property-named";
 import { unwrapExpression } from "#/utils/ast/unwrap-expression";
 
 // `result.error` usado como condición: la presencia del error es el guard.
-export function getErrorMemberObject(node: RuleNode) {
+export function getErrorMemberObject(node: TSESTree.Node) {
   const unwrappedNode = unwrapExpression(node);
 
-  const lacksResultErrorMember = unwrappedNode.type !== "MemberExpression" ||
-    unwrappedNode.object.type !== "Identifier" ||
-    !isMemberPropertyNamed(unwrappedNode, "error");
-  if (
-    lacksResultErrorMember
-  ) {
+  const isMemberExpressionNode = unwrappedNode.type === "MemberExpression";
+  if (!isMemberExpressionNode) {
+    return null;
+  }
+
+  const object = unwrappedNode.object;
+  const lacksResultErrorMember = object.type !== "Identifier" || !isMemberPropertyNamed(unwrappedNode, "error");
+  if (lacksResultErrorMember) {
     return null;
   }
 
   return {
-    name: unwrappedNode.object.name,
-    node: unwrappedNode.object,
+    name: object.name,
+    node: object,
   };
 }

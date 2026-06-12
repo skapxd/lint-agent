@@ -1,8 +1,8 @@
-import type { RuleNode } from "#/utils/rule-authoring/rule-types";
+import type { TSESTree } from "@typescript-eslint/utils";
 // Nombres locales importados desde un módulo concreto en el archivo.
 // Comparar decoradores contra esta lista evita falsos positivos con
 // decoradores propios que casualmente tengan el mismo nombre.
-export function getImportedLocalNames(program: RuleNode, moduleSource: string) {
+export function getImportedLocalNames(program: TSESTree.Program, moduleSource: string) {
   const names = new Set<string>();
 
   for (const statement of program.body) {
