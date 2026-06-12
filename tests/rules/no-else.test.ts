@@ -16,6 +16,12 @@ createRuleTester().run("no-else", rules["no-else"]!, {
       filename: "src/f.ts",
     },
     {
+      // cadena completa if/else if/else: un reporte por cada eslabón else
+      code: "function f(s: string) { if (s === 'a') { run(); } else if (s === 'b') { other(); } else { rest(); } }",
+      errors: [{ messageId: "noElse" }, { messageId: "noElse" }],
+      filename: "src/f.ts",
+    },
+    {
       // else de efectos: extraer o ternario
       code: "function f(a: boolean) { if (a) { doA(); } else { doB(); } sigue(); }",
       errors: [{ messageId: "noElse" }],
