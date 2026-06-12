@@ -1,6 +1,6 @@
 import type { RuleNode, RuleSourceCode } from "#/utils/rule-authoring/rule-types";
 import { getCallExpressionExample } from "./get-call-expression-example";
-import { unwrapExpression } from "#/utils/unwrap-expression";
+import { unwrapExpression } from "#/utils/ast/unwrap-expression";
 
 export function getAwaitedOperationExample(
   node: RuleNode,

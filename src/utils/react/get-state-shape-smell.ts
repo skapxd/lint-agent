@@ -1,6 +1,6 @@
 import type { RuleNode } from "#/utils/rule-authoring/rule-types";
 import { matchesAnyPattern } from "#/utils/matching/matches-any-pattern";
-import { memberIsBoolean } from "#/utils/member-is-boolean";
+import { memberIsBoolean } from "#/utils/ast/member-is-boolean";
 
 // Analiza los miembros de un tipo, interface o CLASE buscando la forma
 // enferma: un flag boolean de "en proceso" conviviendo con un campo de error

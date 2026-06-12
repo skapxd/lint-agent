@@ -1,0 +1,63 @@
+import { runMoveMigration } from "./lib/move-ts-files.mjs";
+
+runMoveMigration({
+  moves: [
+    ["src/utils/collect-identifiers-named.ts", "src/utils/ast/collect-identifiers-named.ts"],
+    ["src/utils/contains-call-named.ts", "src/utils/ast/contains-call-named.ts"],
+    ["src/utils/contains-throw-statement.ts", "src/utils/ast/contains-throw-statement.ts"],
+    ["src/utils/get-await-scope-name.ts", "src/utils/ast/get-await-scope-name.ts"],
+    ["src/utils/get-boolean-literal-value.ts", "src/utils/ast/get-boolean-literal-value.ts"],
+    ["src/utils/get-containing-class-name.ts", "src/utils/ast/get-containing-class-name.ts"],
+    ["src/utils/get-containing-function.ts", "src/utils/ast/get-containing-function.ts"],
+    [
+      "src/utils/get-function-expression-name.ts",
+      "src/utils/ast/get-function-expression-name.ts",
+    ],
+    ["src/utils/get-function-line-count.ts", "src/utils/ast/get-function-line-count.ts"],
+    ["src/utils/get-function-name.ts", "src/utils/ast/get-function-name.ts"],
+    ["src/utils/get-function-node-name.ts", "src/utils/ast/get-function-node-name.ts"],
+    ["src/utils/get-member-chain-depth.ts", "src/utils/ast/get-member-chain-depth.ts"],
+    ["src/utils/get-node-children.ts", "src/utils/ast/get-node-children.ts"],
+    [
+      "src/utils/get-object-keys-set-to-true.ts",
+      "src/utils/ast/get-object-keys-set-to-true.ts",
+    ],
+    [
+      "src/utils/get-object-pattern-prop-names.ts",
+      "src/utils/ast/get-object-pattern-prop-names.ts",
+    ],
+    ["src/utils/get-parent-function-name.ts", "src/utils/ast/get-parent-function-name.ts"],
+    [
+      "src/utils/get-parent-function-report-node.ts",
+      "src/utils/ast/get-parent-function-report-node.ts",
+    ],
+    ["src/utils/get-property-name.ts", "src/utils/ast/get-property-name.ts"],
+    ["src/utils/get-returned-object-expression.ts", "src/utils/ast/get-returned-object-expression.ts"],
+    ["src/utils/get-root-function-entries.ts", "src/utils/ast/get-root-function-entries.ts"],
+    ["src/utils/get-this-property-in-test.ts", "src/utils/ast/get-this-property-in-test.ts"],
+    ["src/utils/get-variable-declarator-name.ts", "src/utils/ast/get-variable-declarator-name.ts"],
+    ["src/utils/get-variable-initializer.ts", "src/utils/ast/get-variable-initializer.ts"],
+    [
+      "src/utils/is-anonymous-generated-function-name.ts",
+      "src/utils/ast/is-anonymous-generated-function-name.ts",
+    ],
+    ["src/utils/is-ast-node.ts", "src/utils/ast/is-ast-node.ts"],
+    ["src/utils/is-callee-named.ts", "src/utils/ast/is-callee-named.ts"],
+    ["src/utils/is-exported-function.ts", "src/utils/ast/is-exported-function.ts"],
+    ["src/utils/is-function-node.ts", "src/utils/ast/is-function-node.ts"],
+    ["src/utils/is-guard-literal.ts", "src/utils/ast/is-guard-literal.ts"],
+    ["src/utils/is-inside-node.ts", "src/utils/ast/is-inside-node.ts"],
+    [
+      "src/utils/is-literal-guard-comparison.ts",
+      "src/utils/ast/is-literal-guard-comparison.ts",
+    ],
+    ["src/utils/is-member-property-named.ts", "src/utils/ast/is-member-property-named.ts"],
+    ["src/utils/is-nested-if-statement.ts", "src/utils/ast/is-nested-if-statement.ts"],
+    ["src/utils/is-property-key-named.ts", "src/utils/ast/is-property-key-named.ts"],
+    ["src/utils/is-public-class-method.ts", "src/utils/ast/is-public-class-method.ts"],
+    ["src/utils/is-public-instance-property.ts", "src/utils/ast/is-public-instance-property.ts"],
+    ["src/utils/member-is-boolean.ts", "src/utils/ast/member-is-boolean.ts"],
+    ["src/utils/unwrap-expression.ts", "src/utils/ast/unwrap-expression.ts"],
+    ["src/utils/unwrap-negations.ts", "src/utils/ast/unwrap-negations.ts"],
+  ],
+});

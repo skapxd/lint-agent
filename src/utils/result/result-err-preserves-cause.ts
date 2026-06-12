@@ -1,8 +1,8 @@
 import type { RuleNode } from "#/utils/rule-authoring/rule-types";
-import { isAstNode } from "#/utils/is-ast-node";
-import { isPropertyKeyNamed } from "#/utils/is-property-key-named";
+import { isAstNode } from "#/utils/ast/is-ast-node";
+import { isPropertyKeyNamed } from "#/utils/ast/is-property-key-named";
 import { isResultErrorMember } from "./is-result-error-member";
-import { unwrapExpression } from "#/utils/unwrap-expression";
+import { unwrapExpression } from "#/utils/ast/unwrap-expression";
 
 export function resultErrPreservesCause(node: unknown, resultName: string) {
   if (!isAstNode(node)) {

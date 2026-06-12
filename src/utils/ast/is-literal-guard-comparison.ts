@@ -1,5 +1,5 @@
-import { getMemberChainDepth } from "#/utils/get-member-chain-depth";
-import { isGuardLiteral } from "#/utils/is-guard-literal";
+import { getMemberChainDepth } from "#/utils/ast/get-member-chain-depth";
+import { isGuardLiteral } from "#/utils/ast/is-guard-literal";
 
 type ComparisonNode = {
   type: string;

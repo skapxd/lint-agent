@@ -2,7 +2,7 @@ import { getPreferAbortSignalOptions } from "#/utils/options/get-prefer-abort-si
 import { getTypeContext } from "#/utils/type-aware/get-type-context";
 import { hasAbortSignalOption } from "#/utils/async/has-abort-signal-option";
 import { isInsideEffectCallback } from "#/utils/react/is-inside-effect-callback";
-import { isMemberPropertyNamed } from "#/utils/is-member-property-named";
+import { isMemberPropertyNamed } from "#/utils/ast/is-member-property-named";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 

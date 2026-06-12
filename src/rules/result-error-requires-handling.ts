@@ -1,4 +1,4 @@
-import { collectIdentifiersNamed } from "#/utils/collect-identifiers-named";
+import { collectIdentifiersNamed } from "#/utils/ast/collect-identifiers-named";
 import { getFailedResultGuard } from "#/utils/result/get-failed-result-guard";
 import { getResultErrorRequiresHandlingOptions } from "#/utils/options/get-result-error-requires-handling-options";
 import { getTypeContext } from "#/utils/type-aware/get-type-context";

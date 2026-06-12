@@ -1,5 +1,5 @@
 import type { RuleNode } from "#/utils/rule-authoring/rule-types";
-import { getBooleanLiteralValue } from "#/utils/get-boolean-literal-value";
+import { getBooleanLiteralValue } from "#/utils/ast/get-boolean-literal-value";
 import { getOkMemberObject } from "./get-ok-member-object";
 import { isFailedOkComparison } from "./is-failed-ok-comparison";
 

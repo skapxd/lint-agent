@@ -1,7 +1,7 @@
-import { containsThrowStatement } from "#/utils/contains-throw-statement";
-import { getContainingFunction } from "#/utils/get-containing-function";
+import { containsThrowStatement } from "#/utils/ast/contains-throw-statement";
+import { getContainingFunction } from "#/utils/ast/get-containing-function";
 import { getNoRuntimeStateGuardOptions } from "#/utils/options/get-no-runtime-state-guard-options";
-import { getThisPropertyInTest } from "#/utils/get-this-property-in-test";
+import { getThisPropertyInTest } from "#/utils/ast/get-this-property-in-test";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 

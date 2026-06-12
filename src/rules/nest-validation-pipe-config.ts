@@ -1,7 +1,7 @@
 import { getImportedLocalNames } from "#/utils/imports/get-imported-local-names";
 import { getNestValidationPipeOptions } from "#/utils/options/get-nest-validation-pipe-options";
-import { getObjectKeysSetToTrue } from "#/utils/get-object-keys-set-to-true";
-import { getVariableInitializer } from "#/utils/get-variable-initializer";
+import { getObjectKeysSetToTrue } from "#/utils/ast/get-object-keys-set-to-true";
+import { getVariableInitializer } from "#/utils/ast/get-variable-initializer";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 

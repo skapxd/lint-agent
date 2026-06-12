@@ -1,5 +1,5 @@
 import { getTypeContext } from "#/utils/type-aware/get-type-context";
-import { isMemberPropertyNamed } from "#/utils/is-member-property-named";
+import { isMemberPropertyNamed } from "#/utils/ast/is-member-property-named";
 import { isPromiseType } from "#/utils/type-aware/is-promise-type";
 import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 

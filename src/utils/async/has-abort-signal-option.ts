@@ -1,5 +1,5 @@
 import type { RuleNode, RuleSourceCode, TypeContext } from "#/utils/rule-authoring/rule-types";
-import { getVariableInitializer } from "#/utils/get-variable-initializer";
+import { getVariableInitializer } from "#/utils/ast/get-variable-initializer";
 import { objectExpressionHasSignal } from "./object-expression-has-signal";
 
 // addEventListener(type, listener, options): ¿las options traen `signal`?

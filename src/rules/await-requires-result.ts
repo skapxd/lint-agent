@@ -1,5 +1,5 @@
 import { getAwaitRequiresResultOptions } from "#/utils/options/get-await-requires-result-options";
-import { getAwaitScopeName } from "#/utils/get-await-scope-name";
+import { getAwaitScopeName } from "#/utils/ast/get-await-scope-name";
 import { getEnclosingTrySafeCall } from "#/utils/result/get-enclosing-try-safe-call";
 import { getTrySafeAwaitSuggestion } from "#/utils/suggestions/get-try-safe-await-suggestion";
 import { getTypeContext } from "#/utils/type-aware/get-type-context";

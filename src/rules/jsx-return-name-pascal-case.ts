@@ -1,5 +1,5 @@
 import { functionReturnsJsx } from "#/utils/react/function-returns-jsx";
-import { isFunctionNode } from "#/utils/is-function-node";
+import { isFunctionNode } from "#/utils/ast/is-function-node";
 import { isPascalCaseName } from "#/utils/naming/is-pascal-case-name";
 import { toPascalCase } from "#/utils/naming/to-pascal-case";
 import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";

@@ -1,5 +1,5 @@
 import type { RuleNode } from "#/utils/rule-authoring/rule-types";
-import { isAstNode } from "#/utils/is-ast-node";
+import { isAstNode } from "#/utils/ast/is-ast-node";
 import { isPascalCaseName } from "#/utils/naming/is-pascal-case-name";
 
 // `<Child ... />` es un componente propio; `<button ... />` es la frontera

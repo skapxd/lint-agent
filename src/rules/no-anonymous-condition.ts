@@ -1,9 +1,9 @@
 import { callHasTypePredicate } from "#/utils/type-aware/call-has-type-predicate";
-import { getMemberChainDepth } from "#/utils/get-member-chain-depth";
+import { getMemberChainDepth } from "#/utils/ast/get-member-chain-depth";
 import { getNoAnonymousConditionOptions } from "#/utils/options/get-no-anonymous-condition-options";
-import { isLiteralGuardComparison } from "#/utils/is-literal-guard-comparison";
+import { isLiteralGuardComparison } from "#/utils/ast/is-literal-guard-comparison";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
-import { unwrapNegations } from "#/utils/unwrap-negations";
+import { unwrapNegations } from "#/utils/ast/unwrap-negations";
 import type { RuleModule } from "#/utils/rule-authoring/rule-types";
 
 type ConditionNode = {

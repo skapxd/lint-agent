@@ -1,8 +1,8 @@
 import type { RuleNode } from "#/utils/rule-authoring/rule-types";
-import { getNodeChildren } from "#/utils/get-node-children";
-import { isAstNode } from "#/utils/is-ast-node";
-import { isCalleeNamed } from "#/utils/is-callee-named";
-import { isFunctionNode } from "#/utils/is-function-node";
+import { getNodeChildren } from "#/utils/ast/get-node-children";
+import { isAstNode } from "#/utils/ast/is-ast-node";
+import { isCalleeNamed } from "#/utils/ast/is-callee-named";
+import { isFunctionNode } from "#/utils/ast/is-function-node";
 
 export function countOwnUseStateCallsInNode(node: RuleNode): number {
   if (!isAstNode(node)) {

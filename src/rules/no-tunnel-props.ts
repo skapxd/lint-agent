@@ -1,7 +1,7 @@
-import { collectIdentifiersNamed } from "#/utils/collect-identifiers-named";
-import { getFunctionName } from "#/utils/get-function-name";
+import { collectIdentifiersNamed } from "#/utils/ast/collect-identifiers-named";
+import { getFunctionName } from "#/utils/ast/get-function-name";
 import { getNoTunnelPropsOptions } from "#/utils/options/get-no-tunnel-props-options";
-import { getObjectPatternPropNames } from "#/utils/get-object-pattern-prop-names";
+import { getObjectPatternPropNames } from "#/utils/ast/get-object-pattern-prop-names";
 import { isForwardedPropReference } from "#/utils/react/is-forwarded-prop-reference";
 import { isPascalCaseJsxElement } from "#/utils/react/is-pascal-case-jsx-element";
 import { isPascalCaseName } from "#/utils/naming/is-pascal-case-name";

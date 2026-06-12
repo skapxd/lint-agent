@@ -1,6 +1,6 @@
 import type { RuleNode } from "#/utils/rule-authoring/rule-types";
-import { isCalleeNamed } from "#/utils/is-callee-named";
-import { isFunctionNode } from "#/utils/is-function-node";
+import { isCalleeNamed } from "#/utils/ast/is-callee-named";
+import { isFunctionNode } from "#/utils/ast/is-function-node";
 
 // ¿El nodo vive dentro del callback de un useEffect/useLayoutEffect?
 // Cubre también las funciones anidadas (handlers y el cleanup retornado).

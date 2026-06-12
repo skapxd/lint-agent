@@ -1,5 +1,5 @@
 import { getMoveSuggestion } from "#/utils/suggestions/get-move-suggestion";
-import { getRootFunctionEntries } from "#/utils/get-root-function-entries";
+import { getRootFunctionEntries } from "#/utils/ast/get-root-function-entries";
 import { getStructureSuggestion } from "#/utils/suggestions/get-structure-suggestion";
 import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 

@@ -1,5 +1,5 @@
 import type { RuleNode } from "#/utils/rule-authoring/rule-types";
-import { isMemberPropertyNamed } from "#/utils/is-member-property-named";
+import { isMemberPropertyNamed } from "#/utils/ast/is-member-property-named";
 
 export function isResultErrCall(node: RuleNode) {
   // No se exige que el objeto se llame literalmente `Result`: un alias

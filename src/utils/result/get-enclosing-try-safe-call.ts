@@ -1,6 +1,6 @@
 import type { RuleNode } from "#/utils/rule-authoring/rule-types";
-import { isCalleeNamed } from "#/utils/is-callee-named";
-import { isFunctionNode } from "#/utils/is-function-node";
+import { isCalleeNamed } from "#/utils/ast/is-callee-named";
+import { isFunctionNode } from "#/utils/ast/is-function-node";
 
 // Si el nodo está dentro de un callback pasado a `trySafe(...)`, devuelve esa
 // CallExpression (para poder verificar su símbolo); si no, null.

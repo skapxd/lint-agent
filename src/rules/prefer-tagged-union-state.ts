@@ -1,4 +1,4 @@
-import { getContainingFunction } from "#/utils/get-containing-function";
+import { getContainingFunction } from "#/utils/ast/get-containing-function";
 import { getStateShapeSmell } from "#/utils/react/get-state-shape-smell";
 import { getTaggedUnionStateOptions } from "#/utils/options/get-tagged-union-state-options";
 import { getUseStateSetterName } from "#/utils/react/get-use-state-setter-name";

@@ -1,5 +1,5 @@
 import { getNoNestedIfOptions } from "#/utils/options/get-no-nested-if-options";
-import { isNestedIfStatement } from "#/utils/is-nested-if-statement";
+import { isNestedIfStatement } from "#/utils/ast/is-nested-if-statement";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 

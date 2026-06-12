@@ -1,10 +1,10 @@
-import { containsCallNamed } from "#/utils/contains-call-named";
+import { containsCallNamed } from "#/utils/ast/contains-call-named";
 import { getAsyncResultRuleOptions } from "#/utils/options/get-async-result-rule-options";
-import { getFunctionExpressionName } from "#/utils/get-function-expression-name";
-import { getParentFunctionName } from "#/utils/get-parent-function-name";
-import { getParentFunctionReportNode } from "#/utils/get-parent-function-report-node";
+import { getFunctionExpressionName } from "#/utils/ast/get-function-expression-name";
+import { getParentFunctionName } from "#/utils/ast/get-parent-function-name";
+import { getParentFunctionReportNode } from "#/utils/ast/get-parent-function-report-node";
 import { getTypeContext } from "#/utils/type-aware/get-type-context";
-import { isAnonymousGeneratedFunctionName } from "#/utils/is-anonymous-generated-function-name";
+import { isAnonymousGeneratedFunctionName } from "#/utils/ast/is-anonymous-generated-function-name";
 import { isPromiseOfResultType } from "#/utils/result/is-promise-of-result-type";
 import { isSkapxdResultOrPromiseResultType } from "#/utils/result/is-skapxd-result-or-promise-result-type";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
