@@ -1,5 +1,5 @@
 import type { RuleNode, TypeContext } from "#/utils/rule-authoring/rule-types";
-import { getFunctionReturnType } from "#/utils/get-function-return-type";
+import { getFunctionReturnType } from "#/utils/type-aware/get-function-return-type";
 import { isSkapxdResultOrPromiseResultType } from "./is-skapxd-result-or-promise-result-type";
 
 export function functionReturnsSkapxdResultType(node: RuleNode, typeContext: TypeContext) {

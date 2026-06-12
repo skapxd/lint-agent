@@ -1,6 +1,6 @@
 import { getFailedResultGuard } from "#/utils/result/get-failed-result-guard";
 import { getOwnResultErrCalls } from "#/utils/result/get-own-result-err-calls";
-import { getTypeContext } from "#/utils/get-type-context";
+import { getTypeContext } from "#/utils/type-aware/get-type-context";
 import { isInsideSkapxdResultReturningFunction } from "#/utils/result/is-inside-skapxd-result-returning-function";
 import { isSkapxdResultErrCall } from "#/utils/result/is-skapxd-result-err-call";
 import { isSkapxdResultExpression } from "#/utils/result/is-skapxd-result-expression";

@@ -3,7 +3,7 @@ import { getAsyncResultRuleOptions } from "#/utils/options/get-async-result-rule
 import { getFunctionExpressionName } from "#/utils/get-function-expression-name";
 import { getParentFunctionName } from "#/utils/get-parent-function-name";
 import { getParentFunctionReportNode } from "#/utils/get-parent-function-report-node";
-import { getTypeContext } from "#/utils/get-type-context";
+import { getTypeContext } from "#/utils/type-aware/get-type-context";
 import { isAnonymousGeneratedFunctionName } from "#/utils/is-anonymous-generated-function-name";
 import { isPromiseOfResultType } from "#/utils/result/is-promise-of-result-type";
 import { isSkapxdResultOrPromiseResultType } from "#/utils/result/is-skapxd-result-or-promise-result-type";

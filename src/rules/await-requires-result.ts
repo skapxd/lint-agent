@@ -2,7 +2,7 @@ import { getAwaitRequiresResultOptions } from "#/utils/options/get-await-require
 import { getAwaitScopeName } from "#/utils/get-await-scope-name";
 import { getEnclosingTrySafeCall } from "#/utils/result/get-enclosing-try-safe-call";
 import { getTrySafeAwaitSuggestion } from "#/utils/suggestions/get-try-safe-await-suggestion";
-import { getTypeContext } from "#/utils/get-type-context";
+import { getTypeContext } from "#/utils/type-aware/get-type-context";
 import { isSkapxdResultOrPromiseResultExpression } from "#/utils/result/is-skapxd-result-or-promise-result-expression";
 import { isSymbolFromSkapxdResult } from "#/utils/result/is-symbol-from-skapxd-result";
 import { isTrySafeCall } from "#/utils/result/is-try-safe-call";

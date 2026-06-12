@@ -1,6 +1,6 @@
 import type { RuleNode, TypeContext } from "#/utils/rule-authoring/rule-types";
-import { getTypeReferenceParameters } from "#/utils/get-type-reference-parameters";
-import { isTypeReferenceNamed } from "#/utils/is-type-reference-named";
+import { getTypeReferenceParameters } from "#/utils/type-aware/get-type-reference-parameters";
+import { isTypeReferenceNamed } from "#/utils/type-aware/is-type-reference-named";
 
 export function isPromiseOfResultType(node: RuleNode, options: { promiseTypeNames: readonly string[]; resultTypeNames: readonly string[] }) {
   if (node.type !== "TSTypeReference") {

@@ -1,4 +1,4 @@
-import { callHasTypePredicate } from "#/utils/call-has-type-predicate";
+import { callHasTypePredicate } from "#/utils/type-aware/call-has-type-predicate";
 import { getMemberChainDepth } from "#/utils/get-member-chain-depth";
 import { getNoAnonymousConditionOptions } from "#/utils/options/get-no-anonymous-condition-options";
 import { isLiteralGuardComparison } from "#/utils/is-literal-guard-comparison";
