@@ -1,4 +1,3 @@
-import tseslint from "typescript-eslint";
 import { nestEntrypointFilePatterns } from "#/constants/nest-entrypoint-file-patterns";
 import { nestFrameworkHookNames } from "#/constants/nest-framework-hook-names";
 import {
@@ -18,10 +17,9 @@ export function createNestConfigs(pluginReference: unknown) {
       files: ["src/**/*.ts"],
       languageOptions: typedLanguageOptions,
       name: "skapxd/nest/base",
-      plugins: {
-        "@typescript-eslint": tseslint.plugin,
-        skapxd: pluginReference,
-      },
+      // Solo el plugin skapxd: las reglas de typescript-eslint entran
+      // re-registradas bajo nuestro namespace (typeDrivenRules).
+      plugins: { skapxd: pluginReference },
       rules: {
         ...baseRules,
         ...typeDrivenRules,
@@ -89,16 +87,13 @@ export function createNestConfigs(pluginReference: unknown) {
     {
       files: ["**/*.spec.ts", "**/*.e2e-spec.ts"],
       name: "skapxd/nest/tests",
-      plugins: {
-        "@typescript-eslint": tseslint.plugin,
-        skapxd: pluginReference,
-      },
+      plugins: { skapxd: pluginReference },
       rules: {
         // El `!` sobre un fixture cuya existencia el propio test garantiza
         // no es mentirle al compilador: es el arrange. no-floating-promises
         // sí queda activa — un await olvidado en un spec es un falso verde.
-        "@typescript-eslint/no-non-null-assertion": "off",
         "skapxd/await-requires-result": "off",
+        "skapxd/no-non-null-assertion": "off",
         "skapxd/no-try-catch": "off",
         "skapxd/result-error-requires-handling": "off",
       },

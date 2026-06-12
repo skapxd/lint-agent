@@ -1,5 +1,8 @@
-// Reglas de typescript-eslint que el diseño guiado por tipos exige y que no
-// tiene sentido reimplementar — typescript-eslint ya es peer dependency.
+// Reglas de typescript-eslint que el diseño guiado por tipos exige, todas
+// re-registradas bajo el namespace skapxd (ver src/utils/wrap-tseslint-rule.ts):
+// mismo motor, cero reimplementación, pero con nombres que dicen lo que
+// defienden y mensajes que enseñan el fix — un solo namespace en toda la
+// lista de pendientes del consumidor.
 //
 // Ausencias deliberadas (no son olvidos):
 // - switch-exhaustiveness-check: prefer-ts-pattern prohíbe el switch entero;
@@ -16,11 +19,30 @@
 // - prefer-readonly-parameter-types: impracticable con cualquier parámetro
 //   que venga de una librería externa.
 export const typeDrivenRules = {
+  // `any` apaga el sistema de tipos: todo el esfuerzo de modelar estados
+  // irrepresentables muere donde aparece uno. (Era no-explicit-any.)
+  "skapxd/no-explicit-any": "error",
+  // El hueco que await-requires-result no ve: una llamada async SIN await no
+  // produce AwaitExpression — el rechazo muere sin pasar por trySafe. La
+  // única salida sin await es `void promesa()`: fire-and-forget declarado.
+  // (Era no-floating-promises; el mensaje upstream recomendaba .then/.catch,
+  // que no-promise-chain prohíbe — el nuestro corrige el consejo.)
+  "skapxd/no-floating-promises": "error",
+  // La generalización type-aware de no-runtime-state-guard: si el tipo dice
+  // que un estado es imposible, el guard defensivo sobra — y si el guard
+  // hace falta, lo que está mal es el tipo. Requiere el tsconfig de
+  // requires-strict-tsconfig para ser sólida: sin noUncheckedIndexedAccess,
+  // `array[i]` miente y esta regla acusaría guards necesarios.
+  // (Era no-unnecessary-condition.)
+  "skapxd/no-impossible-branch": "error",
+  // `!` es "cállate, yo sé más que tú" dicho al compilador. Si el valor no
+  // puede ser nulo, que lo diga el tipo; si puede serlo, hay que modelarlo.
+  "skapxd/no-non-null-assertion": "error",
   // Silenciar la alarma no arregla el incendio: un error de tipos se
   // resuelve modelando mejor, no apagando el compilador. @ts-expect-error
   // queda permitido CON descripción: es la forma legítima de testear que un
-  // estado inválido de verdad no compila.
-  "@typescript-eslint/ban-ts-comment": [
+  // estado inválido de verdad no compila. (Era ban-ts-comment.)
+  "skapxd/no-silenced-compiler": [
     "error",
     {
       "ts-expect-error": "allow-with-description",
@@ -30,25 +52,7 @@ export const typeDrivenRules = {
   ],
   // `type` en vez de `interface`: las uniones discriminadas son types, y la
   // homogeneidad evita el "¿esto se puede extender por declaration merging?"
-  "@typescript-eslint/consistent-type-definitions": ["error", "type"],
-  // `any` apaga el sistema de tipos: todo el esfuerzo de modelar estados
-  // irrepresentables muere donde aparece uno.
-  "@typescript-eslint/no-explicit-any": "error",
-  // El hueco que await-requires-result no ve: una llamada async SIN await no
-  // produce AwaitExpression — el rechazo muere sin pasar por trySafe. Esta
-  // regla obliga a awaitear (y ahí entra el pipeline de Result). El operador
-  // `void promesa` queda como única salida: fire-and-forget declarado y
-  // greppeable, no interpretado.
-  "@typescript-eslint/no-floating-promises": "error",
-  // `!` es "cállate, yo sé más que tú" dicho al compilador. Si el valor no
-  // puede ser nulo, que lo diga el tipo; si puede serlo, hay que modelarlo.
-  "@typescript-eslint/no-non-null-assertion": "error",
-  // La generalización type-aware de no-runtime-state-guard: si el tipo dice
-  // que un estado es imposible, el guard defensivo sobra — y si el guard
-  // hace falta, lo que está mal es el tipo. Requiere el tsconfig de
-  // requires-strict-tsconfig para ser sólida: sin noUncheckedIndexedAccess,
-  // `array[i]` miente y esta regla acusaría guards necesarios.
-  // Es @typescript-eslint/no-unnecessary-condition re-registrada bajo un
-  // nombre que dice lo que defiende, con mensajes que enseñan el fix.
-  "skapxd/no-impossible-branch": "error",
+  // (Era consistent-type-definitions, cuyo default upstream es `interface` —
+  // por eso la opción explícita.)
+  "skapxd/prefer-type-over-interface": ["error", "type"],
 };

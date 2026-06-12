@@ -98,11 +98,11 @@ la que defiende el axioma más fundamental (el orden es jerárquico).
 
 | # | Axioma | Reglas que lo ejecutan |
 | --- | --- | --- |
-| A1 | **Los estados imposibles son irrepresentables.** El tipo modela exactamente los estados válidos; lo inválido no compila. | `prefer-tagged-union-state`, `no-runtime-state-guard`, `requires-strict-tsconfig`, `no-impossible-branch`, `no-explicit-any`, `consistent-type-definitions` |
-| A2 | **Ningún efecto es invisible al tipo.** Si una operación puede fallar, su firma lo confiesa — no una convención oral ni un `throw` sorpresa. | `await-requires-result`, `no-try-catch`, `no-promise-chain`, `no-ad-hoc-ok-result`, `@typescript-eslint/no-floating-promises` |
+| A1 | **Los estados imposibles son irrepresentables.** El tipo modela exactamente los estados válidos; lo inválido no compila. | `prefer-tagged-union-state`, `no-runtime-state-guard`, `requires-strict-tsconfig`, `no-impossible-branch`, `no-explicit-any`, `prefer-type-over-interface` |
+| A2 | **Ningún efecto es invisible al tipo.** Si una operación puede fallar, su firma lo confiesa — no una convención oral ni un `throw` sorpresa. | `await-requires-result`, `no-try-catch`, `no-promise-chain`, `no-ad-hoc-ok-result`, `no-floating-promises` |
 | A3 | **La información no se destruye.** Un error que se transforma conserva su `cause`; uno que se detecta llega a alguien. Nadie decide "esto no importa" en silencio. | `result-error-requires-cause`, `result-error-requires-handling` |
 | A4 | **Una unidad, una responsabilidad, un nombre semántico.** El árbol de archivos cuenta una historia; una clase expone una intención. | `one-root-function-per-file`, `max-public-methods`, `no-default-export`, `jsx-return-name-pascal-case`, `max-hook-size` |
-| A5 | **Las decisiones se declaran, no se interpretan.** Cada rama es explícita y exhaustiva; un caso ignorado es una decisión visible, no un hueco. | `no-else`, `no-nested-if`, `prefer-ts-pattern`, `@typescript-eslint/ban-ts-comment`, el `void promesa()` de `no-floating-promises` |
+| A5 | **Las decisiones se declaran, no se interpretan.** Cada rama es explícita y exhaustiva; un caso ignorado es una decisión visible, no un hueco. | `no-else`, `no-nested-if`, `prefer-ts-pattern`, `no-silenced-compiler`, el `void promesa()` de `no-floating-promises` |
 | A6 | **Evidencia sobre convención.** Una regla decide por lo que el type-checker o los imports demuestran, no por cómo se llama un archivo o un campo. | la implementación type-aware de las reglas de Result, `nest-no-direct-instantiation` (@Injectable resuelto por símbolo), la exención ORM por decorador de `class-properties-require-readonly` |
 | A7 | **Las fronteras son explícitas y únicas.** Lo que cruza una capa lo hace por un contrato, una sola vez, sin túneles. | `no-deep-relative-imports`, `no-tunnel-props`, `nest-no-result-response`, `nest-no-swagger-in-controllers`, `nest-no-inline-query-params` |
 | A8 | **Inmutable por defecto.** La mutación es la excepción que se pide con evidencia, no el estado natural de las cosas. | `class-properties-require-readonly`, `no-accessors` |
@@ -333,7 +333,7 @@ El orden no es arbitrario: va de "cada hallazgo es un bug que ya tienes" hacia
 **Ola 1 — bugs gratis y fixes únicos.** Señal pura, arreglo puntual, cero
 rediseño. Aquí el equipo aprende que el linter encuentra cosas reales:
 
-- `@typescript-eslint/no-floating-promises` — cada hallazgo es un error que
+- `skapxd/no-floating-promises` — cada hallazgo es un error que
   hoy muere sin que nadie lo vea (en un backend real en producción: 12).
 - `skapxd/nest-requires-swagger-plugin` y `skapxd/nest-validation-pipe-config`
   — un hallazgo por proyecto, un fix de configuración, y quedan vigiladas las
@@ -398,8 +398,9 @@ diseño, no solo disciplina. Para cuando el equipo ya vio el patrón en la ola 3
 - `requires-strict-tsconfig` al máximo: `["strict", "noImplicitReturns",
   "noUncheckedIndexedAccess"]`. Sube un flag a la vez — cada uno aflora
   errores de compilación que son bugs latentes, no burocracia.
-- `@typescript-eslint/no-explicit-any`, `no-non-null-assertion` y
-  `ban-ts-comment` — se cierran las tres puertas de escape del compilador.
+- `skapxd/no-explicit-any`, `skapxd/no-non-null-assertion` y
+  `skapxd/no-silenced-compiler` — se cierran las tres puertas de escape del
+  compilador.
 - `skapxd/class-properties-require-readonly` — el cambio se modela con
   instancias nuevas.
 - `skapxd/prefer-tagged-union-state` y `skapxd/no-runtime-state-guard` — los
@@ -677,7 +678,7 @@ Detalles del preset:
   se escribe `void bootstrap();` — fire-and-forget declarado.
 - Los specs colocados (`*.spec.ts`, `*.e2e-spec.ts`) relajan
   `await-requires-result`, `no-try-catch`, `result-error-requires-handling` y
-  `@typescript-eslint/no-non-null-assertion` (el `!` sobre un fixture es el
+  `no-non-null-assertion` (el `!` sobre un fixture es el
   arrange del test): un test awaitea helpers libremente y descartar un Result
   en una aserción no es perder un trace. `no-floating-promises` sigue activa
   en specs: un `await` olvidado es un falso verde.
@@ -819,7 +820,11 @@ de cada regla):
 | `no-default-export` | `allowFilePatterns` (globs, aditivos a los integrados) |
 | `no-else` | `allowFilePatterns` (globs) |
 | `no-emoji` | `allowFilePatterns` (globs) |
+| `no-explicit-any` | las de la regla original de typescript-eslint (`fixToUnknown`, ...) |
+| `no-floating-promises` | las de la regla original de typescript-eslint (`ignoreVoid`, `allowList`, ...) |
 | `no-impossible-branch` | las de la regla original de typescript-eslint (`allowConstantLoopConditions`, ...) |
+| `no-silenced-compiler` | las de `ban-ts-comment` (`ts-expect-error`, `ts-ignore`, `ts-nocheck`, `minimumDescriptionLength`) |
+| `prefer-type-over-interface` | la de `consistent-type-definitions` (`"type"` o `"interface"`; los presets pasan `"type"`) |
 | `no-functions-inside-components` | `allowJsxCallbacks`, `allowArrayMapCallbacks` (ambas `true` por defecto) |
 | `no-nested-if` | `allowFilePatterns` (globs) |
 | `no-promise-chain` | `methods` |
@@ -863,12 +868,17 @@ matchea en cualquier carpeta). Las 7 reglas restantes no tienen opciones: su
 | `skapxd/no-default-export` | Prohíbe `export default`; el nombre del símbolo es el contrato. Exime configs/stories y, en el preset `next`, los entrypoints del App Router. |
 | `skapxd/no-else` | Prohíbe `else`/`else if`: el else es el estado sin nombre. Retorno anticipado, ternario simple o `match()`. |
 | `skapxd/no-emoji` | Prohíbe emojis en strings y JSX; cada sistema los renderiza distinto. Usa un icono SVG. |
+| `skapxd/no-explicit-any` | Prohíbe `any`: apaga el sistema de tipos donde más se necesita. `unknown` para lo desconocido, el tipo real para lo demás. Wrapper de typescript-eslint. |
+| `skapxd/no-floating-promises` | Promesas sin `await` ni `void`: el rechazo muere sin pasar por trySafe. El mensaje corrige el consejo upstream (`.then/.catch` aquí están prohibidos). Wrapper de typescript-eslint. |
 | `skapxd/no-impossible-branch` | Condiciones que el type-checker demuestra constantes: la pregunta ya tiene respuesta. Es `@typescript-eslint/no-unnecessary-condition` con nombre semántico y mensajes que enseñan el fix. |
 | `skapxd/no-nested-if` | Prohíbe `if` anidados: retorno anticipado o `match()`. Menos carga cognitiva y sin puntos ciegos para las demás reglas. |
+| `skapxd/no-non-null-assertion` | Prohíbe el `!`: es "cállate, yo sé más que tú" dicho al compilador. Modela el tipo o maneja la duda. Wrapper de typescript-eslint. |
 | `skapxd/no-runtime-state-guard` | Prohíbe `if (this.x) throw` en métodos: el estado inválido se hace irrepresentable en el tipo, no se vigila en runtime. |
+| `skapxd/no-silenced-compiler` | Prohíbe `@ts-ignore`/`@ts-nocheck`: silenciar la alarma no arregla el incendio. `@ts-expect-error` con descripción queda para tests de tipos. Wrapper de `ban-ts-comment`. |
 | `skapxd/no-tunnel-props` | Ninguna prop viaja más de un nivel: quien la recibe no puede reenviarla a otro componente. Mata el prop drilling. |
 | `skapxd/prefer-abort-signal` | Listeners en efectos se limpian con `AbortController` (`{ signal }` + `abort()`), no con `removeEventListener`. |
 | `skapxd/prefer-tagged-union-state` | Prohíbe estados inconsistentes representables: flag de loading + campo de error independientes → unión etiquetada. |
+| `skapxd/prefer-type-over-interface` | Las uniones discriminadas son types; un `type` no crece en silencio por declaration merging. Wrapper de `consistent-type-definitions`. |
 | `skapxd/no-functions-inside-components` | Prohíbe definir funciones dentro de componentes React. |
 | `skapxd/no-try-catch` | Prohíbe `try/catch`; usa `trySafe` de `@skapxd/result`. |
 | `skapxd/no-promise-chain` | Prohíbe `.then/.catch/.finally`; usa `await` (+ `trySafe`). |
@@ -995,34 +1005,29 @@ Fuera del default, a propósito: `exactOptionalPropertyTypes` y
 con muchas librerías — se agregan vía `requiredCompilerOptions` si el
 proyecto los soporta.
 
-Además, los **presets tipados activan reglas curadas de typescript-eslint**
-(que ya es peer dependency — no se reimplementan):
+Además, los **presets tipados activan reglas curadas de typescript-eslint**,
+todas **re-registradas bajo el namespace skapxd** (mismo motor, cero
+reimplementación — typescript-eslint ya es peer dependency): nombres que
+dicen lo que defienden, mensajes en español que enseñan el fix, y un solo
+namespace en toda tu lista de pendientes. Cada una tiene su sección propia:
 
-- `@typescript-eslint/no-explicit-any` — `any` apaga el sistema de tipos:
-  todo el esfuerzo muere donde aparece uno.
-- `@typescript-eslint/consistent-type-definitions` con `type` — las uniones
-  discriminadas son types.
-- `@typescript-eslint/no-floating-promises` — cierra el hueco que
-  `await-requires-result` no ve: una llamada async **sin** `await` no produce
-  `AwaitExpression`, así que el rechazo muere sin pasar por `trySafe`
-  (medido: 12 promesas flotantes vivas en un backend Nest real). La única
-  salida es `void promesa()`: fire-and-forget declarado y greppeable.
-- `@typescript-eslint/no-non-null-assertion` — `!` es "cállate, yo sé más
-  que tú" dicho al compilador. Si no puede ser nulo, que lo diga el tipo.
-  (En `nest/tests` queda apagada: el `!` sobre un fixture cuya existencia el
-  propio test garantiza es el arrange, no una mentira.)
-- `skapxd/no-impossible-branch` — la generalización type-aware de
-  `no-runtime-state-guard`: si el tipo dice que un estado es imposible, el
-  guard defensivo sobra; si el guard hace falta, lo que está mal es el tipo.
-  Es `@typescript-eslint/no-unnecessary-condition` **re-registrada bajo
-  nuestro namespace** (ver su sección): mismo motor, nombre que dice lo que
-  defiende y mensajes que enseñan el fix. Por eso esta regla y
-  `requires-strict-tsconfig` van juntas: sin `noUncheckedIndexedAccess`,
-  `array[i]` miente y la regla acusaría guards necesarios.
-- `@typescript-eslint/ban-ts-comment` — un error de tipos se arregla
-  modelando mejor, no silenciando la alarma: `@ts-ignore` y `@ts-nocheck`
-  prohibidos. `@ts-expect-error` **con descripción** queda permitido: es la
-  forma legítima de testear que un estado inválido de verdad no compila.
+- `skapxd/no-explicit-any` — `any` apaga el sistema de tipos: todo el
+  esfuerzo muere donde aparece uno.
+- `skapxd/prefer-type-over-interface` (era `consistent-type-definitions`) —
+  las uniones discriminadas son types.
+- `skapxd/no-floating-promises` — cierra el hueco que `await-requires-result`
+  no ve: una llamada async **sin** `await` no produce `AwaitExpression`, así
+  que el rechazo muere sin pasar por `trySafe` (medido: 12 promesas
+  flotantes vivas en un backend Nest real).
+- `skapxd/no-non-null-assertion` — `!` es "cállate, yo sé más que tú" dicho
+  al compilador. (En `nest/tests` queda apagada: el `!` sobre un fixture es
+  el arrange, no una mentira.)
+- `skapxd/no-impossible-branch` (era `no-unnecessary-condition`) — la
+  generalización type-aware de `no-runtime-state-guard`. Va de la mano de
+  `requires-strict-tsconfig`: sin `noUncheckedIndexedAccess`, `array[i]`
+  miente y la regla acusaría guards necesarios.
+- `skapxd/no-silenced-compiler` (era `ban-ts-comment`) — un error de tipos
+  se arregla modelando mejor, no silenciando la alarma.
 
 Ausencias deliberadas, no olvidos:
 
@@ -1906,6 +1911,83 @@ irrepresentables — es la generalización type-aware de
 del críptico "Unnecessary conditional". Los presets tipados activan este
 nombre y **no** el original: una sola fuente de verdad para configurarla,
 silenciarla o buscarla.
+
+### `skapxd/no-explicit-any`
+
+Prohíbe `any`. No es una regla de estilo: `any` apaga el sistema de tipos en
+todo lo que toca — el esfuerzo de modelar estados imposibles muere donde
+aparece uno, y se propaga en silencio a cada valor derivado. El mensaje
+enseña la salida: `unknown` para lo genuinamente desconocido (obliga a
+estrechar antes de usar — la duda queda declarada y verificada), el tipo
+real para lo que tiene forma conocida.
+
+Bajo el capó es `@typescript-eslint/no-explicit-any`
+([doc original](https://typescript-eslint.io/rules/no-explicit-any/))
+re-registrada bajo nuestro namespace con mensajes que enseñan (ver
+`skapxd/no-impossible-branch` para el patrón). Los presets tipados activan
+este nombre, no el original.
+
+### `skapxd/no-floating-promises`
+
+Una llamada async **sin** `await` no produce `AwaitExpression` — es el punto
+ciego de `await-requires-result`: el rechazo muere sin pasar por `trySafe`,
+sin trace y sin que nadie lo decidiera (medido al absorberla: 12 promesas
+flotantes vivas en un backend en producción).
+
+Esta regla existía en typescript-eslint
+([doc original](https://typescript-eslint.io/rules/no-floating-promises/)),
+pero su mensaje recomendaba *"end with a call to `.catch`, or end with a
+call to `.then` with a rejection handler"* — **dos caminos que
+`no-promise-chain` prohíbe**. Obedecer a una regla te estrellaba con la
+otra. El wrapper corrige el consejo para este sistema: las dos salidas
+legales son `await` (y ahí entra el pipeline de Result) o `void promesa()`
+— el fire-and-forget declarado y greppeable del axioma A5 (así se escribe
+el `bootstrap()` del `main.ts` de Nest: `void bootstrap();`).
+
+### `skapxd/no-non-null-assertion`
+
+Prohíbe el `!` (non-null assertion): es "cállate, yo sé más que tú" dicho al
+compilador — y un `!` equivocado es un crash en runtime que el tipo juraba
+imposible. Si el valor de verdad no puede ser nulo, que lo diga el tipo
+(modela mejor, o estrecha con un guard que el compilador verifique); si
+puede serlo, el `!` no resuelve la duda: la esconde.
+
+La excepción legítima vive en los tests: el `!` sobre un fixture cuya
+existencia el propio test garantiza es el arrange, no una mentira — por eso
+`nest/tests` la apaga en specs. Bajo el capó es
+`@typescript-eslint/no-non-null-assertion`
+([doc original](https://typescript-eslint.io/rules/no-non-null-assertion/))
+re-registrada con mensajes propios.
+
+### `skapxd/no-silenced-compiler`
+
+No silencies al compilador: `@ts-ignore` y `@ts-nocheck` apagan la alarma en
+vez de arreglar el incendio. Si el compilador es el muro de contención del
+sistema, nadie lo apaga cuando el modelado se pone difícil — un error de
+tipos se resuelve modelando mejor el dominio.
+
+La puerta que queda abierta, a propósito: `@ts-expect-error` **con
+descripción**. Es la forma legítima de testear que un estado inválido de
+verdad NO compila (la otra mitad son los tests de tipos con `expectTypeOf`,
+ver la sección de `requires-strict-tsconfig`) — y a diferencia de
+`@ts-ignore`, avisa cuando la supresión deja de hacer falta. Bajo el capó es
+`@typescript-eslint/ban-ts-comment`
+([doc original](https://typescript-eslint.io/rules/ban-ts-comment/)) con un
+nombre que dice lo que defiende y mensajes propios.
+
+### `skapxd/prefer-type-over-interface`
+
+Usa `type`, no `interface`. Las uniones discriminadas — la columna vertebral
+del modelado de estados de este paquete — son types, y la homogeneidad
+elimina la pregunta "¿esto puede crecer por declaration merging?": un `type`
+no puede ser extendido en silencio desde otro archivo; lo que declara es
+todo lo que hay.
+
+Bajo el capó es `@typescript-eslint/consistent-type-definitions`
+([doc original](https://typescript-eslint.io/rules/consistent-type-definitions/))
+re-registrada con un nombre que declara la opinión (como los demás
+`prefer-*`). Ojo si la activas suelta: el default upstream prefiere
+`interface` — los presets la pasan como `["error", "type"]`.
 
 ### `skapxd/no-functions-inside-components`
 

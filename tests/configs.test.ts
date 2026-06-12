@@ -151,17 +151,23 @@ describe("preset nest", () => {
     expect(nestTests.rules["skapxd/no-try-catch"]).toBe("off");
     expect(nestTests.rules["skapxd/result-error-requires-handling"]).toBe("off");
     // El ! sobre fixtures es el arrange del test, no una mentira al compilador.
-    expect(
-      nestTests.rules["@typescript-eslint/no-non-null-assertion"],
-    ).toBe("off");
+    expect(nestTests.rules["skapxd/no-non-null-assertion"]).toBe("off");
     // Pero un await olvidado en un spec es un falso verde: sigue activa.
-    expect(
-      nestTests.rules["@typescript-eslint/no-floating-promises"],
-    ).toBeUndefined();
+    expect(nestTests.rules["skapxd/no-floating-promises"]).toBeUndefined();
   });
 });
 
-describe("reglas type-driven de typescript-eslint en presets tipados", () => {
+// Wrappers de typescript-eslint: regla skapxd → regla upstream que envuelve.
+const wrappedRules = {
+  "no-explicit-any": "no-explicit-any",
+  "no-floating-promises": "no-floating-promises",
+  "no-impossible-branch": "no-unnecessary-condition",
+  "no-non-null-assertion": "no-non-null-assertion",
+  "no-silenced-compiler": "ban-ts-comment",
+  "prefer-type-over-interface": "consistent-type-definitions",
+};
+
+describe("reglas type-driven (wrappers de typescript-eslint) en presets tipados", () => {
   it("activa el set curado completo en backend, frontend y nest/base", () => {
     const typedPresets = [
       plugin.configs.backend,
@@ -172,35 +178,27 @@ describe("reglas type-driven de typescript-eslint en presets tipados", () => {
     ];
 
     for (const preset of typedPresets) {
-      expect(
-        preset.rules["@typescript-eslint/no-explicit-any"],
-        preset.name,
-      ).toBe("error");
-      expect(
-        preset.rules["@typescript-eslint/no-floating-promises"],
-        preset.name,
-      ).toBe("error");
-      expect(
-        preset.rules["@typescript-eslint/no-non-null-assertion"],
-        preset.name,
-      ).toBe("error");
-      expect(
-        preset.rules["skapxd/no-impossible-branch"],
-        preset.name,
-      ).toBe("error");
-      // El nombre upstream no se activa además: una sola fuente de verdad.
-      expect(
-        preset.rules["@typescript-eslint/no-unnecessary-condition"],
-        preset.name,
-      ).toBeUndefined();
+      for (const [skapxdName, upstreamName] of Object.entries(wrappedRules)) {
+        const entry = preset.rules[`skapxd/${skapxdName}`];
+        const severity = Array.isArray(entry) ? entry[0] : entry;
+
+        expect(severity, `${preset.name} → ${skapxdName}`).toBe("error");
+        // El nombre upstream no se activa además: una sola fuente de verdad.
+        expect(
+          preset.rules[`@typescript-eslint/${upstreamName}`],
+          `${preset.name} → ${upstreamName}`,
+        ).toBeUndefined();
+      }
+      // Y los presets ya no registran el plugin upstream: el consumidor
+      // puede registrar su propia instancia de tseslint sin chocar.
+      expect(preset.plugins["@typescript-eslint"], preset.name).toBeUndefined();
     }
   });
 
-  it("no-impossible-branch delega en no-unnecessary-condition con mensajes propios", async () => {
+  it("cada wrapper delega en su regla upstream sin messageIds huérfanos", async () => {
     const { default: tseslint } = await import("typescript-eslint");
-    const wrapped = plugin.rules["no-impossible-branch"]!;
     // El tipo CompatiblePlugin de tseslint no expone `rules`: se reafirma a
-    // la forma real del plugin para leer la regla original.
+    // la forma real del plugin para leer las reglas originales.
     const upstreamRules = (
       tseslint.plugin as unknown as {
         rules: Record<
@@ -209,26 +207,55 @@ describe("reglas type-driven de typescript-eslint en presets tipados", () => {
         >;
       }
     ).rules;
-    const original = upstreamRules["no-unnecessary-condition"]!;
 
-    expect(wrapped.create).toBe(original.create);
-    // Todo messageId upstream existe en el wrapper: ninguno queda huérfano.
-    for (const id of Object.keys(original.meta.messages)) {
-      expect(wrapped.meta?.messages?.[id], id).toBeDefined();
+    for (const [skapxdName, upstreamName] of Object.entries(wrappedRules)) {
+      const wrapped = plugin.rules[skapxdName]!;
+      const original = upstreamRules[upstreamName]!;
+
+      expect(wrapped.create, skapxdName).toBe(original.create);
+      for (const id of Object.keys(original.meta.messages)) {
+        expect(wrapped.meta?.messages?.[id], `${skapxdName}.${id}`).toBeDefined();
+      }
     }
-    expect(wrapped.meta?.messages?.alwaysTruthy).toContain(
+  });
+
+  it("los mensajes principales enseñan en español", () => {
+    const messageOf = (name: string, id: string) =>
+      plugin.rules[name]!.meta?.messages?.[id];
+
+    expect(messageOf("no-impossible-branch", "alwaysTruthy")).toContain(
       "Pregunta ya respondida",
+    );
+    // El mensaje corrige el consejo upstream que recomendaba .then/.catch
+    // (prohibidos por no-promise-chain).
+    expect(messageOf("no-floating-promises", "floatingVoid")).toContain(
+      "no-promise-chain",
+    );
+    expect(messageOf("no-silenced-compiler", "tsDirectiveComment")).toContain(
+      "No silencies al compilador",
+    );
+    expect(messageOf("no-explicit-any", "unexpectedAny")).toContain("unknown");
+    expect(messageOf("no-non-null-assertion", "noNonNull")).toContain(
+      "callate, yo se mas que tu",
     );
   });
 
   it("prohíbe ts-ignore y ts-nocheck pero permite ts-expect-error descrito", () => {
     const [severity, options] =
-      plugin.configs.backend.rules["@typescript-eslint/ban-ts-comment"];
+      plugin.configs.backend.rules["skapxd/no-silenced-compiler"];
 
     expect(severity).toBe("error");
     expect(options["ts-ignore"]).toBe(true);
     expect(options["ts-nocheck"]).toBe(true);
     expect(options["ts-expect-error"]).toBe("allow-with-description");
+  });
+
+  it("prefer-type-over-interface fuerza la opción type (el default upstream es interface)", () => {
+    const [severity, mode] =
+      plugin.configs.backend.rules["skapxd/prefer-type-over-interface"];
+
+    expect(severity).toBe("error");
+    expect(mode).toBe("type");
   });
 
   it("las ausencias son deliberadas: lo superado no se duplica", () => {

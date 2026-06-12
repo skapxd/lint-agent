@@ -1,4 +1,3 @@
-import tseslint from "typescript-eslint";
 import { baseRules } from "./base-rules";
 import { createBaseLanguageOptions } from "./create-base-language-options";
 import { createTypedLanguageOptions } from "./create-typed-language-options";
@@ -12,10 +11,11 @@ export function createSharedConfigs(pluginReference: unknown) {
     backend: {
       languageOptions: typedLanguageOptions,
       name: "skapxd/shared/backend",
-      plugins: {
-        "@typescript-eslint": tseslint.plugin,
-        skapxd: pluginReference,
-      },
+      // Solo el plugin skapxd: las reglas de typescript-eslint entran
+      // re-registradas bajo nuestro namespace (typeDrivenRules), así el
+      // consumidor puede registrar su propia instancia de tseslint sin
+      // chocar con "Cannot redefine plugin".
+      plugins: { skapxd: pluginReference },
       rules: {
         ...baseRules,
         ...typeDrivenRules,
@@ -37,10 +37,7 @@ export function createSharedConfigs(pluginReference: unknown) {
     frontend: {
       languageOptions: typedLanguageOptions,
       name: "skapxd/shared/frontend",
-      plugins: {
-        "@typescript-eslint": tseslint.plugin,
-        skapxd: pluginReference,
-      },
+      plugins: { skapxd: pluginReference },
       rules: {
         ...baseRules,
         ...typeDrivenRules,

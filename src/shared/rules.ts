@@ -22,8 +22,13 @@ import { noDeepRelativeImports } from "#/rules/no-deep-relative-imports";
 import { noDefaultExport } from "#/rules/no-default-export";
 import { noElse } from "#/rules/no-else";
 import { noEmoji } from "#/rules/no-emoji";
+import { noExplicitAny } from "#/rules/no-explicit-any";
+import { noFloatingPromises } from "#/rules/no-floating-promises";
 import { noImpossibleBranch } from "#/rules/no-impossible-branch";
+import { noNonNullAssertion } from "#/rules/no-non-null-assertion";
+import { noSilencedCompiler } from "#/rules/no-silenced-compiler";
 import { noTunnelProps } from "#/rules/no-tunnel-props";
+import { preferTypeOverInterface } from "#/rules/prefer-type-over-interface";
 import { noFunctionsInsideComponents } from "#/rules/no-functions-inside-components";
 import { noTryCatch } from "#/rules/no-try-catch";
 import { preferAbortSignal } from "#/rules/prefer-abort-signal";
@@ -68,9 +73,14 @@ export const rules: Record<string, Rule.RuleModule> = {
   "no-default-export": noDefaultExport,
   "no-else": noElse,
   "no-emoji": noEmoji,
-  // Re-registro de @typescript-eslint/no-unnecessary-condition con nombre
-  // semántico y mensajes propios (ver src/rules/no-impossible-branch.ts).
+  // Re-registros de reglas de typescript-eslint con nombre semántico y
+  // mensajes propios (ver src/utils/wrap-tseslint-rule.ts):
+  "no-explicit-any": noExplicitAny,
+  "no-floating-promises": noFloatingPromises,
   "no-impossible-branch": noImpossibleBranch,
+  "no-non-null-assertion": noNonNullAssertion,
+  "no-silenced-compiler": noSilencedCompiler,
+  "prefer-type-over-interface": preferTypeOverInterface,
   "no-tunnel-props": noTunnelProps,
   "no-functions-inside-components": noFunctionsInsideComponents,
   "no-try-catch": noTryCatch,
