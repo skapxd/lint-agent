@@ -53,8 +53,8 @@ con ESLint.
 | Requisito del catálogo | Versión mínima de `typescript-eslint` | Por qué importa |
 | --- | --- | --- |
 | Wrappers `no-unsafe-*`, `no-floating-promises`, `no-non-null-assertion`, `ban-ts-comment`, `consistent-type-definitions`, `no-unnecessary-condition` | `8.15.0` | Cubre la familia envuelta y deja disponible `no-unsafe-type-assertion` para la siguiente regla del cluster. |
-| `allowConstantLoopConditions: "only-allowed-literals"` en `skapxd/no-impossible-branch` | `8.31.0` | El contrato publicado fija este corte para que el guardrail valide el schema real del peer declarado. |
-| Mínimo declarado del paquete | `>=8.31` | Es el mínimo combinado que hace honestos los presets tipados actuales. |
+| `allowConstantLoopConditions: "only-allowed-literals"` en `skapxd/no-impossible-branch` | `8.24.0` | Frontera verificada con validación real de ESLint (8.23 rechaza el schema, 8.24 acepta); una bisección anterior dijo 8.31 por installs fallidos silenciados — corregida. |
+| Mínimo declarado del paquete | `>=8.24` | Máximo entre 8.15 (`no-unsafe-type-assertion`, para #14) y 8.24 (la opción ya publicada): el mínimo REAL — ni laxo (mentía con >=8) ni más estricto de lo necesario (8.31 excluía 7 versiones válidas). |
 
 ## Licencia
 
