@@ -1,4 +1,4 @@
-import type { RuleNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-authoring/rule-types";
 import { getNodeChildren } from "./get-node-children";
 import { isAstNode } from "./is-ast-node";
 import { isFunctionNode } from "./is-function-node";

@@ -1,5 +1,5 @@
 import { countParentSegments } from "#/utils/count-parent-segments";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-types";
+import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const noDeepRelativeImports: RuleModule = {
   meta: {

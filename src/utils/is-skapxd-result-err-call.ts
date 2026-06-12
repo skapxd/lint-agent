@@ -1,4 +1,4 @@
-import type { RuleNode, TypeContext } from "#/utils/rule-types";
+import type { RuleNode, TypeContext } from "#/utils/rule-authoring/rule-types";
 import { isResultErrCall } from "./is-result-err-call";
 import { isSymbolFromSkapxdResult } from "./is-symbol-from-skapxd-result";
 

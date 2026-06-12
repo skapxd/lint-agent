@@ -1,4 +1,4 @@
-import type { RuleNode, RuleSourceCode } from "#/utils/rule-types";
+import type { RuleNode, RuleSourceCode } from "#/utils/rule-authoring/rule-types";
 import { containsAwaitExpression } from "./contains-await-expression";
 import { getAwaitedOperationExample } from "./get-awaited-operation-example";
 

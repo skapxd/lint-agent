@@ -1,4 +1,4 @@
-import { wrapTseslintRule } from "#/utils/wrap-tseslint-rule";
+import { wrapTseslintRule } from "#/utils/rule-authoring/wrap-tseslint-rule";
 
 // @typescript-eslint/no-explicit-any con mensajes que ensenan la alternativa
 // (axioma A1: los estados imposibles son irrepresentables — con `any` nada

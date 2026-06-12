@@ -1,4 +1,4 @@
-import type { RuleNode, RuleModule, RuleContext } from "#/utils/rule-types";
+import type { RuleNode, RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 export const preferTsPattern: RuleModule = {
   meta: {
     type: "suggestion",

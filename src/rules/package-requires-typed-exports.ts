@@ -2,10 +2,10 @@ import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { trySafe } from "@skapxd/result";
 import { findProjectFile } from "#/utils/find-project-file";
-import { getTypedExportsOptions } from "#/utils/get-typed-exports-options";
+import { getTypedExportsOptions } from "#/utils/options/get-typed-exports-options";
 import { getUntypedExportConditions } from "#/utils/get-untyped-export-conditions";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
-import type { RuleNode, RuleModule, RuleContext } from "#/utils/rule-types";
+import type { RuleNode, RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 const kindMessages = {
   "missing-file": "missingTypesFile",

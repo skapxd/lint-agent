@@ -1,12 +1,12 @@
 import { getContainingFunction } from "#/utils/get-containing-function";
 import { getFunctionName } from "#/utils/get-function-name";
-import { getNoFunctionsInsideComponentsOptions } from "#/utils/get-no-functions-inside-components-options";
+import { getNoFunctionsInsideComponentsOptions } from "#/utils/options/get-no-functions-inside-components-options";
 import { isArrayMapCallback } from "#/utils/is-array-map-callback";
 import { isExpressionArrowFunction } from "#/utils/is-expression-arrow-function";
 import { isFunctionNode } from "#/utils/is-function-node";
 import { isJsxAttributeCallback } from "#/utils/is-jsx-attribute-callback";
 import { isPascalCaseName } from "#/utils/is-pascal-case-name";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-types";
+import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const noFunctionsInsideComponents: RuleModule = {
   meta: {

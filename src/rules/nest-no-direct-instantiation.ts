@@ -1,10 +1,10 @@
 import { getInternalValueImports } from "#/utils/get-internal-value-imports";
-import { getNestDirectInstantiationOptions } from "#/utils/get-nest-direct-instantiation-options";
+import { getNestDirectInstantiationOptions } from "#/utils/options/get-nest-direct-instantiation-options";
 import { getTypeContext } from "#/utils/get-type-context";
 import { hasInjectableDecorator } from "#/utils/has-injectable-decorator";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
 import { matchesAnyPattern } from "#/utils/matches-any-pattern";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-types";
+import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const nestNoDirectInstantiation: RuleModule = {
   meta: {

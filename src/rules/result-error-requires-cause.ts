@@ -5,7 +5,7 @@ import { isInsideSkapxdResultReturningFunction } from "#/utils/is-inside-skapxd-
 import { isSkapxdResultErrCall } from "#/utils/is-skapxd-result-err-call";
 import { isSkapxdResultExpression } from "#/utils/is-skapxd-result-expression";
 import { resultErrPreservesCause } from "#/utils/result-err-preserves-cause";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-types";
+import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const resultErrorRequiresCause: RuleModule = {
       meta: {

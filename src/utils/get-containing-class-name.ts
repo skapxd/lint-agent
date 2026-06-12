@@ -1,4 +1,4 @@
-import type { RuleNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-authoring/rule-types";
 export function getContainingClassName(node: RuleNode) {
   let current = node.parent;
 

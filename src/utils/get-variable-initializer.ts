@@ -1,4 +1,4 @@
-import type { RuleNode, RuleScope, RuleScopeVariable } from "#/utils/rule-types";
+import type { RuleNode, RuleScope, RuleScopeVariable } from "#/utils/rule-authoring/rule-types";
 // Resuelve un Identifier hasta el inicializador de su declaración subiendo
 // por la cadena de scopes (`const opts = {...}` → el ObjectExpression).
 // Devuelve null si la variable no se declara aquí (parámetro, import).

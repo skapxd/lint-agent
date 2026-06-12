@@ -1,4 +1,4 @@
-import type { RuleNode, TypeContext } from "#/utils/rule-types";
+import type { RuleNode, TypeContext } from "#/utils/rule-authoring/rule-types";
 import ts from "typescript";
 
 export function resolveAliasSymbol(symbol: ts.Symbol, typeContext: TypeContext) {

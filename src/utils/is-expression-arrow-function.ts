@@ -1,4 +1,4 @@
-import type { RuleNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-authoring/rule-types";
 // Una flecha "de expresión": sin cuerpo de bloque. Solo puede contener una
 // expresión (JSX, una llamada), así que es declarativa por construcción. Un
 // cuerpo con llaves (`=> { return ... }`) ya da pie a ifs, variables y lógica

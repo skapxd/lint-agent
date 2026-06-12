@@ -1,4 +1,4 @@
-import type { RuleNode, TypeContext } from "#/utils/rule-types";
+import type { RuleNode, TypeContext } from "#/utils/rule-authoring/rule-types";
 import { isSkapxdResultType } from "./is-skapxd-result-type";
 
 export function isSkapxdResultExpression(node: RuleNode, typeContext: TypeContext) {

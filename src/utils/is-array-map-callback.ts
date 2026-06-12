@@ -1,4 +1,4 @@
-import type { RuleNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-authoring/rule-types";
 // `items.map((item) => <Item ... />)`: la función es el primer argumento de
 // una llamada `.map(...)`.
 export function isArrayMapCallback(node: RuleNode) {

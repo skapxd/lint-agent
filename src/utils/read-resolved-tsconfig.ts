@@ -1,4 +1,4 @@
-import type { RuleNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-authoring/rule-types";
 import { dirname } from "node:path";
 import ts from "typescript";
 import { trySafe } from "@skapxd/result";

@@ -1,5 +1,5 @@
 import { containsCallNamed } from "#/utils/contains-call-named";
-import { getAsyncResultRuleOptions } from "#/utils/get-async-result-rule-options";
+import { getAsyncResultRuleOptions } from "#/utils/options/get-async-result-rule-options";
 import { getFunctionExpressionName } from "#/utils/get-function-expression-name";
 import { getParentFunctionName } from "#/utils/get-parent-function-name";
 import { getParentFunctionReportNode } from "#/utils/get-parent-function-report-node";
@@ -9,7 +9,7 @@ import { isPromiseOfResultType } from "#/utils/is-promise-of-result-type";
 import { isSkapxdResultOrPromiseResultType } from "#/utils/is-skapxd-result-or-promise-result-type";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
 import { matchesAnyPattern } from "#/utils/matches-any-pattern";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-types";
+import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const asyncFunctionsReturnResult: RuleModule = {
       meta: {

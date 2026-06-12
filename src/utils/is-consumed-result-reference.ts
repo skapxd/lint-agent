@@ -1,4 +1,4 @@
-import type { RuleNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-authoring/rule-types";
 import { collectIdentifiersNamed } from "./collect-identifiers-named";
 import { getDeclaredAliasTargets } from "./get-declared-alias-targets";
 import { isInsideNode } from "./is-inside-node";

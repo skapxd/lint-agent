@@ -2,7 +2,7 @@ import { functionReturnsJsx } from "#/utils/function-returns-jsx";
 import { isFunctionNode } from "#/utils/is-function-node";
 import { isPascalCaseName } from "#/utils/is-pascal-case-name";
 import { toPascalCase } from "#/utils/to-pascal-case";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-types";
+import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const jsxReturnNamePascalCase: RuleModule = {
       meta: {

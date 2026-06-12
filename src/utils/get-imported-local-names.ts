@@ -1,4 +1,4 @@
-import type { RuleNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-authoring/rule-types";
 // Nombres locales importados desde un módulo concreto en el archivo.
 // Comparar decoradores contra esta lista evita falsos positivos con
 // decoradores propios que casualmente tengan el mismo nombre.

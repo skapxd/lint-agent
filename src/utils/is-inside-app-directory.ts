@@ -1,4 +1,4 @@
-import type { RuleNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-authoring/rule-types";
 import { getPathParts } from "./get-path-parts";
 
 export function isInsideAppDirectory(filename: string) {

@@ -1,4 +1,4 @@
-import type { RuleNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-authoring/rule-types";
 import { matchesAnyPattern } from "./matches-any-pattern";
 import { memberIsBoolean } from "./member-is-boolean";
 

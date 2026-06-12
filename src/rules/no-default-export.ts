@@ -1,6 +1,6 @@
-import { getNoDefaultExportOptions } from "#/utils/get-no-default-export-options";
+import { getNoDefaultExportOptions } from "#/utils/options/get-no-default-export-options";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-types";
+import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const noDefaultExport: RuleModule = {
   meta: {

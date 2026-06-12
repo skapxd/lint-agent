@@ -1,4 +1,4 @@
-import type { RuleNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-authoring/rule-types";
 import { trySafe } from "@skapxd/result";
 import fs from "node:fs";
 import path from "node:path";

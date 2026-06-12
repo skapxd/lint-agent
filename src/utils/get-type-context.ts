@@ -1,4 +1,4 @@
-import type { RuleContext, TypeContext } from "#/utils/rule-types";
+import type { RuleContext, TypeContext } from "#/utils/rule-authoring/rule-types";
 
 export function getTypeContext(context: RuleContext): TypeContext | null {
   const sourceCode = context.sourceCode ?? context.getSourceCode();

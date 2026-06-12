@@ -1,4 +1,4 @@
-import type { RuleNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-authoring/rule-types";
 import { isFunctionNode } from "./is-function-node";
 
 // ¿Este if vive dentro de otro if de la MISMA función? El eslabón directo de

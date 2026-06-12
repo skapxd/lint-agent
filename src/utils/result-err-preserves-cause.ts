@@ -1,4 +1,4 @@
-import type { RuleNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-authoring/rule-types";
 import { isAstNode } from "./is-ast-node";
 import { isPropertyKeyNamed } from "./is-property-key-named";
 import { isResultErrorMember } from "./is-result-error-member";

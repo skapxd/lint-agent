@@ -1,5 +1,5 @@
 import type ts from "typescript";
-import type { TypeContext } from "#/utils/rule-types";
+import type { TypeContext } from "#/utils/rule-authoring/rule-types";
 import { isSkapxdResultType } from "./is-skapxd-result-type";
 
 export function isSkapxdResultOrPromiseResultType(type: ts.Type, typeContext: TypeContext) {

@@ -1,4 +1,4 @@
-import type { RuleNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-authoring/rule-types";
 export function isPropertyKeyNamed(property: RuleNode, propertyName: string) {
   if (property.key.type === "Identifier") {
     return property.key.name === propertyName;

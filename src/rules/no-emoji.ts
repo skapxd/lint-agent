@@ -1,7 +1,7 @@
 import { containsEmoji } from "#/utils/contains-emoji";
-import { getNoEmojiOptions } from "#/utils/get-no-emoji-options";
+import { getNoEmojiOptions } from "#/utils/options/get-no-emoji-options";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-types";
+import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const noEmoji: RuleModule = {
   meta: {

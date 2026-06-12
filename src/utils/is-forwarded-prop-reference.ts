@@ -1,4 +1,4 @@
-import type { RuleNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-authoring/rule-types";
 import { isPascalCaseJsxElement } from "./is-pascal-case-jsx-element";
 
 // La referencia es el valor directo de una prop hacia un componente

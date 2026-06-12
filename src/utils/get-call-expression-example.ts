@@ -1,4 +1,4 @@
-import type { RuleNode, RuleSourceCode } from "#/utils/rule-types";
+import type { RuleNode, RuleSourceCode } from "#/utils/rule-authoring/rule-types";
 import { unwrapExpression } from "./unwrap-expression";
 
 export function getCallExpressionExample(node: RuleNode, sourceCode: RuleSourceCode) {

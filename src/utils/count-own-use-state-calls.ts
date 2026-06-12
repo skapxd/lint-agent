@@ -1,4 +1,4 @@
-import type { RuleNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-authoring/rule-types";
 import { countOwnUseStateCallsInNode } from "./count-own-use-state-calls-in-node";
 import { isAstNode } from "./is-ast-node";
 

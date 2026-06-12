@@ -1,4 +1,4 @@
-import type { RuleNode, TypeContext } from "#/utils/rule-types";
+import type { RuleNode, TypeContext } from "#/utils/rule-authoring/rule-types";
 import { functionReturnsSkapxdResultType } from "./function-returns-skapxd-result-type";
 import { getContainingFunction } from "./get-containing-function";
 

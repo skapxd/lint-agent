@@ -1,7 +1,7 @@
 import { getMoveSuggestion } from "#/utils/get-move-suggestion";
 import { getRootFunctionEntries } from "#/utils/get-root-function-entries";
 import { getStructureSuggestion } from "#/utils/get-structure-suggestion";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-types";
+import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const oneRootFunctionPerFile: RuleModule = {
       meta: {

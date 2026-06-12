@@ -1,4 +1,4 @@
-import type { RuleNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-authoring/rule-types";
 // `@Query('name')` cuenta como query param inline. `@Query()` (recibe el DTO
 // completo) y `@Query(MyPipe)` (un solo param consolidado) están bien.
 export function isQueryWithStringArg(decorator: RuleNode) {

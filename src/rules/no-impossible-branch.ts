@@ -1,4 +1,4 @@
-import { wrapTseslintRule } from "#/utils/wrap-tseslint-rule";
+import { wrapTseslintRule } from "#/utils/rule-authoring/wrap-tseslint-rule";
 
 // @typescript-eslint/no-unnecessary-condition bajo un nombre que dice lo que
 // defiende (axioma A1: los estados imposibles son irrepresentables) y con

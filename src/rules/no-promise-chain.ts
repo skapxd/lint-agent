@@ -1,7 +1,7 @@
 import { getTypeContext } from "#/utils/get-type-context";
 import { isMemberPropertyNamed } from "#/utils/is-member-property-named";
 import { isPromiseType } from "#/utils/is-promise-type";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-types";
+import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 const defaultMethods = ["catch", "finally", "then"];
 

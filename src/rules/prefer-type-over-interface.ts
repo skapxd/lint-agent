@@ -1,4 +1,4 @@
-import { wrapTseslintRule } from "#/utils/wrap-tseslint-rule";
+import { wrapTseslintRule } from "#/utils/rule-authoring/wrap-tseslint-rule";
 
 // @typescript-eslint/consistent-type-definitions bajo un nombre que declara
 // la opinion (como prefer-ts-pattern o prefer-tagged-union-state). Ojo: la

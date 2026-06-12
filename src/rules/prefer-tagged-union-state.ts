@@ -1,11 +1,11 @@
 import { getContainingFunction } from "#/utils/get-containing-function";
 import { getStateShapeSmell } from "#/utils/get-state-shape-smell";
-import { getTaggedUnionStateOptions } from "#/utils/get-tagged-union-state-options";
+import { getTaggedUnionStateOptions } from "#/utils/options/get-tagged-union-state-options";
 import { getUseStateSetterName } from "#/utils/get-use-state-setter-name";
 import { getUseStateVariableName } from "#/utils/get-use-state-variable-name";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
 import { matchesAnyPattern } from "#/utils/matches-any-pattern";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-types";
+import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const preferTaggedUnionState: RuleModule = {
   meta: {

@@ -1,4 +1,4 @@
-import { wrapTseslintRule } from "#/utils/wrap-tseslint-rule";
+import { wrapTseslintRule } from "#/utils/rule-authoring/wrap-tseslint-rule";
 
 // @typescript-eslint/ban-ts-comment bajo un nombre que dice lo que defiende
 // (axioma A5: las decisiones se declaran, no se interpretan — y silenciar la

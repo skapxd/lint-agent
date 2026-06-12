@@ -1,4 +1,4 @@
-import type { RuleNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-authoring/rule-types";
 import { isMemberPropertyNamed } from "./is-member-property-named";
 
 export function isCalleeNamed(node: RuleNode, names: readonly string[]) {

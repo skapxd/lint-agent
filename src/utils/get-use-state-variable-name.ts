@@ -1,4 +1,4 @@
-import type { RuleNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-authoring/rule-types";
 // `const [error, setError] = useState(...)` → "error". Devuelve null si el
 // resultado del useState no se destructura con nombre.
 export function getUseStateVariableName(callExpression: RuleNode) {

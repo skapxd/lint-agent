@@ -1,4 +1,4 @@
-import type { RuleNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-authoring/rule-types";
 // ¿La clase lleva alguno de estos decoradores? Cubre la forma con llamada
 // (`@Controller("users")`) y la forma directa (`@Controller`).
 export function hasClassDecoratorNamed(classNode: RuleNode, names: readonly string[]) {

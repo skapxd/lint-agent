@@ -1,4 +1,4 @@
-import type { RuleNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-authoring/rule-types";
 import { containsJsx } from "./contains-jsx";
 import { containsOwnJsx } from "./contains-own-jsx";
 

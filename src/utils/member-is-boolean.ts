@@ -1,4 +1,4 @@
-import type { RuleNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-authoring/rule-types";
 import { isAstNode } from "./is-ast-node";
 // ¿El miembro es boolean? Por anotación (isSyncing: boolean) o por
 // inicializador literal (isProcessing = false).

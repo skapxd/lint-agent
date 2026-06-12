@@ -1,4 +1,4 @@
-import type { RuleNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-authoring/rule-types";
 import { getBooleanLiteralValue } from "./get-boolean-literal-value";
 import { getOkMemberObject } from "./get-ok-member-object";
 import { isFailedOkComparison } from "./is-failed-ok-comparison";

@@ -1,7 +1,7 @@
-import { getMaxPublicMethodsOptions } from "#/utils/get-max-public-methods-options";
+import { getMaxPublicMethodsOptions } from "#/utils/options/get-max-public-methods-options";
 import { isPublicClassMethod } from "#/utils/is-public-class-method";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-types";
+import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const maxPublicMethods: RuleModule = {
   meta: {

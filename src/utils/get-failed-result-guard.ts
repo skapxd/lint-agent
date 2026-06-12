@@ -1,4 +1,4 @@
-import type { RuleNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-authoring/rule-types";
 import { getErrorMemberObject } from "./get-error-member-object";
 import { getFailedResultBinaryGuardName } from "./get-failed-result-binary-guard-name";
 import { getOkMemberObject } from "./get-ok-member-object";

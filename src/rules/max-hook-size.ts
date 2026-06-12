@@ -1,11 +1,11 @@
 import { countOwnUseStateCalls } from "#/utils/count-own-use-state-calls";
 import { getFunctionExpressionName } from "#/utils/get-function-expression-name";
 import { getFunctionLineCount } from "#/utils/get-function-line-count";
-import { getMaxHookSizeOptions } from "#/utils/get-max-hook-size-options";
+import { getMaxHookSizeOptions } from "#/utils/options/get-max-hook-size-options";
 import { getParentFunctionName } from "#/utils/get-parent-function-name";
 import { getParentFunctionReportNode } from "#/utils/get-parent-function-report-node";
 import { isHookName } from "#/utils/is-hook-name";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-types";
+import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const maxHookSize: RuleModule = {
       meta: {

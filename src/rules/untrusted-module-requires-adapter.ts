@@ -1,6 +1,6 @@
-import { getUntrustedModuleOptions } from "#/utils/get-untrusted-module-options";
+import { getUntrustedModuleOptions } from "#/utils/options/get-untrusted-module-options";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-types";
+import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 // La frontera anticorrupcion como guardrail (axioma A7): cuando los tipos de
 // un paquete de terceros mienten (el clasico @types desfasado del runtime

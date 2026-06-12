@@ -1,4 +1,4 @@
-import type { RuleNode, RuleSourceCode, TypeContext } from "#/utils/rule-types";
+import type { RuleNode, RuleSourceCode, TypeContext } from "#/utils/rule-authoring/rule-types";
 import { getVariableInitializer } from "./get-variable-initializer";
 import { objectExpressionHasSignal } from "./object-expression-has-signal";
 

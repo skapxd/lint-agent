@@ -1,4 +1,4 @@
-import { getAwaitRequiresResultOptions } from "#/utils/get-await-requires-result-options";
+import { getAwaitRequiresResultOptions } from "#/utils/options/get-await-requires-result-options";
 import { getAwaitScopeName } from "#/utils/get-await-scope-name";
 import { getEnclosingTrySafeCall } from "#/utils/get-enclosing-try-safe-call";
 import { getTrySafeAwaitSuggestion } from "#/utils/get-try-safe-await-suggestion";
@@ -7,7 +7,7 @@ import { isSkapxdResultOrPromiseResultExpression } from "#/utils/is-skapxd-resul
 import { isSymbolFromSkapxdResult } from "#/utils/is-symbol-from-skapxd-result";
 import { isTrySafeCall } from "#/utils/is-try-safe-call";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-types";
+import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const awaitRequiresResult: RuleModule = {
       meta: {

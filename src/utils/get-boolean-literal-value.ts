@@ -1,4 +1,4 @@
-import type { RuleNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-authoring/rule-types";
 import { unwrapExpression } from "./unwrap-expression";
 
 export function getBooleanLiteralValue(node: RuleNode) {

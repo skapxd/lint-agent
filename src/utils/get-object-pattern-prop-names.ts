@@ -1,4 +1,4 @@
-import type { RuleNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-authoring/rule-types";
 import { isAstNode } from "./is-ast-node";
 // Extrae los nombres de props destructuradas del primer parámetro de un
 // componente: `({ game, variant, ...rest })` → { propNames, restName }.

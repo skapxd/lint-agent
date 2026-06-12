@@ -1,4 +1,4 @@
-import type { RuleNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-authoring/rule-types";
 // Un método que expande la superficie pública de la clase: descarta
 // constructor, getters/setters, private/protected, #privados y el prefijo
 // `_` (la convención de privado suave).

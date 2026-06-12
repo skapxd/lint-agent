@@ -1,13 +1,13 @@
 import { collectIdentifiersNamed } from "#/utils/collect-identifiers-named";
 import { getFunctionName } from "#/utils/get-function-name";
-import { getNoTunnelPropsOptions } from "#/utils/get-no-tunnel-props-options";
+import { getNoTunnelPropsOptions } from "#/utils/options/get-no-tunnel-props-options";
 import { getObjectPatternPropNames } from "#/utils/get-object-pattern-prop-names";
 import { isForwardedPropReference } from "#/utils/is-forwarded-prop-reference";
 import { isPascalCaseJsxElement } from "#/utils/is-pascal-case-jsx-element";
 import { isPascalCaseName } from "#/utils/is-pascal-case-name";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
 import { matchesAnyPattern } from "#/utils/matches-any-pattern";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-types";
+import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const noTunnelProps: RuleModule = {
   meta: {

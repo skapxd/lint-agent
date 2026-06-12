@@ -1,9 +1,9 @@
 import { getDecoratorName } from "#/utils/get-decorator-name";
 import { getImportedLocalNames } from "#/utils/get-imported-local-names";
-import { getNestSwaggerControllerOptions } from "#/utils/get-nest-swagger-controller-options";
+import { getNestSwaggerControllerOptions } from "#/utils/options/get-nest-swagger-controller-options";
 import { hasClassDecoratorNamed } from "#/utils/has-class-decorator-named";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-types";
+import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const nestNoSwaggerInControllers: RuleModule = {
   meta: {

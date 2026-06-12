@@ -1,4 +1,4 @@
-import type { RuleNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-authoring/rule-types";
 import { getParentFunctionName } from "./get-parent-function-name";
 
 export function getFunctionExpressionName(node: RuleNode) {

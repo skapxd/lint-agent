@@ -1,4 +1,4 @@
-import type { RuleNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-authoring/rule-types";
 import { isPropertyKeyNamed } from "./is-property-key-named";
 
 // ¿El objeto literal de options trae `signal`? Un spread dentro del objeto

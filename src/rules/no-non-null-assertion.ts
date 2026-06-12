@@ -1,4 +1,4 @@
-import { wrapTseslintRule } from "#/utils/wrap-tseslint-rule";
+import { wrapTseslintRule } from "#/utils/rule-authoring/wrap-tseslint-rule";
 
 // @typescript-eslint/no-non-null-assertion con mensajes que ensenan a
 // modelar en vez de negar (axioma A2: ningun efecto invisible al tipo — un

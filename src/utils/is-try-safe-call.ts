@@ -1,4 +1,4 @@
-import type { RuleNode } from "#/utils/rule-types";
+import type { RuleNode } from "#/utils/rule-authoring/rule-types";
 import { isCalleeNamed } from "./is-callee-named";
 
 export function isTrySafeCall(node: RuleNode, trySafeCallNames: readonly string[]) {

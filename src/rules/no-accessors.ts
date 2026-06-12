@@ -1,6 +1,6 @@
-import { getNoAccessorsOptions } from "#/utils/get-no-accessors-options";
+import { getNoAccessorsOptions } from "#/utils/options/get-no-accessors-options";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-types";
+import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const noAccessors: RuleModule = {
   meta: {

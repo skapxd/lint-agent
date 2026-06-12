@@ -1,11 +1,11 @@
 import { collectIdentifiersNamed } from "#/utils/collect-identifiers-named";
 import { getFailedResultGuard } from "#/utils/get-failed-result-guard";
-import { getResultErrorRequiresHandlingOptions } from "#/utils/get-result-error-requires-handling-options";
+import { getResultErrorRequiresHandlingOptions } from "#/utils/options/get-result-error-requires-handling-options";
 import { getTypeContext } from "#/utils/get-type-context";
 import { isConsumedResultReference } from "#/utils/is-consumed-result-reference";
 import { isSkapxdResultExpression } from "#/utils/is-skapxd-result-expression";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-types";
+import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const resultErrorRequiresHandling: RuleModule = {
   meta: {

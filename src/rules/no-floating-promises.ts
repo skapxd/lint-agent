@@ -1,4 +1,4 @@
-import { wrapTseslintRule } from "#/utils/wrap-tseslint-rule";
+import { wrapTseslintRule } from "#/utils/rule-authoring/wrap-tseslint-rule";
 
 // @typescript-eslint/no-floating-promises con mensajes corregidos para ESTE
 // sistema: el mensaje upstream recomienda `.then/.catch`, que aqui prohibe

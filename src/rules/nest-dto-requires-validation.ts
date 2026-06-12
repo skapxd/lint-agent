@@ -1,11 +1,11 @@
 import { getContainingClassName } from "#/utils/get-containing-class-name";
 import { getDecoratorName } from "#/utils/get-decorator-name";
 import { getImportedLocalNames } from "#/utils/get-imported-local-names";
-import { getNestDtoValidationOptions } from "#/utils/get-nest-dto-validation-options";
+import { getNestDtoValidationOptions } from "#/utils/options/get-nest-dto-validation-options";
 import { isPublicInstanceProperty } from "#/utils/is-public-instance-property";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
 import { matchesAnyPattern } from "#/utils/matches-any-pattern";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-types";
+import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const nestDtoRequiresValidation: RuleModule = {
   meta: {

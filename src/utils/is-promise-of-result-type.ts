@@ -1,4 +1,4 @@
-import type { RuleNode, TypeContext } from "#/utils/rule-types";
+import type { RuleNode, TypeContext } from "#/utils/rule-authoring/rule-types";
 import { getTypeReferenceParameters } from "./get-type-reference-parameters";
 import { isTypeReferenceNamed } from "./is-type-reference-named";
 
