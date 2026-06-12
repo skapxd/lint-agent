@@ -47,7 +47,12 @@ tipos (un release ya falló por saltárselo).
 6. Cerrar issues solo con la Definición de Hecho cumplida (las DoD de este
    tablero son greppeables a propósito — ejecuta el grep antes de cerrar) o
    cuando el dueño decida explícitamente que el remanente no bloquea.
-7. El trabajo queda **sin mergear hasta la revisión del dueño**. La
+7. **El alcance de un issue NUNCA cruza repos.** Si una tarea toca repos
+   hermanos, se crean issues espejo en cada repo (con `gh issue create -R
+   skapxd/<repo>`) y el issue original solo rastrea con checkboxes que los
+   enlazan. Un agente trabaja UN repo por sesión: el PR de otro repo no
+   puede cerrar un issue de este, y la revisión multi-repo se fragmenta.
+8. El trabajo queda **sin mergear hasta la revisión del dueño**. La
    revisión aquí es de dos pasadas: la primera valida mecánica, la segunda
    valida criterio (precedente: en el issue #8 se rechazaron 130 nombres
    autogenerados con los tests en verde — cumplir la letra no basta).
