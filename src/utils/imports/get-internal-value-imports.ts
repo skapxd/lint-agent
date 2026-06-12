@@ -1,10 +1,10 @@
-import type { RuleNode } from "#/utils/rule-authoring/rule-types";
+import type { TSESTree } from "@typescript-eslint/utils";
 import { matchesAnyPattern } from "#/utils/matching/matches-any-pattern";
 
 // Mapa nombre local → source de los imports DE VALOR (no type) que vienen de
 // código interno del proyecto y no están en la lista de permitidos.
 export function getInternalValueImports(
-  program: RuleNode,
+  program: TSESTree.Program,
   internalPatterns: readonly string[],
   allowedPatterns: readonly string[],
 ) {
@@ -32,7 +32,8 @@ export function getInternalValueImports(
     }
 
     for (const specifier of statement.specifiers) {
-      const isSpecifierImportKindType = specifier.importKind === "type";
+      const isSpecifierImportKindType =
+        specifier.type === "ImportSpecifier" && specifier.importKind === "type";
       if (isSpecifierImportKindType) {
         continue;
       }

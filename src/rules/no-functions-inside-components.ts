@@ -1,3 +1,4 @@
+import type { TSESTree } from "@typescript-eslint/utils";
 import { getContainingFunction } from "#/utils/ast/get-containing-function";
 import { getFunctionName } from "#/utils/ast/get-function-name";
 import { getNoFunctionsInsideComponentsOptions } from "#/utils/options/get-no-functions-inside-components-options";
@@ -6,7 +7,7 @@ import { isExpressionArrowFunction } from "#/utils/react/is-expression-arrow-fun
 import { isFunctionNode } from "#/utils/ast/is-function-node";
 import { isJsxAttributeCallback } from "#/utils/react/is-jsx-attribute-callback";
 import { isPascalCaseName } from "#/utils/naming/is-pascal-case-name";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
+import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const noFunctionsInsideComponents: RuleModule = {
   meta: {
@@ -33,11 +34,11 @@ export const noFunctionsInsideComponents: RuleModule = {
   create(context: RuleContext) {
     const options = getNoFunctionsInsideComponentsOptions(context.options[0]);
 
-    function isComponentFunction(node: RuleNode) {
+    function isComponentFunction(node: TSESTree.Node) {
       return isFunctionNode(node) && isPascalCaseName(getFunctionName(node));
     }
 
-    function isAllowedInlineCallback(node: RuleNode) {
+    function isAllowedInlineCallback(node: TSESTree.Node) {
       const isExpressionArrowCallback = isExpressionArrowFunction(node);
       if (!isExpressionArrowCallback) {
         return false;
@@ -51,7 +52,7 @@ export const noFunctionsInsideComponents: RuleModule = {
       return options.allowArrayMapCallbacks && isArrayMapCallback(node);
     }
 
-    function reportIfInsideComponent(node: RuleNode) {
+    function reportIfInsideComponent(node: TSESTree.Node) {
       const enclosingFunction = getContainingFunction(node);
 
       const lacksComponentScope = !enclosingFunction || !isComponentFunction(enclosingFunction);

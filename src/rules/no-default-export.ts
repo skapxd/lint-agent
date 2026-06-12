@@ -1,6 +1,7 @@
+import type { TSESTree } from "@typescript-eslint/utils";
 import { getNoDefaultExportOptions } from "#/utils/options/get-no-default-export-options";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
+import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const noDefaultExport: RuleModule = {
   meta: {
@@ -36,14 +37,15 @@ export const noDefaultExport: RuleModule = {
     }
 
     return {
-      ExportDefaultDeclaration(node: RuleNode) {
+      ExportDefaultDeclaration(node: TSESTree.ExportDefaultDeclaration) {
         context.report({ messageId: "noDefaultExport", node });
       },
       // Cubre la forma indirecta: `export { algo as default }`.
-      ExportNamedDeclaration(node: RuleNode) {
-        for (const specifier of node.specifiers ?? []) {
-          const exportedName =
-            specifier.exported?.name ?? specifier.exported?.value;
+      ExportNamedDeclaration(node: TSESTree.ExportNamedDeclaration) {
+        for (const specifier of node.specifiers) {
+          const exportedName = specifier.exported.type === "Identifier"
+            ? specifier.exported.name
+            : specifier.exported.value;
 
           const isExportedNameDefault = exportedName === "default";
           if (isExportedNameDefault) {

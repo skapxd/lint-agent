@@ -1,4 +1,5 @@
-import type { RuleNode, RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
+import type { TSESTree } from "@typescript-eslint/utils";
+import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 export const noTryCatch: RuleModule = {
   meta: {
     type: "suggestion",
@@ -14,7 +15,7 @@ export const noTryCatch: RuleModule = {
   },
   create(context: RuleContext) {
     return {
-      TryStatement(node: RuleNode) {
+      TryStatement(node: TSESTree.TryStatement) {
         context.report({
           messageId: "noTryCatch",
           node,

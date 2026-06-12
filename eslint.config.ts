@@ -26,14 +26,6 @@ export default [
         "error",
         { allowFilePatterns: ["src/index.ts"] },
       ],
-      // ─── Lista de pendientes (solo encoge; ver "Adopción en proyectos
-      // legacy" en el README) ─────────────────────────────────────────────
-      // `RuleNode` (la frontera de tipos de la fase 1 del issue #4) declara
-      // todas las propiedades del AST como presentes: miente a propósito
-      // para que 190 archivos compilen sin casts. Esta regla le cree al
-      // tipo, así que acusaría guards necesarios. Se reactiva por lotes al
-      // migrar a nodos TSESTree honestos (issue #10).
-      "skapxd/no-impossible-branch": "off",
     },
   },
 ];

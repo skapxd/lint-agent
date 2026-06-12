@@ -1,3 +1,4 @@
+import type { TSESTree } from "@typescript-eslint/utils";
 import { getAwaitRequiresResultOptions } from "#/utils/options/get-await-requires-result-options";
 import { getAwaitScopeName } from "#/utils/ast/get-await-scope-name";
 import { getEnclosingTrySafeCall } from "#/utils/result/get-enclosing-try-safe-call";
@@ -7,7 +8,7 @@ import { isSkapxdResultOrPromiseResultExpression } from "#/utils/result/is-skapx
 import { isSymbolFromSkapxdResult } from "#/utils/result/is-symbol-from-skapxd-result";
 import { isTrySafeCall } from "#/utils/result/is-try-safe-call";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
+import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const awaitRequiresResult: RuleModule = {
       meta: {
@@ -45,7 +46,7 @@ export const awaitRequiresResult: RuleModule = {
 
         // Una llamada protege el await solo si es trySafe de @skapxd/result.
         // Con info de tipos se verifica por símbolo; sin ella, el nombre basta.
-        function isSkapxdTrySafe(callNode: RuleNode | null) {
+        function isSkapxdTrySafe(callNode: TSESTree.CallExpression | null) {
           if (!callNode) {
             return false;
           }
@@ -60,7 +61,7 @@ export const awaitRequiresResult: RuleModule = {
         }
 
         return {
-          AwaitExpression(node: RuleNode) {
+          AwaitExpression(node: TSESTree.AwaitExpression) {
             const isAllowedFilePattern = matchesAnyGlob(filename, options.allowFilePatterns);
             if (isAllowedFilePattern) {
               return;

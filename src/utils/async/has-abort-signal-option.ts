@@ -1,4 +1,5 @@
-import type { RuleNode, RuleSourceCode, TypeContext } from "#/utils/rule-authoring/rule-types";
+import type { TSESTree } from "@typescript-eslint/utils";
+import type { RuleSourceCode, TypeContext } from "#/utils/rule-authoring/rule-types";
 import { getVariableInitializer } from "#/utils/ast/get-variable-initializer";
 import { objectExpressionHasSignal } from "./object-expression-has-signal";
 
@@ -8,7 +9,7 @@ import { objectExpressionHasSignal } from "./object-expression-has-signal";
 // checker pregunta si el TIPO declara `signal` (si ni el tipo la tiene, es
 // imposible que llegue); sin tipos → beneficio de la duda.
 export function hasAbortSignalOption(
-  callExpression: RuleNode,
+  callExpression: TSESTree.CallExpression,
   sourceCode: RuleSourceCode,
   typeContext: TypeContext | null,
 ) {
@@ -29,9 +30,10 @@ export function hasAbortSignalOption(
     return objectExpressionHasSignal(options);
   }
 
-  const scope =
-    options.type === "Identifier" ? sourceCode.getScope?.(options) : null;
-  const initializer = scope ? getVariableInitializer(options, scope) : null;
+  const scope = options.type === "Identifier" ? sourceCode.getScope?.(options) : null;
+  const initializer = options.type === "Identifier" && scope
+    ? getVariableInitializer(options, scope)
+    : null;
 
   const isInitializerObjectExpression = initializer?.type === "ObjectExpression";
   if (isInitializerObjectExpression) {

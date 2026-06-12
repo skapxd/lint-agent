@@ -1,7 +1,7 @@
-import type { RuleNode } from "#/utils/rule-authoring/rule-types";
+import type { TSESTree } from "@typescript-eslint/utils";
 import { unwrapExpression } from "./unwrap-expression";
 
-export function getBooleanLiteralValue(node: RuleNode) {
+export function getBooleanLiteralValue(node: TSESTree.Node) {
   const unwrappedNode = unwrapExpression(node);
 
   return unwrappedNode.type === "Literal" && typeof unwrappedNode.value === "boolean"

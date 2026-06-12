@@ -1,9 +1,9 @@
-import type { RuleNode } from "#/utils/rule-authoring/rule-types";
+import type { TSESTree } from "@typescript-eslint/utils";
 import { getBooleanLiteralValue } from "#/utils/ast/get-boolean-literal-value";
 import { getOkMemberObject } from "./get-ok-member-object";
 import { isFailedOkComparison } from "./is-failed-ok-comparison";
 
-export function getFailedResultBinaryGuardName(node: RuleNode) {
+export function getFailedResultBinaryGuardName(node: TSESTree.BinaryExpression) {
   const leftResult = getOkMemberObject(node.left);
   const rightResult = getOkMemberObject(node.right);
   const leftBoolean = getBooleanLiteralValue(node.left);

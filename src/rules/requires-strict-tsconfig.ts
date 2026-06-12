@@ -1,10 +1,11 @@
+import type { TSESTree } from "@typescript-eslint/utils";
 import { dirname, resolve } from "node:path";
 import { findProjectFile } from "#/utils/project/find-project-file";
 import { getStrictTsconfigOptions } from "#/utils/options/get-strict-tsconfig-options";
 import { isAnchorlessCheckRedundant } from "#/utils/project/is-anchorless-check-redundant";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import { readResolvedTsconfig } from "#/utils/project/read-resolved-tsconfig";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
+import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const requiresStrictTsconfig: RuleModule = {
   meta: {
@@ -52,7 +53,7 @@ export const requiresStrictTsconfig: RuleModule = {
     const isAnchor = matchesAnyGlob(filename, options.anchorFilePatterns);
 
     return {
-      Program(node: RuleNode) {
+      Program(node: TSESTree.Program) {
         const absoluteFilename = resolve(context.cwd ?? process.cwd(), filename);
         const tsconfigPath = findProjectFile(
           dirname(absoluteFilename),

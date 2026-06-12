@@ -1,7 +1,8 @@
+import type { TSESTree } from "@typescript-eslint/utils";
 import { getMoveSuggestion } from "#/utils/suggestions/get-move-suggestion";
 import { getRootFunctionEntries } from "#/utils/ast/get-root-function-entries";
 import { getStructureSuggestion } from "#/utils/suggestions/get-structure-suggestion";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
+import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const oneRootFunctionPerFile: RuleModule = {
       meta: {
@@ -18,8 +19,8 @@ export const oneRootFunctionPerFile: RuleModule = {
       },
       create(context: RuleContext) {
         return {
-          Program(node: RuleNode) {
-            const rootFunctions = node.body.flatMap((statement: RuleNode) =>
+          Program(node: TSESTree.Program) {
+            const rootFunctions = node.body.flatMap((statement: TSESTree.Node) =>
               getRootFunctionEntries(statement),
             );
 

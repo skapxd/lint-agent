@@ -1,7 +1,8 @@
-import type { RuleNode, RuleSourceCode } from "#/utils/rule-authoring/rule-types";
+import type { TSESTree } from "@typescript-eslint/utils";
+import type { RuleSourceCode } from "#/utils/rule-authoring/rule-types";
 import { unwrapExpression } from "#/utils/ast/unwrap-expression";
 
-export function getCallExpressionExample(node: RuleNode, sourceCode: RuleSourceCode) {
+export function getCallExpressionExample(node: TSESTree.CallExpression, sourceCode: RuleSourceCode) {
   const calleeText = sourceCode.getText(node.callee);
 
   const hasNoArguments = node.arguments.length === 0;

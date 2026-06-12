@@ -1,3 +1,4 @@
+import type { TSESTree } from "@typescript-eslint/utils";
 import { countOwnUseStateCalls } from "#/utils/react/count-own-use-state-calls";
 import { getFunctionExpressionName } from "#/utils/ast/get-function-expression-name";
 import { getFunctionLineCount } from "#/utils/ast/get-function-line-count";
@@ -5,7 +6,8 @@ import { getMaxHookSizeOptions } from "#/utils/options/get-max-hook-size-options
 import { getParentFunctionName } from "#/utils/ast/get-parent-function-name";
 import { getParentFunctionReportNode } from "#/utils/ast/get-parent-function-report-node";
 import { isHookName } from "#/utils/react/is-hook-name";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
+import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
+import type { FunctionNode } from "#/utils/ast/is-function-node";
 
 export const maxHookSize: RuleModule = {
       meta: {
@@ -35,9 +37,9 @@ export const maxHookSize: RuleModule = {
         const options = getMaxHookSizeOptions(context.options[0]);
 
         function reportIfOversizedHook(
-          node: RuleNode,
+          node: FunctionNode,
           name: string | null | undefined,
-          reportNode: RuleNode = node,
+          reportNode: TSESTree.Node = node,
         ) {
           const isHook = isHookName(name);
           if (!isHook) {
@@ -76,17 +78,17 @@ export const maxHookSize: RuleModule = {
         }
 
         return {
-          ArrowFunctionExpression(node: RuleNode) {
+          ArrowFunctionExpression(node: TSESTree.ArrowFunctionExpression) {
             reportIfOversizedHook(
               node,
               getParentFunctionName(node),
               getParentFunctionReportNode(node),
             );
           },
-          FunctionDeclaration(node: RuleNode) {
+          FunctionDeclaration(node: TSESTree.FunctionDeclaration) {
             reportIfOversizedHook(node, node.id?.name, node.id ?? node);
           },
-          FunctionExpression(node: RuleNode) {
+          FunctionExpression(node: TSESTree.FunctionExpression) {
             reportIfOversizedHook(
               node,
               getFunctionExpressionName(node),

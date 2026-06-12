@@ -1,6 +1,6 @@
-import type { RuleNode } from "#/utils/rule-authoring/rule-types";
-export function isInsideNode(node: RuleNode, ancestor: RuleNode) {
-  let current = node;
+import type { TSESTree } from "@typescript-eslint/utils";
+export function isInsideNode(node: TSESTree.Node, ancestor: TSESTree.Node) {
+  let current: TSESTree.Node | undefined = node;
 
   while (current) {
     const isCurrentAncestor = current === ancestor;

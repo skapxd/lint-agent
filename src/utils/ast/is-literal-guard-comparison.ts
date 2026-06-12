@@ -1,14 +1,6 @@
+import type { TSESTree } from "@typescript-eslint/utils";
 import { getMemberChainDepth } from "#/utils/ast/get-member-chain-depth";
 import { isGuardLiteral } from "#/utils/ast/is-guard-literal";
-
-type ComparisonNode = {
-  type: string;
-  operator?: string;
-  left?: ComparisonNode;
-  right?: ComparisonNode;
-  name?: string;
-  value?: unknown;
-};
 
 const guardOperators = new Set(["===", "!==", "==", "!="]);
 
@@ -19,7 +11,7 @@ const guardOperators = new Set(["===", "!==", "==", "!="]);
 // contra cualquier otro literal (`status === "ready"`) si es un computo
 // anonimo: ahi la extraccion compra semantica.
 export function isLiteralGuardComparison(
-  node: ComparisonNode,
+  node: TSESTree.Node,
   maxMemberDepth: number,
 ): boolean {
   const isBinaryExpressionNode = node.type === "BinaryExpression";
@@ -27,17 +19,12 @@ export function isLiteralGuardComparison(
     return false;
   }
 
-  const usesGuardOperator = node.operator === undefined || !guardOperators.has(node.operator);
+  const usesGuardOperator = !guardOperators.has(node.operator);
   if (usesGuardOperator) {
     return false;
   }
 
   const { left, right } = node;
-
-  const lacksComparisonSides = left === undefined || right === undefined;
-  if (lacksComparisonSides) {
-    return false;
-  }
 
   const leftIsGuard = isGuardLiteral(left);
   const rightIsGuard = isGuardLiteral(right);

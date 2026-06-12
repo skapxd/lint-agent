@@ -1,10 +1,11 @@
+import type { TSESTree } from "@typescript-eslint/utils";
 import { getPreferAbortSignalOptions } from "#/utils/options/get-prefer-abort-signal-options";
 import { getTypeContext } from "#/utils/type-aware/get-type-context";
 import { hasAbortSignalOption } from "#/utils/async/has-abort-signal-option";
 import { isInsideEffectCallback } from "#/utils/react/is-inside-effect-callback";
 import { isMemberPropertyNamed } from "#/utils/ast/is-member-property-named";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
+import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const preferAbortSignal: RuleModule = {
   meta: {
@@ -48,14 +49,15 @@ export const preferAbortSignal: RuleModule = {
     }
 
     return {
-      CallExpression(node: RuleNode) {
-        const hasMemberCallee = node.callee?.type === "MemberExpression";
+      CallExpression(node: TSESTree.CallExpression) {
+        const callee = node.callee;
+        const hasMemberCallee = callee.type === "MemberExpression";
         if (!hasMemberCallee) {
           return;
         }
 
-        const isAdd = isMemberPropertyNamed(node.callee, "addEventListener");
-        const isRemove = isMemberPropertyNamed(node.callee, "removeEventListener");
+        const isAdd = isMemberPropertyNamed(callee, "addEventListener");
+        const isRemove = isMemberPropertyNamed(callee, "removeEventListener");
 
         const isUntrackedEventMethod = !isAdd && !isRemove;
         if (isUntrackedEventMethod) {

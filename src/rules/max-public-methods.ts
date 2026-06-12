@@ -1,7 +1,8 @@
+import type { TSESTree } from "@typescript-eslint/utils";
 import { getMaxPublicMethodsOptions } from "#/utils/options/get-max-public-methods-options";
 import { isPublicClassMethod } from "#/utils/ast/is-public-class-method";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
+import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const maxPublicMethods: RuleModule = {
   meta: {
@@ -44,10 +45,10 @@ export const maxPublicMethods: RuleModule = {
       return {};
     }
 
-    function reportIfTooManyPublicMethods(node: RuleNode) {
+    function reportIfTooManyPublicMethods(node: TSESTree.ClassDeclaration | TSESTree.ClassExpression) {
       const publicMethods = node.body.body
         .filter(isPublicClassMethod)
-        .map((member: RuleNode) => member.key.name)
+        .map((member) => member.key.name)
         .filter((name: string) => !options.ignore.has(name));
 
       const staysWithinMethodBudget = publicMethods.length <= options.max;

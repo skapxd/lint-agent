@@ -1,13 +1,13 @@
-import type { RuleNode } from "#/utils/rule-authoring/rule-types";
+import type { TSESTree } from "@typescript-eslint/utils";
 import { getNodeChildren } from "#/utils/ast/get-node-children";
 import { isAstNode } from "#/utils/ast/is-ast-node";
 import { isFunctionNode } from "#/utils/ast/is-function-node";
 import { isResultErrCall } from "./is-result-err-call";
 
 export function getOwnResultErrCalls(
-  node: RuleNode | null,
+  node: TSESTree.Node | null,
   isRoot: boolean = true,
-): RuleNode[] {
+): TSESTree.CallExpression[] {
   if (!isAstNode(node)) {
     return [];
   }
@@ -17,11 +17,10 @@ export function getOwnResultErrCalls(
     return [];
   }
 
-  const ownCalls =
-    node.type === "CallExpression" && isResultErrCall(node) ? [node] : [];
+  const ownCalls = isResultErrCall(node) ? [node] : [];
 
   return [
     ...ownCalls,
-    ...getNodeChildren(node).flatMap((child: RuleNode) => getOwnResultErrCalls(child, false)),
+    ...getNodeChildren(node).flatMap((child: TSESTree.Node) => getOwnResultErrCalls(child, false)),
   ];
 }

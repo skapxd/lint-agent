@@ -1,8 +1,8 @@
-import type { RuleNode } from "#/utils/rule-authoring/rule-types";
+import type { TSESTree } from "@typescript-eslint/utils";
 import { isMemberPropertyNamed } from "#/utils/ast/is-member-property-named";
 import { unwrapExpression } from "#/utils/ast/unwrap-expression";
 
-export function isResultErrorMember(node: RuleNode, resultName: string) {
+export function isResultErrorMember(node: TSESTree.Node, resultName: string) {
   const unwrappedNode = unwrapExpression(node);
 
   return (

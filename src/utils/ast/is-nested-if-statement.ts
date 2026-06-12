@@ -1,11 +1,11 @@
-import type { RuleNode } from "#/utils/rule-authoring/rule-types";
+import type { TSESTree } from "@typescript-eslint/utils";
 import { isFunctionNode } from "./is-function-node";
 
 // ¿Este if vive dentro de otro if de la MISMA función? El eslabón directo de
 // un `else if` no cuenta (es cadena, no anidación) — si la cadena entera está
 // dentro de otro if, el reporte cae sobre su cabeza, una sola vez. Una
 // función definida dentro de un if es una unidad cognitiva aparte.
-export function isNestedIfStatement(node: RuleNode) {
+export function isNestedIfStatement(node: TSESTree.Node) {
   const isElseIfBranch = node.parent?.type === "IfStatement" && node.parent.alternate === node;
   if (isElseIfBranch) {
     return false;

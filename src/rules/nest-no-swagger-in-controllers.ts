@@ -1,9 +1,11 @@
+import type { TSESTree } from "@typescript-eslint/utils";
+import { isClassBoundary } from "#/utils/ast/is-class-boundary";
 import { getDecoratorName } from "#/utils/nest/get-decorator-name";
 import { getImportedLocalNames } from "#/utils/imports/get-imported-local-names";
 import { getNestSwaggerControllerOptions } from "#/utils/options/get-nest-swagger-controller-options";
 import { hasClassDecoratorNamed } from "#/utils/nest/has-class-decorator-named";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
+import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const nestNoSwaggerInControllers: RuleModule = {
   meta: {
@@ -48,15 +50,11 @@ export const nestNoSwaggerInControllers: RuleModule = {
 
     let swaggerNames = new Set();
 
-    function isInsideControllerClass(node: RuleNode) {
+    function isInsideControllerClass(node: TSESTree.Node) {
       let current = node.parent;
 
       while (current) {
-        const reachedClassBoundary = current.type === "ClassDeclaration" ||
-          current.type === "ClassExpression";
-        if (
-          reachedClassBoundary
-        ) {
+        if (isClassBoundary(current)) {
           return hasClassDecoratorNamed(current, options.controllerDecoratorNames);
         }
 
@@ -67,10 +65,10 @@ export const nestNoSwaggerInControllers: RuleModule = {
     }
 
     return {
-      Program(node: RuleNode) {
+      Program(node: TSESTree.Program) {
         swaggerNames = getImportedLocalNames(node, "@nestjs/swagger");
       },
-      Decorator(node: RuleNode) {
+      Decorator(node: TSESTree.Decorator) {
         const name = getDecoratorName(node);
 
         const isAllowedSwaggerDecorator = !name ||

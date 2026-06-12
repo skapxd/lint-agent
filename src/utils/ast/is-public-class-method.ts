@@ -1,8 +1,10 @@
-import type { RuleNode } from "#/utils/rule-authoring/rule-types";
+import type { TSESTree } from "@typescript-eslint/utils";
 // Un método que expande la superficie pública de la clase: descarta
 // constructor, getters/setters, private/protected, #privados y el prefijo
 // `_` (la convención de privado suave).
-export function isPublicClassMethod(member: RuleNode) {
+export function isPublicClassMethod(
+  member: TSESTree.ClassElement,
+): member is TSESTree.MethodDefinition & { key: TSESTree.Identifier } {
   const isMethodDefinitionNode = member.type === "MethodDefinition";
   if (!isMethodDefinitionNode) {
     return false;
@@ -13,15 +15,16 @@ export function isPublicClassMethod(member: RuleNode) {
     return false;
   }
 
-  const includesPrivateProtected = ["private", "protected"].includes(member.accessibility);
+  const includesPrivateProtected = ["private", "protected"].includes(member.accessibility ?? "");
   if (includesPrivateProtected) {
     return false;
   }
 
-  const hasIdentifierKey = member.key?.type === "Identifier";
+  const key = member.key;
+  const hasIdentifierKey = key.type === "Identifier";
   if (!hasIdentifierKey) {
     return false;
   }
 
-  return !member.key.name.startsWith("_");
+  return !key.name.startsWith("_");
 }

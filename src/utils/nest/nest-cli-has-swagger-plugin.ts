@@ -6,7 +6,7 @@ type NestCliConfig = {
 };
 
 export function nestCliHasSwaggerPlugin(nestCliConfig: NestCliConfig) {
-  const plugins = nestCliConfig?.compilerOptions?.plugins ?? [];
+  const plugins = nestCliConfig.compilerOptions?.plugins ?? [];
 
   return plugins.some((plugin: string | { name?: string }) =>
     typeof plugin === "string"

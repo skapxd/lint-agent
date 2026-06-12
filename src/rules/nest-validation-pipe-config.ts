@@ -1,9 +1,10 @@
+import type { TSESTree } from "@typescript-eslint/utils";
 import { getImportedLocalNames } from "#/utils/imports/get-imported-local-names";
 import { getNestValidationPipeOptions } from "#/utils/options/get-nest-validation-pipe-options";
 import { getObjectKeysSetToTrue } from "#/utils/ast/get-object-keys-set-to-true";
 import { getVariableInitializer } from "#/utils/ast/get-variable-initializer";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
+import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const nestValidationPipeConfig: RuleModule = {
   meta: {
@@ -45,7 +46,7 @@ export const nestValidationPipeConfig: RuleModule = {
 
     let commonNames = new Set<string>();
 
-    function resolvePipeOptionsObject(argument: RuleNode | undefined) {
+    function resolvePipeOptionsObject(argument: TSESTree.Node | undefined) {
       if (!argument) {
         return null;
       }
@@ -72,11 +73,11 @@ export const nestValidationPipeConfig: RuleModule = {
     }
 
     return {
-      Program(node: RuleNode) {
+      Program(node: TSESTree.Program) {
         commonNames = getImportedLocalNames(node, "@nestjs/common");
       },
-      NewExpression(node: RuleNode) {
-        const isValidationPipeConstructor = node.callee?.type === "Identifier" &&
+      NewExpression(node: TSESTree.NewExpression) {
+        const isValidationPipeConstructor = node.callee.type === "Identifier" &&
           node.callee.name === "ValidationPipe" &&
           commonNames.has("ValidationPipe");
         if (!isValidationPipeConstructor) {
@@ -92,7 +93,7 @@ export const nestValidationPipeConfig: RuleModule = {
 
         const hasSpread =
           pipeOptions?.properties.some(
-            (property: RuleNode) => property.type === "SpreadElement",
+            (property: TSESTree.Node) => property.type === "SpreadElement",
           ) ?? false;
 
         if (hasSpread) {

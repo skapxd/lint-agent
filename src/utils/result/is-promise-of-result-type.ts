@@ -1,8 +1,9 @@
-import type { RuleNode, TypeContext } from "#/utils/rule-authoring/rule-types";
+import type { TSESTree } from "@typescript-eslint/utils";
+import type { TypeContext } from "#/utils/rule-authoring/rule-types";
 import { getTypeReferenceParameters } from "#/utils/type-aware/get-type-reference-parameters";
 import { isTypeReferenceNamed } from "#/utils/type-aware/is-type-reference-named";
 
-export function isPromiseOfResultType(node: RuleNode, options: { promiseTypeNames: readonly string[]; resultTypeNames: readonly string[] }) {
+export function isPromiseOfResultType(node: TSESTree.Node, options: { promiseTypeNames: readonly string[]; resultTypeNames: readonly string[] }) {
   const isTypeReferenceNode = node.type === "TSTypeReference";
   if (!isTypeReferenceNode) {
     return false;

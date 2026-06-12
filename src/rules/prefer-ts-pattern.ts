@@ -1,4 +1,5 @@
-import type { RuleNode, RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
+import type { TSESTree } from "@typescript-eslint/utils";
+import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 export const preferTsPattern: RuleModule = {
   meta: {
     type: "suggestion",
@@ -16,8 +17,8 @@ export const preferTsPattern: RuleModule = {
   },
   create(context: RuleContext) {
     return {
-      ConditionalExpression(node: RuleNode) {
-        const isConditionalExpressionNode = node.parent?.type === "ConditionalExpression";
+      ConditionalExpression(node: TSESTree.ConditionalExpression) {
+        const isConditionalExpressionNode = node.parent.type === "ConditionalExpression";
         if (isConditionalExpressionNode) {
           context.report({
             messageId: "noNestedTernary",
@@ -25,7 +26,7 @@ export const preferTsPattern: RuleModule = {
           });
         }
       },
-      SwitchStatement(node: RuleNode) {
+      SwitchStatement(node: TSESTree.SwitchStatement) {
         context.report({
           messageId: "noSwitch",
           node,

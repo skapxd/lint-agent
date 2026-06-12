@@ -1,6 +1,7 @@
+import type { TSESTree } from "@typescript-eslint/utils";
 import { getNoElseOptions } from "#/utils/options/get-no-else-options";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
+import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const noElse: RuleModule = {
   meta: {
@@ -36,7 +37,7 @@ export const noElse: RuleModule = {
     }
 
     return {
-      IfStatement(node: RuleNode) {
+      IfStatement(node: TSESTree.IfStatement) {
         if (node.alternate) {
           context.report({ messageId: "noElse", node: node.alternate });
         }

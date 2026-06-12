@@ -1,3 +1,4 @@
+import type { TSESTree } from "@typescript-eslint/utils";
 import { containsCallNamed } from "#/utils/ast/contains-call-named";
 import { getAsyncResultRuleOptions } from "#/utils/options/get-async-result-rule-options";
 import { getFunctionExpressionName } from "#/utils/ast/get-function-expression-name";
@@ -9,7 +10,8 @@ import { isPromiseOfResultType } from "#/utils/result/is-promise-of-result-type"
 import { isSkapxdResultOrPromiseResultType } from "#/utils/result/is-skapxd-result-or-promise-result-type";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import { matchesAnyPattern } from "#/utils/matching/matches-any-pattern";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
+import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
+import type { FunctionNode } from "#/utils/ast/is-function-node";
 
 export const asyncFunctionsReturnResult: RuleModule = {
       meta: {
@@ -66,7 +68,7 @@ export const asyncFunctionsReturnResult: RuleModule = {
         // Verifica que el tipo de retorno sea un Result de @skapxd/result.
         // Con información de tipos (projectService) resuelve el símbolo hasta
         // el paquete; sin ella, cae a una comprobación por nombre.
-        function isSkapxdResultReturnType(annotation: RuleNode) {
+        function isSkapxdResultReturnType(annotation: TSESTree.Node) {
           if (typeContext) {
             const type = typeContext.services.getTypeFromTypeNode(annotation);
 
@@ -77,9 +79,9 @@ export const asyncFunctionsReturnResult: RuleModule = {
         }
 
         function reportIfInvalidAsyncReturn(
-          node: RuleNode,
+          node: FunctionNode,
           name: string | null | undefined,
-          reportNode: RuleNode = node,
+          reportNode: TSESTree.Node = node,
         ) {
           const shouldSkipAsyncFunction = !node.async || matchesAnyGlob(filename, options.allowFilePatterns);
           if (shouldSkipAsyncFunction) {
@@ -138,17 +140,17 @@ export const asyncFunctionsReturnResult: RuleModule = {
         }
 
         return {
-          ArrowFunctionExpression(node: RuleNode) {
+          ArrowFunctionExpression(node: TSESTree.ArrowFunctionExpression) {
             reportIfInvalidAsyncReturn(
               node,
               getParentFunctionName(node),
               getParentFunctionReportNode(node),
             );
           },
-          FunctionDeclaration(node: RuleNode) {
+          FunctionDeclaration(node: TSESTree.FunctionDeclaration) {
             reportIfInvalidAsyncReturn(node, node.id?.name, node.id ?? node);
           },
-          FunctionExpression(node: RuleNode) {
+          FunctionExpression(node: TSESTree.FunctionExpression) {
             reportIfInvalidAsyncReturn(
               node,
               getFunctionExpressionName(node),

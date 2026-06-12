@@ -1,34 +1,11 @@
+import type { TSESTree } from "@typescript-eslint/utils";
 import { callHasTypePredicate } from "#/utils/type-aware/call-has-type-predicate";
 import { getMemberChainDepth } from "#/utils/ast/get-member-chain-depth";
 import { getNoAnonymousConditionOptions } from "#/utils/options/get-no-anonymous-condition-options";
 import { isLiteralGuardComparison } from "#/utils/ast/is-literal-guard-comparison";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import { unwrapNegations } from "#/utils/ast/unwrap-negations";
-import type { RuleModule } from "#/utils/rule-authoring/rule-types";
-
-type ConditionNode = {
-  type: string;
-  value?: unknown;
-  [key: string]: unknown;
-};
-
-type IfStatementNode = {
-  test: ConditionNode;
-};
-
-type RuleContext = {
-  filename?: string;
-  getFilename?: () => string;
-  options: unknown[];
-  report: (descriptor: {
-    data?: Record<string, string>;
-    messageId: string;
-    node: unknown;
-  }) => void;
-  sourceCode?: {
-    parserServices?: unknown;
-  };
-};
+import type { RuleContext, RuleModule } from "#/utils/rule-authoring/rule-types";
 
 // La hermana de no-else: esa nombra los CAMINOS, esta nombra la PREGUNTA.
 // Un if cuya condicion es un computo (llamada, comparacion, combinacion
@@ -73,7 +50,7 @@ export const noAnonymousCondition: RuleModule = {
         typeof getNoAnonymousConditionOptions
       >[0],
     );
-    const filename = context.filename ?? context.getFilename?.() ?? "";
+    const filename = context.filename ?? context.getFilename();
 
     const isAllowedFilePattern = matchesAnyGlob(filename, options.allowFilePatterns);
     if (isAllowedFilePattern) {
@@ -81,8 +58,8 @@ export const noAnonymousCondition: RuleModule = {
     }
 
     return {
-      IfStatement(node: IfStatementNode) {
-        const condition = unwrapNegations(node.test) as ConditionNode;
+      IfStatement(node: TSESTree.IfStatement) {
+        const condition = unwrapNegations(node.test);
 
         // Un literal constante es territorio de no-impossible-branch.
         const isLiteralNode = condition.type === "Literal";

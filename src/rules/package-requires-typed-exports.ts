@@ -1,3 +1,4 @@
+import type { TSESTree } from "@typescript-eslint/utils";
 import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { trySafe } from "@skapxd/result";
@@ -5,7 +6,7 @@ import { findProjectFile } from "#/utils/project/find-project-file";
 import { getTypedExportsOptions } from "#/utils/options/get-typed-exports-options";
 import { getUntypedExportConditions } from "#/utils/project/get-untyped-export-conditions";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
-import type { RuleNode, RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
+import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 const kindMessages = {
   "missing-file": "missingTypesFile",
@@ -62,7 +63,7 @@ export const packageRequiresTypedExports: RuleModule = {
     }
 
     return {
-      Program(node: RuleNode) {
+      Program(node: TSESTree.Program) {
         const absoluteFilename = resolve(context.cwd ?? process.cwd(), filename);
         const packageJsonPath = findProjectFile(
           dirname(absoluteFilename),

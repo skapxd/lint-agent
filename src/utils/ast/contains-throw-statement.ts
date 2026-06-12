@@ -1,10 +1,10 @@
-import type { RuleNode } from "#/utils/rule-authoring/rule-types";
+import type { TSESTree } from "@typescript-eslint/utils";
 import { getNodeChildren } from "./get-node-children";
 import { isFunctionNode } from "./is-function-node";
 
 // ¿El nodo contiene un throw propio? No cruza funciones anidadas: un throw
 // dentro de un callback es de ese callback.
-export function containsThrowStatement(node: RuleNode | null): boolean {
+export function containsThrowStatement(node: TSESTree.Node | null): boolean {
   const isThrowStatementNode = node?.type === "ThrowStatement";
   if (isThrowStatementNode) {
     return true;
@@ -15,5 +15,5 @@ export function containsThrowStatement(node: RuleNode | null): boolean {
     return false;
   }
 
-  return getNodeChildren(node).some((child: RuleNode) => containsThrowStatement(child));
+  return getNodeChildren(node).some((child: TSESTree.Node) => containsThrowStatement(child));
 }

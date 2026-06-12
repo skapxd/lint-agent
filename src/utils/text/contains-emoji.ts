@@ -1,4 +1,3 @@
-import type { RuleNode } from "#/utils/rule-authoring/rule-types";
 // Detección por propiedad Unicode: Extended_Pictographic cubre los emojis y
 // pictogramas (🚀, ✅, 😄) sin tocar símbolos de texto normales (→, ✓, ©).
 const emojiPattern = /\p{Extended_Pictographic}/u;

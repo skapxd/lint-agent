@@ -1,3 +1,4 @@
+import type { TSESTree } from "@typescript-eslint/utils";
 import { collectIdentifiersNamed } from "#/utils/ast/collect-identifiers-named";
 import { getFailedResultGuard } from "#/utils/result/get-failed-result-guard";
 import { getResultErrorRequiresHandlingOptions } from "#/utils/options/get-result-error-requires-handling-options";
@@ -5,7 +6,7 @@ import { getTypeContext } from "#/utils/type-aware/get-type-context";
 import { isConsumedResultReference } from "#/utils/result/is-consumed-result-reference";
 import { isSkapxdResultExpression } from "#/utils/result/is-skapxd-result-expression";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
+import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const resultErrorRequiresHandling: RuleModule = {
   meta: {
@@ -42,7 +43,7 @@ export const resultErrorRequiresHandling: RuleModule = {
     }
 
     return {
-      IfStatement(node: RuleNode) {
+      IfStatement(node: TSESTree.IfStatement) {
         const resultGuard = getFailedResultGuard(node.test);
 
         const lacksResultGuardContext = !typeContext ||
@@ -59,7 +60,7 @@ export const resultErrorRequiresHandling: RuleModule = {
           resultGuard.name,
         );
 
-        const hasMatchingReference = references.some((reference: RuleNode) =>
+        const hasMatchingReference = references.some((reference: TSESTree.Node) =>
             isConsumedResultReference(reference, node.consequent),
           );
         if (

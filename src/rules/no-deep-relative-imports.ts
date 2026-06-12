@@ -1,5 +1,6 @@
+import type { TSESTree } from "@typescript-eslint/utils";
 import { countParentSegments } from "#/utils/project/count-parent-segments";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
+import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const noDeepRelativeImports: RuleModule = {
   meta: {
@@ -26,13 +27,13 @@ export const noDeepRelativeImports: RuleModule = {
     const maxDepthOption = context.options[0]?.maxDepth;
     const maxDepth = typeof maxDepthOption === "number" ? maxDepthOption : 0;
 
-    function reportIfTooDeep(source: RuleNode) {
+    function reportIfTooDeep(source: TSESTree.StringLiteral | null) {
       const lacksImportSource = !source || typeof source.value !== "string";
       if (lacksImportSource) {
         return;
       }
 
-      const importSource = source.value as string;
+      const importSource = source.value;
       const depth = countParentSegments(importSource);
 
       const staysWithinImportDepth = depth <= maxDepth;
@@ -52,17 +53,21 @@ export const noDeepRelativeImports: RuleModule = {
     }
 
     return {
-      ExportAllDeclaration(node: RuleNode) {
+      ExportAllDeclaration(node: TSESTree.ExportAllDeclaration) {
         reportIfTooDeep(node.source);
       },
-      ExportNamedDeclaration(node: RuleNode) {
+      ExportNamedDeclaration(node: TSESTree.ExportNamedDeclaration) {
         reportIfTooDeep(node.source);
       },
-      ImportDeclaration(node: RuleNode) {
+      ImportDeclaration(node: TSESTree.ImportDeclaration) {
         reportIfTooDeep(node.source);
       },
-      ImportExpression(node: RuleNode) {
-        reportIfTooDeep(node.source);
+      ImportExpression(node: TSESTree.ImportExpression) {
+        reportIfTooDeep(
+          node.source.type === "Literal" && typeof node.source.value === "string"
+            ? node.source
+            : null,
+        );
       },
     };
   },

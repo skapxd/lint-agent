@@ -1,5 +1,5 @@
-import type { RuleNode } from "#/utils/rule-authoring/rule-types";
-export function unwrapExpression(node: RuleNode) {
+import type { TSESTree } from "@typescript-eslint/utils";
+export function unwrapExpression(node: TSESTree.Node) {
   const isTransparentExpression = node.type === "ChainExpression" ||
     node.type === "TSAsExpression" ||
     node.type === "TSSatisfiesExpression" ||

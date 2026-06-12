@@ -1,4 +1,4 @@
-import type { RuleNode } from "#/utils/rule-authoring/rule-types";
+import type { TSESTree } from "@typescript-eslint/utils";
 import { matchesAnyPattern } from "#/utils/matching/matches-any-pattern";
 import { memberIsBoolean } from "#/utils/ast/member-is-boolean";
 
@@ -13,7 +13,7 @@ type StateShapeOptions = {
 };
 
 export function getStateShapeSmell(
-  members: readonly RuleNode[],
+  members: readonly TSESTree.Node[],
   options: StateShapeOptions,
 ) {
   let flag: string | null = null;
@@ -22,18 +22,26 @@ export function getStateShapeSmell(
   for (const member of members) {
     const isShapeMember =
       member.type === "TSPropertySignature" || member.type === "PropertyDefinition";
-
-    const lacksStateShapeMember = !isShapeMember || member.key?.type !== "Identifier";
-    if (lacksStateShapeMember) {
+    if (!isShapeMember) {
       continue;
     }
 
-    const name = member.key.name;
+    const key = member.key;
+    const hasIdentifierKey = key.type === "Identifier";
+    if (!hasIdentifierKey) {
+      continue;
+    }
+
+    const name = key.name;
+    const typeAnnotation = member.typeAnnotation;
     // Un callback no es estado: `onError` en unas props es un handler
     // legítimo, no un campo de error conviviendo con el flag.
     const isCallback =
       /^on[A-Z]/.test(name) ||
-      member.typeAnnotation?.typeAnnotation?.type === "TSFunctionType";
+      (
+        typeAnnotation !== undefined &&
+        typeAnnotation.typeAnnotation.type === "TSFunctionType"
+      );
 
     if (isCallback) {
       continue;

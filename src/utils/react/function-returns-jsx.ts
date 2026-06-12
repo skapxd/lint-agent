@@ -1,9 +1,9 @@
-import type { RuleNode } from "#/utils/rule-authoring/rule-types";
+import type { FunctionNode } from "#/utils/ast/is-function-node";
 import { containsJsx } from "./contains-jsx";
 import { containsOwnJsx } from "./contains-own-jsx";
 
-export function functionReturnsJsx(functionNode: RuleNode) {
-  const hasBlockBody = functionNode.body?.type === "BlockStatement";
+export function functionReturnsJsx(functionNode: FunctionNode) {
+  const hasBlockBody = functionNode.body.type === "BlockStatement";
   if (!hasBlockBody) {
     return containsJsx(functionNode.body);
   }

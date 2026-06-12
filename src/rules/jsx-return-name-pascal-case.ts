@@ -1,8 +1,10 @@
+import type { TSESTree } from "@typescript-eslint/utils";
 import { functionReturnsJsx } from "#/utils/react/function-returns-jsx";
 import { isFunctionNode } from "#/utils/ast/is-function-node";
+import type { FunctionNode } from "#/utils/ast/is-function-node";
 import { isPascalCaseName } from "#/utils/naming/is-pascal-case-name";
 import { toPascalCase } from "#/utils/naming/to-pascal-case";
-import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
+import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const jsxReturnNamePascalCase: RuleModule = {
       meta: {
@@ -19,9 +21,9 @@ export const jsxReturnNamePascalCase: RuleModule = {
       },
       create(context: RuleContext) {
         function reportIfJsxReturningFunction(
-          node: RuleNode,
+          node: FunctionNode,
           name: string | null | undefined,
-          reportNode: RuleNode = node,
+          reportNode: TSESTree.Node = node,
         ) {
           const hasValidJsxReturnName = !name || isPascalCaseName(name) || !functionReturnsJsx(node);
           if (hasValidJsxReturnName) {
@@ -39,16 +41,23 @@ export const jsxReturnNamePascalCase: RuleModule = {
         }
 
         return {
-          FunctionDeclaration(node: RuleNode) {
+          FunctionDeclaration(node: TSESTree.FunctionDeclaration) {
             reportIfJsxReturningFunction(node, node.id?.name, node.id ?? node);
           },
-          VariableDeclarator(node: RuleNode) {
-            const lacksNamedFunctionInitializer = !isFunctionNode(node.init) || node.id.type !== "Identifier";
-            if (lacksNamedFunctionInitializer) {
+          VariableDeclarator(node: TSESTree.VariableDeclarator) {
+            const functionInitializer = node.init;
+            const hasFunctionInitializer = isFunctionNode(functionInitializer);
+            if (!hasFunctionInitializer) {
               return;
             }
 
-            reportIfJsxReturningFunction(node.init, node.id.name, node.id);
+            const variableName = node.id;
+            const hasIdentifierName = variableName.type === "Identifier";
+            if (!hasIdentifierName) {
+              return;
+            }
+
+            reportIfJsxReturningFunction(functionInitializer, variableName.name, variableName);
           },
         };
       },
