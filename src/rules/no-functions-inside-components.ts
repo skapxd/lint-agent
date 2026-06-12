@@ -5,7 +5,7 @@ import { isArrayMapCallback } from "#/utils/is-array-map-callback";
 import { isExpressionArrowFunction } from "#/utils/is-expression-arrow-function";
 import { isFunctionNode } from "#/utils/is-function-node";
 import { isJsxAttributeCallback } from "#/utils/is-jsx-attribute-callback";
-import { isPascalCaseName } from "#/utils/is-pascal-case-name";
+import { isPascalCaseName } from "#/utils/naming/is-pascal-case-name";
 import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const noFunctionsInsideComponents: RuleModule = {

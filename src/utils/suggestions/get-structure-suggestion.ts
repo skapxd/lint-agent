@@ -4,7 +4,7 @@ import { getSourceExtension } from "#/utils/project/get-source-extension";
 import { getSuggestedHelperFileNames } from "./get-suggested-helper-file-names";
 import { getTreeChildLines } from "./get-tree-child-lines";
 import { isNextConventionFile } from "#/utils/project/is-next-convention-file";
-import { toKebabCase } from "#/utils/to-kebab-case";
+import { toKebabCase } from "#/utils/naming/to-kebab-case";
 
 type StructureSuggestionInput = {
   filename: string;

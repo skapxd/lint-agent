@@ -4,7 +4,7 @@ import { getNoTunnelPropsOptions } from "#/utils/options/get-no-tunnel-props-opt
 import { getObjectPatternPropNames } from "#/utils/get-object-pattern-prop-names";
 import { isForwardedPropReference } from "#/utils/is-forwarded-prop-reference";
 import { isPascalCaseJsxElement } from "#/utils/is-pascal-case-jsx-element";
-import { isPascalCaseName } from "#/utils/is-pascal-case-name";
+import { isPascalCaseName } from "#/utils/naming/is-pascal-case-name";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import { matchesAnyPattern } from "#/utils/matching/matches-any-pattern";
 import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
