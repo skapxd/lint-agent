@@ -86,6 +86,7 @@
   "license": "MIT",
   "dependencies": {
     "@skapxd/result": "^1.0.1",
+    "@typescript-eslint/utils": "8.59.4",
     "picomatch": "^4.0.4"
   },
   "peerDependencies": {
@@ -95,6 +96,7 @@
   },
   "devDependencies": {
     "@types/node": "25.0.10",
+    "@types/picomatch": "^4.0.3",
     "@typescript-eslint/rule-tester": "^8.60.1",
     "commander": "^15.0.0",
     "eslint": "9.39.4",
