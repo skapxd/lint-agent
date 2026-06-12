@@ -520,20 +520,27 @@ legítima y auditable — es la definición misma del suelo.
 
 ```text
 src/
-├── shared/
-│   ├── rules.ts
-│   ├── configs/
-│   └── index.ts
-├── nest/
-│   ├── configs.ts
-│   └── index.ts
-├── next/
-│   ├── configs.ts
-│   └── index.ts
-├── astro/
-│   ├── configs.ts
-│   └── index.ts
-└── index.ts
+├── index.ts            ← entrypoint del plugin (registro de reglas y presets)
+├── cli.ts              ← bin skapxd-lint-changed
+├── rules/              ← una regla por archivo
+├── constants/          ← convenciones de frameworks (entrypoints, hooks, stems)
+├── shared/             ← reglas base + presets base/backend/frontend/package + strict
+├── nest/ next/ astro/  ← presets por framework
+└── utils/              ← un util por archivo, agrupados por dominio:
+    ├── ast/               lectura estructural del AST
+    ├── async/             awaits y AbortSignal
+    ├── imports/           provenance de imports (evidencia, no convención)
+    ├── matching/          globs y regex (picomatch)
+    ├── naming/            kebab/pascal case
+    ├── nest/              decoradores y nest-cli.json
+    ├── options/           lectura tipada de las opciones de cada regla
+    ├── project/           filesystem del proyecto (package.json, tsconfig)
+    ├── react/             JSX, hooks, useState
+    ├── result/            el corazón: detección type-aware de @skapxd/result
+    ├── rule-authoring/    frontera de tipos y wrapper de typescript-eslint
+    ├── suggestions/       mensajes que enseñan (ejemplos y árboles sugeridos)
+    ├── text/              emojis y texto
+    └── type-aware/        type-checker: símbolos, firmas, type predicates
 ```
 
 | Módulo | Propósito |
