@@ -1,8 +1,8 @@
-import { getFileName } from "./project/get-file-name";
-import { getSourceExtension } from "./project/get-source-extension";
+import { getFileName } from "#/utils/project/get-file-name";
+import { getSourceExtension } from "#/utils/project/get-source-extension";
 import { getSuggestedHelperPath } from "./get-suggested-helper-path";
-import { isHttpRouteMethod } from "./is-http-route-method";
-import { isNextConventionFile } from "./project/is-next-convention-file";
+import { isHttpRouteMethod } from "#/utils/is-http-route-method";
+import { isNextConventionFile } from "#/utils/project/is-next-convention-file";
 
 type MoveSuggestionInput = {
   filename: string;

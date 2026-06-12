@@ -1,7 +1,7 @@
-import { getDirectoryName } from "./project/get-directory-name";
+import { getDirectoryName } from "#/utils/project/get-directory-name";
 import { getSuggestedHelperFileName } from "./get-suggested-helper-file-name";
-import { isNextConventionFile } from "./project/is-next-convention-file";
-import { toKebabCase } from "./to-kebab-case";
+import { isNextConventionFile } from "#/utils/project/is-next-convention-file";
+import { toKebabCase } from "#/utils/to-kebab-case";
 
 type SuggestedHelperPathInput = {
   extension: string;

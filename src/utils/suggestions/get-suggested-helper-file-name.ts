@@ -1,5 +1,5 @@
-import { isHttpRouteMethod } from "./is-http-route-method";
-import { toKebabCase } from "./to-kebab-case";
+import { isHttpRouteMethod } from "#/utils/is-http-route-method";
+import { toKebabCase } from "#/utils/to-kebab-case";
 
 type SuggestedHelperFileNameInput = {
   extension: string;

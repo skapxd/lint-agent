@@ -117,18 +117,21 @@ function getModuleSpecifier(node) {
   return node.moduleSpecifier;
 }
 
-function replacementSpecifier(importerPath, specifier, destinationPath, moveMap) {
+function replacementSpecifier(importerPath, specifier, destinationPath) {
   if (specifier.startsWith("#/")) {
     return moduleSpecifierForAlias(destinationPath);
   }
 
-  const finalImporterPath = moveMap.get(importerPath) ?? importerPath;
-
-  return relativeSpecifier(finalImporterPath, destinationPath);
+  return relativeSpecifier(importerPath, destinationPath);
 }
 
 function collectUpdates(repoRoot, filePath, moveMap) {
   const importerPath = toPosix(path.relative(repoRoot, filePath));
+  const destinationToSourceMap = new Map(
+    [...moveMap.entries()].map(([source, destination]) => [destination, source]),
+  );
+  const originalImporterPath = destinationToSourceMap.get(importerPath) ?? importerPath;
+  const finalImporterPath = moveMap.get(originalImporterPath) ?? importerPath;
   const sourceText = fs.readFileSync(filePath, "utf8");
   const sourceFile = ts.createSourceFile(
     filePath,
@@ -142,15 +145,43 @@ function collectUpdates(repoRoot, filePath, moveMap) {
     const moduleSpecifier = getModuleSpecifier(node);
 
     if (moduleSpecifier !== undefined) {
-      const resolvedPath = resolveSpecifier(repoRoot, importerPath, moduleSpecifier.text);
-      const destination = resolvedPath ? moveMap.get(resolvedPath) : undefined;
+      const resolvedFromCurrent = resolveSpecifier(
+        repoRoot,
+        importerPath,
+        moduleSpecifier.text,
+      );
+      const resolvedFromOriginal =
+        resolvedFromCurrent === undefined
+          ? resolveSpecifier(repoRoot, originalImporterPath, moduleSpecifier.text)
+          : undefined;
+      const resolvedPath = resolvedFromCurrent ?? resolvedFromOriginal;
+      const finalTargetPath = resolvedPath
+        ? moveMap.get(resolvedPath) ?? resolvedPath
+        : undefined;
+      const shouldRecalculateRelative =
+        moduleSpecifier.text.startsWith(".") &&
+        (finalImporterPath !== importerPath || resolvedFromOriginal !== undefined);
+      const shouldNormalizeParentRelative =
+        importerPath.startsWith("src/") &&
+        moduleSpecifier.text.startsWith("../") &&
+        finalTargetPath !== undefined;
+      const targetMoved = resolvedPath ? moveMap.has(resolvedPath) : false;
 
-      if (destination !== undefined) {
+      if (
+        finalTargetPath !== undefined &&
+        (targetMoved || shouldRecalculateRelative || shouldNormalizeParentRelative)
+      ) {
+        const replacement = shouldNormalizeParentRelative
+          ? moduleSpecifierForAlias(finalTargetPath)
+          : replacementSpecifier(
+              finalImporterPath,
+              moduleSpecifier.text,
+              finalTargetPath,
+            );
+
         updates.push({
           end: moduleSpecifier.end,
-          replacement: JSON.stringify(
-            replacementSpecifier(importerPath, moduleSpecifier.text, destination, moveMap),
-          ),
+          replacement: JSON.stringify(replacement),
           start: moduleSpecifier.getStart(sourceFile),
         });
       }
