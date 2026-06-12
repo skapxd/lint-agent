@@ -2,7 +2,7 @@ import { getNestNoResultResponseOptions } from "#/utils/options/get-nest-no-resu
 import { getTypeContext } from "#/utils/get-type-context";
 import { hasClassDecoratorNamed } from "#/utils/nest/has-class-decorator-named";
 import { isAstNode } from "#/utils/is-ast-node";
-import { isSkapxdResultOrPromiseResultType } from "#/utils/is-skapxd-result-or-promise-result-type";
+import { isSkapxdResultOrPromiseResultType } from "#/utils/result/is-skapxd-result-or-promise-result-type";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 import type ts from "typescript";

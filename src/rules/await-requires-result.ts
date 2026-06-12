@@ -1,11 +1,11 @@
 import { getAwaitRequiresResultOptions } from "#/utils/options/get-await-requires-result-options";
 import { getAwaitScopeName } from "#/utils/get-await-scope-name";
-import { getEnclosingTrySafeCall } from "#/utils/get-enclosing-try-safe-call";
+import { getEnclosingTrySafeCall } from "#/utils/result/get-enclosing-try-safe-call";
 import { getTrySafeAwaitSuggestion } from "#/utils/suggestions/get-try-safe-await-suggestion";
 import { getTypeContext } from "#/utils/get-type-context";
-import { isSkapxdResultOrPromiseResultExpression } from "#/utils/is-skapxd-result-or-promise-result-expression";
-import { isSymbolFromSkapxdResult } from "#/utils/is-symbol-from-skapxd-result";
-import { isTrySafeCall } from "#/utils/is-try-safe-call";
+import { isSkapxdResultOrPromiseResultExpression } from "#/utils/result/is-skapxd-result-or-promise-result-expression";
+import { isSymbolFromSkapxdResult } from "#/utils/result/is-symbol-from-skapxd-result";
+import { isTrySafeCall } from "#/utils/result/is-try-safe-call";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 

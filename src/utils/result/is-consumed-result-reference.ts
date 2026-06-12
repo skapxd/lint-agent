@@ -1,8 +1,8 @@
 import type { RuleNode } from "#/utils/rule-authoring/rule-types";
-import { collectIdentifiersNamed } from "./collect-identifiers-named";
-import { getDeclaredAliasTargets } from "./get-declared-alias-targets";
-import { isInsideNode } from "./is-inside-node";
-import { isMemberPropertyNamed } from "./is-member-property-named";
+import { collectIdentifiersNamed } from "#/utils/collect-identifiers-named";
+import { getDeclaredAliasTargets } from "#/utils/get-declared-alias-targets";
+import { isInsideNode } from "#/utils/is-inside-node";
+import { isMemberPropertyNamed } from "#/utils/is-member-property-named";
 
 // ¿La referencia consume el error de verdad? El contrato:
 // - El ERROR debe fluir COMPLETO: `result.error` (o su alias) como argumento,

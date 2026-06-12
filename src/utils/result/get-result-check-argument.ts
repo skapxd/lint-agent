@@ -1,6 +1,6 @@
 import type { RuleNode } from "#/utils/rule-authoring/rule-types";
-import { isMemberPropertyNamed } from "./is-member-property-named";
-import { unwrapExpression } from "./unwrap-expression";
+import { isMemberPropertyNamed } from "#/utils/is-member-property-named";
+import { unwrapExpression } from "#/utils/unwrap-expression";
 
 // Extrae el Result de una guarda con type-guard, p. ej. `Result.isErr(result)`
 // o `Result.isOk(result)`. Devuelve `{ name, node }` del argumento, o null.

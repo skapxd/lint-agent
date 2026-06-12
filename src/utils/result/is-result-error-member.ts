@@ -1,6 +1,6 @@
 import type { RuleNode } from "#/utils/rule-authoring/rule-types";
-import { isMemberPropertyNamed } from "./is-member-property-named";
-import { unwrapExpression } from "./unwrap-expression";
+import { isMemberPropertyNamed } from "#/utils/is-member-property-named";
+import { unwrapExpression } from "#/utils/unwrap-expression";
 
 export function isResultErrorMember(node: RuleNode, resultName: string) {
   const unwrappedNode = unwrapExpression(node);

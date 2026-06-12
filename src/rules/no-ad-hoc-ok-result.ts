@@ -1,7 +1,7 @@
 import { getContainingFunction } from "#/utils/get-containing-function";
 import { getFunctionName } from "#/utils/get-function-name";
 import { getReturnedObjectExpression } from "#/utils/get-returned-object-expression";
-import { hasBooleanOkProperty } from "#/utils/has-boolean-ok-property";
+import { hasBooleanOkProperty } from "#/utils/result/has-boolean-ok-property";
 import { isExportedFunction } from "#/utils/is-exported-function";
 import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 
