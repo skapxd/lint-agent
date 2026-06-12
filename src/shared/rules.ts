@@ -51,15 +51,6 @@ export const rules: Record<string, Rule.RuleModule> = {
   "async-functions-return-result": asyncFunctionsReturnResult,
   "no-ad-hoc-ok-result": noAdHocOkResult,
   "await-requires-result": awaitRequiresResult,
-  // Alias deprecado del nombre anterior; se elimina en una versión futura.
-  "await-requires-try-safe": {
-    ...awaitRequiresResult,
-    meta: {
-      ...awaitRequiresResult.meta,
-      deprecated: true,
-      replacedBy: ["skapxd/await-requires-result"],
-    },
-  },
   "result-error-requires-cause": resultErrorRequiresCause,
   "result-error-requires-handling": resultErrorRequiresHandling,
   "max-hook-size": maxHookSize,

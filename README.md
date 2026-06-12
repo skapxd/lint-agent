@@ -1199,8 +1199,9 @@ con las mismas cinco formas de guard.
 > }
 > ```
 >
-> (`skapxd/await-requires-try-safe` es el nombre anterior; sigue funcionando
-> como alias deprecado y se eliminará en una versión futura.)
+> (`skapxd/await-requires-try-safe` fue el nombre anterior; el alias se
+> eliminó en la v1.0.0 — si tu config lo menciona, renómbralo a
+> `skapxd/await-requires-result`: mismo comportamiento, mismas opciones.)
 
 Hay dos caminos válidos, y la regla recomienda el primero:
 

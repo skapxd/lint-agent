@@ -17,14 +17,9 @@ describe("configs.frontend", () => {
   });
 });
 
-describe("alias deprecado await-requires-try-safe", () => {
-  it("sigue registrado, marcado como deprecado y apunta al nombre nuevo", () => {
-    const alias = plugin.rules["await-requires-try-safe"]!;
-
-    expect(alias).toBeDefined();
-    expect(alias.meta?.deprecated).toBe(true);
-    expect(alias.meta?.replacedBy).toContain("skapxd/await-requires-result");
-    expect(alias.create).toBe(plugin.rules["await-requires-result"]!.create);
+describe("alias await-requires-try-safe eliminado en v1.0.0", () => {
+  it("ya no existe: la migración es renombrar a await-requires-result", () => {
+    expect(plugin.rules["await-requires-try-safe"]).toBeUndefined();
   });
 });
 
