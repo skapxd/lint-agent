@@ -13,7 +13,7 @@ const plugin = {
   configs: {} as Record<string, any>,
   meta: {
     name: "@skapxd/eslint-opinionated",
-    version: "0.18.0",
+    version: "1.0.0",
   },
   rules,
 };
