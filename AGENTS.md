@@ -154,6 +154,45 @@ Este repo siempre está en la lista de medición. Los resultados van al
 issue en tabla, con muestreo manual de hallazgos (señal vs ruido). Medir
 NO es adoptar: la adopción en un proyecto es decisión separada del dueño.
 
+## Worktrees: un agente, una tarea, un directorio
+
+Cuando hay más de un agente (o una tarea en paralelo con una revisión en
+curso), **cada tarea vive en su propio worktree** — N directorios de
+trabajo independientes que comparten el mismo `.git`. La regla nació de
+colisiones reales: agentes dejando ramas y archivos a medio camino en el
+checkout donde el dueño revisaba.
+
+```bash
+# Crear: directorio hermano, 1:1 con issue y rama
+git worktree add ../eslint-opinionated-wt/issue-16 -b codex/issue-16-no-unsafe origin/main
+cd ../eslint-opinionated-wt/issue-16
+pnpm install   # node_modules NO se comparte (pnpm hardlinkea del store: rápido)
+
+# Ver el mapa / limpiar al terminar (parte de la higiene de andamiaje)
+git worktree list
+git worktree remove ../eslint-opinionated-wt/issue-16 && git branch -d codex/issue-16-no-unsafe
+git worktree prune
+```
+
+Convenciones y trampas de ESTE repo:
+
+- **Identidad 1:1:** issue `#N` ↔ rama `codex/issue-N-slug` ↔ worktree
+  `../eslint-opinionated-wt/issue-N`. Si no puedes nombrar el worktree con
+  un issue, no deberías estar creando el worktree.
+- **El checkout principal es del dueño**: se queda en `main`, limpio,
+  reservado para revisión e integración. Los agentes no trabajan ahí.
+- **Cada worktree compila lo suyo**: el dogfood importa `./dist/index.mjs`,
+  así que `pnpm build` es POR worktree (el script `lint` ya lo hace). Las
+  mediciones de solo lectura apuntan al dist del worktree propio, no al
+  del checkout principal.
+- **Verificaciones pesadas en paralelo compiten por CPU**: los testers
+  tipados ya mostraron timeouts de 5s con la máquina cargada — si dos
+  worktrees corren `pnpm test` a la vez y aparece un timeout, re-ejecuta
+  antes de asumir rojo real.
+- `gh` funciona igual desde cualquier worktree (mismo repo).
+- Un worktree huérfano es andamiaje: si `git worktree list` muestra
+  entradas de issues cerrados, eso es deuda de limpieza.
+
 ## Higiene local
 
 - Antes de editar, sincronizar con `origin/main` y revisar `git status`.
