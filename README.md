@@ -748,6 +748,19 @@ export default [
 ];
 ```
 
+Para librerías npm escritas en TypeScript (tsup o equivalente). Trae las
+bases completas + el set type-driven (tipado, con `projectService`) +
+`await-requires-result` + el contrato de empaquetado:
+
+- `skapxd/package-requires-typed-exports` — los `exports` del package.json
+  cablean los tipos **por condición** (`import` → `.d.mts`, `require` →
+  `.d.ts`); el `types` único por subpath es el bug "FalseCJS".
+- `skapxd/untrusted-module-requires-adapter` — inerte hasta que declares tu
+  inventario de paquetes con tipos mentirosos (ver su sección).
+
+**Este mismo repo se lintea con este preset** — dogfood: la regla de exports
+nos obligó a corregir nuestro propio package.json al nacer.
+
 ### Strict (sin escape via `eslint-disable`)
 
 Un prompt o un agente puede saltarse cualquier regla con
@@ -831,7 +844,9 @@ de cada regla):
 | `no-runtime-state-guard` | `allowFilePatterns` (globs) |
 | `no-tunnel-props` | `allowFilePatterns` (globs), `allowPropPatterns` (regex) |
 | `prefer-abort-signal` | `allowFilePatterns` (globs), `effectNames` (default `["useEffect", "useLayoutEffect"]`) |
+| `package-requires-typed-exports` | `allowFilePatterns` (globs), `anchorFilePatterns` (default `src/index.ts(x)`, `src/main.ts`) |
 | `prefer-tagged-union-state` | `allowFilePatterns` (globs), `loadingPatterns` (regex, en minúsculas), `errorPatterns` (regex, en minúsculas) |
+| `untrusted-module-requires-adapter` | `modules` (default `[]` — inerte), `adapterFilePatterns` (globs), `allowFilePatterns` (globs) |
 | `requires-strict-tsconfig` | `allowFilePatterns` (globs), `anchorFilePatterns` (globs), `requiredCompilerOptions` |
 | `result-error-requires-handling` | `allowFilePatterns` (globs) |
 
@@ -883,6 +898,8 @@ matchea en cualquier carpeta). Las 7 reglas restantes no tienen opciones: su
 | `skapxd/no-try-catch` | Prohíbe `try/catch`; usa `trySafe` de `@skapxd/result`. |
 | `skapxd/no-promise-chain` | Prohíbe `.then/.catch/.finally`; usa `await` (+ `trySafe`). |
 | `skapxd/prefer-ts-pattern` | Prohíbe `switch` y ternarios anidados; usa `match()` de ts-pattern. |
+| `skapxd/package-requires-typed-exports` | Los `exports` del package.json declaran `types` por condición (`import` → `.d.mts`, `require` → `.d.ts`): mata el bug FalseCJS. Preset `package`. |
+| `skapxd/untrusted-module-requires-adapter` | Los paquetes con tipos mentirosos (@types desfasados) solo se importan desde su adaptador: la mentira vive en UN archivo. Preset `package`. |
 | `skapxd/no-jsx-ternary-null` | Prefiere `cond && <El />` sobre `cond ? <El /> : null` en JSX. |
 
 ### `skapxd/one-root-function-per-file`
@@ -2228,6 +2245,68 @@ no puede traer `signal`.
 
 `effectNames` permite cubrir wrappers propios (`["useEffect",
 "useLayoutEffect", "useIsomorphicEffect"]`).
+
+### `skapxd/package-requires-typed-exports`
+
+El contrato de empaquetado de una librería TypeScript dual (ESM + CJS): cada
+condición del mapa `exports` declara **sus propios tipos**, del sabor
+correcto.
+
+```jsonc
+"exports": {
+  ".": {
+    "import": { "types": "./dist/index.d.mts", "default": "./dist/index.mjs" },
+    "require": { "types": "./dist/index.d.ts", "default": "./dist/index.js" }
+  }
+}
+```
+
+El antipatrón que mata es el **"FalseCJS"** (el hallazgo #1 de
+[arethetypeswrong](https://arethetypeswrong.github.io)): un `types` único por
+subpath apuntando al `.d.ts` — los consumidores ESM con
+`moduleResolution: node16` reciben tipos CJS y el contrato miente en la
+frontera más pública que tiene una librería. tsup con `dts: true` ya genera
+los dos sabores (`.d.mts` y `.d.ts`); esta regla verifica que el package.json
+de verdad los cablee y que los archivos existan en disco. Anclada al
+entrypoint (`src/index.ts` por defecto): un reporte por paquete.
+
+Dogfood: esta regla nació reportando a este mismo repo — nuestros `exports`
+tenían el bug y el lint no volvió a verde hasta corregirlos.
+
+### `skapxd/untrusted-module-requires-adapter`
+
+¿Qué pasa cuando los tipos de un paquete de terceros **mienten**? El clásico:
+un paquete escrito en JS cuyos tipos viven aparte (`@types/...`) y van
+desfasados del runtime real, o índices que juran nunca devolver `undefined`.
+Todo el sistema de este paquete descansa en que el tipo dice la verdad
+(`no-impossible-branch` le cree ciegamente) — un tipo mentiroso envenena cada
+regla type-aware que lo toque.
+
+El playbook, en orden:
+
+1. **Armadura de tsconfig primero**: `noUncheckedIndexedAccess` corrige de
+   raíz la clase más común de mentira (index signatures optimistas) sin
+   tocar al tercero — `requires-strict-tsconfig` ya lo exige.
+2. **Frontera anticorrupción** (lo que esta regla impone): declara el módulo
+   como no confiable y enciérralo tras UN adaptador. El adaptador importa el
+   paquete, re-declara los tipos honestos (lo que el runtime de verdad
+   devuelve) y exporta esa versión. El resto del código importa el adaptador
+   y razona con tipos veraces — la mentira queda en un archivo auditable.
+3. **`@ts-expect-error` con descripción** dentro del adaptador si hace falta
+   forzar la corrección — es la puerta que `no-silenced-compiler` deja
+   abierta, declarada y con porqué.
+4. **Arregla el upstream**: PR a DefinitelyTyped. Mientras llega, los pasos
+   1-3 te protegen.
+
+```js
+"skapxd/untrusted-module-requires-adapter": ["error", {
+  adapterFilePatterns: ["src/lib/xlsx-adapter.ts"],
+  modules: ["xlsx"],
+}]
+```
+
+Sin `modules` declarados la regla es inerte: el inventario de sospechosos es
+una decisión del proyecto, no una adivinanza del linter (axioma A5).
 
 ### `skapxd/no-jsx-ternary-null`
 

@@ -65,12 +65,23 @@ export function createSharedConfigs(pluginReference: unknown) {
         ],
       },
     },
+    // Para librerias npm en TypeScript (tsup o equivalente): las bases
+    // completas + el set type-driven + el contrato de empaquetado. Este
+    // mismo repo se lintea con este preset (dogfood).
     package: {
-      languageOptions: baseLanguageOptions,
+      languageOptions: typedLanguageOptions,
       name: "skapxd/shared/package",
       plugins: { skapxd: pluginReference },
       rules: {
-        "skapxd/one-root-function-per-file": "error",
+        ...baseRules,
+        ...typeDrivenRules,
+        "skapxd/await-requires-result": "error",
+        // El contrato de tipos duales en exports: import → .d.mts,
+        // require → .d.ts. Sin esto, FalseCJS (attw lo confirma).
+        "skapxd/package-requires-typed-exports": "error",
+        // Inerte hasta declarar modulos sospechosos: el inventario de
+        // paquetes cuyos @types mienten, encerrados tras su adaptador.
+        "skapxd/untrusted-module-requires-adapter": "error",
       },
     },
   };

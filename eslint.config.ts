@@ -4,21 +4,22 @@
 // sobre el artefacto real que reciben los consumidores.
 import skapxd from "./dist/index.mjs";
 
-// Dogfooding: el plugin se aplica su propio preset backend COMPLETO — con type
-// info (projectService) y el set type-driven incluido. Las reglas transversales
-// que les vendemos a los consumidores nos juzgan a nosotros primero.
+// Dogfooding: el plugin es una libreria npm hecha con tsup, asi que se aplica
+// su propio preset `package` COMPLETO — con type info (projectService), el set
+// type-driven y el contrato de empaquetado (package-requires-typed-exports).
+// Las reglas que les vendemos a los consumidores nos juzgan a nosotros primero.
 export default [
   {
     ignores: ["dist/**", "node_modules/**"],
   },
   {
     files: ["src/**/*.ts"],
-    languageOptions: skapxd.configs.shared.backend.languageOptions,
+    languageOptions: skapxd.configs.shared.package.languageOptions,
     plugins: {
       skapxd,
     },
     rules: {
-      ...skapxd.configs.shared.backend.rules,
+      ...skapxd.configs.shared.package.rules,
       // Dogfood de la opción extensible: el entrypoint del plugin exige
       // `export default` por convención de plugins de ESLint.
       "skapxd/no-default-export": [

@@ -68,6 +68,21 @@ describe("contrato de errores: await-requires-result manda", () => {
   });
 });
 
+describe("preset package", () => {
+  it("trae las bases, el set type-driven y el contrato de empaquetado", () => {
+    const preset = plugin.configs.package;
+
+    expect(preset.rules["skapxd/one-root-function-per-file"]).toBe("error");
+    expect(preset.rules["skapxd/await-requires-result"]).toBe("error");
+    expect(preset.rules["skapxd/package-requires-typed-exports"]).toBe("error");
+    // Inerte sin inventario de modulos sospechosos, pero registrada.
+    expect(preset.rules["skapxd/untrusted-module-requires-adapter"]).toBe(
+      "error",
+    );
+    expect(preset.languageOptions?.parser).toBeDefined();
+  });
+});
+
 describe("no-default-export en el preset next", () => {
   it("exime automáticamente los entrypoints del App Router", () => {
     const nextBase = plugin.configs.next.find(
@@ -168,10 +183,11 @@ const wrappedRules = {
 };
 
 describe("reglas type-driven (wrappers de typescript-eslint) en presets tipados", () => {
-  it("activa el set curado completo en backend, frontend y nest/base", () => {
+  it("activa el set curado completo en backend, frontend, package y nest/base", () => {
     const typedPresets = [
       plugin.configs.backend,
       plugin.configs.frontend,
+      plugin.configs.package,
       plugin.configs.nest.find(
         (config: { name: string }) => config.name === "skapxd/nest/base",
       ),

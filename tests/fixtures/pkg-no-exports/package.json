@@ -1,0 +1,4 @@
+{
+  "name": "pkg-no-exports",
+  "main": "./dist/index.js"
+}

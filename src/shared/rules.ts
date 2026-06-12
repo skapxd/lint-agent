@@ -39,6 +39,8 @@ import { noJsxTernaryNull } from "#/rules/no-jsx-ternary-null";
 import { noNestedIf } from "#/rules/no-nested-if";
 import { noPromiseChain } from "#/rules/no-promise-chain";
 import { noRuntimeStateGuard } from "#/rules/no-runtime-state-guard";
+import { packageRequiresTypedExports } from "#/rules/package-requires-typed-exports";
+import { untrustedModuleRequiresAdapter } from "#/rules/untrusted-module-requires-adapter";
 
 export const rules: Record<string, Rule.RuleModule> = {
   "class-properties-require-readonly": classPropertiesRequireReadonly,
@@ -92,4 +94,6 @@ export const rules: Record<string, Rule.RuleModule> = {
   "no-nested-if": noNestedIf,
   "no-promise-chain": noPromiseChain,
   "no-runtime-state-guard": noRuntimeStateGuard,
+  "package-requires-typed-exports": packageRequiresTypedExports,
+  "untrusted-module-requires-adapter": untrustedModuleRequiresAdapter,
 } as unknown as Record<string, Rule.RuleModule>;

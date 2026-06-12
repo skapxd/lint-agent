@@ -11,29 +11,54 @@
   },
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
     },
     "./astro": {
-      "types": "./dist/astro/index.d.ts",
-      "import": "./dist/astro/index.mjs",
-      "require": "./dist/astro/index.js"
+      "import": {
+        "types": "./dist/astro/index.d.mts",
+        "default": "./dist/astro/index.mjs"
+      },
+      "require": {
+        "types": "./dist/astro/index.d.ts",
+        "default": "./dist/astro/index.js"
+      }
     },
     "./nest": {
-      "types": "./dist/nest/index.d.ts",
-      "import": "./dist/nest/index.mjs",
-      "require": "./dist/nest/index.js"
+      "import": {
+        "types": "./dist/nest/index.d.mts",
+        "default": "./dist/nest/index.mjs"
+      },
+      "require": {
+        "types": "./dist/nest/index.d.ts",
+        "default": "./dist/nest/index.js"
+      }
     },
     "./next": {
-      "types": "./dist/next/index.d.ts",
-      "import": "./dist/next/index.mjs",
-      "require": "./dist/next/index.js"
+      "import": {
+        "types": "./dist/next/index.d.mts",
+        "default": "./dist/next/index.mjs"
+      },
+      "require": {
+        "types": "./dist/next/index.d.ts",
+        "default": "./dist/next/index.js"
+      }
     },
     "./shared": {
-      "types": "./dist/shared/index.d.ts",
-      "import": "./dist/shared/index.mjs",
-      "require": "./dist/shared/index.js"
+      "import": {
+        "types": "./dist/shared/index.d.mts",
+        "default": "./dist/shared/index.mjs"
+      },
+      "require": {
+        "types": "./dist/shared/index.d.ts",
+        "default": "./dist/shared/index.js"
+      }
     }
   },
   "files": [
