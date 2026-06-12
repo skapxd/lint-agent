@@ -1,9 +1,10 @@
 import tseslint from "typescript-eslint";
+import type { RuleListener } from "#/utils/rule-authoring/rule-types";
 
 // Forma minima de una regla de typescript-eslint que el wrapper necesita
 // conocer; el resto de campos pasan intactos via spread.
 type UpstreamRuleModule = {
-  create: (context: unknown) => Record<string, unknown>;
+  create: (context: unknown) => RuleListener;
   meta: {
     docs?: Record<string, unknown>;
     messages?: Record<string, string>;

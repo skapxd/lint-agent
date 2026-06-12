@@ -30,6 +30,7 @@ import { noUnsafeAssignment } from "#/rules/no-unsafe-assignment";
 import { noUnsafeCall } from "#/rules/no-unsafe-call";
 import { noUnsafeMemberAccess } from "#/rules/no-unsafe-member-access";
 import { noUnsafeReturn } from "#/rules/no-unsafe-return";
+import { noUnverifiedCast } from "#/rules/no-unverified-cast";
 import { noImpossibleBranch } from "#/rules/no-impossible-branch";
 import { noNonNullAssertion } from "#/rules/no-non-null-assertion";
 import { noSilencedCompiler } from "#/rules/no-silenced-compiler";
@@ -82,6 +83,7 @@ export const rules: Record<string, Rule.RuleModule> = {
   "no-unsafe-call": noUnsafeCall,
   "no-unsafe-member-access": noUnsafeMemberAccess,
   "no-unsafe-return": noUnsafeReturn,
+  "no-unverified-cast": noUnverifiedCast,
   "no-impossible-branch": noImpossibleBranch,
   "no-non-null-assertion": noNonNullAssertion,
   "no-silenced-compiler": noSilencedCompiler,
