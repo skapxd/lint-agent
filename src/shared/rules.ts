@@ -22,6 +22,7 @@ import { noDeepRelativeImports } from "#/rules/no-deep-relative-imports";
 import { noDefaultExport } from "#/rules/no-default-export";
 import { noElse } from "#/rules/no-else";
 import { noEmoji } from "#/rules/no-emoji";
+import { noImpossibleBranch } from "#/rules/no-impossible-branch";
 import { noTunnelProps } from "#/rules/no-tunnel-props";
 import { noFunctionsInsideComponents } from "#/rules/no-functions-inside-components";
 import { noTryCatch } from "#/rules/no-try-catch";
@@ -67,6 +68,9 @@ export const rules: Record<string, Rule.RuleModule> = {
   "no-default-export": noDefaultExport,
   "no-else": noElse,
   "no-emoji": noEmoji,
+  // Re-registro de @typescript-eslint/no-unnecessary-condition con nombre
+  // semántico y mensajes propios (ver src/rules/no-impossible-branch.ts).
+  "no-impossible-branch": noImpossibleBranch,
   "no-tunnel-props": noTunnelProps,
   "no-functions-inside-components": noFunctionsInsideComponents,
   "no-try-catch": noTryCatch,

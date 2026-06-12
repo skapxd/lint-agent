@@ -98,7 +98,7 @@ la que defiende el axioma más fundamental (el orden es jerárquico).
 
 | # | Axioma | Reglas que lo ejecutan |
 | --- | --- | --- |
-| A1 | **Los estados imposibles son irrepresentables.** El tipo modela exactamente los estados válidos; lo inválido no compila. | `prefer-tagged-union-state`, `no-runtime-state-guard`, `requires-strict-tsconfig`, `@typescript-eslint/no-unnecessary-condition`, `no-explicit-any`, `consistent-type-definitions` |
+| A1 | **Los estados imposibles son irrepresentables.** El tipo modela exactamente los estados válidos; lo inválido no compila. | `prefer-tagged-union-state`, `no-runtime-state-guard`, `requires-strict-tsconfig`, `no-impossible-branch`, `no-explicit-any`, `consistent-type-definitions` |
 | A2 | **Ningún efecto es invisible al tipo.** Si una operación puede fallar, su firma lo confiesa — no una convención oral ni un `throw` sorpresa. | `await-requires-result`, `no-try-catch`, `no-promise-chain`, `no-ad-hoc-ok-result`, `@typescript-eslint/no-floating-promises` |
 | A3 | **La información no se destruye.** Un error que se transforma conserva su `cause`; uno que se detecta llega a alguien. Nadie decide "esto no importa" en silencio. | `result-error-requires-cause`, `result-error-requires-handling` |
 | A4 | **Una unidad, una responsabilidad, un nombre semántico.** El árbol de archivos cuenta una historia; una clase expone una intención. | `one-root-function-per-file`, `max-public-methods`, `no-default-export`, `jsx-return-name-pascal-case`, `max-hook-size` |
@@ -404,9 +404,9 @@ diseño, no solo disciplina. Para cuando el equipo ya vio el patrón en la ola 3
   instancias nuevas.
 - `skapxd/prefer-tagged-union-state` y `skapxd/no-runtime-state-guard` — los
   booleanos co-dependientes se vuelven uniones etiquetadas.
-- `@typescript-eslint/no-unnecessary-condition` — **la última de todas**: solo
-  es sólida cuando el tsconfig ya está al máximo (sin
-  `noUncheckedIndexedAccess`, acusaría guards necesarios).
+- `skapxd/no-impossible-branch` — **la última de todas**: solo es sólida
+  cuando el tsconfig ya está al máximo (sin `noUncheckedIndexedAccess`,
+  acusaría guards necesarios).
 
 ### Los dos ejes se combinan
 
@@ -819,6 +819,7 @@ de cada regla):
 | `no-default-export` | `allowFilePatterns` (globs, aditivos a los integrados) |
 | `no-else` | `allowFilePatterns` (globs) |
 | `no-emoji` | `allowFilePatterns` (globs) |
+| `no-impossible-branch` | las de la regla original de typescript-eslint (`allowConstantLoopConditions`, ...) |
 | `no-functions-inside-components` | `allowJsxCallbacks`, `allowArrayMapCallbacks` (ambas `true` por defecto) |
 | `no-nested-if` | `allowFilePatterns` (globs) |
 | `no-promise-chain` | `methods` |
@@ -862,6 +863,7 @@ matchea en cualquier carpeta). Las 7 reglas restantes no tienen opciones: su
 | `skapxd/no-default-export` | Prohíbe `export default`; el nombre del símbolo es el contrato. Exime configs/stories y, en el preset `next`, los entrypoints del App Router. |
 | `skapxd/no-else` | Prohíbe `else`/`else if`: el else es el estado sin nombre. Retorno anticipado, ternario simple o `match()`. |
 | `skapxd/no-emoji` | Prohíbe emojis en strings y JSX; cada sistema los renderiza distinto. Usa un icono SVG. |
+| `skapxd/no-impossible-branch` | Condiciones que el type-checker demuestra constantes: la pregunta ya tiene respuesta. Es `@typescript-eslint/no-unnecessary-condition` con nombre semántico y mensajes que enseñan el fix. |
 | `skapxd/no-nested-if` | Prohíbe `if` anidados: retorno anticipado o `match()`. Menos carga cognitiva y sin puntos ciegos para las demás reglas. |
 | `skapxd/no-runtime-state-guard` | Prohíbe `if (this.x) throw` en métodos: el estado inválido se hace irrepresentable en el tipo, no se vigila en runtime. |
 | `skapxd/no-tunnel-props` | Ninguna prop viaja más de un nivel: quien la recibe no puede reenviarla a otro componente. Mata el prop drilling. |
@@ -1005,12 +1007,14 @@ Además, los **presets tipados activan reglas curadas de typescript-eslint**
   que tú" dicho al compilador. Si no puede ser nulo, que lo diga el tipo.
   (En `nest/tests` queda apagada: el `!` sobre un fixture cuya existencia el
   propio test garantiza es el arrange, no una mentira.)
-- `@typescript-eslint/no-unnecessary-condition` — la generalización
-  type-aware de `no-runtime-state-guard`: si el tipo dice que un estado es
-  imposible, el guard defensivo sobra; si el guard hace falta, lo que está
-  mal es el tipo. Por eso esta regla y `requires-strict-tsconfig` van
-  juntas: sin `noUncheckedIndexedAccess`, `array[i]` miente y la regla
-  acusaría guards necesarios.
+- `skapxd/no-impossible-branch` — la generalización type-aware de
+  `no-runtime-state-guard`: si el tipo dice que un estado es imposible, el
+  guard defensivo sobra; si el guard hace falta, lo que está mal es el tipo.
+  Es `@typescript-eslint/no-unnecessary-condition` **re-registrada bajo
+  nuestro namespace** (ver su sección): mismo motor, nombre que dice lo que
+  defiende y mensajes que enseñan el fix. Por eso esta regla y
+  `requires-strict-tsconfig` van juntas: sin `noUncheckedIndexedAccess`,
+  `array[i]` miente y la regla acusaría guards necesarios.
 - `@typescript-eslint/ban-ts-comment` — un error de tipos se arregla
   modelando mejor, no silenciando la alarma: `@ts-ignore` y `@ts-nocheck`
   prohibidos. `@ts-expect-error` **con descripción** queda permitido: es la
@@ -1868,6 +1872,36 @@ No cuenta como reenvío: usar la prop (`<h2>{title}</h2>`), derivar datos
 en un `<input>` es la frontera con el DOM). Para wrappers legítimos de un
 design system, exime props por nombre (`allowPropPatterns: ["^className$"]`)
 o archivos completos (`allowFilePatterns`).
+
+### `skapxd/no-impossible-branch`
+
+La rama imposible: una condición que el type-checker demuestra constante. Si
+el tipo dice que un valor siempre es truthy, ese `if` no decide nada; si un
+`?.` cuelga de algo que nunca es nullish, finge una duda que el modelo ya
+resolvió. La pregunta ya tiene respuesta — y un `if` que no pregunta es
+código muerto disfrazado de prudencia.
+
+```ts
+const sheet = workbook.Sheets[name]; // tipo: WorkSheet (¿seguro?)
+if (!sheet) continue; // ❌ "always falsy"... ¿o el tipo miente?
+```
+
+El mensaje de error enseña la lección completa: **si la comprobación hace
+falta en runtime, lo que está mal es el tipo**. El caso clásico es el acceso
+por índice sin `noUncheckedIndexedAccess` — `array[i]` y `obj[key]` juran que
+nunca son `undefined`, y esta regla, creyéndoles, acusaría guards necesarios.
+Por eso va de la mano de `skapxd/requires-strict-tsconfig`, que exige ese
+flag: primero el tsconfig dice la verdad, después esta regla opina.
+
+Bajo el capó es `@typescript-eslint/no-unnecessary-condition`
+([doc original](https://typescript-eslint.io/rules/no-unnecessary-condition/))
+**re-registrada bajo nuestro namespace**: mismo motor y mismas opciones, pero
+con un nombre que dice lo que defiende (axioma A1: los estados imposibles son
+irrepresentables — es la generalización type-aware de
+`no-runtime-state-guard`) y mensajes en español que explican el fix en vez
+del críptico "Unnecessary conditional". Los presets tipados activan este
+nombre y **no** el original: una sola fuente de verdad para configurarla,
+silenciarla o buscarla.
 
 ### `skapxd/no-functions-inside-components`
 

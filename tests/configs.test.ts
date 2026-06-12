@@ -185,10 +185,30 @@ describe("reglas type-driven de typescript-eslint en presets tipados", () => {
         preset.name,
       ).toBe("error");
       expect(
-        preset.rules["@typescript-eslint/no-unnecessary-condition"],
+        preset.rules["skapxd/no-impossible-branch"],
         preset.name,
       ).toBe("error");
+      // El nombre upstream no se activa además: una sola fuente de verdad.
+      expect(
+        preset.rules["@typescript-eslint/no-unnecessary-condition"],
+        preset.name,
+      ).toBeUndefined();
     }
+  });
+
+  it("no-impossible-branch delega en no-unnecessary-condition con mensajes propios", async () => {
+    const { default: tseslint } = await import("typescript-eslint");
+    const wrapped = plugin.rules["no-impossible-branch"]!;
+    const original = tseslint.plugin.rules!["no-unnecessary-condition"]!;
+
+    expect(wrapped.create).toBe(original.create);
+    // Todo messageId upstream existe en el wrapper: ninguno queda huérfano.
+    for (const id of Object.keys(original.meta!.messages!)) {
+      expect(wrapped.meta?.messages?.[id], id).toBeDefined();
+    }
+    expect(wrapped.meta?.messages?.alwaysTruthy).toContain(
+      "Pregunta ya respondida",
+    );
   });
 
   it("prohíbe ts-ignore y ts-nocheck pero permite ts-expect-error descrito", () => {

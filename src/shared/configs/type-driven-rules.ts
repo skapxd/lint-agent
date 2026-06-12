@@ -48,5 +48,7 @@ export const typeDrivenRules = {
   // hace falta, lo que está mal es el tipo. Requiere el tsconfig de
   // requires-strict-tsconfig para ser sólida: sin noUncheckedIndexedAccess,
   // `array[i]` miente y esta regla acusaría guards necesarios.
-  "@typescript-eslint/no-unnecessary-condition": "error",
+  // Es @typescript-eslint/no-unnecessary-condition re-registrada bajo un
+  // nombre que dice lo que defiende, con mensajes que enseñan el fix.
+  "skapxd/no-impossible-branch": "error",
 };
