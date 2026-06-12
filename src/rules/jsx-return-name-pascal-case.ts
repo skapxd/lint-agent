@@ -1,4 +1,4 @@
-import { functionReturnsJsx } from "#/utils/function-returns-jsx";
+import { functionReturnsJsx } from "#/utils/react/function-returns-jsx";
 import { isFunctionNode } from "#/utils/is-function-node";
 import { isPascalCaseName } from "#/utils/naming/is-pascal-case-name";
 import { toPascalCase } from "#/utils/naming/to-pascal-case";

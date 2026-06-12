@@ -1,10 +1,10 @@
 import { getContainingFunction } from "#/utils/get-containing-function";
 import { getFunctionName } from "#/utils/get-function-name";
 import { getNoFunctionsInsideComponentsOptions } from "#/utils/options/get-no-functions-inside-components-options";
-import { isArrayMapCallback } from "#/utils/is-array-map-callback";
-import { isExpressionArrowFunction } from "#/utils/is-expression-arrow-function";
+import { isArrayMapCallback } from "#/utils/react/is-array-map-callback";
+import { isExpressionArrowFunction } from "#/utils/react/is-expression-arrow-function";
 import { isFunctionNode } from "#/utils/is-function-node";
-import { isJsxAttributeCallback } from "#/utils/is-jsx-attribute-callback";
+import { isJsxAttributeCallback } from "#/utils/react/is-jsx-attribute-callback";
 import { isPascalCaseName } from "#/utils/naming/is-pascal-case-name";
 import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";
 

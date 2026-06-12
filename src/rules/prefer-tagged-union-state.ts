@@ -1,8 +1,8 @@
 import { getContainingFunction } from "#/utils/get-containing-function";
-import { getStateShapeSmell } from "#/utils/get-state-shape-smell";
+import { getStateShapeSmell } from "#/utils/react/get-state-shape-smell";
 import { getTaggedUnionStateOptions } from "#/utils/options/get-tagged-union-state-options";
-import { getUseStateSetterName } from "#/utils/get-use-state-setter-name";
-import { getUseStateVariableName } from "#/utils/get-use-state-variable-name";
+import { getUseStateSetterName } from "#/utils/react/get-use-state-setter-name";
+import { getUseStateVariableName } from "#/utils/react/get-use-state-variable-name";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import { matchesAnyPattern } from "#/utils/matching/matches-any-pattern";
 import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";

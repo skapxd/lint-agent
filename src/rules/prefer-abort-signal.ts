@@ -1,7 +1,7 @@
 import { getPreferAbortSignalOptions } from "#/utils/options/get-prefer-abort-signal-options";
 import { getTypeContext } from "#/utils/get-type-context";
 import { hasAbortSignalOption } from "#/utils/has-abort-signal-option";
-import { isInsideEffectCallback } from "#/utils/is-inside-effect-callback";
+import { isInsideEffectCallback } from "#/utils/react/is-inside-effect-callback";
 import { isMemberPropertyNamed } from "#/utils/is-member-property-named";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import type { RuleModule, RuleNode, RuleContext } from "#/utils/rule-authoring/rule-types";

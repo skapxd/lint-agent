@@ -1,6 +1,6 @@
 import type { RuleNode } from "#/utils/rule-authoring/rule-types";
 import { countOwnUseStateCallsInNode } from "./count-own-use-state-calls-in-node";
-import { isAstNode } from "./is-ast-node";
+import { isAstNode } from "#/utils/is-ast-node";
 
 export function countOwnUseStateCalls(node: RuleNode) {
   const body = node.body;
