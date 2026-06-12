@@ -976,8 +976,12 @@ Todas las opciones, con sus defaults:
 Todo el sistema descansa en que el compilador pueda hacer irrepresentables
 los estados inválidos — y eso exige un `tsconfig` implacable. Esta regla lee
 el `tsconfig.json` **real** del proyecto (con la API de TypeScript: soporta
-JSONC y resuelve la cadena de `extends`) y exige los flags, anclada a un
-entrypoint para reportar una vez por proyecto:
+JSONC y resuelve la cadena de `extends`) y exige los flags, reportando una
+vez por proyecto: si existe un archivo ancla (`anchorFilePatterns`, default
+`src/main.ts(x)`/`src/index.ts(x)`), el reporte le pertenece a ese archivo;
+si el proyecto no tiene entrypoint clásico (Astro, librerías), reporta sobre
+el primer archivo del run y los demás callan — un proyecto sin ancla no se
+queda sin guardián:
 
 - `strict` — sin él, el sistema de tipos está apagado a medias.
 - `noImplicitReturns` — una rama que sale sin valor deja de ser silenciosa

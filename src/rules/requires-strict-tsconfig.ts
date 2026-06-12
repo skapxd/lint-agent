@@ -2,6 +2,7 @@
 import { dirname, resolve } from "node:path";
 import { findProjectFile } from "#/utils/find-project-file";
 import { getStrictTsconfigOptions } from "#/utils/get-strict-tsconfig-options";
+import { isAnchorlessCheckRedundant } from "#/utils/is-anchorless-check-redundant";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
 import { readResolvedTsconfig } from "#/utils/read-resolved-tsconfig";
 
@@ -43,12 +44,11 @@ export const requiresStrictTsconfig = {
     const options = getStrictTsconfigOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
-    if (
-      matchesAnyGlob(filename, options.allowFilePatterns) ||
-      !matchesAnyGlob(filename, options.anchorFilePatterns)
-    ) {
+    if (matchesAnyGlob(filename, options.allowFilePatterns)) {
       return {};
     }
+
+    const isAnchor = matchesAnyGlob(filename, options.anchorFilePatterns);
 
     return {
       Program(node) {
@@ -57,6 +57,22 @@ export const requiresStrictTsconfig = {
           dirname(absoluteFilename),
           "tsconfig.json",
         );
+
+        // Fallback para proyectos sin entrypoint clasico (Astro, librerias):
+        // si el proyecto SI tiene un archivo ancla, el reporte le pertenece a
+        // ese archivo; si no, reporta el primer archivo del run y los demas
+        // callan.
+        if (
+          !isAnchor &&
+          isAnchorlessCheckRedundant(
+            tsconfigPath,
+            context.cwd ?? process.cwd(),
+            options.anchorFilePatterns,
+          )
+        ) {
+          return;
+        }
+
         const compilerOptions = tsconfigPath
           ? readResolvedTsconfig(tsconfigPath)
           : null;
