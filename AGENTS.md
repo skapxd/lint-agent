@@ -34,9 +34,11 @@ tipos (un release ya falló por saltárselo).
 2. **Antes de tomar un issue, leer sus comentarios completos**: el tablero
    registra secuencias (`⛔ SECUENCIADO`), clusters con orden obligatorio y
    gates del dueño. No atacar un issue que otro bloquea o extiende.
-3. Cada tarea baja a una rama propia con prefijo `codex/`, y
-   preferiblemente a un worktree dedicado cuando haya trabajo paralelo o
-   riesgo de mezclar contextos.
+3. Cada tarea baja a una rama propia con el prefijo del AGENTE que la
+   trabaja (`codex/`, `claude/`, o el nombre del humano): el prefijo
+   identifica al autor, no es una marca fija — `git branch -r` debe decir
+   quién trabaja qué de un vistazo. Preferiblemente en un worktree
+   dedicado cuando haya trabajo paralelo o riesgo de mezclar contextos.
 4. El PR es la unidad de entrega: enlaza el issue (`Closes #N` en el
    commit o el body), resume el cambio, lista las validaciones ejecutadas
    y deja claro lo pendiente.
@@ -163,20 +165,20 @@ colisiones reales: agentes dejando ramas y archivos a medio camino en el
 checkout donde el dueño revisaba.
 
 ```bash
-# Crear: directorio hermano, 1:1 con issue y rama
-git worktree add ../eslint-opinionated-wt/issue-16 -b codex/issue-16-no-unsafe origin/main
+# Crear: directorio hermano, 1:1 con issue y rama (prefijo = tu identidad de agente)
+git worktree add ../eslint-opinionated-wt/issue-16 -b claude/issue-16-no-unsafe origin/main
 cd ../eslint-opinionated-wt/issue-16
 pnpm install   # node_modules NO se comparte (pnpm hardlinkea del store: rápido)
 
 # Ver el mapa / limpiar al terminar (parte de la higiene de andamiaje)
 git worktree list
-git worktree remove ../eslint-opinionated-wt/issue-16 && git branch -d codex/issue-16-no-unsafe
+git worktree remove ../eslint-opinionated-wt/issue-16 && git branch -d claude/issue-16-no-unsafe
 git worktree prune
 ```
 
 Convenciones y trampas de ESTE repo:
 
-- **Identidad 1:1:** issue `#N` ↔ rama `codex/issue-N-slug` ↔ worktree
+- **Identidad 1:1:** issue `#N` ↔ rama `<agente>/issue-N-slug` ↔ worktree
   `../eslint-opinionated-wt/issue-N`. Si no puedes nombrar el worktree con
   un issue, no deberías estar creando el worktree.
 - **El checkout principal es del dueño**: se queda en `main`, limpio,
