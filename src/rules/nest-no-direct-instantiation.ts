@@ -1,4 +1,4 @@
-import { getInternalValueImports } from "#/utils/get-internal-value-imports";
+import { getInternalValueImports } from "#/utils/imports/get-internal-value-imports";
 import { getNestDirectInstantiationOptions } from "#/utils/options/get-nest-direct-instantiation-options";
 import { getTypeContext } from "#/utils/type-aware/get-type-context";
 import { hasInjectableDecorator } from "#/utils/nest/has-injectable-decorator";

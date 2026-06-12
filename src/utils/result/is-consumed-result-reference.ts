@@ -1,6 +1,6 @@
 import type { RuleNode } from "#/utils/rule-authoring/rule-types";
 import { collectIdentifiersNamed } from "#/utils/collect-identifiers-named";
-import { getDeclaredAliasTargets } from "#/utils/get-declared-alias-targets";
+import { getDeclaredAliasTargets } from "#/utils/imports/get-declared-alias-targets";
 import { isInsideNode } from "#/utils/is-inside-node";
 import { isMemberPropertyNamed } from "#/utils/is-member-property-named";
 

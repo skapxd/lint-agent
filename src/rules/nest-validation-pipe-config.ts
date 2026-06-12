@@ -1,4 +1,4 @@
-import { getImportedLocalNames } from "#/utils/get-imported-local-names";
+import { getImportedLocalNames } from "#/utils/imports/get-imported-local-names";
 import { getNestValidationPipeOptions } from "#/utils/options/get-nest-validation-pipe-options";
 import { getObjectKeysSetToTrue } from "#/utils/get-object-keys-set-to-true";
 import { getVariableInitializer } from "#/utils/get-variable-initializer";

@@ -1,6 +1,6 @@
 import type { RuleNode } from "#/utils/rule-authoring/rule-types";
-import { isAstNode } from "./is-ast-node";
-import { isPropertyKeyNamed } from "./is-property-key-named";
+import { isAstNode } from "#/utils/is-ast-node";
+import { isPropertyKeyNamed } from "#/utils/is-property-key-named";
 
 // Bindings que declara el lado izquierdo de un `const x = ...` y QUÉ
 // representa cada uno. Si lo asignado es el error, un destructuring lo

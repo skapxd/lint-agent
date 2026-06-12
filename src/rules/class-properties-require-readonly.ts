@@ -1,5 +1,5 @@
 import { getDecoratorName } from "#/utils/nest/get-decorator-name";
-import { getImportedLocalNames } from "#/utils/get-imported-local-names";
+import { getImportedLocalNames } from "#/utils/imports/get-imported-local-names";
 import { getReadonlyPropertiesOptions } from "#/utils/options/get-readonly-properties-options";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import { matchesAnyPattern } from "#/utils/matching/matches-any-pattern";

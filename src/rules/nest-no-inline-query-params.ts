@@ -1,5 +1,5 @@
 import { getDecoratorName } from "#/utils/nest/get-decorator-name";
-import { getImportedLocalNames } from "#/utils/get-imported-local-names";
+import { getImportedLocalNames } from "#/utils/imports/get-imported-local-names";
 import { getNestInlineQueryOptions } from "#/utils/options/get-nest-inline-query-options";
 import { isAstNode } from "#/utils/is-ast-node";
 import { isQueryWithStringArg } from "#/utils/nest/is-query-with-string-arg";
