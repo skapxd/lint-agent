@@ -16,7 +16,8 @@ export function callHasTypePredicate(
   const tsNode = parserServices?.esTreeNodeToTSNodeMap?.get(node);
   const program = parserServices?.program;
 
-  if (tsNode === undefined || program === null || program === undefined) {
+  const lacksTypeServices = tsNode === undefined || program === null || program === undefined;
+  if (lacksTypeServices) {
     return false;
   }
 

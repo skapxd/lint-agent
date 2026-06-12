@@ -11,7 +11,8 @@ export function collectIdentifiersNamed(
     return results;
   }
 
-  if (node?.type === "Identifier" && node.name === name) {
+  const isTargetIdentifier = node?.type === "Identifier" && node.name === name;
+  if (isTargetIdentifier) {
     results.push(node);
   }
 

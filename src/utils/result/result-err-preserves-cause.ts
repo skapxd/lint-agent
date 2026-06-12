@@ -11,16 +11,19 @@ export function resultErrPreservesCause(node: unknown, resultName: string) {
 
   const unwrappedNode = unwrapExpression(node);
 
-  if (isResultErrorMember(unwrappedNode, resultName)) {
+  const isResultErrorMemberRead = isResultErrorMember(unwrappedNode, resultName);
+  if (isResultErrorMemberRead) {
     return true;
   }
 
-  if (unwrappedNode.type !== "ObjectExpression") {
+  const isObjectExpressionNode = unwrappedNode.type === "ObjectExpression";
+  if (!isObjectExpressionNode) {
     return false;
   }
 
   return unwrappedNode.properties.some((property: RuleNode) => {
-    if (property.type !== "Property" || !isPropertyKeyNamed(property, "cause")) {
+    const lacksCauseProperty = property.type !== "Property" || !isPropertyKeyNamed(property, "cause");
+    if (lacksCauseProperty) {
       return false;
     }
 

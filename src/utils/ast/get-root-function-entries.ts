@@ -14,7 +14,8 @@ export function getRootFunctionEntries(statement: RuleNode) {
     return [];
   }
 
-  if (isFunctionNode(declaration)) {
+  const isFunctionBoundary = isFunctionNode(declaration);
+  if (isFunctionBoundary) {
     return [
       {
         name: getFunctionNodeName(declaration),
@@ -23,7 +24,8 @@ export function getRootFunctionEntries(statement: RuleNode) {
     ];
   }
 
-  if (declaration.type !== "VariableDeclaration") {
+  const isVariableDeclarationNode = declaration.type === "VariableDeclaration";
+  if (!isVariableDeclarationNode) {
     return [];
   }
 

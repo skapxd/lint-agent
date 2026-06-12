@@ -40,9 +40,10 @@ export const nestDtoRequiresApiProperty: RuleModule = {
     const options = getNestDtoApiPropertyOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
+    const isAllowedFilePattern = matchesAnyGlob(filename, options.allowFilePatterns) ||
+      !matchesAnyGlob(filename, options.dtoFilePatterns);
     if (
-      matchesAnyGlob(filename, options.allowFilePatterns) ||
-      !matchesAnyGlob(filename, options.dtoFilePatterns)
+      isAllowedFilePattern
     ) {
       return {};
     }
@@ -50,7 +51,8 @@ export const nestDtoRequiresApiProperty: RuleModule = {
     return {
       PropertyDefinition(node: RuleNode) {
         // Swagger solo serializa propiedades públicas de instancia.
-        if (!isPublicInstanceProperty(node)) {
+        const isPublicInstancePropertyNode = isPublicInstanceProperty(node);
+        if (!isPublicInstancePropertyNode) {
           return;
         }
 

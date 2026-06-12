@@ -21,17 +21,20 @@ export const noJsxTernaryNull: RuleModule = {
       ConditionalExpression(node: RuleNode) {
         const container = node.parent;
 
-        if (container?.type !== "JSXExpressionContainer") {
+        const isJsxExpressionContainer = container?.type === "JSXExpressionContainer";
+        if (!isJsxExpressionContainer) {
           return;
         }
 
         const host = container.parent;
 
-        if (host?.type !== "JSXElement" && host?.type !== "JSXFragment") {
+        const lacksJsxHost = host?.type !== "JSXElement" && host?.type !== "JSXFragment";
+        if (lacksJsxHost) {
           return;
         }
 
-        if (!isNullLiteral(node.alternate) && !isNullLiteral(node.consequent)) {
+        const omitsNullBranch = !isNullLiteral(node.alternate) && !isNullLiteral(node.consequent);
+        if (omitsNullBranch) {
           return;
         }
 

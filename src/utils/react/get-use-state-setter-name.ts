@@ -5,9 +5,10 @@ import type { RuleNode } from "#/utils/rule-authoring/rule-types";
 export function getUseStateSetterName(callExpression: RuleNode) {
   const declarator = callExpression.parent;
 
+  const lacksUseStateTuple = declarator?.type !== "VariableDeclarator" ||
+    declarator.id?.type !== "ArrayPattern";
   if (
-    declarator?.type !== "VariableDeclarator" ||
-    declarator.id?.type !== "ArrayPattern"
+    lacksUseStateTuple
   ) {
     return null;
   }

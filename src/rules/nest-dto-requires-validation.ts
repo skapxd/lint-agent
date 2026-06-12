@@ -55,10 +55,11 @@ export const nestDtoRequiresValidation: RuleModule = {
     const options = getNestDtoValidationOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
-    if (
-      matchesAnyGlob(filename, options.allowFilePatterns) ||
+    const isAllowedDtoFilePattern = matchesAnyGlob(filename, options.allowFilePatterns) ||
       !matchesAnyGlob(filename, options.dtoFilePatterns) ||
-      matchesAnyGlob(filename, options.outputDtoFilePatterns)
+      matchesAnyGlob(filename, options.outputDtoFilePatterns);
+    if (
+      isAllowedDtoFilePattern
     ) {
       return {};
     }
@@ -72,7 +73,8 @@ export const nestDtoRequiresValidation: RuleModule = {
         transformerNames = getImportedLocalNames(node, "class-transformer");
       },
       PropertyDefinition(node: RuleNode) {
-        if (!isPublicInstanceProperty(node)) {
+        const isPublicInstancePropertyNode = isPublicInstanceProperty(node);
+        if (!isPublicInstancePropertyNode) {
           return;
         }
 
@@ -80,9 +82,10 @@ export const nestDtoRequiresValidation: RuleModule = {
         // quedan exentas aunque vivan en un archivo de nombre neutro.
         const className = getContainingClassName(node);
 
+        const isTrackedOutputDto = className &&
+          matchesAnyPattern(className, options.outputDtoClassPatterns);
         if (
-          className &&
-          matchesAnyPattern(className, options.outputDtoClassPatterns)
+          isTrackedOutputDto
         ) {
           return;
         }
@@ -94,7 +97,8 @@ export const nestDtoRequiresValidation: RuleModule = {
             Boolean(name && validatorNames.has(name)),
         );
 
-        if (validators.length === 0) {
+        const hasNoValidators = validators.length === 0;
+        if (hasNoValidators) {
           context.report({
             data: { name: propertyName },
             messageId: "missingValidator",
@@ -111,7 +115,8 @@ export const nestDtoRequiresValidation: RuleModule = {
             options.optionalDecoratorNames.includes(name),
         );
 
-        if (node.optional && !declaresOptional) {
+        const needsIsOptionalDecorator = node.optional && !declaresOptional;
+        if (needsIsOptionalDecorator) {
           context.report({
             data: { name: propertyName },
             messageId: "optionalRequiresIsOptional",
@@ -127,7 +132,8 @@ export const nestDtoRequiresValidation: RuleModule = {
           (name: string | null) => name === "Type" && transformerNames.has(name),
         );
 
-        if (hasValidateNested && !hasType) {
+        const needsNestedTypeDecorator = hasValidateNested && !hasType;
+        if (needsNestedTypeDecorator) {
           context.report({
             data: { name: propertyName },
             messageId: "validateNestedRequiresType",

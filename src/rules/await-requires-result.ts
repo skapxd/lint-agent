@@ -61,15 +61,17 @@ export const awaitRequiresResult: RuleModule = {
 
         return {
           AwaitExpression(node: RuleNode) {
-            if (matchesAnyGlob(filename, options.allowFilePatterns)) {
+            const isAllowedFilePattern = matchesAnyGlob(filename, options.allowFilePatterns);
+            if (isAllowedFilePattern) {
               return;
             }
 
             // Si lo awaiteado ya es Result/Promise<Result> de @skapxd/result,
             // los errores ya están modelados y trySafe sería redundante.
+            const awaitsSkapxdResult = typeContext &&
+              isSkapxdResultOrPromiseResultExpression(node.argument, typeContext);
             if (
-              typeContext &&
-              isSkapxdResultOrPromiseResultExpression(node.argument, typeContext)
+              awaitsSkapxdResult
             ) {
               return;
             }
@@ -82,7 +84,8 @@ export const awaitRequiresResult: RuleModule = {
               options.trySafeCallNames,
             );
 
-            if (isSkapxdTrySafe(directCall) || isSkapxdTrySafe(enclosingCall)) {
+            const awaitsTrySafeCall = isSkapxdTrySafe(directCall) || isSkapxdTrySafe(enclosingCall);
+            if (awaitsTrySafeCall) {
               return;
             }
 

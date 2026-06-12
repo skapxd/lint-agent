@@ -8,11 +8,13 @@ export function containsAwaitExpression(node: RuleNode): boolean {
     return false;
   }
 
-  if (node.type === "AwaitExpression") {
+  const isAwaitExpressionNode = node.type === "AwaitExpression";
+  if (isAwaitExpressionNode) {
     return true;
   }
 
-  if (isFunctionNode(node)) {
+  const isFunctionBoundary = isFunctionNode(node);
+  if (isFunctionBoundary) {
     return false;
   }
 

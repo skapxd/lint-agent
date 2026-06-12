@@ -23,7 +23,8 @@ export const jsxReturnNamePascalCase: RuleModule = {
           name: string | null | undefined,
           reportNode: RuleNode = node,
         ) {
-          if (!name || isPascalCaseName(name) || !functionReturnsJsx(node)) {
+          const hasValidJsxReturnName = !name || isPascalCaseName(name) || !functionReturnsJsx(node);
+          if (hasValidJsxReturnName) {
             return;
           }
 
@@ -42,7 +43,8 @@ export const jsxReturnNamePascalCase: RuleModule = {
             reportIfJsxReturningFunction(node, node.id?.name, node.id ?? node);
           },
           VariableDeclarator(node: RuleNode) {
-            if (!isFunctionNode(node.init) || node.id.type !== "Identifier") {
+            const lacksNamedFunctionInitializer = !isFunctionNode(node.init) || node.id.type !== "Identifier";
+            if (lacksNamedFunctionInitializer) {
               return;
             }
 

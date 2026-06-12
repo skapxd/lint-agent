@@ -41,7 +41,8 @@ export const nestNoSwaggerInControllers: RuleModule = {
     const options = getNestSwaggerControllerOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
-    if (matchesAnyGlob(filename, options.allowFilePatterns)) {
+    const isAllowedFilePattern = matchesAnyGlob(filename, options.allowFilePatterns);
+    if (isAllowedFilePattern) {
       return {};
     }
 
@@ -51,9 +52,10 @@ export const nestNoSwaggerInControllers: RuleModule = {
       let current = node.parent;
 
       while (current) {
+        const reachedClassBoundary = current.type === "ClassDeclaration" ||
+          current.type === "ClassExpression";
         if (
-          current.type === "ClassDeclaration" ||
-          current.type === "ClassExpression"
+          reachedClassBoundary
         ) {
           return hasClassDecoratorNamed(current, options.controllerDecoratorNames);
         }
@@ -71,15 +73,17 @@ export const nestNoSwaggerInControllers: RuleModule = {
       Decorator(node: RuleNode) {
         const name = getDecoratorName(node);
 
-        if (
-          !name ||
+        const isAllowedSwaggerDecorator = !name ||
           !swaggerNames.has(name) ||
-          options.allowedDecoratorNames.includes(name)
+          options.allowedDecoratorNames.includes(name);
+        if (
+          isAllowedSwaggerDecorator
         ) {
           return;
         }
 
-        if (!isInsideControllerClass(node)) {
+        const isInsideControllerClassNode = isInsideControllerClass(node);
+        if (!isInsideControllerClassNode) {
           return;
         }
 

@@ -27,25 +27,28 @@ export const resultErrorRequiresCause: RuleModule = {
           IfStatement(node: RuleNode) {
             const resultGuard = getFailedResultGuard(node.test);
 
-            if (
-              !typeContext ||
+            const lacksResultErrorContext = !typeContext ||
               !resultGuard ||
               !isSkapxdResultExpression(resultGuard.node, typeContext) ||
-              !isInsideSkapxdResultReturningFunction(node, typeContext)
+              !isInsideSkapxdResultReturningFunction(node, typeContext);
+            if (
+              lacksResultErrorContext
             ) {
               return;
             }
 
             for (const resultErrCall of getOwnResultErrCalls(node.consequent)) {
-              if (!isSkapxdResultErrCall(resultErrCall, typeContext)) {
+              const isSkapxdResultErrFactoryCall = isSkapxdResultErrCall(resultErrCall, typeContext);
+              if (!isSkapxdResultErrFactoryCall) {
                 continue;
               }
 
               // `Result.err()` sin argumentos descarta el error por completo:
               // es el peor caso, no una exención.
+              const preservesOriginalCause = resultErrCall.arguments.length > 0 &&
+                resultErrPreservesCause(resultErrCall.arguments[0], resultGuard.name);
               if (
-                resultErrCall.arguments.length > 0 &&
-                resultErrPreservesCause(resultErrCall.arguments[0], resultGuard.name)
+                preservesOriginalCause
               ) {
                 continue;
               }

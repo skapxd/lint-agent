@@ -21,7 +21,8 @@ export function readResolvedTsconfig(tsconfigPath: string) {
     );
   });
 
-  if (!parsed.ok || !parsed.value) {
+  const lacksParsedTsconfig = !parsed.ok || !parsed.value;
+  if (lacksParsedTsconfig) {
     return null;
   }
 

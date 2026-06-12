@@ -4,11 +4,12 @@ import type { RuleNode } from "#/utils/rule-authoring/rule-types";
 export function isQueryWithStringArg(decorator: RuleNode) {
   const expression = decorator.expression;
 
-  if (
-    expression?.type !== "CallExpression" ||
+  const lacksQueryCallArgument = expression?.type !== "CallExpression" ||
     expression.callee.type !== "Identifier" ||
     expression.callee.name !== "Query" ||
-    expression.arguments.length === 0
+    expression.arguments.length === 0;
+  if (
+    lacksQueryCallArgument
   ) {
     return false;
   }

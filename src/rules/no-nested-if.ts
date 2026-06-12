@@ -31,13 +31,15 @@ export const noNestedIf: RuleModule = {
     const options = getNoNestedIfOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
-    if (matchesAnyGlob(filename, options.allowFilePatterns)) {
+    const isAllowedFilePattern = matchesAnyGlob(filename, options.allowFilePatterns);
+    if (isAllowedFilePattern) {
       return {};
     }
 
     return {
       IfStatement(node: RuleNode) {
-        if (isNestedIfStatement(node)) {
+        const isNestedIf = isNestedIfStatement(node);
+        if (isNestedIf) {
           context.report({ messageId: "noNestedIf", node });
         }
       },

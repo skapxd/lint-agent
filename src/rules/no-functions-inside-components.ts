@@ -38,11 +38,13 @@ export const noFunctionsInsideComponents: RuleModule = {
     }
 
     function isAllowedInlineCallback(node: RuleNode) {
-      if (!isExpressionArrowFunction(node)) {
+      const isExpressionArrowCallback = isExpressionArrowFunction(node);
+      if (!isExpressionArrowCallback) {
         return false;
       }
 
-      if (options.allowJsxCallbacks && isJsxAttributeCallback(node)) {
+      const isAllowedJsxCallback = options.allowJsxCallbacks && isJsxAttributeCallback(node);
+      if (isAllowedJsxCallback) {
         return true;
       }
 
@@ -52,11 +54,13 @@ export const noFunctionsInsideComponents: RuleModule = {
     function reportIfInsideComponent(node: RuleNode) {
       const enclosingFunction = getContainingFunction(node);
 
-      if (!enclosingFunction || !isComponentFunction(enclosingFunction)) {
+      const lacksComponentScope = !enclosingFunction || !isComponentFunction(enclosingFunction);
+      if (lacksComponentScope) {
         return;
       }
 
-      if (isAllowedInlineCallback(node)) {
+      const isInlineCallbackAllowed = isAllowedInlineCallback(node);
+      if (isInlineCallbackAllowed) {
         return;
       }
 

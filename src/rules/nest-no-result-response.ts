@@ -42,7 +42,8 @@ export const nestNoResultResponse: RuleModule = {
     const filename = context.filename ?? context.getFilename();
     const typeContext = getTypeContext(context);
 
-    if (!typeContext || matchesAnyGlob(filename, options.allowFilePatterns)) {
+    const shouldSkipResultResponseCheck = !typeContext || matchesAnyGlob(filename, options.allowFilePatterns);
+    if (shouldSkipResultResponseCheck) {
       return {};
     }
 
@@ -69,20 +70,23 @@ export const nestNoResultResponse: RuleModule = {
 
     return {
       MethodDefinition(node: RuleNode) {
-        if (node.kind !== "method") {
+        const isMethodMember = node.kind === "method";
+        if (!isMethodMember) {
           return;
         }
 
         const classNode = node.parent?.parent;
 
+        const lacksControllerClass = !classNode ||
+          !hasClassDecoratorNamed(classNode, options.controllerDecoratorNames);
         if (
-          !classNode ||
-          !hasClassDecoratorNamed(classNode, options.controllerDecoratorNames)
+          lacksControllerClass
         ) {
           return;
         }
 
-        if (methodReturnsResult(node)) {
+        const returnsResultValue = methodReturnsResult(node);
+        if (returnsResultValue) {
           context.report({
             data: { name: node.key?.name ?? "anonymous" },
             messageId: "nestNoResultResponse",

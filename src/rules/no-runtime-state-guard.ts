@@ -33,7 +33,8 @@ export const noRuntimeStateGuard: RuleModule = {
     const options = getNoRuntimeStateGuardOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
-    if (matchesAnyGlob(filename, options.allowFilePatterns)) {
+    const isAllowedFilePattern = matchesAnyGlob(filename, options.allowFilePatterns);
+    if (isAllowedFilePattern) {
       return {};
     }
 
@@ -43,13 +44,15 @@ export const noRuntimeStateGuard: RuleModule = {
 
         // Solo el guard del ESTADO PROPIO en metodos de clase: validar
         // argumentos o inputs externos es otro territorio (DTOs, Result).
-        if (containingFunction?.parent?.type !== "MethodDefinition") {
+        const hasMethodDefinitionParent = containingFunction?.parent?.type === "MethodDefinition";
+        if (!hasMethodDefinitionParent) {
           return;
         }
 
         const property = getThisPropertyInTest(node.test);
 
-        if (!property || !containsThrowStatement(node.consequent)) {
+        const lacksThrowingStateGuard = !property || !containsThrowStatement(node.consequent);
+        if (lacksThrowingStateGuard) {
           return;
         }
 

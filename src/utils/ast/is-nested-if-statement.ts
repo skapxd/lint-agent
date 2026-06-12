@@ -6,14 +6,16 @@ import { isFunctionNode } from "./is-function-node";
 // dentro de otro if, el reporte cae sobre su cabeza, una sola vez. Una
 // función definida dentro de un if es una unidad cognitiva aparte.
 export function isNestedIfStatement(node: RuleNode) {
-  if (node.parent?.type === "IfStatement" && node.parent.alternate === node) {
+  const isElseIfBranch = node.parent?.type === "IfStatement" && node.parent.alternate === node;
+  if (isElseIfBranch) {
     return false;
   }
 
   let current = node.parent;
 
   while (current && !isFunctionNode(current)) {
-    if (current.type === "IfStatement") {
+    const isIfStatementNode = current.type === "IfStatement";
+    if (isIfStatementNode) {
       return true;
     }
 

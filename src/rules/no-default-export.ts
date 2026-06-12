@@ -30,7 +30,8 @@ export const noDefaultExport: RuleModule = {
     const options = getNoDefaultExportOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
-    if (matchesAnyGlob(filename, options.allowFilePatterns)) {
+    const isAllowedFilePattern = matchesAnyGlob(filename, options.allowFilePatterns);
+    if (isAllowedFilePattern) {
       return {};
     }
 
@@ -44,7 +45,8 @@ export const noDefaultExport: RuleModule = {
           const exportedName =
             specifier.exported?.name ?? specifier.exported?.value;
 
-          if (exportedName === "default") {
+          const isExportedNameDefault = exportedName === "default";
+          if (isExportedNameDefault) {
             context.report({ messageId: "noDefaultExport", node: specifier });
           }
         }

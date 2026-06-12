@@ -8,7 +8,8 @@ export function containsCallNamed(node: RuleNode, names: readonly string[]): boo
     return false;
   }
 
-  if (node.type === "CallExpression" && isCalleeNamed(node.callee, names)) {
+  const isNamedCallExpression = node.type === "CallExpression" && isCalleeNamed(node.callee, names);
+  if (isNamedCallExpression) {
     return true;
   }
 

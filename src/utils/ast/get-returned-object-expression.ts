@@ -4,15 +4,17 @@ export function getReturnedObjectExpression(node: RuleNode) {
     return null;
   }
 
-  if (node.type === "ObjectExpression") {
+  const isObjectExpressionNode = node.type === "ObjectExpression";
+  if (isObjectExpressionNode) {
     return node;
   }
 
-  if (
-    node.type === "TSAsExpression" ||
+  const isTransparentWrapper = node.type === "TSAsExpression" ||
     node.type === "TSSatisfiesExpression" ||
     node.type === "TSNonNullExpression" ||
-    node.type === "ChainExpression"
+    node.type === "ChainExpression";
+  if (
+    isTransparentWrapper
   ) {
     return getReturnedObjectExpression(node.expression);
   }

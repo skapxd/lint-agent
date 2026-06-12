@@ -6,10 +6,11 @@ import { unwrapExpression } from "#/utils/ast/unwrap-expression";
 export function getErrorMemberObject(node: RuleNode) {
   const unwrappedNode = unwrapExpression(node);
 
-  if (
-    unwrappedNode.type !== "MemberExpression" ||
+  const lacksResultErrorMember = unwrappedNode.type !== "MemberExpression" ||
     unwrappedNode.object.type !== "Identifier" ||
-    !isMemberPropertyNamed(unwrappedNode, "error")
+    !isMemberPropertyNamed(unwrappedNode, "error");
+  if (
+    lacksResultErrorMember
   ) {
     return null;
   }

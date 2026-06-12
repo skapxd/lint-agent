@@ -3,9 +3,10 @@ export function getContainingClassName(node: RuleNode) {
   let current = node.parent;
 
   while (current) {
+    const isClassBoundary = current.type === "ClassDeclaration" ||
+      current.type === "ClassExpression";
     if (
-      current.type === "ClassDeclaration" ||
-      current.type === "ClassExpression"
+      isClassBoundary
     ) {
       return current.id?.name ?? null;
     }

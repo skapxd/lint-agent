@@ -4,11 +4,13 @@ export function getPropertyName(node: RuleNode) {
     return "anonymous";
   }
 
-  if (node.type === "Identifier") {
+  const isIdentifierNode = node.type === "Identifier";
+  if (isIdentifierNode) {
     return node.name;
   }
 
-  if (node.type === "Literal") {
+  const isLiteralNode = node.type === "Literal";
+  if (isLiteralNode) {
     return String(node.value);
   }
 

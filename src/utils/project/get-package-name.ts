@@ -17,7 +17,8 @@ export function getPackageName(fileName: string) {
   let dir = path.dirname(fileName);
 
   while (true) {
-    if (packageNameByDir.has(dir)) {
+    const hasPackageNameByDir = packageNameByDir.has(dir);
+    if (hasPackageNameByDir) {
       const cached = packageNameByDir.get(dir);
       for (const visitedDir of visited) packageNameByDir.set(visitedDir, cached);
       return cached;
@@ -27,7 +28,8 @@ export function getPackageName(fileName: string) {
 
     const packageJsonPath = path.join(dir, "package.json");
 
-    if (fs.existsSync(packageJsonPath)) {
+    const existsSyncFs = fs.existsSync(packageJsonPath);
+    if (existsSyncFs) {
       const parsed = trySafe<PackageJson>(() =>
         JSON.parse(fs.readFileSync(packageJsonPath, "utf8")) as PackageJson,
       );
@@ -38,7 +40,8 @@ export function getPackageName(fileName: string) {
 
     const parent = path.dirname(dir);
 
-    if (parent === dir) {
+    const isParentDir = parent === dir;
+    if (isParentDir) {
       for (const visitedDir of visited) packageNameByDir.set(visitedDir, null);
       return null;
     }

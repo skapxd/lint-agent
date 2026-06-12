@@ -27,13 +27,16 @@ export const noDeepRelativeImports: RuleModule = {
     const maxDepth = typeof maxDepthOption === "number" ? maxDepthOption : 0;
 
     function reportIfTooDeep(source: RuleNode) {
-      if (!source || typeof source.value !== "string") {
+      const lacksImportSource = !source || typeof source.value !== "string";
+      if (lacksImportSource) {
         return;
       }
 
-      const depth = countParentSegments(source.value);
+      const importSource = source.value as string;
+      const depth = countParentSegments(importSource);
 
-      if (depth <= maxDepth) {
+      const staysWithinImportDepth = depth <= maxDepth;
+      if (staysWithinImportDepth) {
         return;
       }
 
@@ -41,7 +44,7 @@ export const noDeepRelativeImports: RuleModule = {
         data: {
           depth: String(depth),
           maxDepth: String(maxDepth),
-          source: source.value,
+          source: importSource,
         },
         messageId: "deepRelativeImport",
         node: source,

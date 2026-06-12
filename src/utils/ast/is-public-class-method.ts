@@ -3,19 +3,23 @@ import type { RuleNode } from "#/utils/rule-authoring/rule-types";
 // constructor, getters/setters, private/protected, #privados y el prefijo
 // `_` (la convención de privado suave).
 export function isPublicClassMethod(member: RuleNode) {
-  if (member.type !== "MethodDefinition") {
+  const isMethodDefinitionNode = member.type === "MethodDefinition";
+  if (!isMethodDefinitionNode) {
     return false;
   }
 
-  if (["constructor", "get", "set"].includes(String(member.kind))) {
+  const includesConstructorGetSet = ["constructor", "get", "set"].includes(String(member.kind));
+  if (includesConstructorGetSet) {
     return false;
   }
 
-  if (["private", "protected"].includes(member.accessibility)) {
+  const includesPrivateProtected = ["private", "protected"].includes(member.accessibility);
+  if (includesPrivateProtected) {
     return false;
   }
 
-  if (member.key?.type !== "Identifier") {
+  const hasIdentifierKey = member.key?.type === "Identifier";
+  if (!hasIdentifierKey) {
     return false;
   }
 

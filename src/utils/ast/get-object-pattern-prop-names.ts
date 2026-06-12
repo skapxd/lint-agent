@@ -11,22 +11,25 @@ export function getObjectPatternPropNames(pattern: RuleNode) {
     restName: null,
   };
 
-  if (pattern?.type !== "ObjectPattern") {
+  const isObjectPatternNode = pattern?.type === "ObjectPattern";
+  if (!isObjectPatternNode) {
     return result;
   }
 
   for (const property of pattern.properties) {
-    if (property.type === "RestElement" && property.argument.type === "Identifier") {
+    const isRestIdentifierBinding = property.type === "RestElement" && property.argument.type === "Identifier";
+    if (isRestIdentifierBinding) {
       result.restName = property.argument.name;
       continue;
     }
 
-    if (
-      property.type === "Property" &&
+    const isShorthandIdentifierBinding = property.type === "Property" &&
       property.key.type === "Identifier" &&
       isAstNode(property.value) &&
       property.value.type === "Identifier" &&
-      property.key.name === property.value.name
+      property.key.name === property.value.name;
+    if (
+      isShorthandIdentifierBinding
     ) {
       result.propNames.push(property.key.name);
     }

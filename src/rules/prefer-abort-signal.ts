@@ -42,24 +42,28 @@ export const preferAbortSignal: RuleModule = {
     const sourceCode = context.sourceCode ?? context.getSourceCode();
     const typeContext = getTypeContext(context);
 
-    if (matchesAnyGlob(filename, options.allowFilePatterns)) {
+    const isAllowedFilePattern = matchesAnyGlob(filename, options.allowFilePatterns);
+    if (isAllowedFilePattern) {
       return {};
     }
 
     return {
       CallExpression(node: RuleNode) {
-        if (node.callee?.type !== "MemberExpression") {
+        const hasMemberCallee = node.callee?.type === "MemberExpression";
+        if (!hasMemberCallee) {
           return;
         }
 
         const isAdd = isMemberPropertyNamed(node.callee, "addEventListener");
         const isRemove = isMemberPropertyNamed(node.callee, "removeEventListener");
 
-        if (!isAdd && !isRemove) {
+        const isUntrackedEventMethod = !isAdd && !isRemove;
+        if (isUntrackedEventMethod) {
           return;
         }
 
-        if (!isInsideEffectCallback(node, options.effectNames)) {
+        const isInsideTrackedEffect = isInsideEffectCallback(node, options.effectNames);
+        if (!isInsideTrackedEffect) {
           return;
         }
 
@@ -68,7 +72,8 @@ export const preferAbortSignal: RuleModule = {
           return;
         }
 
-        if (!hasAbortSignalOption(node, sourceCode, typeContext)) {
+        const hasNoAbortSignalOption = !hasAbortSignalOption(node, sourceCode, typeContext);
+        if (hasNoAbortSignalOption) {
           context.report({ messageId: "addWithoutSignal", node });
         }
       },

@@ -23,15 +23,17 @@ export const noAdHocOkResult: RuleModule = {
           ReturnStatement(node: RuleNode) {
             const returnedObject = getReturnedObjectExpression(node.argument);
 
-            if (!returnedObject || !hasBooleanOkProperty(returnedObject)) {
+            const lacksBooleanOkReturn = !returnedObject || !hasBooleanOkProperty(returnedObject);
+            if (lacksBooleanOkReturn) {
               return;
             }
 
             const containingFunction = getContainingFunction(node);
 
+            const lacksExportedAsyncFunction = !containingFunction?.async ||
+              !isExportedFunction(containingFunction);
             if (
-              !containingFunction?.async ||
-              !isExportedFunction(containingFunction)
+              lacksExportedAsyncFunction
             ) {
               return;
             }

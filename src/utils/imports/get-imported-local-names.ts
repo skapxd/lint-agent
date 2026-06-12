@@ -6,15 +6,17 @@ export function getImportedLocalNames(program: RuleNode, moduleSource: string) {
   const names = new Set<string>();
 
   for (const statement of program.body) {
+    const isDifferentImportSource = statement.type !== "ImportDeclaration" ||
+      statement.source.value !== moduleSource;
     if (
-      statement.type !== "ImportDeclaration" ||
-      statement.source.value !== moduleSource
+      isDifferentImportSource
     ) {
       continue;
     }
 
     for (const specifier of statement.specifiers) {
-      if (specifier.type === "ImportSpecifier") {
+      const isImportSpecifierNode = specifier.type === "ImportSpecifier";
+      if (isImportSpecifierNode) {
         names.add(specifier.local.name);
       }
     }

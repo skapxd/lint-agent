@@ -9,7 +9,8 @@ export function countOwnUseStateCallsInNode(node: RuleNode): number {
     return 0;
   }
 
-  if (isFunctionNode(node)) {
+  const isFunctionBoundary = isFunctionNode(node);
+  if (isFunctionBoundary) {
     return 0;
   }
 

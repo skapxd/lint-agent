@@ -38,7 +38,8 @@ export const nestValidationPipeConfig: RuleModule = {
     const filename = context.filename ?? context.getFilename();
     const sourceCode = context.sourceCode ?? context.getSourceCode();
 
-    if (matchesAnyGlob(filename, options.allowFilePatterns)) {
+    const isAllowedFilePattern = matchesAnyGlob(filename, options.allowFilePatterns);
+    if (isAllowedFilePattern) {
       return {};
     }
 
@@ -49,11 +50,13 @@ export const nestValidationPipeConfig: RuleModule = {
         return null;
       }
 
-      if (argument.type === "ObjectExpression") {
+      const isObjectExpressionNode = argument.type === "ObjectExpression";
+      if (isObjectExpressionNode) {
         return argument;
       }
 
-      if (argument.type !== "Identifier") {
+      const hasIdentifierArgument = argument.type === "Identifier";
+      if (!hasIdentifierArgument) {
         return undefined;
       }
 
@@ -73,11 +76,10 @@ export const nestValidationPipeConfig: RuleModule = {
         commonNames = getImportedLocalNames(node, "@nestjs/common");
       },
       NewExpression(node: RuleNode) {
-        if (
-          node.callee?.type !== "Identifier" ||
-          node.callee.name !== "ValidationPipe" ||
-          !commonNames.has("ValidationPipe")
-        ) {
+        const isValidationPipeConstructor = node.callee?.type === "Identifier" &&
+          node.callee.name === "ValidationPipe" &&
+          commonNames.has("ValidationPipe");
+        if (!isValidationPipeConstructor) {
           return;
         }
 
@@ -104,7 +106,8 @@ export const nestValidationPipeConfig: RuleModule = {
           (key: string) => !present.includes(key),
         );
 
-        if (missing.length > 0) {
+        const hasMissing = missing.length > 0;
+        if (hasMissing) {
           context.report({
             data: { missing: missing.map((key: string) => `\`${key}: true\``).join(", ") },
             messageId: "missingPipeOptions",

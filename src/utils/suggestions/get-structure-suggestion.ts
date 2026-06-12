@@ -25,7 +25,8 @@ export function getStructureSuggestion({
     functionNames,
   });
 
-  if (isNextConventionFile({ fileStem, filename })) {
+  const isNextConventionFilePath = isNextConventionFile({ fileStem, filename });
+  if (isNextConventionFilePath) {
     return [
       `${directoryName}/`,
       ...getTreeChildLines({

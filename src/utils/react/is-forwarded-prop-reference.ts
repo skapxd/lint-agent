@@ -8,13 +8,15 @@ import { isPascalCaseJsxElement } from "./is-pascal-case-jsx-element";
 export function isForwardedPropReference(identifier: RuleNode) {
   const container = identifier.parent;
 
-  if (container?.type !== "JSXExpressionContainer") {
+  const isJsxExpressionContainer = container?.type === "JSXExpressionContainer";
+  if (!isJsxExpressionContainer) {
     return false;
   }
 
   const attribute = container.parent;
 
-  if (attribute?.type !== "JSXAttribute") {
+  const isJsxAttribute = attribute?.type === "JSXAttribute";
+  if (!isJsxAttribute) {
     return false;
   }
 

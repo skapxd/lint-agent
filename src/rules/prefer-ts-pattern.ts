@@ -17,7 +17,8 @@ export const preferTsPattern: RuleModule = {
   create(context: RuleContext) {
     return {
       ConditionalExpression(node: RuleNode) {
-        if (node.parent?.type === "ConditionalExpression") {
+        const isConditionalExpressionNode = node.parent?.type === "ConditionalExpression";
+        if (isConditionalExpressionNode) {
           context.report({
             messageId: "noNestedTernary",
             node,

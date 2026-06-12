@@ -13,10 +13,11 @@ export function isInsideEffectCallback(
   while (current) {
     const call = isFunctionNode(current) ? current.parent : null;
 
-    if (
-      call?.type === "CallExpression" &&
+    const isEffectCallbackArgument = call?.type === "CallExpression" &&
       call.arguments[0] === current &&
-      isCalleeNamed(call.callee, effectNames)
+      isCalleeNamed(call.callee, effectNames);
+    if (
+      isEffectCallbackArgument
     ) {
       return true;
     }

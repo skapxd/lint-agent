@@ -9,12 +9,14 @@ export function getFailedResultGuard(node: RuleNode) {
   const unwrappedNode = unwrapExpression(node);
 
   // `result.error` como condición (truthiness del error)
-  if (unwrappedNode.type === "MemberExpression") {
+  const isMemberExpressionNode = unwrappedNode.type === "MemberExpression";
+  if (isMemberExpressionNode) {
     return getErrorMemberObject(unwrappedNode);
   }
 
   // `!result.ok` o `!Result.isOk(result)`
-  if (unwrappedNode.type === "UnaryExpression" && unwrappedNode.operator === "!") {
+  const isNegatedResultGuard = unwrappedNode.type === "UnaryExpression" && unwrappedNode.operator === "!";
+  if (isNegatedResultGuard) {
     return (
       getOkMemberObject(unwrappedNode.argument) ??
       getResultCheckArgument(unwrappedNode.argument, "isOk")
@@ -22,14 +24,16 @@ export function getFailedResultGuard(node: RuleNode) {
   }
 
   // `Result.isErr(result)`
-  if (unwrappedNode.type === "CallExpression") {
+  const isCallExpressionNode = unwrappedNode.type === "CallExpression";
+  if (isCallExpressionNode) {
     return getResultCheckArgument(unwrappedNode, "isErr");
   }
 
   // `result.ok === false` / `result.ok !== true`
+  const isBinaryResultGuard = unwrappedNode.type === "BinaryExpression" &&
+    ["===", "!=="].includes(unwrappedNode.operator);
   if (
-    unwrappedNode.type === "BinaryExpression" &&
-    ["===", "!=="].includes(unwrappedNode.operator)
+    isBinaryResultGuard
   ) {
     return getFailedResultBinaryGuardName(unwrappedNode);
   }

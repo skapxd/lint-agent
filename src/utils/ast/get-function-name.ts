@@ -3,7 +3,8 @@ import { getFunctionNodeName } from "./get-function-node-name";
 import { getParentFunctionName } from "./get-parent-function-name";
 
 export function getFunctionName(node: RuleNode) {
-  if (node.type === "FunctionDeclaration") {
+  const isFunctionDeclarationNode = node.type === "FunctionDeclaration";
+  if (isFunctionDeclarationNode) {
     return getFunctionNodeName(node);
   }
 

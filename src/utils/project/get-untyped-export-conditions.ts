@@ -33,38 +33,44 @@ export function getUntypedExportConditions(
         );
 
   for (const [subpath, value] of entries) {
-    if (subpath === "./package.json") {
+    const isSubpathPackageJson = subpath === "./package.json";
+    if (isSubpathPackageJson) {
       continue;
     }
 
-    if (typeof value === "string") {
+    const isTypeofValueString = typeof value === "string";
+    if (isTypeofValueString) {
       violations.push({ kind: "untyped", condition: "todas", subpath });
       continue;
     }
 
     for (const condition of ["import", "require"]) {
-      if (!(condition in value)) {
+      const omitsExportBranch = !(condition in value);
+      if (omitsExportBranch) {
         continue;
       }
 
       const target = value[condition] as ExportCondition | undefined;
 
-      if (!target || typeof target !== "object" || typeof target.types !== "string") {
+      const lacksTypedTarget = !target || typeof target !== "object" || typeof target.types !== "string";
+      if (lacksTypedTarget) {
         violations.push({ kind: "untyped", condition, subpath });
         continue;
       }
 
+      const typesPath = target.types as string;
       const expectsEsmTypes = condition === "import";
       const flavorOk = expectsEsmTypes
-        ? target.types.endsWith(".d.mts")
-        : target.types.endsWith(".d.ts") || target.types.endsWith(".d.cts");
+        ? typesPath.endsWith(".d.mts")
+        : typesPath.endsWith(".d.ts") || typesPath.endsWith(".d.cts");
 
       if (!flavorOk) {
         violations.push({ kind: "wrong-flavor", condition, subpath });
         continue;
       }
 
-      if (!existsSync(join(packageDir, target.types))) {
+      const typesFileExists = existsSync(join(packageDir, typesPath));
+      if (!typesFileExists) {
         violations.push({ kind: "missing-file", condition, subpath });
       }
     }

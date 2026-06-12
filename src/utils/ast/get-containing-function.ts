@@ -5,7 +5,8 @@ export function getContainingFunction(node: RuleNode) {
   let currentNode = node.parent;
 
   while (currentNode) {
-    if (isFunctionNode(currentNode)) {
+    const isFunctionBoundary = isFunctionNode(currentNode);
+    if (isFunctionBoundary) {
       return currentNode;
     }
 

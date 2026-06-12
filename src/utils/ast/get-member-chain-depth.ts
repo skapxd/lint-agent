@@ -25,7 +25,8 @@ export function getMemberChainDepth(node: ChainNode): number | null {
     current = current.object;
   }
 
-  if (current.type === "Identifier" || current.type === "ThisExpression") {
+  const reachedChainRoot = current.type === "Identifier" || current.type === "ThisExpression";
+  if (reachedChainRoot) {
     return depth;
   }
 

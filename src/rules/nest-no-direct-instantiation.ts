@@ -47,7 +47,8 @@ export const nestNoDirectInstantiation: RuleModule = {
     const filename = context.filename ?? context.getFilename();
     const typeContext = getTypeContext(context);
 
-    if (matchesAnyGlob(filename, options.allowFilePatterns)) {
+    const isAllowedFilePattern = matchesAnyGlob(filename, options.allowFilePatterns);
+    if (isAllowedFilePattern) {
       return {};
     }
 
@@ -62,7 +63,8 @@ export const nestNoDirectInstantiation: RuleModule = {
         );
       },
       NewExpression(node: RuleNode) {
-        if (node.callee.type !== "Identifier") {
+        const hasIdentifierCallee = node.callee.type === "Identifier";
+        if (!hasIdentifierCallee) {
           return;
         }
 
@@ -74,16 +76,18 @@ export const nestNoDirectInstantiation: RuleModule = {
         }
 
         // Errores, excepciones y eventos se construyen, no se inyectan.
-        if (matchesAnyPattern(name, options.allowedClassPatterns)) {
+        const matchesAllowedPattern = matchesAnyPattern(name, options.allowedClassPatterns);
+        if (matchesAllowedPattern) {
           return;
         }
 
         // Con type-info, la semántica exacta: solo lo decorado @Injectable
         // pertenece al contenedor. Una clase de valor (DTO, mapper) sin el
         // decorador se instancia legítimamente. Irresoluble → conservador.
+        const hasNoInjectableDecorator = typeContext &&
+          hasInjectableDecorator(node.callee, typeContext) === false;
         if (
-          typeContext &&
-          hasInjectableDecorator(node.callee, typeContext) === false
+          hasNoInjectableDecorator
         ) {
           return;
         }

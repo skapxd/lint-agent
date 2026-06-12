@@ -2,14 +2,16 @@ import type { RuleNode } from "#/utils/rule-authoring/rule-types";
 export function getParentFunctionReportNode(node: RuleNode) {
   const parent = node.parent;
 
-  if (parent?.type === "VariableDeclarator" && parent.id.type === "Identifier") {
+  const hasVariableDeclaratorName = parent?.type === "VariableDeclarator" && parent.id.type === "Identifier";
+  if (hasVariableDeclaratorName) {
     return parent.id;
   }
 
-  if (
-    parent?.type === "Property" ||
+  const hasPropertyLikeParent = parent?.type === "Property" ||
     parent?.type === "MethodDefinition" ||
-    parent?.type === "PropertyDefinition"
+    parent?.type === "PropertyDefinition";
+  if (
+    hasPropertyLikeParent
   ) {
     return parent.key;
   }

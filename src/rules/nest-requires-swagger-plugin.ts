@@ -41,9 +41,10 @@ export const nestRequiresSwaggerPlugin: RuleModule = {
     const options = getNestSwaggerPluginOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
+    const isAllowedFilePattern = matchesAnyGlob(filename, options.allowFilePatterns) ||
+      !matchesAnyGlob(filename, options.mainFilePatterns);
     if (
-      matchesAnyGlob(filename, options.allowFilePatterns) ||
-      !matchesAnyGlob(filename, options.mainFilePatterns)
+      isAllowedFilePattern
     ) {
       return {};
     }
@@ -76,7 +77,8 @@ export const nestRequiresSwaggerPlugin: RuleModule = {
           return;
         }
 
-        if (!nestCliHasSwaggerPlugin(nestCliConfig.value)) {
+        const hasSwaggerPlugin = nestCliHasSwaggerPlugin(nestCliConfig.value);
+        if (!hasSwaggerPlugin) {
           context.report({ messageId: "missingSwaggerPlugin", node });
         }
       },

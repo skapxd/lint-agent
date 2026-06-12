@@ -3,7 +3,8 @@ import { containsJsx } from "./contains-jsx";
 import { containsOwnJsx } from "./contains-own-jsx";
 
 export function functionReturnsJsx(functionNode: RuleNode) {
-  if (functionNode.body?.type !== "BlockStatement") {
+  const hasBlockBody = functionNode.body?.type === "BlockStatement";
+  if (!hasBlockBody) {
     return containsJsx(functionNode.body);
   }
 

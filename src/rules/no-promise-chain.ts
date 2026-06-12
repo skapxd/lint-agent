@@ -42,7 +42,8 @@ export const noPromiseChain: RuleModule = {
       CallExpression(node: RuleNode) {
         const callee = node.callee;
 
-        if (callee.type !== "MemberExpression") {
+        const hasMemberCallee = callee.type === "MemberExpression";
+        if (!hasMemberCallee) {
           return;
         }
 
@@ -56,12 +57,13 @@ export const noPromiseChain: RuleModule = {
 
         // type-aware: solo si el receptor es una promesa. Sin info de tipos
         // (projectService apagado) cae a verificación por nombre.
-        if (
-          typeContext &&
+        const isNonPromiseReceiver = typeContext &&
           !isPromiseType(
             typeContext.services.getTypeAtLocation(callee.object),
             typeContext,
-          )
+          );
+        if (
+          isNonPromiseReceiver
         ) {
           return;
         }

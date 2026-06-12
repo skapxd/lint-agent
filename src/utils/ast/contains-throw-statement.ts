@@ -5,11 +5,13 @@ import { isFunctionNode } from "./is-function-node";
 // ¿El nodo contiene un throw propio? No cruza funciones anidadas: un throw
 // dentro de un callback es de ese callback.
 export function containsThrowStatement(node: RuleNode | null): boolean {
-  if (node?.type === "ThrowStatement") {
+  const isThrowStatementNode = node?.type === "ThrowStatement";
+  if (isThrowStatementNode) {
     return true;
   }
 
-  if (!node || isFunctionNode(node)) {
+  const reachedSearchBoundary = !node || isFunctionNode(node);
+  if (reachedSearchBoundary) {
     return false;
   }
 

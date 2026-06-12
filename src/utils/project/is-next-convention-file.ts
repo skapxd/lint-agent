@@ -13,16 +13,18 @@ export function isNextConventionFile({
   fileStem,
   filename,
 }: NextConventionFileInput) {
-  if (
-    [
+  const isNextAppConventionStem = [
       ...nextAppRouteSegmentFileStems,
       ...nextAppMetadataFileStems,
-    ].includes(fileStem)
+    ].includes(fileStem);
+  if (
+    isNextAppConventionStem
   ) {
     return isInsideAppDirectory(filename);
   }
 
-  if (nextProjectRootFileStems.includes(fileStem)) {
+  const includesNextProjectRootFileStems = nextProjectRootFileStems.includes(fileStem);
+  if (includesNextProjectRootFileStems) {
     return isInSourceRoot(filename);
   }
 

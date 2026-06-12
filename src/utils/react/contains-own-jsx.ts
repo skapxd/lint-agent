@@ -8,11 +8,13 @@ export function containsOwnJsx(node: RuleNode): boolean {
     return false;
   }
 
-  if (node.type === "JSXElement" || node.type === "JSXFragment") {
+  const isOwnJsxNode = node.type === "JSXElement" || node.type === "JSXFragment";
+  if (isOwnJsxNode) {
     return true;
   }
 
-  if (isFunctionNode(node)) {
+  const isFunctionBoundary = isFunctionNode(node);
+  if (isFunctionBoundary) {
     return false;
   }
 

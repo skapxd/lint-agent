@@ -39,7 +39,8 @@ export const maxHookSize: RuleModule = {
           name: string | null | undefined,
           reportNode: RuleNode = node,
         ) {
-          if (!isHookName(name)) {
+          const isHook = isHookName(name);
+          if (!isHook) {
             return;
           }
 
@@ -47,7 +48,8 @@ export const maxHookSize: RuleModule = {
           const useStateCount = countOwnUseStateCalls(node);
           const reportName = name ?? "anonymous";
 
-          if (lines > options.maxLines) {
+          const exceedsLineBudget = lines > options.maxLines;
+          if (exceedsLineBudget) {
             context.report({
               data: {
                 lines: String(lines),
@@ -59,7 +61,8 @@ export const maxHookSize: RuleModule = {
             });
           }
 
-          if (useStateCount > options.maxUseState) {
+          const exceedsStateBudget = useStateCount > options.maxUseState;
+          if (exceedsStateBudget) {
             context.report({
               data: {
                 maxUseState: String(options.maxUseState),

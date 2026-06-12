@@ -16,28 +16,35 @@ export function getDeclaredAliasTargets(
   id: RuleNode,
   represents: "error" | "result",
 ): AliasTarget[] {
-  if (id.type === "Identifier") {
+  const isIdentifierNode = id.type === "Identifier";
+  if (isIdentifierNode) {
     return [{ name: id.name, represents }];
   }
 
-  if (id.type !== "ObjectPattern" || represents !== "result") {
+  const lacksResultObjectPattern = id.type !== "ObjectPattern" || represents !== "result";
+  if (lacksResultObjectPattern) {
     return [];
   }
 
   return id.properties.flatMap((property: RuleNode): AliasTarget[] => {
-    if (property.type === "RestElement" && property.argument.type === "Identifier") {
+    const isRestResultAlias = property.type === "RestElement" && property.argument.type === "Identifier";
+    if (isRestResultAlias) {
       return [{ name: property.argument.name, represents: "result" }];
     }
 
-    if (
-      property.type === "Property" &&
-      isPropertyKeyNamed(property, "error") &&
-      isAstNode(property.value) &&
-      property.value.type === "Identifier"
-    ) {
-      return [{ name: property.value.name, represents: "error" }];
+    const isErrorProperty =
+      property.type === "Property" && isPropertyKeyNamed(property, "error");
+    if (!isErrorProperty) {
+      return [];
     }
 
-    return [];
+    const propertyValue = property.value;
+    const isIdentifierErrorBinding =
+      isAstNode(propertyValue) && propertyValue.type === "Identifier";
+    if (!isIdentifierErrorBinding) {
+      return [];
+    }
+
+    return [{ name: propertyValue.name, represents: "error" }];
   });
 }

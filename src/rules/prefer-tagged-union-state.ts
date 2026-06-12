@@ -47,7 +47,8 @@ export const preferTaggedUnionState: RuleModule = {
     const options = getTaggedUnionStateOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
-    if (matchesAnyGlob(filename, options.allowFilePatterns)) {
+    const isAllowedFilePattern = matchesAnyGlob(filename, options.allowFilePatterns);
+    if (isAllowedFilePattern) {
       return {};
     }
 
@@ -75,7 +76,8 @@ export const preferTaggedUnionState: RuleModule = {
       const stateName = settersToState.get(node.callee?.name);
       const containingFunction = getContainingFunction(node);
 
-      if (!stateName || !containingFunction) {
+      const lacksTrackedStateOwner = !stateName || !containingFunction;
+      if (lacksTrackedStateOwner) {
         return;
       }
 
@@ -90,11 +92,13 @@ export const preferTaggedUnionState: RuleModule = {
     }
 
     function classifyUseState(node: RuleNode) {
-      if (node.callee?.type !== "Identifier") {
+      const hasIdentifierCallee = node.callee?.type === "Identifier";
+      if (!hasIdentifierCallee) {
         return;
       }
 
-      if (node.callee.name !== "useState") {
+      const callsUseState = node.callee.name === "useState";
+      if (!callsUseState) {
         trackTransition(node);
 
         return;
@@ -109,7 +113,8 @@ export const preferTaggedUnionState: RuleModule = {
       const stateName = getUseStateVariableName(node);
       const containingFunction = getContainingFunction(node);
 
-      if (!stateName || !containingFunction) {
+      const lacksTrackedSetterOwner = !stateName || !containingFunction;
+      if (lacksTrackedSetterOwner) {
         return;
       }
 
@@ -121,11 +126,13 @@ export const preferTaggedUnionState: RuleModule = {
 
       const comparableName = stateName.toLowerCase();
 
-      if (matchesAnyPattern(comparableName, options.loadingPatterns)) {
+      const matchesAllowedPattern = matchesAnyPattern(comparableName, options.loadingPatterns);
+      if (matchesAllowedPattern) {
         entry.loadingNames.push(stateName);
       }
 
-      if (matchesAnyPattern(comparableName, options.errorPatterns)) {
+      const matchesErrorPattern = matchesAnyPattern(comparableName, options.errorPatterns);
+      if (matchesErrorPattern) {
         entry.errorNames.push(stateName);
         entry.reportNode = node;
       }
@@ -137,7 +144,8 @@ export const preferTaggedUnionState: RuleModule = {
       CallExpression: classifyUseState,
       "Program:exit"() {
         for (const entry of stateMachines.values()) {
-          if (entry.loadingNames.length === 0 || entry.errorNames.length === 0) {
+          const lacksLoadingErrorPair = entry.loadingNames.length === 0 || entry.errorNames.length === 0;
+          if (lacksLoadingErrorPair) {
             continue;
           }
 
@@ -165,7 +173,8 @@ export const preferTaggedUnionState: RuleModule = {
             );
           });
 
-          if (entry.states.size < 2 || !looksLikeMachine) {
+          const lacksCoordinatedStateTransition = entry.states.size < 2 || !looksLikeMachine;
+          if (lacksCoordinatedStateTransition) {
             continue;
           }
 

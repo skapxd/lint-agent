@@ -4,10 +4,11 @@ import { getNodeChildren } from "./get-node-children";
 // Busca en la condición de un if una referencia a `this.<propiedad>`
 // (directa, negada o comparada) y devuelve el nombre de la propiedad.
 export function getThisPropertyInTest(node: RuleNode): string | null {
-  if (
-    node?.type === "MemberExpression" &&
+  const isThisPropertyRead = node?.type === "MemberExpression" &&
     node.object?.type === "ThisExpression" &&
-    node.property?.type === "Identifier"
+    node.property?.type === "Identifier";
+  if (
+    isThisPropertyRead
   ) {
     return node.property.name;
   }

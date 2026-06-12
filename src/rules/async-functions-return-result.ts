@@ -81,7 +81,8 @@ export const asyncFunctionsReturnResult: RuleModule = {
           name: string | null | undefined,
           reportNode: RuleNode = node,
         ) {
-          if (!node.async || matchesAnyGlob(filename, options.allowFilePatterns)) {
+          const shouldSkipAsyncFunction = !node.async || matchesAnyGlob(filename, options.allowFilePatterns);
+          if (shouldSkipAsyncFunction) {
             return;
           }
 
@@ -91,13 +92,15 @@ export const asyncFunctionsReturnResult: RuleModule = {
             return;
           }
 
-          if (matchesAnyPattern(functionName, options.allowNamePatterns)) {
+          const matchesAllowedPattern = matchesAnyPattern(functionName, options.allowNamePatterns);
+          if (matchesAllowedPattern) {
             return;
           }
 
+          const omitsRequiredAsyncCall = options.requireCallNames.length &&
+            !containsCallNamed(node.body, options.requireCallNames);
           if (
-            options.requireCallNames.length &&
-            !containsCallNamed(node.body, options.requireCallNames)
+            omitsRequiredAsyncCall
           ) {
             return;
           }
@@ -107,7 +110,8 @@ export const asyncFunctionsReturnResult: RuleModule = {
             options.checkMissingReturnType ||
             containsCallNamed(node.body, options.checkMissingReturnTypeWhenCallNames);
 
-          if (!returnType && missingReturnTypeIsReportable) {
+          const omitsDeclaredReturnContract = !returnType && missingReturnTypeIsReportable;
+          if (omitsDeclaredReturnContract) {
             context.report({
               data: { name: functionName },
               messageId: "missingReturnType",
@@ -121,7 +125,8 @@ export const asyncFunctionsReturnResult: RuleModule = {
             return;
           }
 
-          if (isSkapxdResultReturnType(returnType)) {
+          const returnsSkapxdResult = isSkapxdResultReturnType(returnType);
+          if (returnsSkapxdResult) {
             return;
           }
 

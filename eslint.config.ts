@@ -28,10 +28,6 @@ export default [
       ],
       // ─── Lista de pendientes (solo encoge; ver "Adopción en proyectos
       // legacy" en el README) ─────────────────────────────────────────────
-      // 245 condiciones anónimas heredadas de antes de que la regla entrara
-      // a las bases: cada extracción necesita un nombre con criterio, no
-      // autogenerado (issue #8).
-      "skapxd/no-anonymous-condition": "off",
       // `RuleNode` (la frontera de tipos de la fase 1 del issue #4) declara
       // todas las propiedades del AST como presentes: miente a propósito
       // para que 190 archivos compilen sin casts. Esta regla le cree al

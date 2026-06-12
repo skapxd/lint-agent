@@ -44,10 +44,11 @@ export const untrustedModuleRequiresAdapter: RuleModule = {
     const options = getUntrustedModuleOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
-    if (
-      options.modules.length === 0 ||
+    const shouldSkipModuleCheck = options.modules.length === 0 ||
       matchesAnyGlob(filename, options.allowFilePatterns) ||
-      matchesAnyGlob(filename, options.adapterFilePatterns)
+      matchesAnyGlob(filename, options.adapterFilePatterns);
+    if (
+      shouldSkipModuleCheck
     ) {
       return {};
     }
@@ -56,7 +57,8 @@ export const untrustedModuleRequiresAdapter: RuleModule = {
       ImportDeclaration(node: RuleNode) {
         const source = node.source.value;
 
-        if (typeof source !== "string") {
+        const hasStringImportSource = typeof source === "string";
+        if (!hasStringImportSource) {
           return;
         }
 

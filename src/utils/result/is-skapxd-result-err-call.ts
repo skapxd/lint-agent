@@ -3,7 +3,8 @@ import { isResultErrCall } from "./is-result-err-call";
 import { isSymbolFromSkapxdResult } from "./is-symbol-from-skapxd-result";
 
 export function isSkapxdResultErrCall(node: RuleNode, typeContext: TypeContext) {
-  if (!isResultErrCall(node)) {
+  const isResultErrFactoryCall = isResultErrCall(node);
+  if (!isResultErrFactoryCall) {
     return false;
   }
 

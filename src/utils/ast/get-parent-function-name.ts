@@ -6,14 +6,16 @@ import { getVariableDeclaratorName } from "./get-variable-declarator-name";
 export function getParentFunctionName(node: RuleNode) {
   const parent = node.parent;
 
-  if (parent?.type === "VariableDeclarator") {
+  const isVariableDeclaratorNode = parent?.type === "VariableDeclarator";
+  if (isVariableDeclaratorNode) {
     return getVariableDeclaratorName(parent);
   }
 
-  if (
-    parent?.type === "Property" ||
+  const hasNamedFunctionParent = parent?.type === "Property" ||
     parent?.type === "MethodDefinition" ||
-    parent?.type === "PropertyDefinition"
+    parent?.type === "PropertyDefinition";
+  if (
+    hasNamedFunctionParent
   ) {
     return getPropertyName(parent.key);
   }

@@ -4,7 +4,8 @@ import type { RuleNode } from "#/utils/rule-authoring/rule-types";
 export function isArrayMapCallback(node: RuleNode) {
   const parent = node.parent;
 
-  if (parent?.type !== "CallExpression" || parent.arguments[0] !== node) {
+  const isMapCallbackArgument = parent?.type === "CallExpression" && parent.arguments[0] === node;
+  if (!isMapCallbackArgument) {
     return false;
   }
 

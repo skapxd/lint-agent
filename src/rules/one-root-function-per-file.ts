@@ -23,7 +23,8 @@ export const oneRootFunctionPerFile: RuleModule = {
               getRootFunctionEntries(statement),
             );
 
-            if (rootFunctions.length <= 1) {
+            const hasExpectedRootFunctionsCount = rootFunctions.length <= 1;
+            if (hasExpectedRootFunctionsCount) {
               return;
             }
 

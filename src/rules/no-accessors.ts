@@ -30,18 +30,23 @@ export const noAccessors: RuleModule = {
     const options = getNoAccessorsOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
-    if (matchesAnyGlob(filename, options.allowFilePatterns)) {
+    const isAllowedFilePattern = matchesAnyGlob(
+      filename,
+      options.allowFilePatterns,
+    );
+    if (isAllowedFilePattern) {
       return {};
     }
 
     function reportIfAccessor(node: RuleNode) {
-      if (node.kind !== "get" && node.kind !== "set") {
+      const isAccessorMember = node.kind === "get" || node.kind === "set";
+      if (!isAccessorMember) {
         return;
       }
 
       context.report({
         data: {
-          kind: node.kind,
+          kind: String(node.kind),
           name: node.key?.name ?? "anonymous",
         },
         messageId: "noAccessor",

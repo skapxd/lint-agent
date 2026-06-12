@@ -31,12 +31,14 @@ export const noEmoji: RuleModule = {
     const options = getNoEmojiOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
-    if (matchesAnyGlob(filename, options.allowFilePatterns)) {
+    const isAllowedFilePattern = matchesAnyGlob(filename, options.allowFilePatterns);
+    if (isAllowedFilePattern) {
       return {};
     }
 
     function reportIfEmoji(node: RuleNode, value: unknown) {
-      if (typeof value === "string" && containsEmoji(value)) {
+      const containsEmojiText = typeof value === "string" && containsEmoji(value);
+      if (containsEmojiText) {
         context.report({ messageId: "noEmoji", node });
       }
     }

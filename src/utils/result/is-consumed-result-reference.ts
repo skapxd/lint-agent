@@ -27,11 +27,13 @@ export function isConsumedResultReference(
 
   // Cualquier acceso sobre el error es proyección; sobre el result, solo
   // `.error` mantiene la información completa (`.ok`/`.value` la pierden).
-  if (member && represents === "error") {
+  const projectsErrorReference = member && represents === "error";
+  if (projectsErrorReference) {
     return false;
   }
 
-  if (member && !isMemberPropertyNamed(member, "error")) {
+  const projectsResultValue = member && !isMemberPropertyNamed(member, "error");
+  if (projectsResultValue) {
     return false;
   }
 
@@ -40,19 +42,23 @@ export function isConsumedResultReference(
   const parent = reference.parent;
 
   // `result.error.message`: proyección encadenada sobre el error.
-  if (parent?.type === "MemberExpression" && parent.object === reference) {
+  const projectsNestedErrorValue = parent?.type === "MemberExpression" && parent.object === reference;
+  if (projectsNestedErrorValue) {
     return false;
   }
 
-  if (parent?.type === "UnaryExpression" && parent.operator === "void") {
+  const voidsResultReference = parent?.type === "UnaryExpression" && parent.operator === "void";
+  if (voidsResultReference) {
     return false;
   }
 
-  if (parent?.type === "ExpressionStatement") {
+  const isExpressionStatementNode = parent?.type === "ExpressionStatement";
+  if (isExpressionStatementNode) {
     return false;
   }
 
-  if (parent?.type !== "VariableDeclarator" || parent.init !== reference) {
+  const isDirectConsumption = parent?.type !== "VariableDeclarator" || parent.init !== reference;
+  if (isDirectConsumption) {
     return true;
   }
 

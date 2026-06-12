@@ -23,7 +23,8 @@ export function getStateShapeSmell(
     const isShapeMember =
       member.type === "TSPropertySignature" || member.type === "PropertyDefinition";
 
-    if (!isShapeMember || member.key?.type !== "Identifier") {
+    const lacksStateShapeMember = !isShapeMember || member.key?.type !== "Identifier";
+    if (lacksStateShapeMember) {
       continue;
     }
 
@@ -44,15 +45,17 @@ export function getStateShapeSmell(
     // coexistencia, no el tipo.
     const comparableName = name.toLowerCase();
 
+    const isLoadingFlag = memberIsBoolean(member) &&
+      matchesAnyPattern(comparableName, options.loadingPatterns);
     if (
-      memberIsBoolean(member) &&
-      matchesAnyPattern(comparableName, options.loadingPatterns)
+      isLoadingFlag
     ) {
       flag = name;
       continue;
     }
 
-    if (matchesAnyPattern(comparableName, options.errorPatterns)) {
+    const matchesAllowedPattern = matchesAnyPattern(comparableName, options.errorPatterns);
+    if (matchesAllowedPattern) {
       error = name;
     }
   }

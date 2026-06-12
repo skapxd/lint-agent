@@ -12,7 +12,8 @@ export function getOwnResultErrCalls(
     return [];
   }
 
-  if (isFunctionNode(node) || (!isRoot && node.type === "IfStatement")) {
+  const reachedResultSearchBoundary = isFunctionNode(node) || (!isRoot && node.type === "IfStatement");
+  if (reachedResultSearchBoundary) {
     return [];
   }
 

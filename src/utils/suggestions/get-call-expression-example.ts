@@ -4,16 +4,18 @@ import { unwrapExpression } from "#/utils/ast/unwrap-expression";
 export function getCallExpressionExample(node: RuleNode, sourceCode: RuleSourceCode) {
   const calleeText = sourceCode.getText(node.callee);
 
-  if (node.arguments.length === 0) {
+  const hasNoArguments = node.arguments.length === 0;
+  if (hasNoArguments) {
     return `${calleeText}()`;
   }
 
   const firstArgument = node.arguments[0];
 
-  if (
-    firstArgument &&
+  const usesSingleObjectArgument = firstArgument &&
     node.arguments.length === 1 &&
-    unwrapExpression(firstArgument).type === "ObjectExpression"
+    unwrapExpression(firstArgument).type === "ObjectExpression";
+  if (
+    usesSingleObjectArgument
   ) {
     return `${calleeText}({...})`;
   }

@@ -2,12 +2,14 @@ export function countParentSegments(source: string): number {
   let count = 0;
 
   for (const part of source.split("/")) {
-    if (part === "..") {
+    const isPart = part === "..";
+    if (isPart) {
       count += 1;
       continue;
     }
 
-    if (part === ".") {
+    const isCurrentSegment = part === ".";
+    if (isCurrentSegment) {
       continue;
     }
 

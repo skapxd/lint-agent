@@ -7,17 +7,19 @@ import { unwrapExpression } from "#/utils/ast/unwrap-expression";
 export function getResultCheckArgument(node: RuleNode, methodName: string) {
   const unwrappedNode = unwrapExpression(node);
 
-  if (
-    unwrappedNode.type !== "CallExpression" ||
+  const lacksResultCheckCall = unwrappedNode.type !== "CallExpression" ||
     unwrappedNode.callee.type !== "MemberExpression" ||
-    !isMemberPropertyNamed(unwrappedNode.callee, methodName)
+    !isMemberPropertyNamed(unwrappedNode.callee, methodName);
+  if (
+    lacksResultCheckCall
   ) {
     return null;
   }
 
   const argument = unwrappedNode.arguments[0];
 
-  if (argument?.type !== "Identifier") {
+  const isIdentifierArgument = argument?.type === "Identifier";
+  if (!isIdentifierArgument) {
     return null;
   }
 

@@ -17,7 +17,8 @@ export function isAnchorlessCheckRedundant(
 ) {
   const rootKey = tsconfigPath ?? fallbackRootKey;
 
-  if (checkedRoots.has(rootKey)) {
+  const hasCheckedRoots = checkedRoots.has(rootKey);
+  if (hasCheckedRoots) {
     return true;
   }
 

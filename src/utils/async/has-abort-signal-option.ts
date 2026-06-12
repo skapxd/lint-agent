@@ -19,11 +19,13 @@ export function hasAbortSignalOption(
   }
 
   // `addEventListener("x", fn, true)`: el boolean de capture nunca trae signal.
-  if (options.type === "Literal") {
+  const isLiteralNode = options.type === "Literal";
+  if (isLiteralNode) {
     return false;
   }
 
-  if (options.type === "ObjectExpression") {
+  const isObjectExpressionNode = options.type === "ObjectExpression";
+  if (isObjectExpressionNode) {
     return objectExpressionHasSignal(options);
   }
 
@@ -31,7 +33,8 @@ export function hasAbortSignalOption(
     options.type === "Identifier" ? sourceCode.getScope?.(options) : null;
   const initializer = scope ? getVariableInitializer(options, scope) : null;
 
-  if (initializer?.type === "ObjectExpression") {
+  const isInitializerObjectExpression = initializer?.type === "ObjectExpression";
+  if (isInitializerObjectExpression) {
     return objectExpressionHasSignal(initializer);
   }
 

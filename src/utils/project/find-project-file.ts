@@ -11,17 +11,20 @@ export function findProjectFile(startDir: string, fileName: string) {
   while (true) {
     const candidate = join(current, fileName);
 
-    if (existsSync(candidate)) {
+    const candidateExists = existsSync(candidate);
+    if (candidateExists) {
       return candidate;
     }
 
-    if (existsSync(join(current, "package.json"))) {
+    const reachedProjectRoot = existsSync(join(current, "package.json"));
+    if (reachedProjectRoot) {
       return null;
     }
 
     const parent = dirname(current);
 
-    if (parent === current) {
+    const isParentCurrent = parent === current;
+    if (isParentCurrent) {
       return null;
     }
 

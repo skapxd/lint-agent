@@ -9,11 +9,13 @@ export function getFailedResultBinaryGuardName(node: RuleNode) {
   const leftBoolean = getBooleanLiteralValue(node.left);
   const rightBoolean = getBooleanLiteralValue(node.right);
 
-  if (leftResult && rightBoolean !== null) {
+  const leftResultChecksBoolean = leftResult && rightBoolean !== null;
+  if (leftResultChecksBoolean) {
     return isFailedOkComparison(node.operator, rightBoolean) ? leftResult : null;
   }
 
-  if (rightResult && leftBoolean !== null) {
+  const rightResultChecksBoolean = rightResult && leftBoolean !== null;
+  if (rightResultChecksBoolean) {
     return isFailedOkComparison(node.operator, leftBoolean) ? rightResult : null;
   }
 

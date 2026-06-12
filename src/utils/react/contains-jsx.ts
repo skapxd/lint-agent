@@ -7,7 +7,8 @@ export function containsJsx(node: RuleNode): boolean {
     return false;
   }
 
-  if (node.type === "JSXElement" || node.type === "JSXFragment") {
+  const isJsxNode = node.type === "JSXElement" || node.type === "JSXFragment";
+  if (isJsxNode) {
     return true;
   }
 

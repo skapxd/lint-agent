@@ -38,7 +38,8 @@ export const nestNoInlineQueryParams: RuleModule = {
     const options = getNestInlineQueryOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
-    if (matchesAnyGlob(filename, options.allowFilePatterns)) {
+    const isAllowedFilePattern = matchesAnyGlob(filename, options.allowFilePatterns);
+    if (isAllowedFilePattern) {
       return {};
     }
 
@@ -51,7 +52,8 @@ export const nestNoInlineQueryParams: RuleModule = {
         swaggerNames = getImportedLocalNames(node, "@nestjs/swagger");
       },
       MethodDefinition(node: RuleNode) {
-        if (node.kind !== "method") {
+        const isMethodMember = node.kind === "method";
+        if (!isMethodMember) {
           return;
         }
 
@@ -71,7 +73,8 @@ export const nestNoInlineQueryParams: RuleModule = {
 
         const total = apiQueryCount + inlineQueryCount;
 
-        if (total <= options.max) {
+        const staysWithinQueryLimit = total <= options.max;
+        if (staysWithinQueryLimit) {
           return;
         }
 

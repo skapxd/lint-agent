@@ -12,7 +12,8 @@ export function anchorFileExists(
   return anchorFilePatterns.some((pattern: string) => {
     const literal = pattern.replace(/^\*\*\//, "");
 
-    if (literal.includes("*") || literal.includes("{")) {
+    const isGlobPattern = literal.includes("*") || literal.includes("{");
+    if (isGlobPattern) {
       return false;
     }
 

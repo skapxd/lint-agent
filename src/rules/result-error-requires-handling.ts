@@ -36,7 +36,8 @@ export const resultErrorRequiresHandling: RuleModule = {
     const filename = context.filename ?? context.getFilename();
     const typeContext = getTypeContext(context);
 
-    if (matchesAnyGlob(filename, options.allowFilePatterns)) {
+    const isAllowedFilePattern = matchesAnyGlob(filename, options.allowFilePatterns);
+    if (isAllowedFilePattern) {
       return {};
     }
 
@@ -44,10 +45,11 @@ export const resultErrorRequiresHandling: RuleModule = {
       IfStatement(node: RuleNode) {
         const resultGuard = getFailedResultGuard(node.test);
 
-        if (
-          !typeContext ||
+        const lacksResultGuardContext = !typeContext ||
           !resultGuard ||
-          !isSkapxdResultExpression(resultGuard.node, typeContext)
+          !isSkapxdResultExpression(resultGuard.node, typeContext);
+        if (
+          lacksResultGuardContext
         ) {
           return;
         }
@@ -57,10 +59,11 @@ export const resultErrorRequiresHandling: RuleModule = {
           resultGuard.name,
         );
 
-        if (
-          references.some((reference: RuleNode) =>
+        const hasMatchingReference = references.some((reference: RuleNode) =>
             isConsumedResultReference(reference, node.consequent),
-          )
+          );
+        if (
+          hasMatchingReference
         ) {
           return;
         }

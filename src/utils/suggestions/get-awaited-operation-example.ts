@@ -8,7 +8,8 @@ export function getAwaitedOperationExample(
 ) {
   const unwrappedNode = unwrapExpression(node);
 
-  if (unwrappedNode.type === "CallExpression") {
+  const isCallExpressionNode = unwrappedNode.type === "CallExpression";
+  if (isCallExpressionNode) {
     return getCallExpressionExample(unwrappedNode, sourceCode);
   }
 

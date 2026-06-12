@@ -48,7 +48,8 @@ async function lintChanged(base: string | null) {
 
   const files = getChangedFiles();
 
-  if (files.length === 0) {
+  const hasNoFiles = files.length === 0;
+  if (hasNoFiles) {
     console.log("skapxd-lint-changed: no hay archivos cambiados para lintear.");
     return;
   }

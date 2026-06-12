@@ -43,7 +43,8 @@ export const noTunnelProps: RuleModule = {
     const options = getNoTunnelPropsOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
-    if (matchesAnyGlob(filename, options.allowFilePatterns)) {
+    const isAllowedFilePattern = matchesAnyGlob(filename, options.allowFilePatterns);
+    if (isAllowedFilePattern) {
       return {};
     }
 
@@ -75,12 +76,14 @@ export const noTunnelProps: RuleModule = {
       propNames: readonly string[],
     ) {
       for (const propName of propNames) {
-        if (matchesAnyPattern(propName, options.allowPropPatterns)) {
+        const matchesAllowedPattern = matchesAnyPattern(propName, options.allowPropPatterns);
+        if (matchesAllowedPattern) {
           continue;
         }
 
         for (const usage of collectIdentifiersNamed(node.body, propName)) {
-          if (isForwardedPropReference(usage)) {
+          const isForwardedPropReferenceUsage = isForwardedPropReference(usage);
+          if (isForwardedPropReferenceUsage) {
             context.report({
               data: { component: componentName, prop: propName },
               messageId: "forwardedProp",
@@ -94,7 +97,8 @@ export const noTunnelProps: RuleModule = {
     function reportIfTunnelComponent(node: RuleNode) {
       const componentName = getFunctionName(node);
 
-      if (!isPascalCaseName(componentName)) {
+      const isComponentFunctionName = isPascalCaseName(componentName);
+      if (!isComponentFunctionName) {
         return;
       }
 

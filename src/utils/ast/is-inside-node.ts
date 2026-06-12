@@ -3,7 +3,8 @@ export function isInsideNode(node: RuleNode, ancestor: RuleNode) {
   let current = node;
 
   while (current) {
-    if (current === ancestor) {
+    const isCurrentAncestor = current === ancestor;
+    if (isCurrentAncestor) {
       return true;
     }
 

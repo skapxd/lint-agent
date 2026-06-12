@@ -41,7 +41,8 @@ export const classPropertiesRequireReadonly: RuleModule = {
     const options = getReadonlyPropertiesOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
-    if (matchesAnyGlob(filename, options.allowFilePatterns)) {
+    const isAllowedFilePattern = matchesAnyGlob(filename, options.allowFilePatterns);
+    if (isAllowedFilePattern) {
       return {};
     }
 
@@ -60,7 +61,8 @@ export const classPropertiesRequireReadonly: RuleModule = {
         return;
       }
 
-      if (name && matchesAnyPattern(name, options.allowPropertyPatterns)) {
+      const isAllowedPropertyName = name && matchesAnyPattern(name, options.allowPropertyPatterns);
+      if (isAllowedPropertyName) {
         return;
       }
 
@@ -83,7 +85,8 @@ export const classPropertiesRequireReadonly: RuleModule = {
         // Una propiedad decorada por el ORM (@Prop, @Column) le pertenece
         // al ORM: su modelo de mutación (doc.campo = x; doc.save()) no es
         // asunto de este lint. La exención es por propiedad, no por archivo.
-        if (isOrmManagedProperty(node)) {
+        const isOrmManagedPropertyAllowed = isOrmManagedProperty(node);
+        if (isOrmManagedPropertyAllowed) {
           return;
         }
 

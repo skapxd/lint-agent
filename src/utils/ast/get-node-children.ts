@@ -3,7 +3,8 @@ import { isAstNode } from "./is-ast-node";
 
 export function getNodeChildren(node: RuleNode): RuleNode[] {
   return Object.entries(node).flatMap(([key, value]: [string, unknown]) => {
-    if (["parent", "loc", "range", "tokens", "comments"].includes(key)) {
+    const includesParentLocRangeTokensComments = ["parent", "loc", "range", "tokens", "comments"].includes(key);
+    if (includesParentLocRangeTokensComments) {
       return [];
     }
 

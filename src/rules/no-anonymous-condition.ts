@@ -75,7 +75,8 @@ export const noAnonymousCondition: RuleModule = {
     );
     const filename = context.filename ?? context.getFilename?.() ?? "";
 
-    if (matchesAnyGlob(filename, options.allowFilePatterns)) {
+    const isAllowedFilePattern = matchesAnyGlob(filename, options.allowFilePatterns);
+    if (isAllowedFilePattern) {
       return {};
     }
 
@@ -84,17 +85,20 @@ export const noAnonymousCondition: RuleModule = {
         const condition = unwrapNegations(node.test) as ConditionNode;
 
         // Un literal constante es territorio de no-impossible-branch.
-        if (condition.type === "Literal") {
+        const isLiteralNode = condition.type === "Literal";
+        if (isLiteralNode) {
           return;
         }
 
         const depth = getMemberChainDepth(condition);
 
-        if (depth !== null && depth <= options.maxMemberDepth) {
+        const isAllowedMemberGuard = depth !== null && depth <= options.maxMemberDepth;
+        if (isAllowedMemberGuard) {
           return;
         }
 
-        if (isLiteralGuardComparison(condition, options.maxMemberDepth)) {
+        const isAllowedLiteralGuardComparison = isLiteralGuardComparison(condition, options.maxMemberDepth);
+        if (isAllowedLiteralGuardComparison) {
           return;
         }
 

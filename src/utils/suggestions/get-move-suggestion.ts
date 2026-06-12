@@ -20,11 +20,13 @@ export function getMoveSuggestion({ filename, functionName }: MoveSuggestionInpu
     functionName,
   });
 
-  if (fileStem === "route" && isHttpRouteMethod(functionName)) {
+  const usesRouteHandlerExample = fileStem === "route" && isHttpRouteMethod(functionName);
+  if (usesRouteHandlerExample) {
     return `Mueve la implementacion de \`${functionName}\` a \`${suggestedPath}\` si solo se usa aqui y deja \`${functionName}\` en route.ts delegando a ese helper. No conviertas route.ts en route/index.ts porque Next no lo reconoce.`;
   }
 
-  if (isNextConventionFile({ fileStem, filename })) {
+  const isNextConventionFilePath = isNextConventionFile({ fileStem, filename });
+  if (isNextConventionFilePath) {
     return `Mueve \`${functionName}\` a \`${suggestedPath}\` si solo se usa aqui y deja \`${fileName}\` como entrypoint de Next. No conviertas \`${fileName}\` en \`${fileStem}/index${extension}\` porque Next exige el nombre exacto del archivo.`;
   }
 

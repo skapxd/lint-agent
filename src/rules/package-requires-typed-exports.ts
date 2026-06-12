@@ -53,9 +53,10 @@ export const packageRequiresTypedExports: RuleModule = {
     const options = getTypedExportsOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
+    const isAllowedFilePattern = matchesAnyGlob(filename, options.allowFilePatterns) ||
+      !matchesAnyGlob(filename, options.anchorFilePatterns);
     if (
-      matchesAnyGlob(filename, options.allowFilePatterns) ||
-      !matchesAnyGlob(filename, options.anchorFilePatterns)
+      isAllowedFilePattern
     ) {
       return {};
     }
@@ -76,7 +77,8 @@ export const packageRequiresTypedExports: RuleModule = {
             )
           : null;
 
-        if (!packageJsonPath || !parsed || !parsed.ok) {
+        const lacksReadablePackageJson = !packageJsonPath || !parsed || !parsed.ok;
+        if (lacksReadablePackageJson) {
           context.report({ messageId: "unreadablePackageJson", node });
 
           return;
@@ -84,10 +86,11 @@ export const packageRequiresTypedExports: RuleModule = {
 
         const exportsField = parsed.value.exports;
 
-        if (
-          !exportsField ||
+        const lacksObjectExportsMap = !exportsField ||
           typeof exportsField !== "object" ||
-          Array.isArray(exportsField)
+          Array.isArray(exportsField);
+        if (
+          lacksObjectExportsMap
         ) {
           context.report({ messageId: "missingExports", node });
 

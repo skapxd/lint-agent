@@ -3,11 +3,13 @@ import { getTypeReferenceParameters } from "#/utils/type-aware/get-type-referenc
 import { isTypeReferenceNamed } from "#/utils/type-aware/is-type-reference-named";
 
 export function isPromiseOfResultType(node: RuleNode, options: { promiseTypeNames: readonly string[]; resultTypeNames: readonly string[] }) {
-  if (node.type !== "TSTypeReference") {
+  const isTypeReferenceNode = node.type === "TSTypeReference";
+  if (!isTypeReferenceNode) {
     return false;
   }
 
-  if (!isTypeReferenceNamed(node, options.promiseTypeNames)) {
+  const isConfiguredPromiseType = isTypeReferenceNamed(node, options.promiseTypeNames);
+  if (!isConfiguredPromiseType) {
     return false;
   }
 

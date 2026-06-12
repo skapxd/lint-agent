@@ -3,7 +3,8 @@ import type { TypeContext } from "#/utils/rule-authoring/rule-types";
 import { isSkapxdResultType } from "./is-skapxd-result-type";
 
 export function isSkapxdResultOrPromiseResultType(type: ts.Type, typeContext: TypeContext) {
-  if (isSkapxdResultType(type, typeContext)) {
+  const isSkapxdResult = isSkapxdResultType(type, typeContext);
+  if (isSkapxdResult) {
     return true;
   }
 

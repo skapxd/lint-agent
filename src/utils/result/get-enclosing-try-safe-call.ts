@@ -8,7 +8,8 @@ export function getEnclosingTrySafeCall(node: RuleNode, trySafeCallNames: readon
   let currentNode = node.parent;
 
   while (currentNode) {
-    if (!isFunctionNode(currentNode)) {
+    const isFunctionBoundary = isFunctionNode(currentNode);
+    if (!isFunctionBoundary) {
       currentNode = currentNode.parent;
       continue;
     }

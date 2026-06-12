@@ -44,7 +44,8 @@ export const requiresStrictTsconfig: RuleModule = {
     const options = getStrictTsconfigOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
-    if (matchesAnyGlob(filename, options.allowFilePatterns)) {
+    const isAllowedFilePattern = matchesAnyGlob(filename, options.allowFilePatterns);
+    if (isAllowedFilePattern) {
       return {};
     }
 
@@ -62,13 +63,14 @@ export const requiresStrictTsconfig: RuleModule = {
         // si el proyecto SI tiene un archivo ancla, el reporte le pertenece a
         // ese archivo; si no, reporta el primer archivo del run y los demas
         // callan.
-        if (
-          !isAnchor &&
+        const usesRedundantAnchorlessCheck = !isAnchor &&
           isAnchorlessCheckRedundant(
             tsconfigPath,
             context.cwd ?? process.cwd(),
             options.anchorFilePatterns,
-          )
+          );
+        if (
+          usesRedundantAnchorlessCheck
         ) {
           return;
         }
@@ -87,7 +89,8 @@ export const requiresStrictTsconfig: RuleModule = {
           (flag: string) => compilerOptions[flag] !== true,
         );
 
-        if (missing.length > 0) {
+        const hasMissing = missing.length > 0;
+        if (hasMissing) {
           context.report({
             data: { missing: missing.map((flag: string) => `\`${flag}\``).join(", ") },
             messageId: "missingStrictFlags",

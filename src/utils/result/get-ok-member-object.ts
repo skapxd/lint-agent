@@ -5,10 +5,11 @@ import { unwrapExpression } from "#/utils/ast/unwrap-expression";
 export function getOkMemberObject(node: RuleNode) {
   const unwrappedNode = unwrapExpression(node);
 
-  if (
-    unwrappedNode.type !== "MemberExpression" ||
+  const lacksResultOkMember = unwrappedNode.type !== "MemberExpression" ||
     unwrappedNode.object.type !== "Identifier" ||
-    !isMemberPropertyNamed(unwrappedNode, "ok")
+    !isMemberPropertyNamed(unwrappedNode, "ok");
+  if (
+    lacksResultOkMember
   ) {
     return null;
   }

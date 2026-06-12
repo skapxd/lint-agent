@@ -11,25 +11,29 @@ export function getInternalValueImports(
   const imports = new Map<string, string>();
 
   for (const statement of program.body) {
-    if (statement.type !== "ImportDeclaration" || statement.importKind === "type") {
+    const isNonValueImport = statement.type !== "ImportDeclaration" || statement.importKind === "type";
+    if (isNonValueImport) {
       continue;
     }
 
     const source = statement.source.value;
 
-    if (typeof source !== "string") {
+    const hasStringImportSource = typeof source === "string";
+    if (!hasStringImportSource) {
       continue;
     }
 
+    const isExternalOrAllowedImport = !matchesAnyPattern(source, internalPatterns) ||
+      matchesAnyPattern(source, allowedPatterns);
     if (
-      !matchesAnyPattern(source, internalPatterns) ||
-      matchesAnyPattern(source, allowedPatterns)
+      isExternalOrAllowedImport
     ) {
       continue;
     }
 
     for (const specifier of statement.specifiers) {
-      if (specifier.importKind === "type") {
+      const isSpecifierImportKindType = specifier.importKind === "type";
+      if (isSpecifierImportKindType) {
         continue;
       }
 

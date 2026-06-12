@@ -39,7 +39,8 @@ export const maxPublicMethods: RuleModule = {
     const options = getMaxPublicMethodsOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
-    if (matchesAnyGlob(filename, options.allowFilePatterns)) {
+    const isAllowedFilePattern = matchesAnyGlob(filename, options.allowFilePatterns);
+    if (isAllowedFilePattern) {
       return {};
     }
 
@@ -49,7 +50,8 @@ export const maxPublicMethods: RuleModule = {
         .map((member: RuleNode) => member.key.name)
         .filter((name: string) => !options.ignore.has(name));
 
-      if (publicMethods.length <= options.max) {
+      const staysWithinMethodBudget = publicMethods.length <= options.max;
+      if (staysWithinMethodBudget) {
         return;
       }
 
