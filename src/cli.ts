@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import { execSync } from "node:child_process";
-import type { ExecSyncOptionsWithStringEncoding } from "node:child_process";
+import { execFileSync } from "node:child_process";
+import type { ExecFileSyncOptionsWithStringEncoding } from "node:child_process";
 import path from "node:path";
 import process from "node:process";
 import { trySafe } from "@skapxd/result";
@@ -11,32 +11,53 @@ const lintableFile = /\.(c|m)?[jt]sx?$/;
 
 async function lintChanged(base: string | null) {
   function git(
-    command: string,
-    options: Partial<ExecSyncOptionsWithStringEncoding> = {},
+    args: readonly string[],
+    options: Partial<ExecFileSyncOptionsWithStringEncoding> = {},
+    failureMessage?: string,
   ) {
     const result = trySafe(() =>
-      execSync(command, {
+      execFileSync("git", args, {
         encoding: "utf8",
         stdio: ["pipe", "pipe", "ignore"],
         ...options,
       }),
     );
 
-    return result.ok ? result.value : "";
+    if (result.ok) {
+      return result.value;
+    }
+
+    if (failureMessage) {
+      console.error(failureMessage);
+      process.exitCode = 1;
+      return null;
+    }
+
+    return "";
   }
 
   function getChangedFiles() {
     // git diff --name-only devuelve rutas relativas a la RAÍZ del repo, no al
     // cwd: se resuelven contra ella para que el bin funcione desde cualquier
     // subdirectorio (p. ej. un subpaquete de un monorepo).
-    const root = git("git rev-parse --show-toplevel").trim() || process.cwd();
+    const rootOutput = git(["rev-parse", "--show-toplevel"]);
+    const root = rootOutput?.trim() || process.cwd();
     // Con --base: cambios del branch desde que divergió (CI / PR).
     // Sin --base: lo tocado en el árbol de trabajo + archivos sin trackear.
     const range = base ? `${base}...HEAD` : "HEAD";
-    const changed = git(`git diff --name-only --diff-filter=ACMR ${range}`);
+    const changed = git(
+      ["diff", "--name-only", "--diff-filter=ACMR", range],
+      { stdio: ["pipe", "pipe", "inherit"] },
+      "skapxd-lint-changed: git no pudo calcular los cambios.",
+    );
+    if (changed === null) {
+      return null;
+    }
+
     const untracked = base
       ? ""
-      : git("git ls-files --others --exclude-standard", { cwd: root });
+      : (git(["ls-files", "--others", "--exclude-standard"], { cwd: root }) ??
+        "");
     const lines = `${changed}\n${untracked}`
       .split("\n")
       .map((line) => line.trim());
@@ -47,6 +68,9 @@ async function lintChanged(base: string | null) {
   }
 
   const files = getChangedFiles();
+  if (files === null) {
+    return;
+  }
 
   const hasNoFiles = files.length === 0;
   if (hasNoFiles) {
