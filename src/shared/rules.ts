@@ -20,6 +20,7 @@ import { nestRequiresSwaggerPlugin } from "#/rules/nest-requires-swagger-plugin"
 import { nestValidationPipeConfig } from "#/rules/nest-validation-pipe-config";
 import { noDeepRelativeImports } from "#/rules/no-deep-relative-imports";
 import { noDefaultExport } from "#/rules/no-default-export";
+import { noAnonymousCondition } from "#/rules/no-anonymous-condition";
 import { noElse } from "#/rules/no-else";
 import { noEmoji } from "#/rules/no-emoji";
 import { noExplicitAny } from "#/rules/no-explicit-any";
@@ -71,6 +72,7 @@ export const rules: Record<string, Rule.RuleModule> = {
   "nest-no-swagger-in-controllers": nestNoSwaggerInControllers,
   "nest-requires-swagger-plugin": nestRequiresSwaggerPlugin,
   "nest-validation-pipe-config": nestValidationPipeConfig,
+  "no-anonymous-condition": noAnonymousCondition,
   "no-deep-relative-imports": noDeepRelativeImports,
   "no-default-export": noDefaultExport,
   "no-else": noElse,

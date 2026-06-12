@@ -831,6 +831,7 @@ de cada regla):
 | `nest-validation-pipe-config` | `allowFilePatterns` (globs), `requiredPipeOptions` (default `["transform", "whitelist"]`) |
 | `no-deep-relative-imports` | `maxDepth` |
 | `no-default-export` | `allowFilePatterns` (globs, aditivos a los integrados) |
+| `no-anonymous-condition` | `allowFilePatterns` (globs), `maxMemberDepth` (default `2`), `allowTypePredicates` (default `true`, type-aware) |
 | `no-else` | `allowFilePatterns` (globs) |
 | `no-emoji` | `allowFilePatterns` (globs) |
 | `no-explicit-any` | las de la regla original de typescript-eslint (`fixToUnknown`, ...) |
@@ -879,6 +880,7 @@ matchea en cualquier carpeta). Las 7 reglas restantes no tienen opciones: su
 | `skapxd/nest-no-swagger-in-controllers` | Los controllers no se llenan de decoradores de swagger; el plugin introspecciona los DTOs. Preset `nest`. |
 | `skapxd/nest-requires-swagger-plugin` | `nest-cli.json` debe tener el plugin `@nestjs/swagger`: la premisa de las reglas de swagger, verificada. Preset `nest`. |
 | `skapxd/nest-validation-pipe-config` | Todo `new ValidationPipe` configura `transform` y `whitelist`: la premisa de las reglas de DTOs. Preset `nest`. |
+| `skapxd/no-anonymous-condition` | El `if` solo acepta condiciones ya nombradas; todo cómputo (llamada, comparación, `&&`/`||`) se extrae a una `const` con nombre semántico. **Opt-in: no está en ningún preset.** |
 | `skapxd/no-deep-relative-imports` | Limita la profundidad de los imports relativos (`../`). |
 | `skapxd/no-default-export` | Prohíbe `export default`; el nombre del símbolo es el contrato. Exime configs/stories y, en el preset `next`, los entrypoints del App Router. |
 | `skapxd/no-else` | Prohíbe `else`/`else if`: el else es el estado sin nombre. Retorno anticipado, ternario simple o `match()`. |
@@ -1659,6 +1661,57 @@ inferido) hasta el `Result` de `@skapxd/result`, así que devolver el Result
 por indirección tampoco escapa. Solo aplica a clases con `@Controller`
 (configurable con `controllerDecoratorNames` para decoradores propios); los
 services retornan Result con orgullo — ese es el dominio.
+
+### `skapxd/no-anonymous-condition`
+
+La hermana de `no-else`: esa nombra los **caminos**, esta nombra la
+**pregunta**. Un `if` cuya condición es un cómputo evalúa un valor anónimo
+cuyo significado vive solo en la cabeza de quien lo escribió; la regla exige
+bautizarlo (el refactor "introduce explaining variable" de Fowler, como ley):
+
+```ts
+if (matchesAnyGlob(filename, options.allowFilePatterns)) { ... }   // ❌ ¿qué significa que matchee?
+
+const esArchivoExento = matchesAnyGlob(filename, options.allowFilePatterns);
+if (esArchivoExento) { ... }                                       // ✅ la decisión se lee como prosa
+```
+
+Lo **ya nombrado** no se extrae (la lista blanca — extraerlo sería ceremonia
+sin información):
+
+- Variables y sus negaciones: `isReady`, `!isReady`, `!!isReady`.
+- Accesos a propiedad hasta `maxMemberDepth` saltos (contando puntos desde
+  la base como nivel 0: `result.ok` → 1, `options.rules.flag` → 2; default
+  `2`) y sus negaciones — incluido el encadenamiento opcional (`config?.flag`).
+- Comparaciones contra literal booleano o nullish (`x.ok === false`,
+  `x == null`, `x !== undefined`): la escritura explícita de la
+  afirmación/negación/presencia. Cubre las formas oficiales del guard de
+  Result, que `result-error-requires-cause/handling` necesitan ver intactas.
+- **Type guards demostrados por la firma** (`allowTypePredicates`, default
+  `true`): `if (isFunctionNode(x))` pasa cuando la firma declara
+  `x is FunctionNode` — el type-checker lo demuestra (evidencia, no
+  convención de nombre: una `isX(...)` que devuelve `boolean` a secas sí se
+  extrae). Requiere type info; sin parser services no hay evidencia y toda
+  llamada exige nombre. `Result.isErr(x)` pasa por esta vía: es un type
+  predicate real.
+
+Lo que **sí dispara**: llamadas, comparaciones (`a.length <= b.max`,
+`status === "ready"`), combinaciones `&&`/`||` y aritmética
+(`if (total % 2)`). La extracción directa a `const` conserva el narrowing
+(TS 4.4+, aliased conditions).
+
+**Opt-in deliberado: no está en ningún preset.** La calibración contra 4
+proyectos reales (2026-06-12) midió 473/95/308 hallazgos en tres backends
+NestJS en producción y 44 en un front pequeño — señal genuina en la muestra
+revisada, pero un orden de magnitud más invasiva que cualquier regla de las
+bases. Actívala por proyecto (o por carpeta, estilo ola 3 del playbook de
+adopción):
+
+```js
+rules: {
+  "skapxd/no-anonymous-condition": "error",
+}
+```
 
 ### `skapxd/no-deep-relative-imports`
 
