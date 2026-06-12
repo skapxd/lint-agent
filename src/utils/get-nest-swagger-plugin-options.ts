@@ -1,5 +1,5 @@
-// @ts-nocheck
-export function getNestSwaggerPluginOptions(options = {}) {
+import type { LegacyAstNode } from "#/utils/rule-types";
+export function getNestSwaggerPluginOptions(options: LegacyAstNode = {}) {
   return {
     allowFilePatterns: options.allowFilePatterns ?? [],
     // La regla se ancla al entrypoint para reportar UNA vez por proyecto.

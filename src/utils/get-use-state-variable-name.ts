@@ -1,7 +1,7 @@
-// @ts-nocheck
+import type { LegacyAstNode } from "#/utils/rule-types";
 // `const [error, setError] = useState(...)` → "error". Devuelve null si el
 // resultado del useState no se destructura con nombre.
-export function getUseStateVariableName(callExpression) {
+export function getUseStateVariableName(callExpression: LegacyAstNode) {
   const declarator = callExpression.parent;
 
   if (

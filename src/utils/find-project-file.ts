@@ -1,11 +1,11 @@
-// @ts-nocheck
+import type { LegacyAstNode } from "#/utils/rule-types";
 import { existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 
 // Busca un archivo subiendo carpetas desde startDir. Se detiene en la raíz
 // del proyecto (la carpeta con package.json) o del filesystem: no se sale
 // del proyecto que se está linteando.
-export function findProjectFile(startDir, fileName) {
+export function findProjectFile(startDir: LegacyAstNode, fileName: LegacyAstNode) {
   let current = startDir;
 
   while (true) {

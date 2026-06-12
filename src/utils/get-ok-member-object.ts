@@ -1,8 +1,8 @@
-// @ts-nocheck
+import type { LegacyAstNode } from "#/utils/rule-types";
 import { isMemberPropertyNamed } from "./is-member-property-named";
 import { unwrapExpression } from "./unwrap-expression";
 
-export function getOkMemberObject(node) {
+export function getOkMemberObject(node: LegacyAstNode) {
   const unwrappedNode = unwrapExpression(node);
 
   if (

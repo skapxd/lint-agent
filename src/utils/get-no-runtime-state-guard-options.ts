@@ -1,5 +1,5 @@
-// @ts-nocheck
-export function getNoRuntimeStateGuardOptions(options = {}) {
+import type { LegacyAstNode } from "#/utils/rule-types";
+export function getNoRuntimeStateGuardOptions(options: LegacyAstNode = {}) {
   return {
     allowFilePatterns: options.allowFilePatterns ?? [],
   };

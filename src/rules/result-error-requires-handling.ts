@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { collectIdentifiersNamed } from "#/utils/collect-identifiers-named";
 import { getFailedResultGuard } from "#/utils/get-failed-result-guard";
 import { getResultErrorRequiresHandlingOptions } from "#/utils/get-result-error-requires-handling-options";
@@ -6,8 +5,9 @@ import { getTypeContext } from "#/utils/get-type-context";
 import { isConsumedResultReference } from "#/utils/is-consumed-result-reference";
 import { isSkapxdResultExpression } from "#/utils/is-skapxd-result-expression";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
+import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
 
-export const resultErrorRequiresHandling = {
+export const resultErrorRequiresHandling: RuleModule = {
   meta: {
     type: "problem",
     docs: {
@@ -31,7 +31,7 @@ export const resultErrorRequiresHandling = {
       },
     ],
   },
-  create(context) {
+  create(context: LegacyAstNode) {
     const options = getResultErrorRequiresHandlingOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
     const typeContext = getTypeContext(context);
@@ -41,7 +41,7 @@ export const resultErrorRequiresHandling = {
     }
 
     return {
-      IfStatement(node) {
+      IfStatement(node: LegacyAstNode) {
         const resultGuard = getFailedResultGuard(node.test);
 
         if (
@@ -58,7 +58,7 @@ export const resultErrorRequiresHandling = {
         );
 
         if (
-          references.some((reference) =>
+          references.some((reference: LegacyAstNode) =>
             isConsumedResultReference(reference, node.consequent),
           )
         ) {

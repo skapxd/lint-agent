@@ -1,9 +1,9 @@
-// @ts-nocheck
+import type { LegacyAstNode } from "#/utils/rule-types";
 import { getFunctionNodeName } from "./get-function-node-name";
 import { getVariableDeclaratorName } from "./get-variable-declarator-name";
 import { isFunctionNode } from "./is-function-node";
 
-export function getRootFunctionEntries(statement) {
+export function getRootFunctionEntries(statement: LegacyAstNode) {
   const declaration =
     statement.type === "ExportNamedDeclaration" ||
     statement.type === "ExportDefaultDeclaration"
@@ -28,8 +28,8 @@ export function getRootFunctionEntries(statement) {
   }
 
   return declaration.declarations
-    .filter((variableDeclarator) => isFunctionNode(variableDeclarator.init))
-    .map((variableDeclarator) => ({
+    .filter((variableDeclarator: LegacyAstNode) => isFunctionNode(variableDeclarator.init))
+    .map((variableDeclarator: LegacyAstNode) => ({
       name: getVariableDeclaratorName(variableDeclarator),
       node: variableDeclarator.init,
     }));

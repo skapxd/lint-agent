@@ -1,5 +1,5 @@
-// @ts-nocheck
-export function getReadonlyPropertiesOptions(options = {}) {
+import type { LegacyAstNode } from "#/utils/rule-types";
+export function getReadonlyPropertiesOptions(options: LegacyAstNode = {}) {
   return {
     allowFilePatterns: options.allowFilePatterns ?? [],
     // Regex de nombres de propiedad con mutación inherente (la conexión de

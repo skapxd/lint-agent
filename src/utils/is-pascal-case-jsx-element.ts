@@ -1,9 +1,9 @@
-// @ts-nocheck
+import type { LegacyAstNode } from "#/utils/rule-types";
 import { isPascalCaseName } from "./is-pascal-case-name";
 
 // `<Child ... />` es un componente propio; `<button ... />` es la frontera
 // con el DOM. Solo el primero cuenta para las reglas de prop drilling.
-export function isPascalCaseJsxElement(openingElement) {
+export function isPascalCaseJsxElement(openingElement: LegacyAstNode) {
   return (
     openingElement?.type === "JSXOpeningElement" &&
     openingElement.name?.type === "JSXIdentifier" &&

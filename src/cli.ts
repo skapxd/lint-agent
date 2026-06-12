@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// @ts-nocheck
+import type { LegacyAstNode } from "#/utils/rule-types";
 import { execSync } from "node:child_process";
 import path from "node:path";
 import process from "node:process";
@@ -9,8 +9,8 @@ import { ESLint } from "eslint";
 
 const lintableFile = /\.(c|m)?[jt]sx?$/;
 
-async function lintChanged(base) {
-  function git(command, options = {}) {
+async function lintChanged(base: LegacyAstNode) {
+  function git(command: LegacyAstNode, options: LegacyAstNode = {}) {
     const result = trySafe(() =>
       execSync(command, {
         encoding: "utf8",
@@ -34,11 +34,11 @@ async function lintChanged(base) {
     const untracked = base
       ? ""
       : git("git ls-files --others --exclude-standard", { cwd: root });
-    const lines = `${changed}\n${untracked}`.split("\n").map((line) => line.trim());
+    const lines = `${changed}\n${untracked}`.split("\n").map((line: LegacyAstNode) => line.trim());
 
     return [...new Set(lines)]
-      .filter((file) => file && lintableFile.test(file))
-      .map((file) => path.join(root, file));
+      .filter((file: LegacyAstNode) => file && lintableFile.test(file))
+      .map((file: LegacyAstNode) => path.join(root, file));
   }
 
   const files = getChangedFiles();
@@ -83,7 +83,7 @@ async function lintChanged(base) {
 
   if (output.value) {
     console.log(output.value);
-    const hasErrors = lint.value.some((result) => result.errorCount > 0);
+    const hasErrors = lint.value.some((result: LegacyAstNode) => result.errorCount > 0);
     process.exitCode = hasErrors ? 1 : 0;
     return;
   }
@@ -103,5 +103,5 @@ void new Command()
     "--base <ref>",
     "Rama base: lintea lo que tu branch cambió desde que divergió de ella (CI/PR).",
   )
-  .action((options) => lintChanged(options.base ?? null))
+  .action((options: LegacyAstNode) => lintChanged(options.base ?? null))
   .parseAsync();

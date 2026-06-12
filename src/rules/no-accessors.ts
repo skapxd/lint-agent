@@ -1,8 +1,8 @@
-// @ts-nocheck
 import { getNoAccessorsOptions } from "#/utils/get-no-accessors-options";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
+import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
 
-export const noAccessors = {
+export const noAccessors: RuleModule = {
   meta: {
     type: "suggestion",
     docs: {
@@ -26,7 +26,7 @@ export const noAccessors = {
       },
     ],
   },
-  create(context) {
+  create(context: LegacyAstNode) {
     const options = getNoAccessorsOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
@@ -34,7 +34,7 @@ export const noAccessors = {
       return {};
     }
 
-    function reportIfAccessor(node) {
+    function reportIfAccessor(node: LegacyAstNode) {
       if (node.kind !== "get" && node.kind !== "set") {
         return;
       }

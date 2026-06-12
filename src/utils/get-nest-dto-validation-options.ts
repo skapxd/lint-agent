@@ -1,5 +1,5 @@
-// @ts-nocheck
-export function getNestDtoValidationOptions(options = {}) {
+import type { LegacyAstNode } from "#/utils/rule-types";
+export function getNestDtoValidationOptions(options: LegacyAstNode = {}) {
   return {
     allowFilePatterns: options.allowFilePatterns ?? [],
     dtoFilePatterns: options.dtoFilePatterns ?? ["*.dto.ts"],

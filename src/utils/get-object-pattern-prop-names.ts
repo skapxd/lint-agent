@@ -1,8 +1,8 @@
-// @ts-nocheck
+import type { LegacyAstNode } from "#/utils/rule-types";
 // Extrae los nombres de props destructuradas del primer parámetro de un
 // componente: `({ game, variant, ...rest })` → { propNames, restName }.
 // Solo cuenta los shorthand (`{ game }`); un rename (`{ game: g }`) se omite.
-export function getObjectPatternPropNames(pattern) {
+export function getObjectPatternPropNames(pattern: LegacyAstNode) {
   // Anotado a mano: el tipo inferido del literal mentia (restName quedaba
   // como `null` para siempre y propNames como never[]).
   const result: { propNames: string[]; restName: string | null } = {

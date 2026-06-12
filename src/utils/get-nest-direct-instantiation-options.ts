@@ -1,5 +1,5 @@
-// @ts-nocheck
-export function getNestDirectInstantiationOptions(options = {}) {
+import type { LegacyAstNode } from "#/utils/rule-types";
+export function getNestDirectInstantiationOptions(options: LegacyAstNode = {}) {
   return {
     allowFilePatterns: options.allowFilePatterns ?? [],
     // Regex de NOMBRES de clase que se construyen, no se inyectan: errores,

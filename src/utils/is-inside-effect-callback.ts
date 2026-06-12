@@ -1,10 +1,10 @@
-// @ts-nocheck
+import type { LegacyAstNode } from "#/utils/rule-types";
 import { isCalleeNamed } from "./is-callee-named";
 import { isFunctionNode } from "./is-function-node";
 
 // ¿El nodo vive dentro del callback de un useEffect/useLayoutEffect?
 // Cubre también las funciones anidadas (handlers y el cleanup retornado).
-export function isInsideEffectCallback(node, effectNames) {
+export function isInsideEffectCallback(node: LegacyAstNode, effectNames: LegacyAstNode) {
   let current = node.parent;
 
   while (current) {

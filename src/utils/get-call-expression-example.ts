@@ -1,7 +1,7 @@
-// @ts-nocheck
+import type { LegacyAstNode } from "#/utils/rule-types";
 import { unwrapExpression } from "./unwrap-expression";
 
-export function getCallExpressionExample(node, sourceCode) {
+export function getCallExpressionExample(node: LegacyAstNode, sourceCode: LegacyAstNode) {
   const calleeText = sourceCode.getText(node.callee);
 
   if (node.arguments.length === 0) {

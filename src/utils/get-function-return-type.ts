@@ -1,5 +1,5 @@
-// @ts-nocheck
-export function getFunctionReturnType(node, typeContext) {
+import type { LegacyAstNode } from "#/utils/rule-types";
+export function getFunctionReturnType(node: LegacyAstNode, typeContext: LegacyAstNode) {
   if (node.returnType?.typeAnnotation) {
     return typeContext.services.getTypeFromTypeNode(node.returnType.typeAnnotation);
   }

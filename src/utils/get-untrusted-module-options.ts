@@ -1,5 +1,5 @@
-// @ts-nocheck
-export function getUntrustedModuleOptions(options = {}) {
+import type { LegacyAstNode } from "#/utils/rule-types";
+export function getUntrustedModuleOptions(options: LegacyAstNode = {}) {
   return {
     // Globs de los archivos adaptador: el UNICO lugar desde donde se permite
     // importar los modulos declarados como no confiables.

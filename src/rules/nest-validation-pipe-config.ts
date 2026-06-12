@@ -1,11 +1,11 @@
-// @ts-nocheck
 import { getImportedLocalNames } from "#/utils/get-imported-local-names";
 import { getNestValidationPipeOptions } from "#/utils/get-nest-validation-pipe-options";
 import { getObjectKeysSetToTrue } from "#/utils/get-object-keys-set-to-true";
 import { getVariableInitializer } from "#/utils/get-variable-initializer";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
+import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
 
-export const nestValidationPipeConfig = {
+export const nestValidationPipeConfig: RuleModule = {
   meta: {
     type: "problem",
     docs: {
@@ -33,7 +33,7 @@ export const nestValidationPipeConfig = {
       },
     ],
   },
-  create(context) {
+  create(context: LegacyAstNode) {
     const options = getNestValidationPipeOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
     const sourceCode = context.sourceCode ?? context.getSourceCode();
@@ -44,7 +44,7 @@ export const nestValidationPipeConfig = {
 
     let commonNames = new Set();
 
-    function resolvePipeOptionsObject(argument) {
+    function resolvePipeOptionsObject(argument: LegacyAstNode) {
       if (!argument) {
         return null;
       }
@@ -66,10 +66,10 @@ export const nestValidationPipeConfig = {
     }
 
     return {
-      Program(node) {
+      Program(node: LegacyAstNode) {
         commonNames = getImportedLocalNames(node, "@nestjs/common");
       },
-      NewExpression(node) {
+      NewExpression(node: LegacyAstNode) {
         if (
           node.callee?.type !== "Identifier" ||
           node.callee.name !== "ValidationPipe" ||
@@ -87,7 +87,7 @@ export const nestValidationPipeConfig = {
 
         const hasSpread =
           pipeOptions?.properties.some(
-            (property) => property.type === "SpreadElement",
+            (property: LegacyAstNode) => property.type === "SpreadElement",
           ) ?? false;
 
         if (hasSpread) {
@@ -98,12 +98,12 @@ export const nestValidationPipeConfig = {
           ? getObjectKeysSetToTrue(pipeOptions, options.requiredPipeOptions)
           : [];
         const missing = options.requiredPipeOptions.filter(
-          (key) => !present.includes(key),
+          (key: LegacyAstNode) => !present.includes(key),
         );
 
         if (missing.length > 0) {
           context.report({
-            data: { missing: missing.map((key) => `\`${key}: true\``).join(", ") },
+            data: { missing: missing.map((key: LegacyAstNode) => `\`${key}: true\``).join(", ") },
             messageId: "missingPipeOptions",
             node,
           });

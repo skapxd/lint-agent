@@ -1,11 +1,11 @@
-// @ts-nocheck
 import { getContainingFunction } from "#/utils/get-containing-function";
 import { getFunctionName } from "#/utils/get-function-name";
 import { getReturnedObjectExpression } from "#/utils/get-returned-object-expression";
 import { hasBooleanOkProperty } from "#/utils/has-boolean-ok-property";
 import { isExportedFunction } from "#/utils/is-exported-function";
+import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
 
-export const noAdHocOkResult = {
+export const noAdHocOkResult: RuleModule = {
       meta: {
         type: "problem",
         docs: {
@@ -18,9 +18,9 @@ export const noAdHocOkResult = {
         },
         schema: [],
       },
-      create(context) {
+      create(context: LegacyAstNode) {
         return {
-          ReturnStatement(node) {
+          ReturnStatement(node: LegacyAstNode) {
             const returnedObject = getReturnedObjectExpression(node.argument);
 
             if (!returnedObject || !hasBooleanOkProperty(returnedObject)) {

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { getAwaitRequiresResultOptions } from "#/utils/get-await-requires-result-options";
 import { getAwaitScopeName } from "#/utils/get-await-scope-name";
 import { getEnclosingTrySafeCall } from "#/utils/get-enclosing-try-safe-call";
@@ -8,8 +7,9 @@ import { isSkapxdResultOrPromiseResultExpression } from "#/utils/is-skapxd-resul
 import { isSymbolFromSkapxdResult } from "#/utils/is-symbol-from-skapxd-result";
 import { isTrySafeCall } from "#/utils/is-try-safe-call";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
+import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
 
-export const awaitRequiresResult = {
+export const awaitRequiresResult: RuleModule = {
       meta: {
         type: "problem",
         docs: {
@@ -37,7 +37,7 @@ export const awaitRequiresResult = {
           },
         ],
       },
-      create(context) {
+      create(context: LegacyAstNode) {
         const options = getAwaitRequiresResultOptions(context.options[0]);
         const filename = context.filename ?? context.getFilename();
         const sourceCode = context.sourceCode ?? context.getSourceCode();
@@ -45,7 +45,7 @@ export const awaitRequiresResult = {
 
         // Una llamada protege el await solo si es trySafe de @skapxd/result.
         // Con info de tipos se verifica por símbolo; sin ella, el nombre basta.
-        function isSkapxdTrySafe(callNode) {
+        function isSkapxdTrySafe(callNode: LegacyAstNode) {
           if (!callNode) {
             return false;
           }
@@ -60,7 +60,7 @@ export const awaitRequiresResult = {
         }
 
         return {
-          AwaitExpression(node) {
+          AwaitExpression(node: LegacyAstNode) {
             if (matchesAnyGlob(filename, options.allowFilePatterns)) {
               return;
             }

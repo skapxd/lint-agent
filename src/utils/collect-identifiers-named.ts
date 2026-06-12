@@ -1,7 +1,7 @@
-// @ts-nocheck
+import type { LegacyAstNode } from "#/utils/rule-types";
 import { getNodeChildren } from "./get-node-children";
 
-export function collectIdentifiersNamed(node, name, results = []) {
+export function collectIdentifiersNamed(node: LegacyAstNode, name: LegacyAstNode, results: LegacyAstNode = []) {
   if (node?.type === "Identifier" && node.name === name) {
     results.push(node);
   }

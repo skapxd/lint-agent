@@ -1,5 +1,5 @@
-// @ts-nocheck
-export function getTypeContext(context) {
+import type { LegacyAstNode } from "#/utils/rule-types";
+export function getTypeContext(context: LegacyAstNode) {
   const sourceCode = context.sourceCode ?? context.getSourceCode();
   const parserServices = sourceCode.parserServices;
 

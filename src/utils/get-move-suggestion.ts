@@ -1,11 +1,11 @@
-// @ts-nocheck
+import type { LegacyAstNode } from "#/utils/rule-types";
 import { getFileName } from "./get-file-name";
 import { getSourceExtension } from "./get-source-extension";
 import { getSuggestedHelperPath } from "./get-suggested-helper-path";
 import { isHttpRouteMethod } from "./is-http-route-method";
 import { isNextConventionFile } from "./is-next-convention-file";
 
-export function getMoveSuggestion({ filename, functionName }) {
+export function getMoveSuggestion({ filename, functionName }: LegacyAstNode) {
   const fileName = getFileName(filename);
   const extension = getSourceExtension(fileName);
   const fileStem = fileName.slice(0, -extension.length);

@@ -1,5 +1,5 @@
-// @ts-nocheck
-export function getTypedExportsOptions(options = {}) {
+import type { LegacyAstNode } from "#/utils/rule-types";
+export function getTypedExportsOptions(options: LegacyAstNode = {}) {
   return {
     allowFilePatterns: options.allowFilePatterns ?? [],
     // Anclada al entrypoint de la libreria: un reporte por paquete.

@@ -1,8 +1,8 @@
-// @ts-nocheck
+import type { LegacyAstNode } from "#/utils/rule-types";
 import { isAstNode } from "./is-ast-node";
 
-export function getNodeChildren(node) {
-  return Object.entries(node).flatMap(([key, value]) => {
+export function getNodeChildren(node: LegacyAstNode) {
+  return Object.entries(node).flatMap(([key, value]: LegacyAstNode) => {
     if (["parent", "loc", "range", "tokens", "comments"].includes(key)) {
       return [];
     }

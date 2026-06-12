@@ -1,10 +1,13 @@
-// @ts-nocheck
+import type { LegacyAstNode } from "#/utils/rule-types";
 import { getNodeChildren } from "./get-node-children";
 import { isAstNode } from "./is-ast-node";
 import { isFunctionNode } from "./is-function-node";
 import { isResultErrCall } from "./is-result-err-call";
 
-export function getOwnResultErrCalls(node, isRoot = true) {
+export function getOwnResultErrCalls(
+  node: LegacyAstNode,
+  isRoot: LegacyAstNode = true,
+): LegacyAstNode[] {
   if (!isAstNode(node)) {
     return [];
   }
@@ -18,6 +21,6 @@ export function getOwnResultErrCalls(node, isRoot = true) {
 
   return [
     ...ownCalls,
-    ...getNodeChildren(node).flatMap((child) => getOwnResultErrCalls(child, false)),
+    ...getNodeChildren(node).flatMap((child: LegacyAstNode) => getOwnResultErrCalls(child, false)),
   ];
 }

@@ -1,5 +1,5 @@
-// @ts-nocheck
-export function getContainingClassName(node) {
+import type { LegacyAstNode } from "#/utils/rule-types";
+export function getContainingClassName(node: LegacyAstNode) {
   let current = node.parent;
 
   while (current) {

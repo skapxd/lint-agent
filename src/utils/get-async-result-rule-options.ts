@@ -1,5 +1,5 @@
-// @ts-nocheck
-export function getAsyncResultRuleOptions(options = {}) {
+import type { LegacyAstNode } from "#/utils/rule-types";
+export function getAsyncResultRuleOptions(options: LegacyAstNode = {}) {
   return {
     allowFilePatterns: options.allowFilePatterns ?? [],
     allowNamePatterns: options.allowNamePatterns ?? [],

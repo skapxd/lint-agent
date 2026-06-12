@@ -1,7 +1,7 @@
-// @ts-nocheck
+import type { LegacyAstNode } from "#/utils/rule-types";
 // `@Query('name')` cuenta como query param inline. `@Query()` (recibe el DTO
 // completo) y `@Query(MyPipe)` (un solo param consolidado) están bien.
-export function isQueryWithStringArg(decorator) {
+export function isQueryWithStringArg(decorator: LegacyAstNode) {
   const expression = decorator.expression;
 
   if (

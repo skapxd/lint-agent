@@ -1,13 +1,13 @@
-// @ts-nocheck
 import { getNestNoResultResponseOptions } from "#/utils/get-nest-no-result-response-options";
 import { getTypeContext } from "#/utils/get-type-context";
 import { hasClassDecoratorNamed } from "#/utils/has-class-decorator-named";
 import { isSkapxdResultOrPromiseResultType } from "#/utils/is-skapxd-result-or-promise-result-type";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
+import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
 
 const typescriptCallSignatureKind = 0;
 
-export const nestNoResultResponse = {
+export const nestNoResultResponse: RuleModule = {
   meta: {
     type: "problem",
     docs: {
@@ -35,7 +35,7 @@ export const nestNoResultResponse = {
       },
     ],
   },
-  create(context) {
+  create(context: LegacyAstNode) {
     const options = getNestNoResultResponseOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
     const typeContext = getTypeContext(context);
@@ -44,23 +44,25 @@ export const nestNoResultResponse = {
       return {};
     }
 
-    function methodReturnsResult(node) {
-      const methodType = typeContext.services.getTypeAtLocation(node.value);
-      const signatures = typeContext.checker.getSignaturesOfType(
+    const activeTypeContext = typeContext;
+
+    function methodReturnsResult(node: LegacyAstNode) {
+      const methodType = activeTypeContext.services.getTypeAtLocation(node.value);
+      const signatures = activeTypeContext.checker.getSignaturesOfType(
         methodType,
         typescriptCallSignatureKind,
       );
 
-      return signatures.some((signature) =>
+      return signatures.some((signature: LegacyAstNode) =>
         isSkapxdResultOrPromiseResultType(
-          typeContext.checker.getReturnTypeOfSignature(signature),
-          typeContext,
+          activeTypeContext.checker.getReturnTypeOfSignature(signature),
+          activeTypeContext,
         ),
       );
     }
 
     return {
-      MethodDefinition(node) {
+      MethodDefinition(node: LegacyAstNode) {
         if (node.kind !== "method") {
           return;
         }

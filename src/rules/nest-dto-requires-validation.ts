@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { getContainingClassName } from "#/utils/get-containing-class-name";
 import { getDecoratorName } from "#/utils/get-decorator-name";
 import { getImportedLocalNames } from "#/utils/get-imported-local-names";
@@ -6,8 +5,9 @@ import { getNestDtoValidationOptions } from "#/utils/get-nest-dto-validation-opt
 import { isPublicInstanceProperty } from "#/utils/is-public-instance-property";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
 import { matchesAnyPattern } from "#/utils/matches-any-pattern";
+import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
 
-export const nestDtoRequiresValidation = {
+export const nestDtoRequiresValidation: RuleModule = {
   meta: {
     type: "problem",
     docs: {
@@ -51,7 +51,7 @@ export const nestDtoRequiresValidation = {
       },
     ],
   },
-  create(context) {
+  create(context: LegacyAstNode) {
     const options = getNestDtoValidationOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
@@ -67,11 +67,11 @@ export const nestDtoRequiresValidation = {
     let transformerNames = new Set();
 
     return {
-      Program(node) {
+      Program(node: LegacyAstNode) {
         validatorNames = getImportedLocalNames(node, "class-validator");
         transformerNames = getImportedLocalNames(node, "class-transformer");
       },
-      PropertyDefinition(node) {
+      PropertyDefinition(node: LegacyAstNode) {
         if (!isPublicInstanceProperty(node)) {
           return;
         }
@@ -89,7 +89,7 @@ export const nestDtoRequiresValidation = {
 
         const propertyName = node.key?.name ?? "anonymous";
         const decoratorNames = (node.decorators ?? []).map(getDecoratorName);
-        const validators = decoratorNames.filter((name) =>
+        const validators = decoratorNames.filter((name: LegacyAstNode) =>
           validatorNames.has(name),
         );
 
@@ -104,7 +104,7 @@ export const nestDtoRequiresValidation = {
         }
 
         const declaresOptional = decoratorNames.some(
-          (name) =>
+          (name: LegacyAstNode) =>
             validatorNames.has(name) &&
             options.optionalDecoratorNames.includes(name),
         );
@@ -118,10 +118,10 @@ export const nestDtoRequiresValidation = {
         }
 
         const hasValidateNested = decoratorNames.some(
-          (name) => name === "ValidateNested" && validatorNames.has(name),
+          (name: LegacyAstNode) => name === "ValidateNested" && validatorNames.has(name),
         );
         const hasType = decoratorNames.some(
-          (name) => name === "Type" && transformerNames.has(name),
+          (name: LegacyAstNode) => name === "Type" && transformerNames.has(name),
         );
 
         if (hasValidateNested && !hasType) {

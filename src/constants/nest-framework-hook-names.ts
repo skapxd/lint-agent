@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Métodos públicos que NO cuentan hacia el límite porque son callbacks del
 // framework (NestJS): los llama el container/router/HTTP layer, nunca el
 // código de negocio. Contarlos forzaría refactors sin semántica.

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { containsCallNamed } from "#/utils/contains-call-named";
 import { getAsyncResultRuleOptions } from "#/utils/get-async-result-rule-options";
 import { getFunctionExpressionName } from "#/utils/get-function-expression-name";
@@ -10,8 +9,9 @@ import { isPromiseOfResultType } from "#/utils/is-promise-of-result-type";
 import { isSkapxdResultOrPromiseResultType } from "#/utils/is-skapxd-result-or-promise-result-type";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
 import { matchesAnyPattern } from "#/utils/matches-any-pattern";
+import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
 
-export const asyncFunctionsReturnResult = {
+export const asyncFunctionsReturnResult: RuleModule = {
       meta: {
         type: "problem",
         docs: {
@@ -58,7 +58,7 @@ export const asyncFunctionsReturnResult = {
           },
         ],
       },
-      create(context) {
+      create(context: LegacyAstNode) {
         const options = getAsyncResultRuleOptions(context.options[0]);
         const filename = context.filename ?? context.getFilename();
         const typeContext = getTypeContext(context);
@@ -66,7 +66,7 @@ export const asyncFunctionsReturnResult = {
         // Verifica que el tipo de retorno sea un Result de @skapxd/result.
         // Con información de tipos (projectService) resuelve el símbolo hasta
         // el paquete; sin ella, cae a una comprobación por nombre.
-        function isSkapxdResultReturnType(annotation) {
+        function isSkapxdResultReturnType(annotation: LegacyAstNode) {
           if (typeContext) {
             const type = typeContext.services.getTypeFromTypeNode(annotation);
 
@@ -76,7 +76,7 @@ export const asyncFunctionsReturnResult = {
           return isPromiseOfResultType(annotation, options);
         }
 
-        function reportIfInvalidAsyncReturn(node, name, reportNode = node) {
+        function reportIfInvalidAsyncReturn(node: LegacyAstNode, name: LegacyAstNode, reportNode: LegacyAstNode = node) {
           if (!node.async || matchesAnyGlob(filename, options.allowFilePatterns)) {
             return;
           }
@@ -129,17 +129,17 @@ export const asyncFunctionsReturnResult = {
         }
 
         return {
-          ArrowFunctionExpression(node) {
+          ArrowFunctionExpression(node: LegacyAstNode) {
             reportIfInvalidAsyncReturn(
               node,
               getParentFunctionName(node),
               getParentFunctionReportNode(node),
             );
           },
-          FunctionDeclaration(node) {
+          FunctionDeclaration(node: LegacyAstNode) {
             reportIfInvalidAsyncReturn(node, node.id?.name, node.id ?? node);
           },
-          FunctionExpression(node) {
+          FunctionExpression(node: LegacyAstNode) {
             reportIfInvalidAsyncReturn(
               node,
               getFunctionExpressionName(node),

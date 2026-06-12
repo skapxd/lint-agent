@@ -1,5 +1,5 @@
-// @ts-nocheck
-export function isExportedFunction(node) {
+import type { LegacyAstNode } from "#/utils/rule-types";
+export function isExportedFunction(node: LegacyAstNode) {
   const parent = node.parent;
 
   if (

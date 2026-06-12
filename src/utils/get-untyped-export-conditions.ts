@@ -1,4 +1,4 @@
-// @ts-nocheck
+import type { LegacyAstNode } from "#/utils/rule-types";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 
@@ -7,7 +7,7 @@ import { join } from "node:path";
 // un objeto con su PROPIO `types` (import → .d.mts, require → .d.ts/.d.cts)
 // y el archivo debe existir. Un `types` unico a nivel del subpath es el bug
 // "FalseCJS": consumidores ESM con moduleResolution node16 reciben tipos CJS.
-export function getUntypedExportConditions(exportsField, packageDir) {
+export function getUntypedExportConditions(exportsField: LegacyAstNode, packageDir: LegacyAstNode) {
   const violations = [];
   const entries =
     "import" in exportsField || "require" in exportsField

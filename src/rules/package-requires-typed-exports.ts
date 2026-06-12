@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { trySafe } from "@skapxd/result";
@@ -6,14 +5,15 @@ import { findProjectFile } from "#/utils/find-project-file";
 import { getTypedExportsOptions } from "#/utils/get-typed-exports-options";
 import { getUntypedExportConditions } from "#/utils/get-untyped-export-conditions";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
+import type { LegacyAstNode, RuleModule } from "#/utils/rule-types";
 
-const kindMessages = {
+const kindMessages: Record<string, string> = {
   "missing-file": "missingTypesFile",
   untyped: "untypedCondition",
   "wrong-flavor": "wrongTypesFlavor",
 };
 
-export const packageRequiresTypedExports = {
+export const packageRequiresTypedExports: RuleModule = {
   meta: {
     type: "problem",
     docs: {
@@ -49,7 +49,7 @@ export const packageRequiresTypedExports = {
       },
     ],
   },
-  create(context) {
+  create(context: LegacyAstNode) {
     const options = getTypedExportsOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
@@ -61,17 +61,22 @@ export const packageRequiresTypedExports = {
     }
 
     return {
-      Program(node) {
+      Program(node: LegacyAstNode) {
         const absoluteFilename = resolve(context.cwd ?? process.cwd(), filename);
         const packageJsonPath = findProjectFile(
           dirname(absoluteFilename),
           "package.json",
         );
         const parsed = packageJsonPath
-          ? trySafe(() => JSON.parse(readFileSync(packageJsonPath, "utf8")))
+          ? trySafe<Record<string, unknown>>(() =>
+              JSON.parse(readFileSync(packageJsonPath, "utf8")) as Record<
+                string,
+                unknown
+              >,
+            )
           : null;
 
-        if (!parsed || !parsed.ok) {
+        if (!packageJsonPath || !parsed || !parsed.ok) {
           context.report({ messageId: "unreadablePackageJson", node });
 
           return;

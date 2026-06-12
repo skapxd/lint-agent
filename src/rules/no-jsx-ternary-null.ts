@@ -1,5 +1,5 @@
-// @ts-nocheck
-export const noJsxTernaryNull = {
+import type { LegacyAstNode, RuleModule } from "#/utils/rule-types";
+export const noJsxTernaryNull: RuleModule = {
   meta: {
     type: "suggestion",
     docs: {
@@ -12,13 +12,13 @@ export const noJsxTernaryNull = {
     },
     schema: [],
   },
-  create(context) {
-    function isNullLiteral(node) {
+  create(context: LegacyAstNode) {
+    function isNullLiteral(node: LegacyAstNode) {
       return node?.type === "Literal" && node.value === null;
     }
 
     return {
-      ConditionalExpression(node) {
+      ConditionalExpression(node: LegacyAstNode) {
         const container = node.parent;
 
         if (container?.type !== "JSXExpressionContainer") {

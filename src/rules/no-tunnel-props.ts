@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { collectIdentifiersNamed } from "#/utils/collect-identifiers-named";
 import { getFunctionName } from "#/utils/get-function-name";
 import { getNoTunnelPropsOptions } from "#/utils/get-no-tunnel-props-options";
@@ -8,8 +7,9 @@ import { isPascalCaseJsxElement } from "#/utils/is-pascal-case-jsx-element";
 import { isPascalCaseName } from "#/utils/is-pascal-case-name";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
 import { matchesAnyPattern } from "#/utils/matches-any-pattern";
+import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
 
-export const noTunnelProps = {
+export const noTunnelProps: RuleModule = {
   meta: {
     type: "problem",
     docs: {
@@ -39,7 +39,7 @@ export const noTunnelProps = {
       },
     ],
   },
-  create(context) {
+  create(context: LegacyAstNode) {
     const options = getNoTunnelPropsOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
@@ -47,9 +47,9 @@ export const noTunnelProps = {
       return {};
     }
 
-    function reportSpreadTunnel(node, componentName, restName) {
+    function reportSpreadTunnel(node: LegacyAstNode, componentName: LegacyAstNode, restName: LegacyAstNode) {
       const spreads = collectIdentifiersNamed(node.body, restName).filter(
-        (identifier) =>
+        (identifier: LegacyAstNode) =>
           identifier.parent?.type === "JSXSpreadAttribute" &&
           isPascalCaseJsxElement(identifier.parent.parent),
       );
@@ -63,7 +63,7 @@ export const noTunnelProps = {
       }
     }
 
-    function reportForwardedProps(node, componentName, propNames) {
+    function reportForwardedProps(node: LegacyAstNode, componentName: LegacyAstNode, propNames: LegacyAstNode) {
       for (const propName of propNames) {
         if (matchesAnyPattern(propName, options.allowPropPatterns)) {
           continue;
@@ -81,7 +81,7 @@ export const noTunnelProps = {
       }
     }
 
-    function reportIfTunnelComponent(node) {
+    function reportIfTunnelComponent(node: LegacyAstNode) {
       const componentName = getFunctionName(node);
 
       if (!isPascalCaseName(componentName)) {

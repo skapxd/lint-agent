@@ -1,9 +1,9 @@
-// @ts-nocheck
 import { getMoveSuggestion } from "#/utils/get-move-suggestion";
 import { getRootFunctionEntries } from "#/utils/get-root-function-entries";
 import { getStructureSuggestion } from "#/utils/get-structure-suggestion";
+import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
 
-export const oneRootFunctionPerFile = {
+export const oneRootFunctionPerFile: RuleModule = {
       meta: {
         type: "suggestion",
         docs: {
@@ -16,10 +16,10 @@ export const oneRootFunctionPerFile = {
         },
         schema: [],
       },
-      create(context) {
+      create(context: LegacyAstNode) {
         return {
-          Program(node) {
-            const rootFunctions = node.body.flatMap((statement) =>
+          Program(node: LegacyAstNode) {
+            const rootFunctions = node.body.flatMap((statement: LegacyAstNode) =>
               getRootFunctionEntries(statement),
             );
 
@@ -30,7 +30,7 @@ export const oneRootFunctionPerFile = {
             const firstHelper = rootFunctions[1];
             const helperFunctionNames = rootFunctions
               .slice(1)
-              .map((rootFunction) => rootFunction.name);
+              .map((rootFunction: LegacyAstNode) => rootFunction.name);
 
             context.report({
               data: {

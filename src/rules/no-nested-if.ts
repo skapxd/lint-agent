@@ -1,9 +1,9 @@
-// @ts-nocheck
 import { getNoNestedIfOptions } from "#/utils/get-no-nested-if-options";
 import { isNestedIfStatement } from "#/utils/is-nested-if-statement";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
+import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
 
-export const noNestedIf = {
+export const noNestedIf: RuleModule = {
   meta: {
     type: "suggestion",
     docs: {
@@ -27,7 +27,7 @@ export const noNestedIf = {
       },
     ],
   },
-  create(context) {
+  create(context: LegacyAstNode) {
     const options = getNoNestedIfOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
@@ -36,7 +36,7 @@ export const noNestedIf = {
     }
 
     return {
-      IfStatement(node) {
+      IfStatement(node: LegacyAstNode) {
         if (isNestedIfStatement(node)) {
           context.report({ messageId: "noNestedIf", node });
         }

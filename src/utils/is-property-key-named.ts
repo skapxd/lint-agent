@@ -1,5 +1,5 @@
-// @ts-nocheck
-export function isPropertyKeyNamed(property, propertyName) {
+import type { LegacyAstNode } from "#/utils/rule-types";
+export function isPropertyKeyNamed(property: LegacyAstNode, propertyName: LegacyAstNode) {
   if (property.key.type === "Identifier") {
     return property.key.name === propertyName;
   }

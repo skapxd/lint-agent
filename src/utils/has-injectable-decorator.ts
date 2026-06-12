@@ -1,4 +1,4 @@
-// @ts-nocheck
+import type { LegacyAstNode } from "#/utils/rule-types";
 import ts from "typescript";
 import { resolveAliasSymbol } from "./resolve-alias-symbol";
 
@@ -6,7 +6,7 @@ import { resolveAliasSymbol } from "./resolve-alias-symbol";
 // - true: pertenece al contenedor de DI — instanciarla a mano lo esquiva.
 // - false: clase de valor (DTO, mapper, error) — el `new` es legítimo.
 // - null: no se pudo resolver el símbolo hasta una declaración de clase.
-export function hasInjectableDecorator(identifier, typeContext) {
+export function hasInjectableDecorator(identifier: LegacyAstNode, typeContext: LegacyAstNode) {
   const symbol = typeContext.services.getSymbolAtLocation(identifier);
 
   if (!symbol) {
@@ -14,7 +14,7 @@ export function hasInjectableDecorator(identifier, typeContext) {
   }
 
   const resolved = resolveAliasSymbol(symbol, typeContext);
-  const declaration = (resolved.declarations ?? []).find((candidate) =>
+  const declaration = (resolved.declarations ?? []).find((candidate: LegacyAstNode) =>
     ts.isClassDeclaration(candidate),
   );
 
@@ -26,7 +26,7 @@ export function hasInjectableDecorator(identifier, typeContext) {
     ? (ts.getDecorators(declaration) ?? [])
     : [];
 
-  return decorators.some((decorator) => {
+  return decorators.some((decorator: LegacyAstNode) => {
     const expression = decorator.expression;
     const callee = ts.isCallExpression(expression)
       ? expression.expression

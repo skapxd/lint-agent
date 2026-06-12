@@ -1,10 +1,10 @@
-// @ts-nocheck
 import { functionReturnsJsx } from "#/utils/function-returns-jsx";
 import { isFunctionNode } from "#/utils/is-function-node";
 import { isPascalCaseName } from "#/utils/is-pascal-case-name";
 import { toPascalCase } from "#/utils/to-pascal-case";
+import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
 
-export const jsxReturnNamePascalCase = {
+export const jsxReturnNamePascalCase: RuleModule = {
       meta: {
         type: "problem",
         docs: {
@@ -17,8 +17,8 @@ export const jsxReturnNamePascalCase = {
         },
         schema: [],
       },
-      create(context) {
-        function reportIfJsxReturningFunction(node, name, reportNode = node) {
+      create(context: LegacyAstNode) {
+        function reportIfJsxReturningFunction(node: LegacyAstNode, name: LegacyAstNode, reportNode: LegacyAstNode = node) {
           if (!name || isPascalCaseName(name) || !functionReturnsJsx(node)) {
             return;
           }
@@ -34,10 +34,10 @@ export const jsxReturnNamePascalCase = {
         }
 
         return {
-          FunctionDeclaration(node) {
+          FunctionDeclaration(node: LegacyAstNode) {
             reportIfJsxReturningFunction(node, node.id?.name, node.id ?? node);
           },
-          VariableDeclarator(node) {
+          VariableDeclarator(node: LegacyAstNode) {
             if (!isFunctionNode(node.init) || node.id.type !== "Identifier") {
               return;
             }

@@ -1,5 +1,5 @@
-// @ts-nocheck
-export const noTryCatch = {
+import type { LegacyAstNode, RuleModule } from "#/utils/rule-types";
+export const noTryCatch: RuleModule = {
   meta: {
     type: "suggestion",
     docs: {
@@ -12,9 +12,9 @@ export const noTryCatch = {
     },
     schema: [],
   },
-  create(context) {
+  create(context: LegacyAstNode) {
     return {
-      TryStatement(node) {
+      TryStatement(node: LegacyAstNode) {
         context.report({
           messageId: "noTryCatch",
           node,

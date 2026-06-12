@@ -1,9 +1,9 @@
-// @ts-nocheck
+import type { LegacyAstNode } from "#/utils/rule-types";
 import { getNodeChildren } from "./get-node-children";
 import { isAstNode } from "./is-ast-node";
 import { isFunctionNode } from "./is-function-node";
 
-export function containsAwaitExpression(node) {
+export function containsAwaitExpression(node: LegacyAstNode): LegacyAstNode {
   if (!isAstNode(node)) {
     return false;
   }
@@ -16,5 +16,5 @@ export function containsAwaitExpression(node) {
     return false;
   }
 
-  return getNodeChildren(node).some((child) => containsAwaitExpression(child));
+  return getNodeChildren(node).some((child: LegacyAstNode) => containsAwaitExpression(child));
 }

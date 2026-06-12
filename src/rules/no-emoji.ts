@@ -1,9 +1,9 @@
-// @ts-nocheck
 import { containsEmoji } from "#/utils/contains-emoji";
 import { getNoEmojiOptions } from "#/utils/get-no-emoji-options";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
+import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
 
-export const noEmoji = {
+export const noEmoji: RuleModule = {
   meta: {
     type: "problem",
     docs: {
@@ -27,7 +27,7 @@ export const noEmoji = {
       },
     ],
   },
-  create(context) {
+  create(context: LegacyAstNode) {
     const options = getNoEmojiOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
@@ -35,20 +35,20 @@ export const noEmoji = {
       return {};
     }
 
-    function reportIfEmoji(node, value) {
+    function reportIfEmoji(node: LegacyAstNode, value: LegacyAstNode) {
       if (typeof value === "string" && containsEmoji(value)) {
         context.report({ messageId: "noEmoji", node });
       }
     }
 
     return {
-      JSXText(node) {
+      JSXText(node: LegacyAstNode) {
         reportIfEmoji(node, node.value);
       },
-      Literal(node) {
+      Literal(node: LegacyAstNode) {
         reportIfEmoji(node, node.value);
       },
-      TemplateElement(node) {
+      TemplateElement(node: LegacyAstNode) {
         reportIfEmoji(node, node.value.raw);
       },
     };

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { countOwnUseStateCalls } from "#/utils/count-own-use-state-calls";
 import { getFunctionExpressionName } from "#/utils/get-function-expression-name";
 import { getFunctionLineCount } from "#/utils/get-function-line-count";
@@ -6,8 +5,9 @@ import { getMaxHookSizeOptions } from "#/utils/get-max-hook-size-options";
 import { getParentFunctionName } from "#/utils/get-parent-function-name";
 import { getParentFunctionReportNode } from "#/utils/get-parent-function-report-node";
 import { isHookName } from "#/utils/is-hook-name";
+import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
 
-export const maxHookSize = {
+export const maxHookSize: RuleModule = {
       meta: {
         type: "suggestion",
         docs: {
@@ -31,10 +31,10 @@ export const maxHookSize = {
           },
         ],
       },
-      create(context) {
+      create(context: LegacyAstNode) {
         const options = getMaxHookSizeOptions(context.options[0]);
 
-        function reportIfOversizedHook(node, name, reportNode = node) {
+        function reportIfOversizedHook(node: LegacyAstNode, name: LegacyAstNode, reportNode: LegacyAstNode = node) {
           if (!isHookName(name)) {
             return;
           }
@@ -68,17 +68,17 @@ export const maxHookSize = {
         }
 
         return {
-          ArrowFunctionExpression(node) {
+          ArrowFunctionExpression(node: LegacyAstNode) {
             reportIfOversizedHook(
               node,
               getParentFunctionName(node),
               getParentFunctionReportNode(node),
             );
           },
-          FunctionDeclaration(node) {
+          FunctionDeclaration(node: LegacyAstNode) {
             reportIfOversizedHook(node, node.id?.name, node.id ?? node);
           },
-          FunctionExpression(node) {
+          FunctionExpression(node: LegacyAstNode) {
             reportIfOversizedHook(
               node,
               getFunctionExpressionName(node),

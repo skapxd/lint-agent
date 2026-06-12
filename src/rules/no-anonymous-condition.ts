@@ -4,6 +4,7 @@ import { getNoAnonymousConditionOptions } from "#/utils/get-no-anonymous-conditi
 import { isLiteralGuardComparison } from "#/utils/is-literal-guard-comparison";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
 import { unwrapNegations } from "#/utils/unwrap-negations";
+import type { RuleModule } from "#/utils/rule-types";
 
 type ConditionNode = {
   type: string;
@@ -36,7 +37,7 @@ type RuleContext = {
 // accesos a propiedad acotados, sus negaciones, comparaciones con literal
 // booleano (el idioma de Result incluido) y type guards demostrados por la
 // firma (`x is T`) — evidencia, no convencion de nombre.
-export const noAnonymousCondition = {
+export const noAnonymousCondition: RuleModule = {
   meta: {
     type: "suggestion",
     docs: {

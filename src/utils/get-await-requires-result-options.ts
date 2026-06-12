@@ -1,5 +1,5 @@
-// @ts-nocheck
-export function getAwaitRequiresResultOptions(options = {}) {
+import type { LegacyAstNode } from "#/utils/rule-types";
+export function getAwaitRequiresResultOptions(options: LegacyAstNode = {}) {
   return {
     allowFilePatterns: options.allowFilePatterns ?? [],
     trySafeCallNames: options.trySafeCallNames ?? ["trySafe"],

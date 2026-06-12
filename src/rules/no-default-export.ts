@@ -1,8 +1,8 @@
-// @ts-nocheck
 import { getNoDefaultExportOptions } from "#/utils/get-no-default-export-options";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
+import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
 
-export const noDefaultExport = {
+export const noDefaultExport: RuleModule = {
   meta: {
     type: "suggestion",
     docs: {
@@ -26,7 +26,7 @@ export const noDefaultExport = {
       },
     ],
   },
-  create(context) {
+  create(context: LegacyAstNode) {
     const options = getNoDefaultExportOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
@@ -35,11 +35,11 @@ export const noDefaultExport = {
     }
 
     return {
-      ExportDefaultDeclaration(node) {
+      ExportDefaultDeclaration(node: LegacyAstNode) {
         context.report({ messageId: "noDefaultExport", node });
       },
       // Cubre la forma indirecta: `export { algo as default }`.
-      ExportNamedDeclaration(node) {
+      ExportNamedDeclaration(node: LegacyAstNode) {
         for (const specifier of node.specifiers ?? []) {
           const exportedName =
             specifier.exported?.name ?? specifier.exported?.value;

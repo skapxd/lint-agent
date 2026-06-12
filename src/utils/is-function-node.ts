@@ -1,5 +1,5 @@
-// @ts-nocheck
-export function isFunctionNode(node) {
+import type { LegacyAstNode } from "#/utils/rule-types";
+export function isFunctionNode(node: LegacyAstNode) {
   return (
     node?.type === "FunctionDeclaration" ||
     node?.type === "FunctionExpression" ||

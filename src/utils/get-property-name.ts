@@ -1,5 +1,5 @@
-// @ts-nocheck
-export function getPropertyName(node) {
+import type { LegacyAstNode } from "#/utils/rule-types";
+export function getPropertyName(node: LegacyAstNode) {
   if (!node) {
     return "anonymous";
   }

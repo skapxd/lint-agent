@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { getContainingFunction } from "#/utils/get-containing-function";
 import { getStateShapeSmell } from "#/utils/get-state-shape-smell";
 import { getTaggedUnionStateOptions } from "#/utils/get-tagged-union-state-options";
@@ -6,8 +5,9 @@ import { getUseStateSetterName } from "#/utils/get-use-state-setter-name";
 import { getUseStateVariableName } from "#/utils/get-use-state-variable-name";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
 import { matchesAnyPattern } from "#/utils/matches-any-pattern";
+import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
 
-export const preferTaggedUnionState = {
+export const preferTaggedUnionState: RuleModule = {
   meta: {
     type: "problem",
     docs: {
@@ -43,7 +43,7 @@ export const preferTaggedUnionState = {
       },
     ],
   },
-  create(context) {
+  create(context: LegacyAstNode) {
     const options = getTaggedUnionStateOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
@@ -59,7 +59,7 @@ export const preferTaggedUnionState = {
     // transiciones: función → setters distintos que llama.
     const transitions = new Map();
 
-    function reportIfSmellyShape(node, members) {
+    function reportIfSmellyShape(node: LegacyAstNode, members: LegacyAstNode) {
       const smell = getStateShapeSmell(members, options);
 
       if (smell) {
@@ -71,7 +71,7 @@ export const preferTaggedUnionState = {
       }
     }
 
-    function trackTransition(node) {
+    function trackTransition(node: LegacyAstNode) {
       const stateName = settersToState.get(node.callee?.name);
       const containingFunction = getContainingFunction(node);
 
@@ -89,7 +89,7 @@ export const preferTaggedUnionState = {
       transitions.set(containingFunction, entry);
     }
 
-    function classifyUseState(node) {
+    function classifyUseState(node: LegacyAstNode) {
       if (node.callee?.type !== "Identifier") {
         return;
       }
@@ -156,7 +156,7 @@ export const preferTaggedUnionState = {
         // legítimos de campos independientes (resetear un formulario).
         for (const entry of transitions.values()) {
           const stateNames = [...entry.states.values()];
-          const looksLikeMachine = stateNames.some((name) => {
+          const looksLikeMachine = stateNames.some((name: LegacyAstNode) => {
             const comparable = name.toLowerCase();
 
             return (
@@ -179,13 +179,13 @@ export const preferTaggedUnionState = {
       // La versión OOP de la máquina repartida: una clase con el flag y el
       // error como propiedades (un job runner, un schema de Mongoose que
       // persiste la inconsistencia).
-      ClassBody(node) {
+      ClassBody(node: LegacyAstNode) {
         reportIfSmellyShape(node.parent, node.body);
       },
-      TSInterfaceBody(node) {
+      TSInterfaceBody(node: LegacyAstNode) {
         reportIfSmellyShape(node.parent, node.body);
       },
-      TSTypeLiteral(node) {
+      TSTypeLiteral(node: LegacyAstNode) {
         reportIfSmellyShape(node, node.members);
       },
     };

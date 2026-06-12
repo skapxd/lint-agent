@@ -1,13 +1,13 @@
-// @ts-nocheck
+import type { LegacyAstNode } from "#/utils/rule-types";
 // Resuelve un Identifier hasta el inicializador de su declaración subiendo
 // por la cadena de scopes (`const opts = {...}` → el ObjectExpression).
 // Devuelve null si la variable no se declara aquí (parámetro, import).
-export function getVariableInitializer(identifier, scope) {
+export function getVariableInitializer(identifier: LegacyAstNode, scope: LegacyAstNode) {
   let current = scope;
 
   while (current) {
     const variable = current.variables.find(
-      (candidate) => candidate.name === identifier.name,
+      (candidate: LegacyAstNode) => candidate.name === identifier.name,
     );
 
     if (variable) {

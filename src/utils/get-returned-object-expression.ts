@@ -1,5 +1,5 @@
-// @ts-nocheck
-export function getReturnedObjectExpression(node) {
+import type { LegacyAstNode } from "#/utils/rule-types";
+export function getReturnedObjectExpression(node: LegacyAstNode) {
   if (!node) {
     return null;
   }

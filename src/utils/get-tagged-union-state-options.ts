@@ -1,5 +1,5 @@
-// @ts-nocheck
-export function getTaggedUnionStateOptions(options = {}) {
+import type { LegacyAstNode } from "#/utils/rule-types";
+export function getTaggedUnionStateOptions(options: LegacyAstNode = {}) {
   return {
     allowFilePatterns: options.allowFilePatterns ?? [],
     // Nombres que delatan el flag de "estado en proceso". Se exige además

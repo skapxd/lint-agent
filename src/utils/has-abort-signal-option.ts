@@ -1,4 +1,4 @@
-// @ts-nocheck
+import type { LegacyAstNode } from "#/utils/rule-types";
 import { getVariableInitializer } from "./get-variable-initializer";
 import { objectExpressionHasSignal } from "./object-expression-has-signal";
 
@@ -7,7 +7,7 @@ import { objectExpressionHasSignal } from "./object-expression-has-signal";
 // se sigue hasta su inicializador en el scope; sin inicializador → el type
 // checker pregunta si el TIPO declara `signal` (si ni el tipo la tiene, es
 // imposible que llegue); sin tipos → beneficio de la duda.
-export function hasAbortSignalOption(callExpression, sourceCode, typeContext) {
+export function hasAbortSignalOption(callExpression: LegacyAstNode, sourceCode: LegacyAstNode, typeContext: LegacyAstNode) {
   const options = callExpression.arguments[2];
 
   if (!options) {

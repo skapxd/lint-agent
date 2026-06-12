@@ -1,5 +1,5 @@
-// @ts-nocheck
-export function getNestDtoApiPropertyOptions(options = {}) {
+import type { LegacyAstNode } from "#/utils/rule-types";
+export function getNestDtoApiPropertyOptions(options: LegacyAstNode = {}) {
   return {
     allowFilePatterns: options.allowFilePatterns ?? [],
     apiPropertyDecoratorNames: options.apiPropertyDecoratorNames ?? [

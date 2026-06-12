@@ -1,10 +1,10 @@
-// @ts-nocheck
+import type { LegacyAstNode } from "#/utils/rule-types";
 import { isMemberPropertyNamed } from "./is-member-property-named";
 import { unwrapExpression } from "./unwrap-expression";
 
 // Extrae el Result de una guarda con type-guard, p. ej. `Result.isErr(result)`
 // o `Result.isOk(result)`. Devuelve `{ name, node }` del argumento, o null.
-export function getResultCheckArgument(node, methodName) {
+export function getResultCheckArgument(node: LegacyAstNode, methodName: LegacyAstNode) {
   const unwrappedNode = unwrapExpression(node);
 
   if (

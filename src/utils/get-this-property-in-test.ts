@@ -1,9 +1,9 @@
-// @ts-nocheck
+import type { LegacyAstNode } from "#/utils/rule-types";
 import { getNodeChildren } from "./get-node-children";
 
 // Busca en la condición de un if una referencia a `this.<propiedad>`
 // (directa, negada o comparada) y devuelve el nombre de la propiedad.
-export function getThisPropertyInTest(node) {
+export function getThisPropertyInTest(node: LegacyAstNode): LegacyAstNode {
   if (
     node?.type === "MemberExpression" &&
     node.object?.type === "ThisExpression" &&

@@ -1,12 +1,12 @@
-// @ts-nocheck
 import { getInternalValueImports } from "#/utils/get-internal-value-imports";
 import { getNestDirectInstantiationOptions } from "#/utils/get-nest-direct-instantiation-options";
 import { getTypeContext } from "#/utils/get-type-context";
 import { hasInjectableDecorator } from "#/utils/has-injectable-decorator";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
 import { matchesAnyPattern } from "#/utils/matches-any-pattern";
+import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
 
-export const nestNoDirectInstantiation = {
+export const nestNoDirectInstantiation: RuleModule = {
   meta: {
     type: "suggestion",
     docs: {
@@ -42,7 +42,7 @@ export const nestNoDirectInstantiation = {
       },
     ],
   },
-  create(context) {
+  create(context: LegacyAstNode) {
     const options = getNestDirectInstantiationOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
     const typeContext = getTypeContext(context);
@@ -54,14 +54,14 @@ export const nestNoDirectInstantiation = {
     let internalImports = new Map();
 
     return {
-      Program(node) {
+      Program(node: LegacyAstNode) {
         internalImports = getInternalValueImports(
           node,
           options.internalPatterns,
           options.allowedPatterns,
         );
       },
-      NewExpression(node) {
+      NewExpression(node: LegacyAstNode) {
         if (node.callee.type !== "Identifier") {
           return;
         }

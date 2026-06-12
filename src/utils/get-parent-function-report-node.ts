@@ -1,5 +1,5 @@
-// @ts-nocheck
-export function getParentFunctionReportNode(node) {
+import type { LegacyAstNode } from "#/utils/rule-types";
+export function getParentFunctionReportNode(node: LegacyAstNode) {
   const parent = node.parent;
 
   if (parent?.type === "VariableDeclarator" && parent.id.type === "Identifier") {

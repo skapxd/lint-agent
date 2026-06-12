@@ -1,4 +1,4 @@
-// @ts-nocheck
+import type { LegacyAstNode } from "#/utils/rule-types";
 import { isPropertyKeyNamed } from "./is-property-key-named";
 
 // Bindings que declara el lado izquierdo de un `const x = ...` y QUÉ
@@ -6,7 +6,7 @@ import { isPropertyKeyNamed } from "./is-property-key-named";
 // proyecta (pierde el cause) y no produce targets. Si es el result:
 // `{ error }` sigue como error, `...rest` sigue como result (aún lo carga),
 // y los demás bindings (`ok`, `value`) son proyecciones que no se siguen.
-export function getDeclaredAliasTargets(id, represents) {
+export function getDeclaredAliasTargets(id: LegacyAstNode, represents: LegacyAstNode) {
   if (id.type === "Identifier") {
     return [{ name: id.name, represents }];
   }
@@ -15,7 +15,7 @@ export function getDeclaredAliasTargets(id, represents) {
     return [];
   }
 
-  return id.properties.flatMap((property) => {
+  return id.properties.flatMap((property: LegacyAstNode) => {
     if (property.type === "RestElement" && property.argument.type === "Identifier") {
       return [{ name: property.argument.name, represents: "result" }];
     }

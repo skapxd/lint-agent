@@ -1,5 +1,5 @@
-// @ts-nocheck
-export function isInsideNode(node, ancestor) {
+import type { LegacyAstNode } from "#/utils/rule-types";
+export function isInsideNode(node: LegacyAstNode, ancestor: LegacyAstNode) {
   let current = node;
 
   while (current) {

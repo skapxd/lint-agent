@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { getContainingFunction } from "#/utils/get-containing-function";
 import { getFunctionName } from "#/utils/get-function-name";
 import { getNoFunctionsInsideComponentsOptions } from "#/utils/get-no-functions-inside-components-options";
@@ -7,8 +6,9 @@ import { isExpressionArrowFunction } from "#/utils/is-expression-arrow-function"
 import { isFunctionNode } from "#/utils/is-function-node";
 import { isJsxAttributeCallback } from "#/utils/is-jsx-attribute-callback";
 import { isPascalCaseName } from "#/utils/is-pascal-case-name";
+import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
 
-export const noFunctionsInsideComponents = {
+export const noFunctionsInsideComponents: RuleModule = {
   meta: {
     type: "suggestion",
     docs: {
@@ -30,14 +30,14 @@ export const noFunctionsInsideComponents = {
       },
     ],
   },
-  create(context) {
+  create(context: LegacyAstNode) {
     const options = getNoFunctionsInsideComponentsOptions(context.options[0]);
 
-    function isComponentFunction(node) {
+    function isComponentFunction(node: LegacyAstNode) {
       return isFunctionNode(node) && isPascalCaseName(getFunctionName(node));
     }
 
-    function isAllowedInlineCallback(node) {
+    function isAllowedInlineCallback(node: LegacyAstNode) {
       if (!isExpressionArrowFunction(node)) {
         return false;
       }
@@ -49,7 +49,7 @@ export const noFunctionsInsideComponents = {
       return options.allowArrayMapCallbacks && isArrayMapCallback(node);
     }
 
-    function reportIfInsideComponent(node) {
+    function reportIfInsideComponent(node: LegacyAstNode) {
       const enclosingFunction = getContainingFunction(node);
 
       if (!enclosingFunction || !isComponentFunction(enclosingFunction)) {

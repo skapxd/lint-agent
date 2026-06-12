@@ -1,7 +1,7 @@
-// @ts-nocheck
+import type { LegacyAstNode } from "#/utils/rule-types";
 import { isSkapxdNamedType } from "./is-skapxd-named-type";
 
-export function isSkapxdResultType(type, typeContext) {
+export function isSkapxdResultType(type: LegacyAstNode, typeContext: LegacyAstNode) {
   if (isSkapxdNamedType(type, ["Result", "SafeResult"], typeContext)) {
     return true;
   }
@@ -10,10 +10,10 @@ export function isSkapxdResultType(type, typeContext) {
     return false;
   }
 
-  const hasOk = type.types.some((part) =>
+  const hasOk = type.types.some((part: LegacyAstNode) =>
     isSkapxdNamedType(part, ["Ok"], typeContext),
   );
-  const hasErr = type.types.some((part) =>
+  const hasErr = type.types.some((part: LegacyAstNode) =>
     isSkapxdNamedType(part, ["Err"], typeContext),
   );
 

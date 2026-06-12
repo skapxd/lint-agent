@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { trySafe } from "@skapxd/result";
@@ -6,8 +5,9 @@ import { findProjectFile } from "#/utils/find-project-file";
 import { getNestSwaggerPluginOptions } from "#/utils/get-nest-swagger-plugin-options";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
 import { nestCliHasSwaggerPlugin } from "#/utils/nest-cli-has-swagger-plugin";
+import type { LegacyAstNode, RuleModule } from "#/utils/rule-types";
 
-export const nestRequiresSwaggerPlugin = {
+export const nestRequiresSwaggerPlugin: RuleModule = {
   meta: {
     type: "problem",
     docs: {
@@ -37,7 +37,7 @@ export const nestRequiresSwaggerPlugin = {
       },
     ],
   },
-  create(context) {
+  create(context: LegacyAstNode) {
     const options = getNestSwaggerPluginOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
@@ -49,16 +49,29 @@ export const nestRequiresSwaggerPlugin = {
     }
 
     return {
-      Program(node) {
+      Program(node: LegacyAstNode) {
         const absoluteFilename = resolve(context.cwd ?? process.cwd(), filename);
         const nestCliPath = findProjectFile(dirname(absoluteFilename), "nest-cli.json");
 
-        const nestCliConfig = trySafe(() =>
-          JSON.parse(readFileSync(nestCliPath, "utf8")),
+        if (!nestCliPath) {
+          context.report({ messageId: "missingNestCli", node });
+
+          return;
+        }
+
+        const nestCliConfig = trySafe<Record<string, unknown>>(() =>
+          JSON.parse(readFileSync(nestCliPath, "utf8")) as Record<
+            string,
+            unknown
+          >,
         );
 
-        if (!nestCliPath || !nestCliConfig.ok) {
-          context.report({ messageId: "missingNestCli", node });
+        if (!nestCliConfig.ok) {
+          context.report({
+            data: { reason: String(nestCliConfig.error) },
+            messageId: "missingNestCli",
+            node,
+          });
 
           return;
         }

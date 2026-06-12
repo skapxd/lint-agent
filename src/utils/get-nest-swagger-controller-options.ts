@@ -1,5 +1,5 @@
-// @ts-nocheck
-export function getNestSwaggerControllerOptions(options = {}) {
+import type { LegacyAstNode } from "#/utils/rule-types";
+export function getNestSwaggerControllerOptions(options: LegacyAstNode = {}) {
   return {
     allowFilePatterns: options.allowFilePatterns ?? [],
     // Lo único que un controller necesita de swagger cuando el plugin

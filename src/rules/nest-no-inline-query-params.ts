@@ -1,11 +1,11 @@
-// @ts-nocheck
 import { getDecoratorName } from "#/utils/get-decorator-name";
 import { getImportedLocalNames } from "#/utils/get-imported-local-names";
 import { getNestInlineQueryOptions } from "#/utils/get-nest-inline-query-options";
 import { isQueryWithStringArg } from "#/utils/is-query-with-string-arg";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
+import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
 
-export const nestNoInlineQueryParams = {
+export const nestNoInlineQueryParams: RuleModule = {
   meta: {
     type: "suggestion",
     docs: {
@@ -33,7 +33,7 @@ export const nestNoInlineQueryParams = {
       },
     ],
   },
-  create(context) {
+  create(context: LegacyAstNode) {
     const options = getNestInlineQueryOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
@@ -45,24 +45,24 @@ export const nestNoInlineQueryParams = {
     let swaggerNames = new Set();
 
     return {
-      Program(node) {
+      Program(node: LegacyAstNode) {
         commonNames = getImportedLocalNames(node, "@nestjs/common");
         swaggerNames = getImportedLocalNames(node, "@nestjs/swagger");
       },
-      MethodDefinition(node) {
+      MethodDefinition(node: LegacyAstNode) {
         if (node.kind !== "method") {
           return;
         }
 
         const apiQueryCount = (node.decorators ?? []).filter(
-          (decorator) =>
+          (decorator: LegacyAstNode) =>
             getDecoratorName(decorator) === "ApiQuery" &&
             swaggerNames.has("ApiQuery"),
         ).length;
 
-        const inlineQueryCount = (node.value.params ?? []).filter((param) =>
+        const inlineQueryCount = (node.value.params ?? []).filter((param: LegacyAstNode) =>
           (param.decorators ?? []).some(
-            (decorator) =>
+            (decorator: LegacyAstNode) =>
               isQueryWithStringArg(decorator) && commonNames.has("Query"),
           ),
         ).length;

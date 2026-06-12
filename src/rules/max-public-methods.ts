@@ -1,9 +1,9 @@
-// @ts-nocheck
 import { getMaxPublicMethodsOptions } from "#/utils/get-max-public-methods-options";
 import { isPublicClassMethod } from "#/utils/is-public-class-method";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
+import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
 
-export const maxPublicMethods = {
+export const maxPublicMethods: RuleModule = {
   meta: {
     type: "suggestion",
     docs: {
@@ -35,7 +35,7 @@ export const maxPublicMethods = {
       },
     ],
   },
-  create(context) {
+  create(context: LegacyAstNode) {
     const options = getMaxPublicMethodsOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
@@ -43,11 +43,11 @@ export const maxPublicMethods = {
       return {};
     }
 
-    function reportIfTooManyPublicMethods(node) {
+    function reportIfTooManyPublicMethods(node: LegacyAstNode) {
       const publicMethods = node.body.body
         .filter(isPublicClassMethod)
-        .map((member) => member.key.name)
-        .filter((name) => !options.ignore.has(name));
+        .map((member: LegacyAstNode) => member.key.name)
+        .filter((name: LegacyAstNode) => !options.ignore.has(name));
 
       if (publicMethods.length <= options.max) {
         return;

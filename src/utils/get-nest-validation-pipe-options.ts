@@ -1,5 +1,5 @@
-// @ts-nocheck
-export function getNestValidationPipeOptions(options = {}) {
+import type { LegacyAstNode } from "#/utils/rule-types";
+export function getNestValidationPipeOptions(options: LegacyAstNode = {}) {
   return {
     allowFilePatterns: options.allowFilePatterns ?? [],
     // Las opciones que sostienen el contrato de los DTOs:

@@ -1,9 +1,9 @@
-// @ts-nocheck
+import type { LegacyAstNode } from "#/utils/rule-types";
 import { isPropertyKeyNamed } from "./is-property-key-named";
 import { isResultErrorMember } from "./is-result-error-member";
 import { unwrapExpression } from "./unwrap-expression";
 
-export function resultErrPreservesCause(node, resultName) {
+export function resultErrPreservesCause(node: LegacyAstNode, resultName: LegacyAstNode) {
   const unwrappedNode = unwrapExpression(node);
 
   if (isResultErrorMember(unwrappedNode, resultName)) {
@@ -14,7 +14,7 @@ export function resultErrPreservesCause(node, resultName) {
     return false;
   }
 
-  return unwrappedNode.properties.some((property) => {
+  return unwrappedNode.properties.some((property: LegacyAstNode) => {
     if (property.type !== "Property" || !isPropertyKeyNamed(property, "cause")) {
       return false;
     }

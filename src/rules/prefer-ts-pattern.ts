@@ -1,5 +1,5 @@
-// @ts-nocheck
-export const preferTsPattern = {
+import type { LegacyAstNode, RuleModule } from "#/utils/rule-types";
+export const preferTsPattern: RuleModule = {
   meta: {
     type: "suggestion",
     docs: {
@@ -14,9 +14,9 @@ export const preferTsPattern = {
     },
     schema: [],
   },
-  create(context) {
+  create(context: LegacyAstNode) {
     return {
-      ConditionalExpression(node) {
+      ConditionalExpression(node: LegacyAstNode) {
         if (node.parent?.type === "ConditionalExpression") {
           context.report({
             messageId: "noNestedTernary",
@@ -24,7 +24,7 @@ export const preferTsPattern = {
           });
         }
       },
-      SwitchStatement(node) {
+      SwitchStatement(node: LegacyAstNode) {
         context.report({
           messageId: "noSwitch",
           node,

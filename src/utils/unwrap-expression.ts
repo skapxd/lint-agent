@@ -1,5 +1,5 @@
-// @ts-nocheck
-export function unwrapExpression(node) {
+import type { LegacyAstNode } from "#/utils/rule-types";
+export function unwrapExpression(node: LegacyAstNode) {
   if (
     node.type === "ChainExpression" ||
     node.type === "TSAsExpression" ||

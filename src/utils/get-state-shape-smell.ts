@@ -1,4 +1,4 @@
-// @ts-nocheck
+import type { LegacyAstNode } from "#/utils/rule-types";
 import { matchesAnyPattern } from "./matches-any-pattern";
 import { memberIsBoolean } from "./member-is-boolean";
 
@@ -7,7 +7,7 @@ import { memberIsBoolean } from "./member-is-boolean";
 // como miembros independientes. Devuelve { flag, error } o null. Aplica
 // igual en front (estado de UI) y en back (clases de jobs, schemas que
 // PERSISTEN la inconsistencia).
-export function getStateShapeSmell(members, options) {
+export function getStateShapeSmell(members: LegacyAstNode, options: LegacyAstNode) {
   let flag = null;
   let error = null;
 

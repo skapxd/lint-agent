@@ -1,9 +1,9 @@
-// @ts-nocheck
+import type { LegacyAstNode } from "#/utils/rule-types";
 import { isMemberPropertyNamed } from "./is-member-property-named";
 import { unwrapExpression } from "./unwrap-expression";
 
 // `result.error` usado como condición: la presencia del error es el guard.
-export function getErrorMemberObject(node) {
+export function getErrorMemberObject(node: LegacyAstNode) {
   const unwrappedNode = unwrapExpression(node);
 
   if (

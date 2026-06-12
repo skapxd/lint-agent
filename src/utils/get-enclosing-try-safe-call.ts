@@ -1,10 +1,10 @@
-// @ts-nocheck
+import type { LegacyAstNode } from "#/utils/rule-types";
 import { isCalleeNamed } from "./is-callee-named";
 import { isFunctionNode } from "./is-function-node";
 
 // Si el nodo está dentro de un callback pasado a `trySafe(...)`, devuelve esa
 // CallExpression (para poder verificar su símbolo); si no, null.
-export function getEnclosingTrySafeCall(node, trySafeCallNames) {
+export function getEnclosingTrySafeCall(node: LegacyAstNode, trySafeCallNames: LegacyAstNode) {
   let currentNode = node.parent;
 
   while (currentNode) {

@@ -1,10 +1,10 @@
-// @ts-nocheck
+import type { LegacyAstNode } from "#/utils/rule-types";
 import { getSuggestedHelperFileName } from "./get-suggested-helper-file-name";
 
-export function getSuggestedHelperFileNames({ extension, fileStem, functionNames }) {
+export function getSuggestedHelperFileNames({ extension, fileStem, functionNames }: LegacyAstNode) {
   return [
     ...new Set(
-      functionNames.map((functionName) =>
+      functionNames.map((functionName: LegacyAstNode) =>
         getSuggestedHelperFileName({
           extension,
           fileStem,

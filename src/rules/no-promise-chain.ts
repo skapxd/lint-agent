@@ -1,11 +1,11 @@
-// @ts-nocheck
 import { getTypeContext } from "#/utils/get-type-context";
 import { isMemberPropertyNamed } from "#/utils/is-member-property-named";
 import { isPromiseType } from "#/utils/is-promise-type";
+import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
 
 const defaultMethods = ["catch", "finally", "then"];
 
-export const noPromiseChain = {
+export const noPromiseChain: RuleModule = {
   meta: {
     type: "suggestion",
     docs: {
@@ -29,19 +29,19 @@ export const noPromiseChain = {
       },
     ],
   },
-  create(context) {
+  create(context: LegacyAstNode) {
     const methods = context.options[0]?.methods ?? defaultMethods;
     const typeContext = getTypeContext(context);
 
     return {
-      CallExpression(node) {
+      CallExpression(node: LegacyAstNode) {
         const callee = node.callee;
 
         if (callee.type !== "MemberExpression") {
           return;
         }
 
-        const method = methods.find((name) => isMemberPropertyNamed(callee, name));
+        const method = methods.find((name: LegacyAstNode) => isMemberPropertyNamed(callee, name));
 
         if (!method) {
           return;

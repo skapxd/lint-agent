@@ -1,7 +1,7 @@
-// @ts-nocheck
 import { countParentSegments } from "#/utils/count-parent-segments";
+import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
 
-export const noDeepRelativeImports = {
+export const noDeepRelativeImports: RuleModule = {
   meta: {
     type: "suggestion",
     docs: {
@@ -22,10 +22,10 @@ export const noDeepRelativeImports = {
       },
     ],
   },
-  create(context) {
+  create(context: LegacyAstNode) {
     const maxDepth = context.options[0]?.maxDepth ?? 0;
 
-    function reportIfTooDeep(source) {
+    function reportIfTooDeep(source: LegacyAstNode) {
       if (!source || typeof source.value !== "string") {
         return;
       }
@@ -48,16 +48,16 @@ export const noDeepRelativeImports = {
     }
 
     return {
-      ExportAllDeclaration(node) {
+      ExportAllDeclaration(node: LegacyAstNode) {
         reportIfTooDeep(node.source);
       },
-      ExportNamedDeclaration(node) {
+      ExportNamedDeclaration(node: LegacyAstNode) {
         reportIfTooDeep(node.source);
       },
-      ImportDeclaration(node) {
+      ImportDeclaration(node: LegacyAstNode) {
         reportIfTooDeep(node.source);
       },
-      ImportExpression(node) {
+      ImportExpression(node: LegacyAstNode) {
         reportIfTooDeep(node.source);
       },
     };

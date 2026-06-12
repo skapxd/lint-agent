@@ -1,10 +1,10 @@
-// @ts-nocheck
+import type { LegacyAstNode } from "#/utils/rule-types";
 import { getDirectoryName } from "./get-directory-name";
 import { getSuggestedHelperFileName } from "./get-suggested-helper-file-name";
 import { isNextConventionFile } from "./is-next-convention-file";
 import { toKebabCase } from "./to-kebab-case";
 
-export function getSuggestedHelperPath({ extension, fileStem, filename, functionName }) {
+export function getSuggestedHelperPath({ extension, fileStem, filename, functionName }: LegacyAstNode) {
   const helperFileName = getSuggestedHelperFileName({
     extension,
     fileStem,

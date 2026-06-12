@@ -1,5 +1,5 @@
-// @ts-nocheck
-export function getStrictTsconfigOptions(options = {}) {
+import type { LegacyAstNode } from "#/utils/rule-types";
+export function getStrictTsconfigOptions(options: LegacyAstNode = {}) {
   return {
     allowFilePatterns: options.allowFilePatterns ?? [],
     // La regla se ancla a un entrypoint para reportar UNA vez por proyecto.

@@ -1,8 +1,8 @@
-// @ts-nocheck
+import type { LegacyAstNode } from "#/utils/rule-types";
 import { getTypeReferenceParameters } from "./get-type-reference-parameters";
 import { isTypeReferenceNamed } from "./is-type-reference-named";
 
-export function isPromiseOfResultType(node, options) {
+export function isPromiseOfResultType(node: LegacyAstNode, options: LegacyAstNode) {
   if (node.type !== "TSTypeReference") {
     return false;
   }

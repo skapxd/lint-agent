@@ -1,5 +1,5 @@
-// @ts-nocheck
-export function toKebabCase(value) {
+import type { LegacyAstNode } from "#/utils/rule-types";
+export function toKebabCase(value: LegacyAstNode) {
   return value
     .replace(/OEmbed/g, "Oembed")
     .replace(/([a-z0-9])([A-Z])/g, "$1-$2")

@@ -1,11 +1,11 @@
-// @ts-nocheck
 import { getDecoratorName } from "#/utils/get-decorator-name";
 import { getImportedLocalNames } from "#/utils/get-imported-local-names";
 import { getNestSwaggerControllerOptions } from "#/utils/get-nest-swagger-controller-options";
 import { hasClassDecoratorNamed } from "#/utils/has-class-decorator-named";
 import { matchesAnyGlob } from "#/utils/matches-any-glob";
+import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
 
-export const nestNoSwaggerInControllers = {
+export const nestNoSwaggerInControllers: RuleModule = {
   meta: {
     type: "problem",
     docs: {
@@ -37,7 +37,7 @@ export const nestNoSwaggerInControllers = {
       },
     ],
   },
-  create(context) {
+  create(context: LegacyAstNode) {
     const options = getNestSwaggerControllerOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
 
@@ -47,7 +47,7 @@ export const nestNoSwaggerInControllers = {
 
     let swaggerNames = new Set();
 
-    function isInsideControllerClass(node) {
+    function isInsideControllerClass(node: LegacyAstNode) {
       let current = node.parent;
 
       while (current) {
@@ -65,10 +65,10 @@ export const nestNoSwaggerInControllers = {
     }
 
     return {
-      Program(node) {
+      Program(node: LegacyAstNode) {
         swaggerNames = getImportedLocalNames(node, "@nestjs/swagger");
       },
-      Decorator(node) {
+      Decorator(node: LegacyAstNode) {
         const name = getDecoratorName(node);
 
         if (

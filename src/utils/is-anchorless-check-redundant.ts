@@ -1,4 +1,4 @@
-// @ts-nocheck
+import type { LegacyAstNode } from "#/utils/rule-types";
 import { dirname } from "node:path";
 import { anchorFileExists } from "#/utils/anchor-file-exists";
 
@@ -12,9 +12,9 @@ const checkedRoots = new Set();
 // porque su raiz ya fue revisada en este run, o porque el proyecto SI tiene
 // un archivo ancla y el reporte le pertenece a ese archivo (determinista).
 export function isAnchorlessCheckRedundant(
-  tsconfigPath,
-  fallbackRootKey,
-  anchorFilePatterns,
+  tsconfigPath: LegacyAstNode,
+  fallbackRootKey: LegacyAstNode,
+  anchorFilePatterns: LegacyAstNode,
 ) {
   const rootKey = tsconfigPath ?? fallbackRootKey;
 

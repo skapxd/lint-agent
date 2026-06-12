@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { getFailedResultGuard } from "#/utils/get-failed-result-guard";
 import { getOwnResultErrCalls } from "#/utils/get-own-result-err-calls";
 import { getTypeContext } from "#/utils/get-type-context";
@@ -6,8 +5,9 @@ import { isInsideSkapxdResultReturningFunction } from "#/utils/is-inside-skapxd-
 import { isSkapxdResultErrCall } from "#/utils/is-skapxd-result-err-call";
 import { isSkapxdResultExpression } from "#/utils/is-skapxd-result-expression";
 import { resultErrPreservesCause } from "#/utils/result-err-preserves-cause";
+import type { RuleModule, LegacyAstNode } from "#/utils/rule-types";
 
-export const resultErrorRequiresCause = {
+export const resultErrorRequiresCause: RuleModule = {
       meta: {
         type: "problem",
         docs: {
@@ -20,11 +20,11 @@ export const resultErrorRequiresCause = {
         },
         schema: [],
       },
-      create(context) {
+      create(context: LegacyAstNode) {
         const typeContext = getTypeContext(context);
 
         return {
-          IfStatement(node) {
+          IfStatement(node: LegacyAstNode) {
             const resultGuard = getFailedResultGuard(node.test);
 
             if (
