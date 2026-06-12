@@ -39,9 +39,34 @@ jobs:
     - name: Run Tests
       run: pnpm test
 
+  peer-minimum-contract:
+    name: Peer Minimum Contract
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v6
+
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v6
+
+    - name: Use Node.js 22.x
+      uses: actions/setup-node@v6
+      with:
+        node-version: 22.x
+        cache: 'pnpm'
+
+    - name: Install dependencies (Frozen Lockfile)
+      run: pnpm install --frozen-lockfile
+
+    - name: Check peer minimum contract
+      run: pnpm test:peer-minimum
+
   publish:
     name: Publish to NPM
-    needs: build-and-test # Solo publica si los tests pasaron
+    needs:
+      - build-and-test
+      - peer-minimum-contract
     if: startsWith(github.ref, 'refs/tags/v') # Solo corre en tags de versión
     runs-on: ubuntu-latest
     permissions:
