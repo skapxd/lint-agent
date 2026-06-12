@@ -350,6 +350,11 @@ tocar contratos. Es la ola que más enseña por repetición:
 - `skapxd/no-nested-if` y `skapxd/no-else` — guard clauses. El refactor más
   formativo que existe para un junior: aplana la lógica o confiesa que la
   función hace demasiado.
+- `skapxd/no-anonymous-condition` — la pareja de las anteriores y **la más
+  cara de todo el catálogo** (cientos de hallazgos en un backend típico):
+  cada condición-cómputo recibe un nombre con criterio. Vale la pena ir por
+  carpetas y SIN prisa — es la que más enseña por hallazgo, y la última de
+  esta ola.
 - `skapxd/one-root-function-per-file` y `skapxd/no-default-export` — el árbol
   de archivos empieza a contar la historia.
 - `skapxd/no-accessors`, `skapxd/max-public-methods` — clases con una
@@ -880,7 +885,7 @@ matchea en cualquier carpeta). Las 7 reglas restantes no tienen opciones: su
 | `skapxd/nest-no-swagger-in-controllers` | Los controllers no se llenan de decoradores de swagger; el plugin introspecciona los DTOs. Preset `nest`. |
 | `skapxd/nest-requires-swagger-plugin` | `nest-cli.json` debe tener el plugin `@nestjs/swagger`: la premisa de las reglas de swagger, verificada. Preset `nest`. |
 | `skapxd/nest-validation-pipe-config` | Todo `new ValidationPipe` configura `transform` y `whitelist`: la premisa de las reglas de DTOs. Preset `nest`. |
-| `skapxd/no-anonymous-condition` | El `if` solo acepta condiciones ya nombradas; todo cómputo (llamada, comparación, `&&`/`||`) se extrae a una `const` con nombre semántico. **Opt-in: no está en ningún preset.** |
+| `skapxd/no-anonymous-condition` | El `if` solo acepta condiciones ya nombradas; todo cómputo (llamada, comparación, `&&`/`||`) se extrae a una `const` con nombre semántico. |
 | `skapxd/no-deep-relative-imports` | Limita la profundidad de los imports relativos (`../`). |
 | `skapxd/no-default-export` | Prohíbe `export default`; el nombre del símbolo es el contrato. Exime configs/stories y, en el preset `next`, los entrypoints del App Router. |
 | `skapxd/no-else` | Prohíbe `else`/`else if`: el else es el estado sin nombre. Retorno anticipado, ternario simple o `match()`. |
@@ -1701,18 +1706,15 @@ Lo que **sí dispara**: llamadas, comparaciones (`a.length <= b.max`,
 (`if (total % 2)`). La extracción directa a `const` conserva el narrowing
 (TS 4.4+, aliased conditions).
 
-**Opt-in deliberado: no está en ningún preset.** La calibración contra 4
-proyectos reales (2026-06-12) midió 473/95/308 hallazgos en tres backends
-NestJS en producción y 44 en un front pequeño — señal genuina en la muestra
-revisada, pero un orden de magnitud más invasiva que cualquier regla de las
-bases. Actívala por proyecto (o por carpeta, estilo ola 3 del playbook de
-adopción):
-
-```js
-rules: {
-  "skapxd/no-anonymous-condition": "error",
-}
-```
+**Está en las reglas base** — y es la más invasiva del catálogo: la
+calibración contra 4 proyectos reales (2026-06-12) midió 473/95/308
+hallazgos en tres backends NestJS en producción y 44 en un front pequeño
+(señal genuina en la muestra revisada a mano). En un proyecto existente,
+trátala con el playbook de adopción: entra apagada en la lista de
+pendientes y se enciende por carpetas, nombrando con criterio — el valor de
+la regla son los nombres, y un nombre autogenerado la traiciona. Este mismo
+repo la tiene en su lista de pendientes (245 condiciones heredadas) — la
+regla nació subiendo la vara que su propio código aún está alcanzando.
 
 ### `skapxd/no-deep-relative-imports`
 

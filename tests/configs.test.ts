@@ -68,6 +68,9 @@ describe("preset package", () => {
     const preset = plugin.configs.package;
 
     expect(preset.rules["skapxd/one-root-function-per-file"]).toBe("error");
+    // En las bases por decisión del dueño (issue #2): los legacy la apagan
+    // en su lista de pendientes.
+    expect(preset.rules["skapxd/no-anonymous-condition"]).toBe("error");
     expect(preset.rules["skapxd/await-requires-result"]).toBe("error");
     expect(preset.rules["skapxd/package-requires-typed-exports"]).toBe("error");
     // Inerte sin inventario de modulos sospechosos, pero registrada.

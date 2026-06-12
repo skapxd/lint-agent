@@ -3,6 +3,10 @@ export const baseRules = {
   "skapxd/max-public-methods": "error",
   "skapxd/no-accessors": "error",
   "skapxd/no-ad-hoc-ok-result": "error",
+  // En las bases por decisión del dueño (issue #2): con poca adopción
+  // todavía, es el momento de subir la vara; los legacy la apagan en su
+  // lista de pendientes (playbook de adopción del README).
+  "skapxd/no-anonymous-condition": "error",
   "skapxd/no-deep-relative-imports": "error",
   "skapxd/no-default-export": "error",
   "skapxd/no-else": "error",

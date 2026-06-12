@@ -28,9 +28,12 @@ export default [
       ],
       // ─── Lista de pendientes (solo encoge; ver "Adopción en proyectos
       // legacy" en el README) ─────────────────────────────────────────────
+      // 245 condiciones anónimas heredadas de antes de que la regla entrara
+      // a las bases: cada extracción necesita un nombre con criterio, no
+      // autogenerado (issue #8).
+      "skapxd/no-anonymous-condition": "off",
       // 187 archivos heredan `// @ts-nocheck` de antes de que existiera la
-      // regla: quitarlos exige tipar los utils contra TSESTree (tarea
-      // aparte). El código nuevo ya nace sin el pragma.
+      // regla: quitarlos exige tipar los utils contra TSESTree (issue #4).
       "skapxd/no-silenced-compiler": "off",
     },
   },
