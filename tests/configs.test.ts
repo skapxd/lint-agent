@@ -199,11 +199,21 @@ describe("reglas type-driven de typescript-eslint en presets tipados", () => {
   it("no-impossible-branch delega en no-unnecessary-condition con mensajes propios", async () => {
     const { default: tseslint } = await import("typescript-eslint");
     const wrapped = plugin.rules["no-impossible-branch"]!;
-    const original = tseslint.plugin.rules!["no-unnecessary-condition"]!;
+    // El tipo CompatiblePlugin de tseslint no expone `rules`: se reafirma a
+    // la forma real del plugin para leer la regla original.
+    const upstreamRules = (
+      tseslint.plugin as unknown as {
+        rules: Record<
+          string,
+          { create: unknown; meta: { messages: Record<string, string> } }
+        >;
+      }
+    ).rules;
+    const original = upstreamRules["no-unnecessary-condition"]!;
 
     expect(wrapped.create).toBe(original.create);
     // Todo messageId upstream existe en el wrapper: ninguno queda huérfano.
-    for (const id of Object.keys(original.meta!.messages!)) {
+    for (const id of Object.keys(original.meta.messages)) {
       expect(wrapped.meta?.messages?.[id], id).toBeDefined();
     }
     expect(wrapped.meta?.messages?.alwaysTruthy).toContain(
