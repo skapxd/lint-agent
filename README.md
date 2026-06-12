@@ -39,7 +39,7 @@ Los enlaces apuntan a GitHub de forma absoluta para que funcionen tambien desde 
 | [Adopcion incremental y legacy](https://github.com/skapxd/eslint-opinionated/blob/main/docs/adopcion-legacy.md) | Lint sobre cambios, olas de adopcion, overrides y propuestas de reglas. |
 | [Pipeline Result](https://github.com/skapxd/eslint-opinionated/blob/main/docs/pipeline-result.md) | Como encajan @skapxd/result, ts-pattern y el trace global. |
 | [Notas type-aware](https://github.com/skapxd/eslint-opinionated/blob/main/docs/notas-type-aware.md) | Supuestos, limites conocidos y notas de reglas que dependen del checker. |
-| [Indice de reglas](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/README.md) | Las 49 fichas individuales en docs/reglas/. |
+| [Indice de reglas](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/README.md) | Las 50 fichas individuales en docs/reglas/. |
 
 ## Reglas
 
@@ -78,6 +78,7 @@ Los enlaces apuntan a GitHub de forma absoluta para que funcionen tambien desde 
 | [`skapxd/no-unsafe-member-access`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/no-unsafe-member-access.md) | Impide leer propiedades sobre `any`: `JSON.parse()`/`response.json()` pasan por `unknown` + schema/predicate antes de tocar campos. Wrapper de typescript-eslint. |
 | [`skapxd/no-unsafe-return`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/no-unsafe-return.md) | Impide retornar `any` desde una funcion tipada: el dato externo se estrecha antes de salir de la frontera. Wrapper de typescript-eslint. |
 | [`skapxd/no-unverified-cast`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/no-unverified-cast.md) | Prohíbe casts `as` que estrechan sin evidencia: schema, type predicate honesto o tipo de origen mejor modelado. Wrapper de typescript-eslint. |
+| [`skapxd/prefer-schema-validation`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/prefer-schema-validation.md) | Detecta validadores artesanales con muchos checks estructurales sobre el mismo `unknown`/`any`: eso ya es un schema, decláralo. |
 | [`skapxd/no-impossible-branch`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/no-impossible-branch.md) | Condiciones que el type-checker demuestra constantes: la pregunta ya tiene respuesta. Es `@typescript-eslint/no-unnecessary-condition` con nombre semántico y mensajes que enseñan el fix. |
 | [`skapxd/no-nested-if`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/no-nested-if.md) | Prohíbe `if` anidados: retorno anticipado o `match()`. Menos carga cognitiva y sin puntos ciegos para las demás reglas. |
 | [`skapxd/no-non-null-assertion`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/no-non-null-assertion.md) | Prohíbe el `!`: es "cállate, yo sé más que tú" dicho al compilador. Modela el tipo o maneja la duda. Wrapper de typescript-eslint. |
