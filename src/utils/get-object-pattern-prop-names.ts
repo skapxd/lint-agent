@@ -3,7 +3,12 @@
 // componente: `({ game, variant, ...rest })` → { propNames, restName }.
 // Solo cuenta los shorthand (`{ game }`); un rename (`{ game: g }`) se omite.
 export function getObjectPatternPropNames(pattern) {
-  const result = { propNames: [], restName: null };
+  // Anotado a mano: el tipo inferido del literal mentia (restName quedaba
+  // como `null` para siempre y propNames como never[]).
+  const result: { propNames: string[]; restName: string | null } = {
+    propNames: [],
+    restName: null,
+  };
 
   if (pattern?.type !== "ObjectPattern") {
     return result;

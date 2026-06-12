@@ -25,5 +25,5 @@ export function readResolvedTsconfig(tsconfigPath) {
     return null;
   }
 
-  return parsed.value.options ?? null;
+  return parsed.value.options;
 }

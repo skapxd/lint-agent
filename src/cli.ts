@@ -63,11 +63,26 @@ async function lintChanged(base) {
     return;
   }
 
-  const formatter = await eslint.loadFormatter("stylish");
-  const output = await formatter.format(lint.value);
+  const formatter = await trySafe(() => eslint.loadFormatter("stylish"));
 
-  if (output) {
-    console.log(output);
+  if (!formatter.ok) {
+    console.error("skapxd-lint-changed: no pude cargar el formatter de ESLint.");
+    console.error(formatter.error);
+    process.exitCode = 1;
+    return;
+  }
+
+  const output = await trySafe(() => formatter.value.format(lint.value));
+
+  if (!output.ok) {
+    console.error("skapxd-lint-changed: no pude formatear el reporte.");
+    console.error(output.error);
+    process.exitCode = 1;
+    return;
+  }
+
+  if (output.value) {
+    console.log(output.value);
     const hasErrors = lint.value.some((result) => result.errorCount > 0);
     process.exitCode = hasErrors ? 1 : 0;
     return;
@@ -76,7 +91,10 @@ async function lintChanged(base) {
   console.log("✓ Sin problemas.");
 }
 
-new Command()
+// Entrypoint: fire-and-forget declarado con `void` (el patrón que documenta
+// no-floating-promises) — lintChanged maneja sus errores y setea exitCode;
+// un rechazo de commander debe crashear ruidoso.
+void new Command()
   .name("skapxd-lint-changed")
   .description(
     "Lintea solo los archivos cambiados (detectados con git) con tus reglas de ESLint.",

@@ -33,8 +33,13 @@ export const typeDrivenRules = {
   // hace falta, lo que está mal es el tipo. Requiere el tsconfig de
   // requires-strict-tsconfig para ser sólida: sin noUncheckedIndexedAccess,
   // `array[i]` miente y esta regla acusaría guards necesarios.
-  // (Era no-unnecessary-condition.)
-  "skapxd/no-impossible-branch": "error",
+  // (Era no-unnecessary-condition.) El literal `true` en bucles queda
+  // permitido: `while (true)` con returns internos es un bucle infinito
+  // DECLARADO (axioma A5), no un guard mentiroso.
+  "skapxd/no-impossible-branch": [
+    "error",
+    { allowConstantLoopConditions: "only-allowed-literals" },
+  ],
   // `!` es "cállate, yo sé más que tú" dicho al compilador. Si el valor no
   // puede ser nulo, que lo diga el tipo; si puede serlo, hay que modelarlo.
   "skapxd/no-non-null-assertion": "error",

@@ -6,7 +6,10 @@ import { createSharedConfigs, rules, strictConfig } from "./shared";
 const plugin = {
   // Diccionario dinámico de configs (cada entrada es un flat config o un array
   // de ellos). Se tipa laxo, como es convención en los plugins de ESLint, para
-  // que `skapxd.configs.<preset>` sea accesible desde el config del consumidor.
+  // que `skapxd.configs.<preset>` sea accesible desde el config del consumidor:
+  // con `unknown`, spreadear `...skapxd.configs.backend.rules` no compila en
+  // los eslint.config.ts de los consumidores. Excepción declarada, no trampa.
+  // eslint-disable-next-line skapxd/no-explicit-any -- DX del consumidor: ver arriba
   configs: {} as Record<string, any>,
   meta: {
     name: "@skapxd/eslint-opinionated",
