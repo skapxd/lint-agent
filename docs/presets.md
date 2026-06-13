@@ -39,6 +39,11 @@ src/
 
 ## Presets
 
+Los presets tipados ya traen `parserOptions.projectService: true`. Si necesitas
+sumar reglas type-aware propias, no agregues `parserOptions.project`: reutiliza
+el `languageOptions` del preset. Ver
+[la nota sobre `projectService` y `parserOptions.project`](./notas-type-aware.md#no-mezclar-projectservice-con-parseroptionsproject).
+
 ### Shared
 
 ```js

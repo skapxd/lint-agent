@@ -42,6 +42,75 @@ Esto hace el lint un poco más lento, pero reduce falsos positivos importantes:
 por ejemplo, distinguir un `Result` real de `@skapxd/result` de otro objeto que
 casualmente también tenga propiedades `ok` y `error`.
 
+### No mezclar `projectService` con `parserOptions.project`
+
+Los presets tipados (`shared.backend`, `shared.frontend`, `shared.package` y los
+presets de framework que se apoyan en ellos) ya traen el parser de
+`typescript-eslint` y `parserOptions.projectService: true`.
+
+Ese es el contrato por defecto porque deja que `typescript-eslint` encuentre el
+proyecto TypeScript correcto para cada archivo sin pedirle al consumidor que
+mantenga una lista manual de `tsconfig`. Es el camino recomendado para flat
+config en proyectos con varios paquetes, tests, scripts o entrypoints.
+
+El anti-patrón es tomar un preset tipado y volver a declarar
+`parserOptions.project` encima:
+
+```js
+import skapxd from "@skapxd/eslint-opinionated";
+
+export default [
+  {
+    files: ["src/**/*.ts"],
+    ...skapxd.configs.shared.backend,
+    languageOptions: {
+      ...skapxd.configs.shared.backend.languageOptions,
+      parserOptions: {
+        ...skapxd.configs.shared.backend.languageOptions.parserOptions,
+        project: "./tsconfig.json",
+      },
+    },
+  },
+];
+```
+
+Reproducido con `eslint@9.39.4`, `typescript-eslint@8.59.4` y
+`typescript@5.9.3`, ese choque falla antes de ejecutar reglas:
+
+```text
+/private/tmp/eslint-opinionated-issue-6-repro/src/index.ts
+  0:0  error  Parsing error: Enabling "project" does nothing when "projectService" is enabled. You can remove the "project" setting
+
+✖ 1 problem (1 error, 0 warnings)
+```
+
+Si necesitas sumar reglas type-aware propias, reutiliza el `languageOptions` del
+preset y agrega solo `rules` o `plugins`; no declares otro parser ni otro
+proyecto TypeScript:
+
+```js
+import customPlugin from "eslint-plugin-custom";
+import skapxd from "@skapxd/eslint-opinionated";
+
+const backend = skapxd.configs.shared.backend;
+
+export default [
+  {
+    files: ["src/**/*.ts"],
+    ...backend,
+    languageOptions: backend.languageOptions,
+    plugins: {
+      ...backend.plugins,
+      custom: customPlugin,
+    },
+    rules: {
+      ...backend.rules,
+      "custom/requires-domain-error": "error",
+    },
+  },
+];
+```
+
 ## Contrato mínimo de `typescript-eslint`
 
 Los presets type-aware se publican como contrato: si una regla u opción entra
