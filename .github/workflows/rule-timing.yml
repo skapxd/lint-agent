@@ -11,8 +11,8 @@ permissions:
   issues: write
 
 jobs:
-  measure:
-    name: Measure package preset rule timing
+  measure-isolated:
+    name: Measure isolated rule timing
     runs-on: ubuntu-latest
 
     steps:
@@ -31,8 +31,89 @@ jobs:
       - name: Install dependencies (Frozen Lockfile)
         run: pnpm install --frozen-lockfile
 
-      - name: Measure rule timing
-        run: pnpm measure:rules -- --output rule-timing-results.md
+      - name: Measure isolated rules
+        run: pnpm measure:rules -- --mode isolated --output rule-timing-isolated.json
+
+      - name: Upload isolated timing artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rule-timing-isolated
+          path: rule-timing-isolated.json
+
+  measure-all:
+    name: Measure all-rules timing
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Use Node.js 22.14.0
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22.14.0
+          cache: "pnpm"
+
+      - name: Install dependencies (Frozen Lockfile)
+        run: pnpm install --frozen-lockfile
+
+      - name: Measure all rules and TIMING=all
+        run: pnpm measure:rules -- --mode all --output rule-timing-all.json
+
+      - name: Upload all-rules timing artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rule-timing-all
+          path: rule-timing-all.json
+
+  publish:
+    name: Publish rule timing results
+    needs:
+      - measure-isolated
+      - measure-all
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Use Node.js 22.14.0
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22.14.0
+          cache: "pnpm"
+
+      - name: Install dependencies (Frozen Lockfile)
+        run: pnpm install --frozen-lockfile
+
+      - name: Build package
+        run: pnpm build
+
+      - name: Download isolated timing artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: rule-timing-isolated
+          path: rule-timing-artifacts
+
+      - name: Download all-rules timing artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: rule-timing-all
+          path: rule-timing-artifacts
+
+      - name: Combine timing results
+        run: >
+          node scripts/measure-rule-timing.mjs
+          --mode combine
+          --isolated-input rule-timing-artifacts/rule-timing-isolated.json
+          --all-input rule-timing-artifacts/rule-timing-all.json
+          --output rule-timing-results.md
 
       - name: Publish results to issue 18
         env:

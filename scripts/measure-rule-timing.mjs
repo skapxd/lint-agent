@@ -1,6 +1,6 @@
 import { spawnSync } from "node:child_process";
-import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
-import { existsSync, writeFileSync } from "node:fs";
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { performance } from "node:perf_hooks";
@@ -29,81 +29,51 @@ const plugin = await import(pathToFileURL(distEntrypoint).href).then(
 const tempDir = await mkdtemp(path.join(tmpdir(), "skapxd-rule-timing-"));
 
 try {
-  const configPaths = await writeMeasurementConfigs(tempDir);
-  const activeRules = getActiveRules(configPaths.all);
-  const typeAwareRules = new Set(
-    activeRules
+  if (options.mode === "combine") {
+    writeMarkdownReport(
+      createReportFromParts({
+        all: readJsonInput(options.allInputPath, "--all-input"),
+        isolated: readJsonInput(options.isolatedInputPath, "--isolated-input"),
+      }),
+    );
+  } else {
+    const configPaths = await writeMeasurementConfigs(tempDir);
+    const activeRules = getActiveRules(configPaths.all);
+    const typeAwareRuleIds = activeRules
       .filter((rule) => isTypeAwareRule(rule.id))
-      .map((rule) => rule.id),
-  );
+      .map((rule) => rule.id);
+    const typeAwareRules = new Set(typeAwareRuleIds);
 
-  console.error(
-    `Midiendo ${activeRules.length} reglas activas ` +
-      `(${typeAwareRules.size} type-aware por meta.docs.requiresTypeChecking).`,
-  );
+    console.error(
+      `Midiendo ${activeRules.length} reglas activas ` +
+        `(${typeAwareRules.size} type-aware por meta.docs.requiresTypeChecking).`,
+    );
 
-  const untypedBaseline = measureConfig(configPaths.untypedBaseline);
-  const typedBaseline = measureConfig(configPaths.typedBaseline);
-  const allRules = measureConfig(configPaths.all);
-  const timingAll = runTimingAll(configPaths.all);
-  const isolatedRules = [];
-
-  for (const rule of activeRules) {
-    const ruleConfigPath = await writeRuleConfig(tempDir, rule);
-    const measurement = measureConfig(ruleConfigPath);
-    const baseline = typeAwareRules.has(rule.id)
-      ? typedBaseline
-      : untypedBaseline;
-
-    isolatedRules.push({
-      id: rule.id,
-      measurement,
-      marginalMedianMs: measurement.medianMs - baseline.medianMs,
-      marginalMinMs: measurement.minMs - baseline.minMs,
-      typeAware: typeAwareRules.has(rule.id),
-    });
+    if (options.mode === "isolated") {
+      writeJsonResult(
+        await measureIsolatedRules(configPaths, activeRules, typeAwareRules),
+      );
+    } else if (options.mode === "all") {
+      writeJsonResult(measureAllRules(configPaths, activeRules, typeAwareRuleIds));
+    } else {
+      const isolated = await measureIsolatedRules(
+        configPaths,
+        activeRules,
+        typeAwareRules,
+      );
+      const all = measureAllRules(configPaths, activeRules, typeAwareRuleIds);
+      writeMarkdownReport(createReportFromParts({ all, isolated }));
+    }
   }
-
-  const sumIndividualMinMs = isolatedRules.reduce(
-    (total, rule) => total + rule.marginalMinMs,
-    0,
-  );
-  const sumIndividualMedianMs = isolatedRules.reduce(
-    (total, rule) => total + rule.marginalMedianMs,
-    0,
-  );
-  const allTogetherMinMs = allRules.minMs - typedBaseline.minMs;
-  const allTogetherMedianMs = allRules.medianMs - typedBaseline.medianMs;
-  const programFloorMinMs = typedBaseline.minMs - untypedBaseline.minMs;
-  const programFloorMedianMs =
-    typedBaseline.medianMs - untypedBaseline.medianMs;
-
-  const report = renderReport({
-    activeRules,
-    allTogetherMedianMs,
-    allTogetherMinMs,
-    isolatedRules,
-    options,
-    programFloorMedianMs,
-    programFloorMinMs,
-    sumIndividualMedianMs,
-    sumIndividualMinMs,
-    timingAll,
-    typeAwareRules,
-    typedBaseline,
-    untypedBaseline,
-  });
-
-  await mkdir(path.dirname(outputPath), { recursive: true });
-  writeFileSync(outputPath, report);
-  process.stdout.write(report);
-  console.error(`\nResultado escrito en ${path.relative(repoRoot, outputPath)}`);
 } finally {
   await rm(tempDir, { force: true, recursive: true });
 }
 
 function parseOptions(args) {
   const parsed = {
+    allInputPath: null,
+    isolatedInputPath: null,
+    mode: "full",
     outputPath: defaultOutputPath,
     repetitions: Number(process.env.RULE_TIMING_REPETITIONS ?? 5),
     warmup: Number(process.env.RULE_TIMING_WARMUP ?? 1),
@@ -140,10 +110,156 @@ function parseOptions(args) {
       continue;
     }
 
+    if (arg === "--mode") {
+      const value = args[index + 1];
+      if (!["all", "combine", "full", "isolated"].includes(value)) {
+        throw new Error(
+          "--mode debe ser uno de: full, isolated, all, combine.",
+        );
+      }
+      parsed.mode = value;
+      index += 1;
+      continue;
+    }
+
+    if (arg === "--isolated-input") {
+      const value = args[index + 1];
+      if (!value) throw new Error("--isolated-input requiere una ruta.");
+      parsed.isolatedInputPath = path.resolve(repoRoot, value);
+      index += 1;
+      continue;
+    }
+
+    if (arg === "--all-input") {
+      const value = args[index + 1];
+      if (!value) throw new Error("--all-input requiere una ruta.");
+      parsed.allInputPath = path.resolve(repoRoot, value);
+      index += 1;
+      continue;
+    }
+
     throw new Error(`Opcion no reconocida: ${arg}`);
   }
 
   return parsed;
+}
+
+async function measureIsolatedRules(configPaths, activeRules, typeAwareRules) {
+  const untypedBaseline = measureConfig(configPaths.untypedBaseline);
+  const typedBaseline = measureConfig(configPaths.typedBaseline);
+  const isolatedRules = [];
+
+  for (const rule of activeRules) {
+    const ruleConfigPath = await writeRuleConfig(tempDir, rule);
+    const measurement = measureConfig(ruleConfigPath);
+    const baseline = typeAwareRules.has(rule.id)
+      ? typedBaseline
+      : untypedBaseline;
+
+    isolatedRules.push({
+      id: rule.id,
+      measurement,
+      marginalMedianMs: measurement.medianMs - baseline.medianMs,
+      marginalMinMs: measurement.minMs - baseline.minMs,
+      typeAware: typeAwareRules.has(rule.id),
+    });
+  }
+
+  return {
+    activeRules,
+    generatedAt: new Date().toISOString(),
+    isolatedRules,
+    kind: "isolated",
+    options: getSerializableOptions(),
+    typeAwareRuleIds: [...typeAwareRules],
+    typedBaseline,
+    untypedBaseline,
+  };
+}
+
+function measureAllRules(configPaths, activeRules, typeAwareRuleIds) {
+  const typedBaseline = measureConfig(configPaths.typedBaseline);
+  const allRules = measureConfig(configPaths.all);
+  const timingAll = runTimingAll(configPaths.all);
+
+  return {
+    activeRules,
+    allRules,
+    generatedAt: new Date().toISOString(),
+    kind: "all",
+    options: getSerializableOptions(),
+    timingAll,
+    typeAwareRuleIds,
+    typedBaseline,
+  };
+}
+
+function createReportFromParts({ all, isolated }) {
+  const sumIndividualMinMs = isolated.isolatedRules.reduce(
+    (total, rule) => total + rule.marginalMinMs,
+    0,
+  );
+  const sumIndividualMedianMs = isolated.isolatedRules.reduce(
+    (total, rule) => total + rule.marginalMedianMs,
+    0,
+  );
+  const allTogetherMinMs = all.allRules.minMs - all.typedBaseline.minMs;
+  const allTogetherMedianMs =
+    all.allRules.medianMs - all.typedBaseline.medianMs;
+  const programFloorMinMs =
+    isolated.typedBaseline.minMs - isolated.untypedBaseline.minMs;
+  const programFloorMedianMs =
+    isolated.typedBaseline.medianMs - isolated.untypedBaseline.medianMs;
+
+  return {
+    activeRules: isolated.activeRules,
+    allBaseline: all.typedBaseline,
+    allGeneratedAt: all.generatedAt,
+    allTogetherMedianMs,
+    allTogetherMinMs,
+    isolatedGeneratedAt: isolated.generatedAt,
+    isolatedRules: isolated.isolatedRules,
+    options: isolated.options,
+    programFloorMedianMs,
+    programFloorMinMs,
+    sumIndividualMedianMs,
+    sumIndividualMinMs,
+    timingAll: all.timingAll,
+    typeAwareRuleIds: isolated.typeAwareRuleIds,
+    typedBaseline: isolated.typedBaseline,
+    untypedBaseline: isolated.untypedBaseline,
+  };
+}
+
+function getSerializableOptions() {
+  return {
+    mode: options.mode,
+    repetitions: options.repetitions,
+    warmup: options.warmup,
+  };
+}
+
+function readJsonInput(inputPath, flagName) {
+  if (!inputPath) {
+    throw new Error(`${flagName} es obligatorio con --mode combine.`);
+  }
+
+  return JSON.parse(readFileSync(inputPath, "utf8"));
+}
+
+function writeOutput(content) {
+  mkdirSync(path.dirname(outputPath), { recursive: true });
+  writeFileSync(outputPath, content);
+  process.stdout.write(content);
+  console.error(`\nResultado escrito en ${path.relative(repoRoot, outputPath)}`);
+}
+
+function writeJsonResult(result) {
+  writeOutput(`${JSON.stringify(result, null, 2)}\n`);
+}
+
+function writeMarkdownReport(report) {
+  writeOutput(renderReport(report));
 }
 
 async function writeMeasurementConfigs(configDir) {
@@ -427,7 +543,7 @@ function renderReport(report) {
     "| Cache ESLint | apagado (`--no-cache`) |",
     "| Concurrencia ESLint | apagada (`--concurrency off`) |",
     `| Reglas activas | ${report.activeRules.length} |`,
-    `| Type-aware por metadato | ${report.typeAwareRules.size} |`,
+    `| Type-aware por metadato | ${report.typeAwareRuleIds.length} |`,
     "",
     "## Tabla de resultados (por regla, mayor -> menor)",
     "",
