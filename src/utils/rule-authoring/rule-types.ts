@@ -43,6 +43,9 @@ export type RuleContext = {
   options: [RuleOptions?];
   report: (descriptor: {
     data?: Record<string, string>;
+    fix?: (
+      fixer: TSESLint.RuleFixer,
+    ) => TSESLint.RuleFix | TSESLint.RuleFix[] | null;
     messageId: string;
     node: unknown;
   }) => void;

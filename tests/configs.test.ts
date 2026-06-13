@@ -91,6 +91,9 @@ describe("preset package", () => {
     // En las bases por decisión del dueño (issue #2): los legacy la apagan
     // en su lista de pendientes.
     expect(preset.rules["skapxd/no-anonymous-condition"]).toBe("error");
+    expect(preset.rules["skapxd/prefer-node-protocol-for-builtins"]).toBe(
+      "error",
+    );
     expect(preset.rules["skapxd/await-requires-result"]).toBe("error");
     expect(preset.rules["skapxd/package-requires-typed-exports"]).toBe("error");
     // Inerte sin inventario de modulos sospechosos, pero registrada.
