@@ -41,7 +41,7 @@ tipos (un release ya falló por saltárselo).
    dedicado cuando haya trabajo paralelo o riesgo de mezclar contextos.
 4. El PR es la unidad de entrega: enlaza el issue (`Closes #N` en el
    commit o el body), resume el cambio, lista las validaciones ejecutadas
-   y deja claro lo pendiente.
+   y deja claro lo pendiente (ver "Formato del body de un PR").
 5. Commits pequeños y revisables; no mezclar refactors, docs y reglas
    nuevas salvo que el issue lo pida como una sola unidad.
 6. Cerrar issues solo con la Definición de Hecho cumplida (las DoD de este
@@ -128,6 +128,78 @@ Esqueleto de un comentario de avance:
 
 **Pendiente / bloqueado por**: ...
 ```
+
+## Formato del body de un PR
+
+El body del PR sigue el mismo criterio de markdown para lector en frío de la
+sección anterior. No repitas ahí lo que ya cubren los comentarios: cuando haya
+mediciones o validaciones, van en tabla con el comando que las produjo. Este
+estándar es el techo esperado para cambios normales; usa sentido común en PRs
+triviales de una línea o tres: si no hubo sitios dudosos reales, no inventes
+ceremonia.
+
+Partes esperadas:
+
+1. Primera línea: `Closes #N` o `Refs #N`.
+   - Usa `Closes #N` cuando el merge completa la Definición de Hecho del issue.
+   - Usa `Refs #N` cuando el issue sigue vivo tras el merge: trabajo multi-paso,
+     depende de un gate del dueño, o queda pendiente un tag/release posterior.
+   - La distinción importa: ya hubo confusión real con el #1, que hubo que cerrar
+     a mano.
+2. `## Resumen`: qué cambia y por qué, en viñetas. El "qué" va en prosa corta,
+   no como changelog línea por línea.
+3. `## Validación`: tabla con cada comando del ritual y su resultado. Si hay
+   mediciones adicionales, aplica la regla de tablas de la sección anterior.
+4. `## Sitios dudosos para revisión`: dónde dudó el agente, qué decidió y cuál
+   es el riesgo. La revisión mira esto primero; declararlo es parte del contrato.
+5. Deuda dogfood, si aplica: si el cambio activa una regla que este repo todavía
+   no cumple, el body separa lo arreglado de lo declarado en la lista de
+   pendientes y enlaza el issue de cumplimiento (precedente: #38).
+6. Auto-demostración cuando el PR toca CI o tooling: enlaza el run del propio PR
+   que prueba que el cambio funciona (precedente: #39 añadió lint a CI y mostró
+   ese lint corriendo verde).
+
+Esqueleto copiable:
+
+````markdown
+Closes #N
+
+## Resumen
+
+- Cambia ... para ...
+- Ajusta ... porque ...
+
+## Validación
+
+| Comando | Resultado |
+| --- | --- |
+| `export PATH="$HOME/.nvm/versions/node/v22.14.0/bin:$PATH"; pnpm build` | verde |
+| `export PATH="$HOME/.nvm/versions/node/v22.14.0/bin:$PATH"; pnpm typecheck` | verde |
+| `export PATH="$HOME/.nvm/versions/node/v22.14.0/bin:$PATH"; pnpm test` | verde: N archivos / N tests |
+| `export PATH="$HOME/.nvm/versions/node/v22.14.0/bin:$PATH"; pnpm lint` | verde |
+| `export PATH="$HOME/.nvm/versions/node/v22.14.0/bin:$PATH"; pnpm test:peer-minimum` | verde |
+
+## Sitios dudosos para revisión
+
+| Sitio | Decisión | Riesgo |
+| --- | --- | --- |
+| ... | ... | ... |
+
+## Dogfood
+
+| Estado | Detalle |
+| --- | --- |
+| Arreglado en este PR | ... |
+| Declarado como deuda | ... |
+
+## Prueba de CI/tooling
+
+Run del PR: <url>
+
+| Job | Resultado | Evidencia |
+| --- | --- | --- |
+| ... | ... | ... |
+````
 
 ## Convenciones del código (las que no perdonan)
 
