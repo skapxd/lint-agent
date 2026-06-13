@@ -3,10 +3,14 @@ import { nestFrameworkHookNames } from "#/constants/nest-framework-hook-names";
 import {
   baseRules,
   createTypedLanguageOptions,
+  type OpinionatedConfigList,
+  type OpinionatedPluginReference,
   typeDrivenRules,
 } from "#/shared/configs";
 
-export function createNestConfigs(pluginReference: unknown) {
+export function createNestConfigs(
+  pluginReference: OpinionatedPluginReference,
+) {
   const typedLanguageOptions = createTypedLanguageOptions();
 
   return [
@@ -98,5 +102,5 @@ export function createNestConfigs(pluginReference: unknown) {
         "skapxd/result-error-requires-handling": "off",
       },
     },
-  ];
+  ] satisfies OpinionatedConfigList;
 }

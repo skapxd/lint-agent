@@ -2,8 +2,11 @@ import { baseRules } from "./base-rules";
 import { createBaseLanguageOptions } from "./create-base-language-options";
 import { createTypedLanguageOptions } from "./create-typed-language-options";
 import { typeDrivenRules } from "./type-driven-rules";
+import type { OpinionatedPluginReference, SharedConfigs } from "./types";
 
-export function createSharedConfigs(pluginReference: unknown) {
+export function createSharedConfigs(
+  pluginReference: OpinionatedPluginReference,
+) {
   const baseLanguageOptions = createBaseLanguageOptions();
   const typedLanguageOptions = createTypedLanguageOptions();
 
@@ -84,5 +87,5 @@ export function createSharedConfigs(pluginReference: unknown) {
         "skapxd/untrusted-module-requires-adapter": "error",
       },
     },
-  };
+  } satisfies SharedConfigs;
 }

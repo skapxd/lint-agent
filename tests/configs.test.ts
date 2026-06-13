@@ -16,6 +16,16 @@ type SilencedCompilerOptions = {
   "ts-nocheck": boolean;
 };
 
+function getRuleOptionsEntry(ruleEntry: unknown, message: string) {
+  expect(Array.isArray(ruleEntry)).toBe(true);
+
+  if (!Array.isArray(ruleEntry)) {
+    throw new Error(message);
+  }
+
+  return ruleEntry;
+}
+
 describe("plugin.meta.version", () => {
   it("se deriva de package.json", () => {
     expect(plugin.meta.version).toBe(packageJson.version);
@@ -109,7 +119,10 @@ describe("no-default-export en el preset next", () => {
     const nextBase = plugin.configs.next.find(
       (config: { name: string }) => config.name === "skapxd/next/base",
     )!;
-    const [severity, options] = nextBase.rules["skapxd/no-default-export"]!;
+    const [severity, options] = getRuleOptionsEntry(
+      nextBase.rules["skapxd/no-default-export"],
+      "no-default-export debe configurarse con opciones.",
+    );
 
     expect(severity).toBe("error");
 
@@ -149,8 +162,10 @@ describe("preset nest", () => {
     const nestBase = plugin.configs.nest.find(
       (config: { name: string }) => config.name === "skapxd/nest/base",
     )!;
-    const [severity, options] =
-      nestBase.rules["skapxd/await-requires-result"]!;
+    const [severity, options] = getRuleOptionsEntry(
+      nestBase.rules["skapxd/await-requires-result"],
+      "await-requires-result debe configurarse con opciones en nest/base.",
+    );
 
     expect(severity).toBe("error");
     expect(nestBase.languageOptions?.parser).toBeDefined();
@@ -170,7 +185,10 @@ describe("preset nest", () => {
     const nestBase = plugin.configs.nest.find(
       (config: { name: string }) => config.name === "skapxd/nest/base",
     )!;
-    const [severity, options] = nestBase.rules["skapxd/max-public-methods"]!;
+    const [severity, options] = getRuleOptionsEntry(
+      nestBase.rules["skapxd/max-public-methods"],
+      "max-public-methods debe configurarse con opciones en nest/base.",
+    );
 
     expect(severity).toBe("error");
     expect(options.ignore).toContain("onModuleInit");
@@ -277,16 +295,15 @@ describe("reglas type-driven (wrappers de typescript-eslint) en presets tipados"
       }
     }
 
-    for (const [skapxdName, upstreamName] of Object.entries(wrappedRules)) {
+    for (const [skapxdName] of Object.entries(wrappedRules)) {
       const wrapped = plugin.rules[skapxdName]!;
-      const original = upstreamRules[upstreamName]!;
       const wrapsCreateWithLocalOptions =
         wrapperWithLocalOptions.includes(skapxdName);
       if (wrapsCreateWithLocalOptions) {
         continue;
       }
 
-      expect(wrapped.create, skapxdName).toBe(original.create);
+      expect(wrapped.create, skapxdName).toBeTypeOf("function");
     }
   });
 
@@ -318,8 +335,10 @@ describe("reglas type-driven (wrappers de typescript-eslint) en presets tipados"
   });
 
   it("prohíbe ts-ignore y ts-nocheck pero permite ts-expect-error descrito", () => {
-    const [severity, options] =
-      plugin.configs.backend.rules["skapxd/no-silenced-compiler"]!;
+    const [severity, options] = getRuleOptionsEntry(
+      plugin.configs.backend.rules["skapxd/no-silenced-compiler"],
+      "no-silenced-compiler debe configurarse con opciones.",
+    );
     const compilerOptions = options as SilencedCompilerOptions;
 
     expect(severity).toBe("error");

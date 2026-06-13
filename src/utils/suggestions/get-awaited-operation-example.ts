@@ -14,7 +14,8 @@ export function getAwaitedOperationExample(
     return getCallExpressionExample(unwrappedNode, sourceCode);
   }
 
-  const expressionText = sourceCode.getText(unwrappedNode).replace(/\s+/g, " ");
+  const expressionText =
+    sourceCode.getText?.(unwrappedNode).replace(/\s+/g, " ") ?? "operacion";
 
   return expressionText.length > 80
     ? `${expressionText.slice(0, 77)}...`

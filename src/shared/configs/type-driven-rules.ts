@@ -1,3 +1,5 @@
+import type { Linter } from "eslint";
+
 // Reglas de typescript-eslint que el diseño guiado por tipos exige, todas
 // re-registradas bajo el namespace skapxd (ver src/utils/wrap-tseslint-rule.ts):
 // mismo motor, cero reimplementación, pero con nombres que dicen lo que
@@ -74,4 +76,4 @@ export const typeDrivenRules = {
   // (Era consistent-type-definitions, cuyo default upstream es `interface` —
   // por eso la opción explícita.)
   "skapxd/prefer-type-over-interface": ["error", "type"],
-};
+} satisfies Linter.RulesRecord;

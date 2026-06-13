@@ -1,4 +1,5 @@
 import type { TSESLint, TSESTree } from "@typescript-eslint/utils";
+import { isBuiltinDetector } from "./is-builtin-detector";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import { getPreferNodeProtocolOptions } from "#/utils/options/get-prefer-node-protocol-options";
 import type {
@@ -6,7 +7,6 @@ import type {
   RuleModule,
 } from "#/utils/rule-authoring/rule-types";
 
-type BuiltinDetector = (specifier: string) => boolean;
 type StringSpecifierNode = TSESTree.StringLiteral;
 
 export function createPreferNodeProtocolRule(
@@ -45,14 +45,13 @@ export function createPreferNodeProtocolRule(
         filename,
         options.allowFilePatterns,
       );
-      const hasBuiltinDetector =
-        typeof builtinDetectorCandidate === "function";
-      const shouldSkipRule = isAllowedFilePattern || !hasBuiltinDetector;
+      const shouldSkipRule =
+        isAllowedFilePattern || !isBuiltinDetector(builtinDetectorCandidate);
       if (shouldSkipRule) {
         return {};
       }
 
-      const isBuiltin = builtinDetectorCandidate as BuiltinDetector;
+      const isBuiltin = builtinDetectorCandidate;
 
       function reportIfBareNodeBuiltin(source: StringSpecifierNode | null) {
         const lacksStringSource = !source || typeof source.value !== "string";
