@@ -6,6 +6,7 @@ import { findProjectFile } from "#/utils/project/find-project-file";
 import { getNestSwaggerPluginOptions } from "#/utils/options/get-nest-swagger-plugin-options";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import { nestCliHasSwaggerPlugin } from "#/utils/nest/nest-cli-has-swagger-plugin";
+import { parseJsonRecord } from "#/utils/unknown/parse-json-record";
 import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export const nestRequiresSwaggerPlugin: RuleModule = {
@@ -62,10 +63,7 @@ export const nestRequiresSwaggerPlugin: RuleModule = {
         }
 
         const nestCliConfig = trySafe<Record<string, unknown>>(() =>
-          JSON.parse(readFileSync(nestCliPath, "utf8")) as Record<
-            string,
-            unknown
-          >,
+          parseJsonRecord(readFileSync(nestCliPath, "utf8")),
         );
 
         if (!nestCliConfig.ok) {

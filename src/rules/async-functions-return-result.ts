@@ -68,7 +68,7 @@ export const asyncFunctionsReturnResult: RuleModule = {
         // Verifica que el tipo de retorno sea un Result de @skapxd/result.
         // Con información de tipos (projectService) resuelve el símbolo hasta
         // el paquete; sin ella, cae a una comprobación por nombre.
-        function isSkapxdResultReturnType(annotation: TSESTree.Node) {
+        function isSkapxdResultReturnType(annotation: TSESTree.TypeNode) {
           if (typeContext) {
             const type = typeContext.services.getTypeFromTypeNode(annotation);
 

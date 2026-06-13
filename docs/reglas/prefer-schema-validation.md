@@ -64,10 +64,8 @@ Opciones:
 ],
 ```
 
-Nace registrada y documentada, sin activarse en presets. Su entrada en
-`typeDrivenRules` queda para el gate de medición del cluster #14/#16/#17; el
-autofix no existe porque traducir una forma manual a schema es diseño, no una
-transformación mecánica.
+Esta activa como `error` en los presets tipados. El autofix no existe porque
+traducir una forma manual a schema es diseño, no una transformación mecánica.
 
 ---
 

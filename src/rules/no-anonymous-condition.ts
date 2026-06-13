@@ -4,6 +4,7 @@ import { getMemberChainDepth } from "#/utils/ast/get-member-chain-depth";
 import { getNoAnonymousConditionOptions } from "#/utils/options/get-no-anonymous-condition-options";
 import { isLiteralGuardComparison } from "#/utils/ast/is-literal-guard-comparison";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
+import { isParserServicesWithTypeInformation } from "#/utils/type-aware/is-parser-services-with-type-information";
 import { unwrapNegations } from "#/utils/ast/unwrap-negations";
 import type { RuleContext, RuleModule } from "#/utils/rule-authoring/rule-types";
 
@@ -51,6 +52,7 @@ export const noAnonymousCondition: RuleModule = {
       >[0],
     );
     const filename = context.filename ?? context.getFilename();
+    const sourceCode = context.sourceCode ?? context.getSourceCode();
 
     const isAllowedFilePattern = matchesAnyGlob(filename, options.allowFilePatterns);
     if (isAllowedFilePattern) {
@@ -82,11 +84,10 @@ export const noAnonymousCondition: RuleModule = {
         const isProvenTypeGuard =
           condition.type === "CallExpression" &&
           options.allowTypePredicates &&
+          isParserServicesWithTypeInformation(sourceCode.parserServices) &&
           callHasTypePredicate(
             condition,
-            context.sourceCode?.parserServices as Parameters<
-              typeof callHasTypePredicate
-            >[1],
+            sourceCode.parserServices,
           );
 
         if (isProvenTypeGuard) {

@@ -1,19 +1,16 @@
 import type { RuleContext, TypeContext } from "#/utils/rule-authoring/rule-types";
+import { isParserServicesWithTypeInformation } from "#/utils/type-aware/is-parser-services-with-type-information";
 
 export function getTypeContext(context: RuleContext): TypeContext | null {
   const sourceCode = context.sourceCode ?? context.getSourceCode();
   const parserServices = sourceCode.parserServices;
 
-  const program = parserServices?.program;
-
-  if (!program) {
+  if (!isParserServicesWithTypeInformation(parserServices)) {
     return null;
   }
 
-  const services = parserServices as TypeContext["services"];
-
   return {
-    checker: program.getTypeChecker(),
-    services,
+    checker: parserServices.program.getTypeChecker(),
+    services: parserServices,
   };
 }

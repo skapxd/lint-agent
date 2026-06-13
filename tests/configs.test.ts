@@ -194,15 +194,16 @@ const wrappedRules = {
   "no-unsafe-call": "no-unsafe-call",
   "no-unsafe-member-access": "no-unsafe-member-access",
   "no-unsafe-return": "no-unsafe-return",
+  "no-unverified-cast": "no-unsafe-type-assertion",
   "no-impossible-branch": "no-unnecessary-condition",
   "no-non-null-assertion": "no-non-null-assertion",
   "no-silenced-compiler": "ban-ts-comment",
   "prefer-type-over-interface": "consistent-type-definitions",
 };
 
-const registeredOnlyWrappedRules = {
-  "no-unverified-cast": "no-unsafe-type-assertion",
-};
+const ownTypeDrivenRules = ["prefer-schema-validation"];
+
+const wrapperWithLocalOptions = ["no-unverified-cast"];
 
 describe("reglas type-driven (wrappers de typescript-eslint) en presets tipados", () => {
   it("activa el set curado completo en backend, frontend, package y nest/base", () => {
@@ -227,6 +228,12 @@ describe("reglas type-driven (wrappers de typescript-eslint) en presets tipados"
           `${preset.name} → ${upstreamName}`,
         ).toBeUndefined();
       }
+      for (const skapxdName of ownTypeDrivenRules) {
+        const entry = preset.rules[`skapxd/${skapxdName}`];
+        const severity = Array.isArray(entry) ? entry[0] : entry;
+
+        expect(severity, `${preset.name} → ${skapxdName}`).toBe("error");
+      }
       // Y los presets ya no registran el plugin upstream: el consumidor
       // puede registrar su propia instancia de tseslint sin chocar.
       expect(preset.plugins["@typescript-eslint"], preset.name).toBeUndefined();
@@ -248,7 +255,6 @@ describe("reglas type-driven (wrappers de typescript-eslint) en presets tipados"
 
     for (const [skapxdName, upstreamName] of Object.entries({
       ...wrappedRules,
-      ...registeredOnlyWrappedRules,
     })) {
       const wrapped = plugin.rules[skapxdName]!;
       const original = upstreamRules[upstreamName]!;
@@ -261,6 +267,11 @@ describe("reglas type-driven (wrappers de typescript-eslint) en presets tipados"
     for (const [skapxdName, upstreamName] of Object.entries(wrappedRules)) {
       const wrapped = plugin.rules[skapxdName]!;
       const original = upstreamRules[upstreamName]!;
+      const wrapsCreateWithLocalOptions =
+        wrapperWithLocalOptions.includes(skapxdName);
+      if (wrapsCreateWithLocalOptions) {
+        continue;
+      }
 
       expect(wrapped.create, skapxdName).toBe(original.create);
     }
@@ -291,26 +302,6 @@ describe("reglas type-driven (wrappers de typescript-eslint) en presets tipados"
     expect(messageOf("no-unverified-cast", "unsafeTypeAssertion")).toContain(
       "la misma mentira con lavado de manos",
     );
-  });
-
-  it("registra no-unverified-cast sin activarla antes del gate de presets", () => {
-    expect(plugin.rules["no-unverified-cast"]).toBeDefined();
-
-    const typedPresets = [
-      plugin.configs.backend,
-      plugin.configs.frontend,
-      plugin.configs.package,
-      plugin.configs.nest.find(
-        (config: { name: string }) => config.name === "skapxd/nest/base",
-      )!,
-    ];
-
-    for (const preset of typedPresets) {
-      expect(
-        preset.rules["skapxd/no-unverified-cast"],
-        preset.name,
-      ).toBeUndefined();
-    }
   });
 
   it("prohíbe ts-ignore y ts-nocheck pero permite ts-expect-error descrito", () => {
