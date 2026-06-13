@@ -26,6 +26,9 @@ export default [
         "error",
         { allowFilePatterns: ["src/index.ts"] },
       ],
+      // Pendiente #37: fronteras de ensamblado del plugin
+      // contra tipos publicos incompletos de ESLint/typescript-eslint.
+      "skapxd/no-unverified-cast": "off",
     },
   },
 ];

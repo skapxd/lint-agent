@@ -27,8 +27,8 @@ no afirman una forma nueva sin comprobarla, asi que pasan.
 
 Bajo el capo es `@typescript-eslint/no-unsafe-type-assertion`
 ([doc original](https://typescript-eslint.io/rules/no-unsafe-type-assertion/))
-re-registrada con mensajes propios. Nace registrada y documentada; su entrada
-en presets tipados queda para el gate de medicion del cluster #14/#16/#17.
+re-registrada con mensajes propios. Esta activa como `error` en los presets
+tipados.
 
 Lo que NO cubre:
 

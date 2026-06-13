@@ -6,6 +6,8 @@ import { findProjectFile } from "#/utils/project/find-project-file";
 import { getTypedExportsOptions } from "#/utils/options/get-typed-exports-options";
 import { getUntypedExportConditions } from "#/utils/project/get-untyped-export-conditions";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
+import { isRecord } from "#/utils/unknown/is-record";
+import { parseJsonRecord } from "#/utils/unknown/parse-json-record";
 import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 
 const kindMessages = {
@@ -71,10 +73,7 @@ export const packageRequiresTypedExports: RuleModule = {
         );
         const parsed = packageJsonPath
           ? trySafe<Record<string, unknown>>(() =>
-              JSON.parse(readFileSync(packageJsonPath, "utf8")) as Record<
-                string,
-                unknown
-              >,
+              parseJsonRecord(readFileSync(packageJsonPath, "utf8")),
             )
           : null;
 
@@ -87,9 +86,7 @@ export const packageRequiresTypedExports: RuleModule = {
 
         const exportsField = parsed.value.exports;
 
-        const lacksObjectExportsMap = !exportsField ||
-          typeof exportsField !== "object" ||
-          Array.isArray(exportsField);
+        const lacksObjectExportsMap = !isRecord(exportsField);
         if (
           lacksObjectExportsMap
         ) {
@@ -99,7 +96,7 @@ export const packageRequiresTypedExports: RuleModule = {
         }
 
         const violations = getUntypedExportConditions(
-          exportsField as Record<string, unknown>,
+          exportsField,
           dirname(packageJsonPath),
         );
 

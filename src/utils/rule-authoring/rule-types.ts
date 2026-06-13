@@ -32,11 +32,7 @@ export type RuleScopeVariable = {
 
 export type TypeContext = {
   checker: ts.TypeChecker;
-  services: ParserServicesWithTypeInformation & {
-    getSymbolAtLocation: (node: TSESTree.Node) => ts.Symbol | undefined;
-    getTypeAtLocation: (node: TSESTree.Node) => ts.Type;
-    getTypeFromTypeNode: (node: TSESTree.Node) => ts.Type;
-  };
+  services: ParserServicesWithTypeInformation;
 };
 
 export type RuleContext = {

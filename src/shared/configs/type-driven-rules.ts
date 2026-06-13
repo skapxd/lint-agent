@@ -36,6 +36,9 @@ export const typeDrivenRules = {
   "skapxd/no-unsafe-call": "error",
   "skapxd/no-unsafe-return": "error",
   "skapxd/no-unsafe-argument": "error",
+  // Un `as T` que estrecha sin evidencia es la misma fuga con otro traje:
+  // el type-checker razona sobre una forma que nadie comprobó en runtime.
+  "skapxd/no-unverified-cast": "error",
   // La generalización type-aware de no-runtime-state-guard: si el tipo dice
   // que un estado es imposible, el guard defensivo sobra — y si el guard
   // hace falta, lo que está mal es el tipo. Requiere el tsconfig de
@@ -63,6 +66,9 @@ export const typeDrivenRules = {
       "ts-nocheck": true,
     },
   ],
+  // Si una frontera unknown/any acumula muchos typeof/in/Array.isArray, eso
+  // ya es un schema artesanal: la evidencia debe vivir en schema declarado.
+  "skapxd/prefer-schema-validation": "error",
   // `type` en vez de `interface`: las uniones discriminadas son types, y la
   // homogeneidad evita el "¿esto se puede extender por declaration merging?"
   // (Era consistent-type-definitions, cuyo default upstream es `interface` —

@@ -1,9 +1,6 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
-
-type ExportCondition = {
-  types?: unknown;
-};
+import { isExportCondition } from "#/utils/project/is-export-condition";
 
 type ExportValue = string | Record<string, unknown>;
 
@@ -50,15 +47,15 @@ export function getUntypedExportConditions(
         continue;
       }
 
-      const target = value[condition] as ExportCondition | undefined;
+      const target = value[condition];
 
-      const lacksTypedTarget = !target || typeof target !== "object" || typeof target.types !== "string";
+      const lacksTypedTarget = !isExportCondition(target);
       if (lacksTypedTarget) {
         violations.push({ kind: "untyped", condition, subpath });
         continue;
       }
 
-      const typesPath = target.types as string;
+      const typesPath = target.types;
       const expectsEsmTypes = condition === "import";
       const flavorOk = expectsEsmTypes
         ? typesPath.endsWith(".d.mts")
