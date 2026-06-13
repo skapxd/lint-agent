@@ -1,6 +1,10 @@
+import { createRequire } from "node:module";
 import { describe, expect, it } from "vitest";
 import plugin from "../src/index";
 import { matchesAnyGlob } from "../src/utils/matching/matches-any-glob";
+
+const require = createRequire(import.meta.url);
+const packageJson = require("../package.json") as { version: string };
 
 type AllowFilePatternsOptions = {
   allowFilePatterns: readonly string[];
@@ -11,6 +15,12 @@ type SilencedCompilerOptions = {
   "ts-ignore": boolean;
   "ts-nocheck": boolean;
 };
+
+describe("plugin.meta.version", () => {
+  it("se deriva de package.json", () => {
+    expect(plugin.meta.version).toBe(packageJson.version);
+  });
+});
 
 describe("configs.strict", () => {
   it("expone el preset endurecido con noInlineConfig", () => {

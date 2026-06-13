@@ -3,6 +3,8 @@ import { createNestConfigs } from "./nest";
 import { createNextConfigs } from "./next";
 import { createSharedConfigs, rules, strictConfig } from "./shared";
 
+declare const __PKG_VERSION__: string;
+
 type RuleEntry = [string, Record<string, unknown>];
 
 type OpinionatedFlatConfig = {
@@ -42,7 +44,7 @@ const plugin: Plugin = {
   configs: {} as PluginConfigs,
   meta: {
     name: "@skapxd/eslint-opinionated",
-    version: "3.0.0",
+    version: __PKG_VERSION__,
   },
   rules,
 };

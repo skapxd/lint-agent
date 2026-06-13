@@ -212,8 +212,9 @@ Convenciones y trampas de ESTE repo:
 
 ## Lo que el agente NO hace
 
-- **Releases**: el tag lo dispara solo el dueño (bump doble: `package.json`
-  Y `meta.version` en `src/index.ts`; typecheck antes del tag).
+- **Releases**: el tag lo dispara solo el dueño. La versión se actualiza en un
+  solo sitio (`package.json`); `meta.version` se deriva en build-time.
+  `typecheck` antes del tag.
 - Push directo a `main` (excepción: solo el dueño, y el issue queda
   comentado con commit, validaciones y razón).
 - Decidir severidades de presets: las mediciones se presentan, el dueño
