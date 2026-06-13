@@ -47,6 +47,7 @@ Cada ficha vive en un archivo propio. El indice conserva la descripcion corta de
 | [`skapxd/no-silenced-compiler`](./no-silenced-compiler.md) | Prohíbe `@ts-ignore`/`@ts-nocheck`: silenciar la alarma no arregla el incendio. `@ts-expect-error` con descripción queda para tests de tipos. Wrapper de `ban-ts-comment`. |
 | [`skapxd/no-tunnel-props`](./no-tunnel-props.md) | Ninguna prop viaja más de un nivel: quien la recibe no puede reenviarla a otro componente. Mata el prop drilling. |
 | [`skapxd/prefer-abort-signal`](./prefer-abort-signal.md) | Listeners en efectos se limpian con `AbortController` (`{ signal }` + `abort()`), no con `removeEventListener`. |
+| [`skapxd/prefer-node-protocol-for-builtins`](./prefer-node-protocol-for-builtins.md) | Builtins de Node siempre con protocolo `node:`: separa runtime de npm y evita ambigüedad cross-runtime. |
 | [`skapxd/prefer-tagged-union-state`](./prefer-tagged-union-state.md) | Prohíbe estados inconsistentes representables: flag de loading + campo de error independientes → unión etiquetada. |
 | [`skapxd/prefer-type-over-interface`](./prefer-type-over-interface.md) | Las uniones discriminadas son types; un `type` no crece en silencio por declaration merging. Wrapper de `consistent-type-definitions`. |
 | [`skapxd/no-functions-inside-components`](./no-functions-inside-components.md) | Prohíbe definir funciones dentro de componentes React. |

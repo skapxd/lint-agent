@@ -39,7 +39,7 @@ Los enlaces apuntan a GitHub de forma absoluta para que funcionen tambien desde 
 | [Adopcion incremental y legacy](https://github.com/skapxd/eslint-opinionated/blob/main/docs/adopcion-legacy.md) | Lint sobre cambios, olas de adopcion, overrides y propuestas de reglas. |
 | [Pipeline Result](https://github.com/skapxd/eslint-opinionated/blob/main/docs/pipeline-result.md) | Como encajan @skapxd/result, ts-pattern y el trace global. |
 | [Notas type-aware](https://github.com/skapxd/eslint-opinionated/blob/main/docs/notas-type-aware.md) | Supuestos, limites conocidos y notas de reglas que dependen del checker. |
-| [Indice de reglas](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/README.md) | Las 50 fichas individuales en docs/reglas/. |
+| [Indice de reglas](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/README.md) | Las 51 fichas individuales en docs/reglas/. |
 
 ## Reglas
 
@@ -86,6 +86,7 @@ Los enlaces apuntan a GitHub de forma absoluta para que funcionen tambien desde 
 | [`skapxd/no-silenced-compiler`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/no-silenced-compiler.md) | Prohíbe `@ts-ignore`/`@ts-nocheck`: silenciar la alarma no arregla el incendio. `@ts-expect-error` con descripción queda para tests de tipos. Wrapper de `ban-ts-comment`. |
 | [`skapxd/no-tunnel-props`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/no-tunnel-props.md) | Ninguna prop viaja más de un nivel: quien la recibe no puede reenviarla a otro componente. Mata el prop drilling. |
 | [`skapxd/prefer-abort-signal`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/prefer-abort-signal.md) | Listeners en efectos se limpian con `AbortController` (`{ signal }` + `abort()`), no con `removeEventListener`. |
+| [`skapxd/prefer-node-protocol-for-builtins`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/prefer-node-protocol-for-builtins.md) | Builtins de Node siempre con protocolo `node:`: separa runtime de npm y evita ambigüedad cross-runtime. |
 | [`skapxd/prefer-tagged-union-state`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/prefer-tagged-union-state.md) | Prohíbe estados inconsistentes representables: flag de loading + campo de error independientes → unión etiquetada. |
 | [`skapxd/prefer-type-over-interface`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/prefer-type-over-interface.md) | Las uniones discriminadas son types; un `type` no crece en silencio por declaration merging. Wrapper de `consistent-type-definitions`. |
 | [`skapxd/no-functions-inside-components`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/no-functions-inside-components.md) | Prohíbe definir funciones dentro de componentes React. |
