@@ -42,7 +42,7 @@ const plugin: Plugin = {
   configs: {} as PluginConfigs,
   meta: {
     name: "@skapxd/eslint-opinionated",
-    version: "2.0.0",
+    version: "3.0.0",
   },
   rules,
 };
