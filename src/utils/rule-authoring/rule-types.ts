@@ -24,7 +24,10 @@ export type TextRuleSourceCode = RuleSourceCode & {
 
 export type RuleScope = {
   childScopes?: RuleScope[];
+  references?: RuleScopeReference[];
   set?: Map<string, RuleScopeVariable>;
+  through?: RuleScopeReference[];
+  type?: string;
   upper?: RuleScope | null;
   variables: RuleScopeVariable[];
 };
@@ -32,6 +35,13 @@ export type RuleScope = {
 export type RuleScopeVariable = {
   defs: Array<{ node?: TSESTree.Node }>;
   name: string;
+  scope?: RuleScope;
+};
+
+export type RuleScopeReference = {
+  from?: RuleScope;
+  identifier?: TSESTree.Identifier;
+  resolved: RuleScopeVariable | null;
 };
 
 export type TypeContext = {

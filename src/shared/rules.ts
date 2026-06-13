@@ -18,6 +18,7 @@ import { nestNoResultResponse } from "#/rules/nest-no-result-response";
 import { nestNoSwaggerInControllers } from "#/rules/nest-no-swagger-in-controllers";
 import { nestRequiresSwaggerPlugin } from "#/rules/nest-requires-swagger-plugin";
 import { nestValidationPipeConfig } from "#/rules/nest-validation-pipe-config";
+import { nestedFunctionRequiresCapture } from "#/rules/nested-function-requires-capture";
 import { noDeepRelativeImports } from "#/rules/no-deep-relative-imports";
 import { noDefaultExport } from "#/rules/no-default-export";
 import { noAnonymousCondition } from "#/rules/no-anonymous-condition";
@@ -71,6 +72,7 @@ export const rules = {
   "nest-no-swagger-in-controllers": nestNoSwaggerInControllers,
   "nest-requires-swagger-plugin": nestRequiresSwaggerPlugin,
   "nest-validation-pipe-config": nestValidationPipeConfig,
+  "nested-function-requires-capture": nestedFunctionRequiresCapture,
   "no-anonymous-condition": noAnonymousCondition,
   "no-deep-relative-imports": noDeepRelativeImports,
   "no-default-export": noDefaultExport,
