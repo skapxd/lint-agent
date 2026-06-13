@@ -151,22 +151,45 @@ function parseOptions(args) {
 }
 
 async function measureIsolatedRules(configPaths, activeRules, typeAwareRules) {
+  console.error("Midiendo BASE_untyped...");
   const untypedBaseline = measureConfig(configPaths.untypedBaseline);
+  console.error(
+    `BASE_untyped: min=${formatMs(untypedBaseline.minMs)} ms; ` +
+      `mediana=${formatMs(untypedBaseline.medianMs)} ms.`,
+  );
+
+  console.error("Midiendo BASE_typed...");
   const typedBaseline = measureConfig(configPaths.typedBaseline);
+  console.error(
+    `BASE_typed: min=${formatMs(typedBaseline.minMs)} ms; ` +
+      `mediana=${formatMs(typedBaseline.medianMs)} ms.`,
+  );
+
   const isolatedRules = [];
 
-  for (const rule of activeRules) {
+  for (const [ruleIndex, rule] of activeRules.entries()) {
+    const progress = `[${String(ruleIndex + 1).padStart(2, "0")}/${activeRules.length}]`;
+    console.error(`${progress} Midiendo ${rule.id}...`);
+
     const ruleConfigPath = await writeRuleConfig(tempDir, rule);
+    const startedAt = performance.now();
     const measurement = measureConfig(ruleConfigPath);
     const baseline = typedBaseline;
-
-    isolatedRules.push({
+    const isolatedRule = {
       id: rule.id,
       measurement,
       marginalMedianMs: measurement.medianMs - baseline.medianMs,
       marginalMinMs: measurement.minMs - baseline.minMs,
       typeAware: typeAwareRules.has(rule.id),
-    });
+    };
+
+    console.error(
+      `${progress} ${rule.id}: min=${formatMs(isolatedRule.marginalMinMs)} ms; ` +
+        `mediana=${formatMs(isolatedRule.marginalMedianMs)} ms; ` +
+        `wall=${formatMs(performance.now() - startedAt)} ms.`,
+    );
+
+    isolatedRules.push(isolatedRule);
   }
 
   return {
@@ -182,8 +205,21 @@ async function measureIsolatedRules(configPaths, activeRules, typeAwareRules) {
 }
 
 function measureAllRules(configPaths, activeRules, typeAwareRuleIds) {
+  console.error("Midiendo BASE_typed para preset completo...");
   const typedBaseline = measureConfig(configPaths.typedBaseline);
+  console.error(
+    `BASE_typed: min=${formatMs(typedBaseline.minMs)} ms; ` +
+      `mediana=${formatMs(typedBaseline.medianMs)} ms.`,
+  );
+
+  console.error("Midiendo preset package completo...");
   const allRules = measureConfig(configPaths.all);
+  console.error(
+    `TODAS_JUNTAS: min=${formatMs(allRules.minMs - typedBaseline.minMs)} ms; ` +
+      `mediana=${formatMs(allRules.medianMs - typedBaseline.medianMs)} ms.`,
+  );
+
+  console.error("Ejecutando cross-check TIMING=all...");
   const timingAll = runTimingAll(configPaths.all);
 
   return {
@@ -259,7 +295,10 @@ function writeOutput(content) {
 }
 
 function writeJsonResult(result) {
-  writeOutput(`${JSON.stringify(result, null, 2)}\n`);
+  mkdirSync(path.dirname(outputPath), { recursive: true });
+  writeFileSync(outputPath, `${JSON.stringify(result, null, 2)}\n`);
+  process.stdout.write(renderConsoleReport(result));
+  console.error(`\nArtifact JSON escrito en ${path.relative(repoRoot, outputPath)}`);
 }
 
 function writeMarkdownReport(report) {
@@ -577,6 +616,130 @@ function renderReport(report) {
     "```",
     "",
   ].join("\n");
+}
+
+function renderConsoleReport(result) {
+  if (result.kind === "isolated") {
+    return renderIsolatedConsoleReport(result);
+  }
+
+  if (result.kind === "all") {
+    return renderAllConsoleReport(result);
+  }
+
+  throw new Error(`Tipo de resultado no soportado: ${result.kind}`);
+}
+
+function renderIsolatedConsoleReport(result) {
+  const ruleRows = result.isolatedRules
+    .map((rule) => ({
+      mediana: formatMs(rule.marginalMedianMs),
+      min: formatMs(rule.marginalMinMs),
+      regla: rule.id,
+      typeAware: rule.typeAware ? "si" : "no",
+    }))
+    .sort((left, right) => Number(right.min) - Number(left.min));
+
+  return [
+    "",
+    "## Resumen isolated",
+    "",
+    renderMarkdownTable([
+      ["Metrica", "ms", "mediana ms", "detalle"],
+      [
+        "BASE_untyped",
+        formatMs(result.untypedBaseline.minMs),
+        formatMs(result.untypedBaseline.medianMs),
+        "arranque sin programa TS",
+      ],
+      [
+        "BASE_typed",
+        formatMs(result.typedBaseline.minMs),
+        formatMs(result.typedBaseline.medianMs),
+        "arranque con programa TS",
+      ],
+      [
+        "reglas activas",
+        String(result.activeRules.length),
+        "-",
+        `${result.typeAwareRuleIds.length} type-aware`,
+      ],
+    ]),
+    "",
+    "## Ranking aislado (mayor -> menor)",
+    "",
+    renderMarkdownTable([
+      ["Regla", "ms", "type-aware?", "mediana ms"],
+      ...ruleRows.map((row) => [
+        row.regla,
+        row.min,
+        row.typeAware,
+        row.mediana,
+      ]),
+    ]),
+    "",
+  ].join("\n");
+}
+
+function renderAllConsoleReport(result) {
+  const allTogetherMinMs = result.allRules.minMs - result.typedBaseline.minMs;
+  const allTogetherMedianMs =
+    result.allRules.medianMs - result.typedBaseline.medianMs;
+
+  return [
+    "",
+    "## Resumen all",
+    "",
+    renderMarkdownTable([
+      ["Metrica", "ms", "mediana ms", "detalle"],
+      [
+        "BASE_typed",
+        formatMs(result.typedBaseline.minMs),
+        formatMs(result.typedBaseline.medianMs),
+        "arranque con programa TS",
+      ],
+      [
+        "TODAS_JUNTAS",
+        formatMs(allTogetherMinMs),
+        formatMs(allTogetherMedianMs),
+        "preset completo - BASE_typed",
+      ],
+      [
+        "reglas activas",
+        String(result.activeRules.length),
+        "-",
+        `${result.typeAwareRuleIds.length} type-aware`,
+      ],
+    ]),
+    "",
+    "## Cross-check TIMING=all",
+    "",
+    "```text",
+    result.timingAll || "(TIMING=all no produjo salida textual)",
+    "```",
+    "",
+  ].join("\n");
+}
+
+function renderMarkdownTable(rows) {
+  const widths = rows[0].map((_, columnIndex) =>
+    Math.max(...rows.map((row) => row[columnIndex].length)),
+  );
+
+  return rows
+    .flatMap((row, rowIndex) => {
+      const renderedRow = `| ${row
+        .map((cell, columnIndex) => cell.padEnd(widths[columnIndex], " "))
+        .join(" | ")} |`;
+
+      if (rowIndex !== 0) return [renderedRow];
+
+      return [
+        renderedRow,
+        `| ${widths.map((width) => "-".repeat(width)).join(" | ")} |`,
+      ];
+    })
+    .join("\n");
 }
 
 function renderProgramReading(report) {
