@@ -20,7 +20,7 @@ permissions:
 jobs:
   measure-isolated:
     name: Measure isolated rule timing
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout repository
@@ -49,7 +49,7 @@ jobs:
 
   measure-all:
     name: Measure all-rules timing
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout repository
@@ -81,7 +81,7 @@ jobs:
     needs:
       - measure-isolated
       - measure-all
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout repository
