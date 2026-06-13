@@ -32,6 +32,7 @@ Cada ficha vive en un archivo propio. El indice conserva la descripcion corta de
 | [`skapxd/no-else`](./no-else.md) | Prohíbe `else`/`else if`: el else es el estado sin nombre. Retorno anticipado, ternario simple o `match()`. |
 | [`skapxd/no-emoji`](./no-emoji.md) | Prohíbe emojis en strings y JSX; cada sistema los renderiza distinto. Usa un icono SVG. |
 | [`skapxd/no-explicit-any`](./no-explicit-any.md) | Prohíbe `any`: apaga el sistema de tipos donde más se necesita. `unknown` para lo desconocido, el tipo real para lo demás. Wrapper de typescript-eslint. |
+| [`skapxd/no-flat-dump-folder`](./no-flat-dump-folder.md) | Evita que carpetas cajón de sastre como `utils/` o `helpers/` acumulen archivos sueltos; cada util vive en un subdominio. |
 | [`skapxd/no-floating-promises`](./no-floating-promises.md) | Promesas sin `await` ni `void`: el rechazo muere sin pasar por trySafe. El mensaje corrige el consejo upstream (`.then/.catch` aquí están prohibidos). Wrapper de typescript-eslint. |
 | [`skapxd/no-unsafe-argument`](./no-unsafe-argument.md) | Impide pasar un `any` invisible como argumento: la frontera debe declararse `unknown` y estrecharse con schema o predicate. Wrapper de typescript-eslint. |
 | [`skapxd/no-unsafe-assignment`](./no-unsafe-assignment.md) | Impide asignar un `any` invisible a variables o propiedades: la frontera debe declararse `unknown` y validarse. Wrapper de typescript-eslint. |

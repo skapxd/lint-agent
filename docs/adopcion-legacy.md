@@ -232,6 +232,7 @@ de cada regla):
 | `no-else` | `allowFilePatterns` (globs) |
 | `no-emoji` | `allowFilePatterns` (globs) |
 | `no-explicit-any` | las de la regla original de typescript-eslint (`fixToUnknown`, ...) |
+| `no-flat-dump-folder` | `dumpFolderNames` (default `["utils", "helpers", "lib", "common", "misc"]`), `maxLooseFiles` (default `0`), `allowFilePatterns` (globs) |
 | `no-floating-promises` | las de la regla original de typescript-eslint (`ignoreVoid`, `allowList`, ...) |
 | `no-unsafe-assignment` | las de la regla original de typescript-eslint |
 | `no-unsafe-member-access` | las de la regla original de typescript-eslint |

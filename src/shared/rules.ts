@@ -37,6 +37,7 @@ import { noSilencedCompiler } from "#/rules/no-silenced-compiler";
 import { noTunnelProps } from "#/rules/no-tunnel-props";
 import { preferTypeOverInterface } from "#/rules/prefer-type-over-interface";
 import { noFunctionsInsideComponents } from "#/rules/no-functions-inside-components";
+import { noFlatDumpFolder } from "#/rules/no-flat-dump-folder";
 import { noTryCatch } from "#/rules/no-try-catch";
 import { preferAbortSignal } from "#/rules/prefer-abort-signal";
 import { preferNodeProtocolForBuiltins } from "#/rules/prefer-node-protocol-for-builtins";
@@ -92,6 +93,7 @@ export const rules = {
   "prefer-type-over-interface": preferTypeOverInterface,
   "no-tunnel-props": noTunnelProps,
   "no-functions-inside-components": noFunctionsInsideComponents,
+  "no-flat-dump-folder": noFlatDumpFolder,
   "no-try-catch": noTryCatch,
   "prefer-abort-signal": preferAbortSignal,
   "prefer-node-protocol-for-builtins": preferNodeProtocolForBuiltins,
