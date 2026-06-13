@@ -82,6 +82,12 @@ function parseOptions(args) {
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index];
 
+    // El separador `--` que pnpm reenvia cuando el target encadena comandos
+    // (`pnpm build && node ...`): no es una opcion, se ignora.
+    if (arg === "--") {
+      continue;
+    }
+
     if (arg === "--output") {
       const value = args[index + 1];
       if (!value) throw new Error("--output requiere una ruta.");
