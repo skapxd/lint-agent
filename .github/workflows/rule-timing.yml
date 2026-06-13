@@ -2,9 +2,16 @@ name: Rule Timing
 
 on:
   workflow_dispatch:
+  push:
+    tags:
+      - "v*"
   # El nightly queda documentado pero apagado; agendarlo es decision del dueno.
   # schedule:
   #   - cron: "0 8 * * 1"
+
+env:
+  RULE_TIMING_REPORT_ISSUE: "18"
+  RULE_TIMING_DASHBOARD_ISSUE: "31"
 
 permissions:
   contents: read
@@ -13,7 +20,7 @@ permissions:
 jobs:
   measure-isolated:
     name: Measure isolated rule timing
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout repository
@@ -42,7 +49,7 @@ jobs:
 
   measure-all:
     name: Measure all-rules timing
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout repository
@@ -74,7 +81,7 @@ jobs:
     needs:
       - measure-isolated
       - measure-all
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout repository
@@ -115,19 +122,25 @@ jobs:
           --all-input rule-timing-artifacts/rule-timing-all.json
           --output rule-timing-results.md
 
-      - name: Publish results to issue 18
+      - name: Publish results to issues
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           today="$(date -u +%F)"
+          if [ "$GITHUB_EVENT_NAME" = "push" ] && [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            run_label="$GITHUB_REF_NAME"
+          else
+            run_label="manual @ ${GITHUB_SHA::7}"
+          fi
+
           {
             printf '## Medicion automatica por regla (%s)\n\n' "$today"
             printf '**Origen**: workflow `%s` en `%s`.\n\n' "$GITHUB_WORKFLOW" "$GITHUB_SHA"
             cat rule-timing-results.md
           } > /tmp/rule-timing-comment.md
 
-          gh issue comment 18 --body-file /tmp/rule-timing-comment.md
-          gh issue view 18 --json body --jq .body > /tmp/issue-18-body.md
+          gh issue comment "$RULE_TIMING_REPORT_ISSUE" --body-file /tmp/rule-timing-comment.md
+          gh issue view "$RULE_TIMING_REPORT_ISSUE" --json body --jq .body > /tmp/issue-18-body.md
 
           node --input-type=module <<'EOF'
           import { readFileSync, writeFileSync } from "node:fs";
@@ -155,4 +168,104 @@ jobs:
           writeFileSync("/tmp/issue-18-body-updated.md", updated);
           EOF
 
-          gh issue edit 18 --body-file /tmp/issue-18-body-updated.md
+          gh issue edit "$RULE_TIMING_REPORT_ISSUE" --body-file /tmp/issue-18-body-updated.md
+          gh issue view "$RULE_TIMING_DASHBOARD_ISSUE" --json body --jq .body > /tmp/issue-dashboard-body.md
+
+          RUN_LABEL="$run_label" TODAY="$today" node --input-type=module <<'EOF'
+          import { readFileSync, writeFileSync } from "node:fs";
+
+          const bodyPath = "/tmp/issue-dashboard-body.md";
+          const reportPath = "rule-timing-results.md";
+          const body = readFileSync(bodyPath, "utf8");
+          const report = readFileSync(reportPath, "utf8");
+          const startMarker = "<!-- RULE-TIMING-TABLE:START -->";
+          const endMarker = "<!-- RULE-TIMING-TABLE:END -->";
+
+          const tableSectionMatch =
+            /^## Tabla de resultados[\s\S]*?(?=\n## )/m.exec(report);
+
+          if (!tableSectionMatch) {
+            throw new Error("No se encontro la seccion Tabla de resultados.");
+          }
+
+          const rows = tableSectionMatch[0]
+            .split("\n")
+            .filter((line) => line.startsWith("| "))
+            .map((line) =>
+              line
+                .trim()
+                .slice(1, -1)
+                .split("|")
+                .map((cell) => cell.trim()),
+            )
+            .filter(
+              ([rule]) => rule !== "Regla" && !/^-+$/.test(rule),
+            )
+            .map(([rule, ms, typeAware]) => ({
+              ms,
+              numericMs: Number(ms),
+              rule,
+              typeAware,
+            }));
+
+          const takeRow = (predicate, description) => {
+            const row = rows.find(predicate);
+
+            if (!row) {
+              throw new Error(`No se encontro la fila ${description}.`);
+            }
+
+            return row;
+          };
+
+          const allTogether = takeRow(
+            (row) => row.rule.includes("TODAS_JUNTAS"),
+            "TODAS_JUNTAS",
+          );
+          const sumIndividuals = takeRow(
+            (row) => row.rule.includes("SUMA_INDIVIDUALES"),
+            "SUMA_INDIVIDUALES",
+          );
+          const programFloor = takeRow(
+            (row) => row.rule.includes("_programa TS_"),
+            "_programa TS_",
+          );
+          const startup = takeRow(
+            (row) => row.rule.includes("_arranque_"),
+            "_arranque_",
+          );
+          const ruleRows = rows
+            .filter((row) => /^`skapxd\//.test(row.rule))
+            .sort((left, right) => right.numericMs - left.numericMs);
+          const dashboardRows = [
+            { ...allTogether, rule: "**TODAS_JUNTAS**" },
+            { ...sumIndividuals, rule: "**SUMA_INDIVIDUALES**" },
+            ...ruleRows,
+            { ...programFloor, rule: "_programa TS_" },
+            { ...startup, rule: "_arranque_" },
+          ];
+          const dashboard = [
+            `## ${process.env.RUN_LABEL} (${process.env.TODAY} UTC)`,
+            "",
+            "| Regla | ms | type-aware? |",
+            "| --- | ---: | --- |",
+            ...dashboardRows.map(
+              (row) => `| ${row.rule} | ${row.ms} | ${row.typeAware} |`,
+            ),
+          ].join("\n");
+          const startIndex = body.indexOf(startMarker);
+          const endIndex = body.indexOf(endMarker);
+
+          if (startIndex === -1 || endIndex === -1 || endIndex < startIndex) {
+            throw new Error("No se encontraron los marcadores del dashboard.");
+          }
+
+          const updated =
+            body.slice(0, startIndex + startMarker.length) +
+            `\n${dashboard}\n` +
+            body.slice(endIndex);
+
+          writeFileSync("/tmp/issue-dashboard-body-updated.md", updated);
+          EOF
+
+          gh issue edit "$RULE_TIMING_DASHBOARD_ISSUE" --body-file /tmp/issue-dashboard-body-updated.md
