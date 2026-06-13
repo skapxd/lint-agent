@@ -152,9 +152,7 @@ async function measureIsolatedRules(configPaths, activeRules, typeAwareRules) {
   for (const rule of activeRules) {
     const ruleConfigPath = await writeRuleConfig(tempDir, rule);
     const measurement = measureConfig(ruleConfigPath);
-    const baseline = typeAwareRules.has(rule.id)
-      ? typedBaseline
-      : untypedBaseline;
+    const baseline = typedBaseline;
 
     isolatedRules.push({
       id: rule.id,
@@ -544,6 +542,10 @@ function renderReport(report) {
     "| Concurrencia ESLint | apagada (`--concurrency off`) |",
     `| Reglas activas | ${report.activeRules.length} |`,
     `| Type-aware por metadato | ${report.typeAwareRuleIds.length} |`,
+    "| Marginales por regla | cada regla resta `BASE_typed` del mismo job/runner |",
+    "| `TODAS_JUNTAS` | resta `BASE_typed` medido en su propio job/runner |",
+    "| Nota CI paralela | `SUMA_INDIVIDUALES` y `TODAS_JUNTAS` pueden venir de runners distintos; no comparar absolutos sin su baseline local |",
+    "| Columna type-aware | informativa; no selecciona baseline |",
     "",
     "## Tabla de resultados (por regla, mayor -> menor)",
     "",
