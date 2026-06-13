@@ -1,4 +1,5 @@
 import type { TSESTree } from "@typescript-eslint/utils";
+import { isNullLiteral } from "#/utils/ast/is-null-literal";
 import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
 export const noJsxTernaryNull: RuleModule = {
   meta: {
@@ -14,10 +15,6 @@ export const noJsxTernaryNull: RuleModule = {
     schema: [],
   },
   create(context: RuleContext) {
-    function isNullLiteral(node: TSESTree.Node | null) {
-      return node?.type === "Literal" && node.value === null;
-    }
-
     return {
       ConditionalExpression(node: TSESTree.ConditionalExpression) {
         const container = node.parent;

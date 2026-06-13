@@ -1,51 +1,24 @@
 #!/usr/bin/env node
-import { execFileSync } from "node:child_process";
-import type { ExecFileSyncOptionsWithStringEncoding } from "node:child_process";
 import path from "node:path";
 import process from "node:process";
 import { trySafe } from "@skapxd/result";
 import { Command } from "commander";
 import { ESLint } from "eslint";
+import { runGitCommand } from "#/utils/cli/run-git-command";
 
 const lintableFile = /\.(c|m)?[jt]sx?$/;
 
 async function lintChanged(base: string | null) {
-  function git(
-    args: readonly string[],
-    options: Partial<ExecFileSyncOptionsWithStringEncoding> = {},
-    failureMessage?: string,
-  ) {
-    const result = trySafe(() =>
-      execFileSync("git", args, {
-        encoding: "utf8",
-        stdio: ["pipe", "pipe", "ignore"],
-        ...options,
-      }),
-    );
-
-    if (result.ok) {
-      return result.value;
-    }
-
-    if (failureMessage) {
-      console.error(failureMessage);
-      process.exitCode = 1;
-      return null;
-    }
-
-    return "";
-  }
-
   function getChangedFiles() {
     // git diff --name-only devuelve rutas relativas a la RAÍZ del repo, no al
     // cwd: se resuelven contra ella para que el bin funcione desde cualquier
     // subdirectorio (p. ej. un subpaquete de un monorepo).
-    const rootOutput = git(["rev-parse", "--show-toplevel"]);
+    const rootOutput = runGitCommand(["rev-parse", "--show-toplevel"]);
     const root = rootOutput?.trim() || process.cwd();
     // Con --base: cambios del branch desde que divergió (CI / PR).
     // Sin --base: lo tocado en el árbol de trabajo + archivos sin trackear.
     const range = base ? `${base}...HEAD` : "HEAD";
-    const changed = git(
+    const changed = runGitCommand(
       ["diff", "--name-only", "--diff-filter=ACMR", range],
       { stdio: ["pipe", "pipe", "inherit"] },
       "skapxd-lint-changed: git no pudo calcular los cambios.",
@@ -56,7 +29,7 @@ async function lintChanged(base: string | null) {
 
     const untracked = base
       ? ""
-      : (git(["ls-files", "--others", "--exclude-standard"], { cwd: root }) ??
+      : (runGitCommand(["ls-files", "--others", "--exclude-standard"], { cwd: root }) ??
         "");
     const lines = `${changed}\n${untracked}`
       .split("\n")
