@@ -332,6 +332,15 @@ describe("reglas type-driven (wrappers de typescript-eslint) en presets tipados"
     expect(messageOf("no-unverified-cast", "unsafeTypeAssertion")).toContain(
       "la misma mentira con lavado de manos",
     );
+    expect(messageOf("no-anonymous-condition", "anonymousCondition")).toContain(
+      "QUE DECIDE el if",
+    );
+    expect(messageOf("no-anonymous-condition", "anonymousCondition")).toContain(
+      "nombres-AST concatenados a maquina",
+    );
+    expect(messageOf("no-anonymous-condition", "anonymousCondition")).toContain(
+      "type predicate descriptivo largo",
+    );
   });
 
   it("prohíbe ts-ignore y ts-nocheck pero permite ts-expect-error descrito", () => {
