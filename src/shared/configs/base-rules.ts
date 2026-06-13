@@ -1,3 +1,5 @@
+import type { Linter } from "eslint";
+
 export const baseRules = {
   "skapxd/class-properties-require-readonly": "error",
   "skapxd/max-public-methods": "error",
@@ -22,4 +24,4 @@ export const baseRules = {
   "skapxd/prefer-ts-pattern": "error",
   "skapxd/result-error-requires-cause": "error",
   "skapxd/result-error-requires-handling": "error",
-};
+} satisfies Linter.RulesRecord;

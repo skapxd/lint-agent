@@ -1,6 +1,7 @@
 import path from "node:path";
 import { RuleTester } from "@typescript-eslint/rule-tester";
 import { afterAll, describe, it } from "vitest";
+import type { RuleModule } from "#/utils/rule-authoring/rule-types";
 
 RuleTester.afterAll = afterAll;
 RuleTester.describe = describe;
@@ -15,7 +16,7 @@ RuleTester.itOnly = it.only;
  * `isSkapxdResultSourceFile`, que solo matchea rutas dentro de node_modules).
  */
 export function createTypedRuleTester() {
-  return new RuleTester({
+  const ruleTester = new RuleTester({
     languageOptions: {
       parserOptions: {
         projectService: {
@@ -25,4 +26,18 @@ export function createTypedRuleTester() {
       },
     },
   });
+
+  return {
+    run(
+      ruleName: string,
+      rule: RuleModule,
+      testCases: Parameters<RuleTester["run"]>[2],
+    ) {
+      ruleTester.run(
+        ruleName,
+        rule as unknown as Parameters<RuleTester["run"]>[1],
+        testCases,
+      );
+    },
+  };
 }

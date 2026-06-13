@@ -7,7 +7,7 @@ import { resultErrorRequiresCause } from "#/rules/result-error-requires-cause";
 import { resultErrorRequiresHandling } from "#/rules/result-error-requires-handling";
 import { classPropertiesRequireReadonly } from "#/rules/class-properties-require-readonly";
 import { noAccessors } from "#/rules/no-accessors";
-import type { Rule } from "eslint";
+import type { RuleModule } from "#/utils/rule-authoring/rule-types";
 import { maxHookSize } from "#/rules/max-hook-size";
 import { maxPublicMethods } from "#/rules/max-public-methods";
 import { nestDtoRequiresApiProperty } from "#/rules/nest-dto-requires-api-property";
@@ -51,7 +51,7 @@ import { noRuntimeStateGuard } from "#/rules/no-runtime-state-guard";
 import { packageRequiresTypedExports } from "#/rules/package-requires-typed-exports";
 import { untrustedModuleRequiresAdapter } from "#/rules/untrusted-module-requires-adapter";
 
-export const rules: Record<string, Rule.RuleModule> = {
+export const rules = {
   "class-properties-require-readonly": classPropertiesRequireReadonly,
   "no-accessors": noAccessors,
   "one-root-function-per-file": oneRootFunctionPerFile,
@@ -105,4 +105,4 @@ export const rules: Record<string, Rule.RuleModule> = {
   "no-runtime-state-guard": noRuntimeStateGuard,
   "package-requires-typed-exports": packageRequiresTypedExports,
   "untrusted-module-requires-adapter": untrustedModuleRequiresAdapter,
-} as unknown as Record<string, Rule.RuleModule>;
+} satisfies Record<string, RuleModule>;

@@ -1,28 +1,12 @@
-import tseslint from "typescript-eslint";
-import type { RuleListener } from "#/utils/rule-authoring/rule-types";
-
-// Forma minima de una regla de typescript-eslint que el wrapper necesita
-// conocer; el resto de campos pasan intactos via spread.
-type UpstreamRuleModule = {
-  create: (context: unknown) => RuleListener;
-  meta: {
-    docs?: Record<string, unknown>;
-    messages?: Record<string, string>;
-    [key: string]: unknown;
-  };
-  [key: string]: unknown;
-};
+import { getTseslintPluginRules } from "./get-tseslint-plugin-rules";
+import type { UpstreamRuleModule } from "./upstream-rule-module";
 
 type WrapOverrides = {
   description: string;
   messages: Record<string, string>;
 };
 
-// El tipo publico CompatiblePlugin de tseslint no expone `rules`: se
-// reafirma a la forma real del plugin para poder leer las reglas originales.
-const upstreamRules = (
-  tseslint.plugin as unknown as { rules: Record<string, UpstreamRuleModule> }
-).rules;
+const upstreamRules = getTseslintPluginRules();
 
 // Re-registra una regla de typescript-eslint bajo el namespace skapxd:
 // mismo `create` y mismas opciones (cero reimplementacion — typescript-eslint

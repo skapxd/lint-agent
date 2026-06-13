@@ -13,9 +13,13 @@ export type RuleValue = unknown;
 export type RuleOptions = Record<string, unknown>;
 
 export type RuleSourceCode = {
-  getScope?: (node: TSESTree.Node) => RuleScope;
-  getText: (node?: TSESTree.Node) => string;
+  getScope?: (node: unknown) => RuleScope;
+  getText?: (node?: unknown) => string;
   parserServices?: ParserServices;
+};
+
+export type TextRuleSourceCode = RuleSourceCode & {
+  getText: (node?: unknown) => string;
 };
 
 export type RuleScope = {
@@ -57,7 +61,9 @@ export type RuleListener = TSESLint.RuleListener;
 
 export type RuleModule = {
   create: (context: RuleContext) => RuleListener;
-  meta: Record<string, RuleValue>;
+  meta: Record<string, RuleValue> & {
+    messages?: Record<string, string>;
+  };
 };
 
 export type TypedRuleModule<

@@ -2,9 +2,13 @@ import {
   baseRules,
   createBaseLanguageOptions,
   createTypedLanguageOptions,
+  type OpinionatedConfigList,
+  type OpinionatedPluginReference,
 } from "#/shared/configs";
 
-export function createAstroConfigs(pluginReference: unknown) {
+export function createAstroConfigs(
+  pluginReference: OpinionatedPluginReference,
+) {
   const baseLanguageOptions = createBaseLanguageOptions();
   const typedLanguageOptions = createTypedLanguageOptions();
 
@@ -35,5 +39,5 @@ export function createAstroConfigs(pluginReference: unknown) {
         "skapxd/result-error-requires-handling": "error",
       },
     },
-  ];
+  ] satisfies OpinionatedConfigList;
 }

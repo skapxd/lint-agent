@@ -1,6 +1,7 @@
 import { Linter, RuleTester } from "eslint";
 import tseslint from "typescript-eslint";
 import { afterAll, describe, it } from "vitest";
+import type { RuleModule } from "#/utils/rule-authoring/rule-types";
 
 // RuleTester busca `describe`/`it` globales; en vitest hay que inyectarlos.
 // Los tipos de eslint no declaran estos estáticos, por eso el cast puntual.
@@ -21,7 +22,7 @@ testFrameworkHooks.itOnly = it.only;
  * (`result-error-requires-cause`) necesita un harness aparte con `projectService`.
  */
 export function createRuleTester() {
-  return new RuleTester({
+  const ruleTester = new RuleTester({
     languageOptions: {
       ecmaVersion: 2022,
       parser: tseslint.parser as unknown as Linter.Parser,
@@ -31,4 +32,18 @@ export function createRuleTester() {
       sourceType: "module",
     },
   });
+
+  return {
+    run(
+      ruleName: string,
+      rule: RuleModule,
+      testCases: Parameters<RuleTester["run"]>[2],
+    ) {
+      ruleTester.run(
+        ruleName,
+        rule as unknown as Parameters<RuleTester["run"]>[1],
+        testCases,
+      );
+    },
+  };
 }

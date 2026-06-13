@@ -4,6 +4,8 @@ import {
   baseRules,
   createBaseLanguageOptions,
   createTypedLanguageOptions,
+  type OpinionatedConfigList,
+  type OpinionatedPluginReference,
 } from "#/shared/configs";
 
 // Entrypoints donde Next exige `export default` (page, layout, sitemap, ...):
@@ -13,7 +15,9 @@ const nextDefaultExportFileGlob = `{${[
   ...nextAppMetadataFileStems,
 ].join(",")}}.{js,jsx,ts,tsx}`;
 
-export function createNextConfigs(pluginReference: unknown) {
+export function createNextConfigs(
+  pluginReference: OpinionatedPluginReference,
+) {
   const baseLanguageOptions = createBaseLanguageOptions();
   const typedLanguageOptions = createTypedLanguageOptions();
 
@@ -66,5 +70,5 @@ export function createNextConfigs(pluginReference: unknown) {
         ],
       },
     },
-  ];
+  ] satisfies OpinionatedConfigList;
 }
