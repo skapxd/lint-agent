@@ -70,6 +70,7 @@
     "lint": "tsup && eslint src",
     "lint:fix": "tsup && eslint src --fix",
     "lint:changed": "tsup && node dist/cli.js",
+    "measure:rules": "pnpm build && node scripts/measure-rule-timing.mjs",
     "test:peer-minimum": "pnpm build && node scripts/check-peer-minimum.mjs",
     "test": "vitest run",
     "test:watch": "vitest",

@@ -1,0 +1,77 @@
+name: Rule Timing
+
+on:
+  workflow_dispatch:
+  # El nightly queda documentado pero apagado; agendarlo es decision del dueno.
+  # schedule:
+  #   - cron: "0 8 * * 1"
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  measure:
+    name: Measure package preset rule timing
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Use Node.js 22.14.0
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22.14.0
+          cache: "pnpm"
+
+      - name: Install dependencies (Frozen Lockfile)
+        run: pnpm install --frozen-lockfile
+
+      - name: Measure rule timing
+        run: pnpm measure:rules -- --output rule-timing-results.md
+
+      - name: Publish results to issue 18
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          today="$(date -u +%F)"
+          {
+            printf '## Medicion automatica por regla (%s)\n\n' "$today"
+            printf '**Origen**: workflow `%s` en `%s`.\n\n' "$GITHUB_WORKFLOW" "$GITHUB_SHA"
+            cat rule-timing-results.md
+          } > /tmp/rule-timing-comment.md
+
+          gh issue comment 18 --body-file /tmp/rule-timing-comment.md
+          gh issue view 18 --json body --jq .body > /tmp/issue-18-body.md
+
+          node --input-type=module <<'EOF'
+          import { readFileSync, writeFileSync } from "node:fs";
+
+          const bodyPath = "/tmp/issue-18-body.md";
+          const reportPath = "rule-timing-results.md";
+          const body = readFileSync(bodyPath, "utf8");
+          const report = readFileSync(reportPath, "utf8");
+          const tableMatch = /^## Tabla de resultados[\s\S]*?(?=\n## )/m.exec(report);
+
+          if (!tableMatch) {
+            throw new Error("No se encontro la seccion Tabla de resultados.");
+          }
+
+          const replacement = tableMatch[0].trim();
+          const updated = body.replace(
+            /^## Tabla de resultados[\s\S]*?(?=\n## Acciones ya ejecutadas)/m,
+            `${replacement}\n\n`,
+          );
+
+          if (updated === body) {
+            throw new Error("No se pudo reemplazar el placeholder del issue.");
+          }
+
+          writeFileSync("/tmp/issue-18-body-updated.md", updated);
+          EOF
+
+          gh issue edit 18 --body-file /tmp/issue-18-body-updated.md

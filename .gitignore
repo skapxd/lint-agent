@@ -1,5 +1,6 @@
 dist
 node_modules
+rule-timing-results.md
 *.log
 *.swp
 # Los stubs de tipos de los fixtures SI se versionan: la regla
