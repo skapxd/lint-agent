@@ -31,6 +31,8 @@ export type CliArguments = {
   path: string | null;
   preset: CliPreset | null;
   rawPreset: string | null;
+  resetState: boolean;
+  resumeLast: boolean;
   verifySeed: string | null;
 };
 
@@ -49,9 +51,10 @@ export type SkapxdLintOutput = {
   configDeleted?: boolean;
   errorCount: number;
   files: LintFileResult[];
-  mode: "adopt" | "changed" | "evaluate" | "verify";
+  mode: "adopt" | "changed" | "evaluate" | "state" | "verify";
   omittedFileCount?: number;
   preset?: CliPreset;
+  state?: StateOutput;
   status: CliStatus;
   targetPath?: string;
   verification?: VerificationOutput;
@@ -84,6 +87,18 @@ export type VerificationOutput = {
   remainingViolationCount: number;
   seed: string;
   targetRules: string[];
+};
+
+export type AdoptionState = {
+  percent: number;
+  seed: string;
+  targetRules: string[];
+  timestamp: string;
+};
+
+export type StateOutput = {
+  action: "reset";
+  statePath: string;
 };
 
 export type LintFileResult = {

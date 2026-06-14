@@ -48,6 +48,10 @@ type CliJson = {
   mode: "changed" | "evaluate";
   omittedFileCount?: number;
   preset?: string;
+  state?: {
+    action: "reset";
+    statePath: string;
+  };
   status: string;
   verification?: {
     completed: boolean;
@@ -79,10 +83,16 @@ function createTempProject(prefix: string) {
   return mkdtempSync(path.join(tmpdir(), prefix));
 }
 
-function runCli(args: string[], cwd = PROJECT_ROOT, cliPath = CLI_PATH) {
+function runCli(
+  args: string[],
+  cwd = PROJECT_ROOT,
+  cliPath = CLI_PATH,
+  env: NodeJS.ProcessEnv = process.env,
+) {
   const result = spawnSync(process.execPath, [cliPath, ...args], {
     cwd,
     encoding: "utf8",
+    env,
   });
   const json = result.stdout ? (JSON.parse(result.stdout) as CliJson) : null;
 
@@ -176,6 +186,13 @@ function runGit(args: string[], cwd: string) {
 
 function includesReportedPath(filePaths: string[], suffix: string) {
   return filePaths.some((filePath) => filePath.endsWith(suffix));
+}
+
+function createCacheEnv(cacheRoot: string) {
+  return {
+    ...process.env,
+    XDG_CACHE_HOME: cacheRoot,
+  };
 }
 
 beforeAll(() => {
@@ -528,6 +545,141 @@ describe("skapxd-lint", () => {
     )).toBe(true);
   });
 
+  it("persiste el lote por repo y --resume-last lo usa explicitamente", () => {
+    const projectRoot = createTempProject("skapxd-cli-state-");
+    const cacheRoot = createTempProject("skapxd-cli-cache-");
+    const env = createCacheEnv(cacheRoot);
+    writeAdoptionFixture(projectRoot);
+    runGit(["init"], projectRoot);
+
+    const adoption = runCli([
+      projectRoot,
+      "--preset",
+      "base",
+      "--yes",
+      "--format",
+      "json",
+      "--adopt",
+      "1",
+    ], PROJECT_ROOT, CLI_PATH, env);
+    const seed = adoption.json?.adoption?.seed;
+    const stateFiles = readdirSync(path.join(cacheRoot, "skapxd-lint"));
+
+    expect(seed).toEqual(expect.stringMatching(/^skapxd1\./u));
+    expect(stateFiles).toHaveLength(1);
+
+    const resumed = runCli([
+      projectRoot,
+      "--preset",
+      "base",
+      "--yes",
+      "--format",
+      "json",
+      "--resume-last",
+    ], PROJECT_ROOT, CLI_PATH, env);
+
+    expect(resumed.result.status).toBe(1);
+    expect(resumed.json?.mode).toBe("verify");
+    expect(resumed.json?.verification?.seed).toBe(seed);
+  });
+
+  it("el modo args ignora el estado si no se pasa --resume-last", () => {
+    const projectRoot = createTempProject("skapxd-cli-state-ignore-");
+    const cacheRoot = createTempProject("skapxd-cli-cache-ignore-");
+    const env = createCacheEnv(cacheRoot);
+    writeAdoptionFixture(projectRoot);
+    runGit(["init"], projectRoot);
+
+    runCli([
+      projectRoot,
+      "--preset",
+      "base",
+      "--yes",
+      "--format",
+      "json",
+      "--adopt",
+      "1",
+    ], PROJECT_ROOT, CLI_PATH, env);
+
+    const evaluation = runCli([
+      projectRoot,
+      "--preset",
+      "base",
+      "--yes",
+      "--format",
+      "json",
+    ], PROJECT_ROOT, CLI_PATH, env);
+
+    expect(evaluation.result.status).toBe(1);
+    expect(evaluation.json?.mode).toBe("evaluate");
+    expect(evaluation.json?.verification).toBeUndefined();
+  });
+
+  it("usa claves distintas por root y limpia el estado al completar o resetear", () => {
+    const firstRoot = createTempProject("skapxd-cli-state-root-a-");
+    const secondRoot = createTempProject("skapxd-cli-state-root-b-");
+    const cacheRoot = createTempProject("skapxd-cli-cache-roots-");
+    const env = createCacheEnv(cacheRoot);
+    const firstFixture = writeAdoptionFixture(firstRoot);
+    writeAdoptionFixture(secondRoot);
+    runGit(["init"], firstRoot);
+    runGit(["init"], secondRoot);
+
+    const firstAdoption = runCli([
+      firstRoot,
+      "--preset",
+      "base",
+      "--yes",
+      "--format",
+      "json",
+      "--adopt",
+      "1",
+    ], PROJECT_ROOT, CLI_PATH, env);
+    runCli([
+      secondRoot,
+      "--preset",
+      "base",
+      "--yes",
+      "--format",
+      "json",
+      "--adopt",
+      "1",
+    ], PROJECT_ROOT, CLI_PATH, env);
+
+    expect(readdirSync(path.join(cacheRoot, "skapxd-lint"))).toHaveLength(2);
+
+    writeFileSync(
+      firstFixture.otherPath,
+      "const enabled = Boolean(process.env.ENABLED);\nif (enabled) {\n  console.log(enabled);\n}\n",
+      "utf8",
+    );
+    const completed = runCli([
+      firstRoot,
+      "--preset",
+      "base",
+      "--yes",
+      "--format",
+      "json",
+      "--verify",
+      firstAdoption.json?.adoption?.seed ?? "",
+    ], PROJECT_ROOT, CLI_PATH, env);
+
+    expect(completed.result.status).toBe(0);
+    expect(readdirSync(path.join(cacheRoot, "skapxd-lint"))).toHaveLength(1);
+
+    const reset = runCli([
+      secondRoot,
+      "--yes",
+      "--format",
+      "json",
+      "--reset-state",
+    ], PROJECT_ROOT, CLI_PATH, env);
+
+    expect(reset.result.status).toBe(0);
+    expect(reset.json?.state?.action).toBe("reset");
+    expect(readdirSync(path.join(cacheRoot, "skapxd-lint"))).toHaveLength(0);
+  });
+
   it("ignora configs, tests y fixtures por default en evaluacion efimera", () => {
     const projectRoot = createTempProject("skapxd-cli-default-ignores-");
     writeScopedFixture(projectRoot);
@@ -704,6 +856,8 @@ describe("skapxd-lint", () => {
     expect(result.stdout).toContain("--preset <name>");
     expect(result.stdout).toContain("--adopt <percent>");
     expect(result.stdout).toContain("--verify <seed>");
+    expect(result.stdout).toContain("--resume-last");
+    expect(result.stdout).toContain("--reset-state");
     expect(result.stdout).toContain("--base <git-ref>");
     expect(result.stdout).toContain("--format <json|compact|toon>");
     expect(result.stdout).toContain("--include-tests");
@@ -712,6 +866,8 @@ describe("skapxd-lint", () => {
     expect(result.stdout).toContain("Ignorados en evaluacion efimera:");
     expect(result.stdout).toContain("Adopcion incremental:");
     expect(result.stdout).toContain("--verify <seed> reevalua solo esas reglas");
+    expect(result.stdout).toContain("Estado persistido:");
+    expect(result.stdout).toContain("Args nunca dependen del estado salvo --resume-last");
     expect(result.stdout).toContain("Tests: ignorados por default; usa --include-tests");
     expect(result.stdout).toContain("--format compact: lectura humana;");
     expect(result.stdout).toContain("Para agentes:");
@@ -734,9 +890,35 @@ describe("skapxd-lint", () => {
       ),
       "utf8",
     );
+    const resumePromptSource = readFileSync(
+      path.join(
+        PROJECT_ROOT,
+        "src",
+        "utils",
+        "cli",
+        "output",
+        "interactive",
+        "prompt-for-resume-last-state.ts",
+      ),
+      "utf8",
+    );
+    const resolverSource = readFileSync(
+      path.join(
+        PROJECT_ROOT,
+        "src",
+        "utils",
+        "cli",
+        "state",
+        "resolve-state-backed-verify-seed.ts",
+      ),
+      "utf8",
+    );
 
     expect(promptSource).toContain("@clack/prompts");
     expect(promptSource).not.toContain("node:readline");
+    expect(resumePromptSource).toContain("confirm");
+    expect(resumePromptSource).toContain("@clack/prompts");
+    expect(resolverSource).toContain("promptForResumeLastState");
   });
 
   it("--changed y el alias legacy devuelven el mismo resultado", () => {

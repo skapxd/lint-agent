@@ -19,6 +19,8 @@ export function parseCliArguments(args: readonly string[]): CliParseResult {
         "include-tests": { type: "boolean" },
         "no-interactive": { type: "boolean" },
         preset: { type: "string" },
+        "reset-state": { type: "boolean" },
+        "resume-last": { type: "boolean" },
         verify: { type: "string" },
         yes: { type: "boolean" },
       },
@@ -83,10 +85,33 @@ export function parseCliArguments(args: readonly string[]): CliParseResult {
 
   const verifySeed = parsed.value.values.verify ?? null;
   const mixesAdoptAndVerify = adoptPercent !== null && verifySeed !== null;
+  const resumeLast = parsed.value.values["resume-last"] === true;
+  const resetState = parsed.value.values["reset-state"] === true;
   if (mixesAdoptAndVerify) {
     return {
       message:
         "Uso invalido: --adopt <percent> crea un lote y --verify <seed> verifica un lote existente; usa solo uno.",
+      ok: false,
+    };
+  }
+
+  const mixesResumeWithExplicitBatch =
+    resumeLast && (adoptPercent !== null || verifySeed !== null);
+  if (mixesResumeWithExplicitBatch) {
+    return {
+      message:
+        "Uso invalido: --resume-last usa el lote persistido; no lo mezcles con --adopt <percent> ni --verify <seed>.",
+      ok: false,
+    };
+  }
+
+  const mixesResetWithBatch =
+    resetState &&
+    (adoptPercent !== null || verifySeed !== null || resumeLast);
+  if (mixesResetWithBatch) {
+    return {
+      message:
+        "Uso invalido: --reset-state solo limpia el lote persistido; no lo mezcles con --adopt, --verify ni --resume-last.",
       ok: false,
     };
   }
@@ -106,6 +131,8 @@ export function parseCliArguments(args: readonly string[]): CliParseResult {
       path,
       preset,
       rawPreset,
+      resetState,
+      resumeLast,
       verifySeed,
     },
   };

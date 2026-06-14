@@ -7,8 +7,12 @@ import { getCliOutputFormat } from "#/utils/cli/args/get-cli-output-format";
 import { isInteractiveSession } from "#/utils/cli/output/interactive/is-interactive-session";
 import { parseCliArguments } from "#/utils/cli/args/parse-cli-arguments";
 import { promptForPath } from "#/utils/cli/output/interactive/prompt-for-path";
+import { createStateResetOutput } from "#/utils/cli/state/create-state-reset-output";
+import { removeAdoptionState } from "#/utils/cli/state/remove-adoption-state";
+import { resolveStateBackedVerifySeed } from "#/utils/cli/state/resolve-state-backed-verify-seed";
 import { runRequestedMode } from "./run-requested-mode";
 import { withChangedAlias } from "#/utils/cli/args/with-changed-alias";
+import { writeAdoptionState } from "#/utils/cli/state/write-adoption-state";
 import { writeCliOutput } from "#/utils/cli/output/machine/write-cli-output";
 import type { CliStreams } from "#/utils/cli/types";
 
@@ -72,16 +76,46 @@ export async function runSkapxdLint(streams: CliStreams) {
     return;
   }
 
+  const requestedPath = pathFromPrompt ?? streams.cwd;
+
+  if (parsed.value.resetState) {
+    const statePath = removeAdoptionState(requestedPath);
+    const output = createStateResetOutput(statePath);
+
+    writeCliOutput(output, streams.stdout, outputFormat);
+    process.exitCode = 0;
+    return;
+  }
+
+  const verifySeedResult = await resolveStateBackedVerifySeed({
+    cliArguments: parsed.value,
+    interactive,
+    path: requestedPath,
+    streams: { input: streams.stdin, output: streams.stdout },
+  });
+
+  if (!verifySeedResult.ok) {
+    const message =
+      verifySeedResult.error instanceof Error
+        ? verifySeedResult.error.message
+        : "no pude resolver el lote persistido.";
+    const output = createUsageErrorOutput(message);
+
+    writeCliOutput(output, streams.stdout, outputFormat);
+    process.exitCode = 2;
+    return;
+  }
+
   const requestedOutput = await trySafe(() =>
     runRequestedMode({
       adoptPercent: parsed.value.adoptPercent,
       base: parsed.value.base,
       changed: parsed.value.changed,
       includeTests: parsed.value.includeTests,
-      path: pathFromPrompt ?? streams.cwd,
+      path: requestedPath,
       preset: parsed.value.preset,
       streams,
-      verifySeed: parsed.value.verifySeed,
+      verifySeed: verifySeedResult.value,
     }),
   );
 
@@ -99,6 +133,15 @@ export async function runSkapxdLint(streams: CliStreams) {
 
   const output = requestedOutput.value;
   const exitCode = getCliExitCode(output);
+  const outputTargetPath = output.targetPath ?? requestedPath;
+
+  if (output.adoption) {
+    writeAdoptionState(outputTargetPath, output.adoption);
+  }
+
+  if (output.verification?.completed === true) {
+    removeAdoptionState(outputTargetPath);
+  }
 
   writeCliOutput(output, streams.stdout, outputFormat);
   process.exitCode = exitCode;
