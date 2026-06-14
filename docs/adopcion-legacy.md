@@ -5,7 +5,7 @@
 ## Adopción incremental: lintear solo lo que cambió
 
 En una base de código existente, activar todas las reglas de golpe genera mucho
-ruido. El paquete incluye el comando **`skapxd-lint-changed`**, que ejecuta
+ruido. El paquete incluye el modo **`skapxd-lint --changed`**, que ejecuta
 **todas** las reglas **solo sobre los archivos que tocaste** (detectados con
 git), no sobre todo el repo. Así el código nuevo nace limpio y el legacy se
 arregla cuando lo editas — la "regla del boy scout".
@@ -15,8 +15,8 @@ No necesita husky ni hooks: basta con un script en tu `package.json`.
 ```json
 {
   "scripts": {
-    "lint:changed": "skapxd-lint-changed",
-    "lint:ci": "skapxd-lint-changed --base origin/main"
+    "lint:changed": "skapxd-lint --changed",
+    "lint:ci": "skapxd-lint --changed --base origin/main"
   }
 }
 ```
@@ -174,7 +174,7 @@ diseño, no solo disciplina. Para cuando el equipo ya vio el patrón en la ola 3
 
 ### Los dos ejes se combinan
 
-Mientras la lista de pendientes encoge, `skapxd-lint-changed` aplica lo ya
+Mientras la lista de pendientes encoge, `skapxd-lint --changed` aplica lo ya
 activado solo a los archivos tocados: el código nuevo nace cumpliendo y el
 legacy se corrige cuando alguien lo visita (regla del boy scout), no en un
 big-bang. Un proyecto mediano recorre las cuatro olas en semanas, no en

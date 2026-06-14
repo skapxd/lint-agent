@@ -1,10 +1,8 @@
 import {
-  existsSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
   readdirSync,
-  symlinkSync,
   writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
@@ -921,9 +919,8 @@ describe("skapxd-lint", () => {
     expect(resolverSource).toContain("promptForResumeLastState");
   });
 
-  it("--changed y el alias legacy devuelven el mismo resultado", () => {
+  it("--changed lintea solo archivos modificados por git", () => {
     const projectRoot = createTempProject("skapxd-cli-changed-");
-    const aliasPath = path.join(projectRoot, "skapxd-lint-changed");
 
     writeFileSync(
       path.join(projectRoot, "eslint.config.mjs"),
@@ -936,19 +933,12 @@ describe("skapxd-lint", () => {
     runGit(["add", "eslint.config.mjs"], projectRoot);
     runGit(["commit", "-m", "initial"], projectRoot);
     writeFileSync(path.join(projectRoot, "bad.js"), "missingReference;\n", "utf8");
-    symlinkSync(CLI_PATH, aliasPath);
 
     const changed = runCli(["--changed", "--yes", "--format", "json"], projectRoot);
-    const alias = runCli(["--yes", "--format", "json"], projectRoot, aliasPath);
 
     expect(changed.result.status).toBe(1);
-    expect(alias.result.status).toBe(1);
     expect(changed.json?.status).toBe("findings");
-    expect(alias.json?.status).toBe("findings");
-    expect(alias.json?.errorCount).toBe(changed.json?.errorCount);
-    expect(alias.json?.changedFiles?.map((file) => path.basename(file))).toEqual(
-      changed.json?.changedFiles?.map((file) => path.basename(file)),
-    );
-    expect(existsSync(aliasPath)).toBe(true);
+    expect(changed.json?.errorCount).toBe(1);
+    expect(changed.json?.changedFiles?.map((file) => path.basename(file))).toEqual(["bad.js"]);
   });
 });
