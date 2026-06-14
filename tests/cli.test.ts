@@ -307,7 +307,15 @@ describe("skapxd-lint", () => {
 
   it("usa clack para el prompt interactivo, no readline", () => {
     const promptSource = readFileSync(
-      path.join(PROJECT_ROOT, "src", "utils", "cli", "prompt-for-path.ts"),
+      path.join(
+        PROJECT_ROOT,
+        "src",
+        "utils",
+        "cli",
+        "output",
+        "interactive",
+        "prompt-for-path.ts",
+      ),
       "utf8",
     );
 

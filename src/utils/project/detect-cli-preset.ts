@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { toCliPreset } from "#/utils/cli/to-cli-preset";
+import { toCliPreset } from "#/utils/cli/args/to-cli-preset";
 import type { CliPreset } from "#/utils/cli/types";
 import { packageJsonHasExports } from "./package-json-has-exports";
 

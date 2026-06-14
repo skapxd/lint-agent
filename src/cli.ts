@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { runSkapxdLint } from "#/utils/cli/run-skapxd-lint";
+import { runSkapxdLint } from "#/utils/cli/commands/run-skapxd-lint";
 
 void runSkapxdLint({
   argv: process.argv,
