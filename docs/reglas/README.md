@@ -26,7 +26,7 @@ Cada ficha vive en un archivo propio. El indice conserva la descripcion corta de
 | [`skapxd/nest-no-swagger-in-controllers`](./nest-no-swagger-in-controllers.md) | Los controllers no se llenan de decoradores de swagger; el plugin introspecciona los DTOs. Preset `nest`. |
 | [`skapxd/nest-requires-swagger-plugin`](./nest-requires-swagger-plugin.md) | `nest-cli.json` debe tener el plugin `@nestjs/swagger`: la premisa de las reglas de swagger, verificada. Preset `nest`. |
 | [`skapxd/nest-validation-pipe-config`](./nest-validation-pipe-config.md) | Todo `new ValidationPipe` configura `transform` y `whitelist`: la premisa de las reglas de DTOs. Preset `nest`. |
-| [`skapxd/nested-function-requires-capture`](./nested-function-requires-capture.md) | Una funcion anidada nombrada debe capturar scope local; si no, es un helper extraible. |
+| [`skapxd/nested-function-requires-capture`](./nested-function-requires-capture.md) | Una funcion anidada nombrada debe capturar scope local; si no, es un helper extraible. Preset `shared`, en `error`. |
 | [`skapxd/no-anonymous-condition`](./no-anonymous-condition.md) | El `if` solo acepta condiciones ya nombradas; todo cómputo (llamada, comparación, `&&`/`||`) se extrae a una `const` con nombre semántico. |
 | [`skapxd/no-deep-relative-imports`](./no-deep-relative-imports.md) | Limita la profundidad de los imports relativos (`../`). |
 | [`skapxd/no-default-export`](./no-default-export.md) | Prohíbe `export default`; el nombre del símbolo es el contrato. Exime configs/stories y, en el preset `next`, los entrypoints del App Router. |

@@ -46,6 +46,11 @@ el `languageOptions` del preset. Ver
 
 ### Shared
 
+Las reglas agnosticas al framework viven en `shared.base` como `error`. Por
+eso `skapxd/nested-function-requires-capture`, que solo depende de AST y scope,
+queda en las bases y la heredan `shared.backend`, `shared.frontend`,
+`shared.package` y los presets de framework que extienden las bases.
+
 ```js
 import skapxd from "@skapxd/eslint-opinionated";
 

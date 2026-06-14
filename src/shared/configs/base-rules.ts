@@ -14,6 +14,7 @@ export const baseRules = {
   "skapxd/no-else": "error",
   "skapxd/no-emoji": "error",
   "skapxd/no-nested-if": "error",
+  "skapxd/nested-function-requires-capture": "error",
   "skapxd/no-runtime-state-guard": "error",
   "skapxd/no-promise-chain": "error",
   "skapxd/no-try-catch": "error",
