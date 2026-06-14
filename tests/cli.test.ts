@@ -119,11 +119,14 @@ describe("detectCliPreset", () => {
 
 describe("skapxd-lint", () => {
   it("falla rapido en no-interactivo cuando falta path", () => {
-    const { json, result } = runCli(["--yes"]);
+    const result = spawnSync(process.execPath, [CLI_PATH, "--yes"], {
+      cwd: PROJECT_ROOT,
+      encoding: "utf8",
+    });
 
     expect(result.status).toBe(2);
-    expect(json?.status).toBe("usage-error");
-    expect(json?.files[0]?.messages[0]?.message).toContain("Falta <path>");
+    expect(result.stdout).toContain("1 errors | 1 files | preset none");
+    expect(result.stdout).toContain("Falta <path>");
   });
 
   it("emite JSON y exit code 1 cuando hay hallazgos", () => {
@@ -133,7 +136,14 @@ describe("skapxd-lint", () => {
       "const enabled = true;\nif (enabled) {\n  console.log(enabled);\n} else {\n  console.log(false);\n}\n",
     );
 
-    const { json, result } = runCli([projectRoot, "--preset", "base", "--yes"]);
+    const { json, result } = runCli([
+      projectRoot,
+      "--preset",
+      "base",
+      "--yes",
+      "--format",
+      "json",
+    ]);
 
     expect(result.status).toBe(1);
     expect(json?.status).toBe("findings");
@@ -153,7 +163,7 @@ describe("skapxd-lint", () => {
 
     const result = spawnSync(
       process.execPath,
-      [CLI_PATH, projectRoot, "--preset", "base", "--yes"],
+      [CLI_PATH, projectRoot, "--preset", "base", "--yes", "--format", "json"],
       {
         cwd: PROJECT_ROOT,
         encoding: "utf8",
@@ -166,7 +176,7 @@ describe("skapxd-lint", () => {
     expect(JSON.parse(result.stdout)).toMatchObject({ status: "findings" });
   });
 
-  it("emite salida compacta cuando se pide --format compact", () => {
+  it("emite salida compacta por defecto en no-interactivo", () => {
     const projectRoot = createTempProject("skapxd-cli-compact-");
     writeBaseFixture(
       projectRoot,
@@ -174,6 +184,15 @@ describe("skapxd-lint", () => {
     );
 
     const result = spawnSync(
+      process.execPath,
+      [CLI_PATH, projectRoot, "--preset", "base", "--yes"],
+      {
+        cwd: PROJECT_ROOT,
+        encoding: "utf8",
+        env: { ...process.env, FORCE_COLOR: "1" },
+      },
+    );
+    const explicitResult = spawnSync(
       process.execPath,
       [CLI_PATH, projectRoot, "--preset", "base", "--yes", "--format", "compact"],
       {
@@ -184,13 +203,16 @@ describe("skapxd-lint", () => {
     );
 
     expect(result.status).toBe(1);
+    expect(explicitResult.status).toBe(1);
     expect(result.stdout).not.toMatch(ansiEscapePattern);
+    expect(explicitResult.stdout).not.toMatch(ansiEscapePattern);
     expect(result.stdout).toContain("errors |");
     expect(result.stdout).toContain("files | preset base");
     expect(result.stdout).toContain("index.ts");
     expect(result.stdout).toContain("skapxd/no-else");
     expect(result.stdout).not.toContain("errorCount:");
     expect(result.stdout).not.toContain("{");
+    expect(explicitResult.stdout).toBe(result.stdout);
   });
 
   it("emite TOON compacto cuando se pide --format toon", () => {
@@ -230,7 +252,14 @@ describe("skapxd-lint", () => {
     const projectRoot = createTempProject("skapxd-cli-clean-");
     writeBaseFixture(projectRoot, "const value = 1;\nconsole.log(value);\n");
 
-    const { json, result } = runCli([projectRoot, "--preset", "base", "--yes"]);
+    const { json, result } = runCli([
+      projectRoot,
+      "--preset",
+      "base",
+      "--yes",
+      "--format",
+      "json",
+    ]);
 
     expect(result.status).toBe(0);
     expect(json?.status).toBe("ok");
@@ -245,7 +274,14 @@ describe("skapxd-lint", () => {
     );
     const beforeFiles = listProjectFiles(projectRoot);
 
-    const { json, result } = runCli([projectRoot, "--preset", "base", "--yes"]);
+    const { json, result } = runCli([
+      projectRoot,
+      "--preset",
+      "base",
+      "--yes",
+      "--format",
+      "json",
+    ]);
     const afterFiles = listProjectFiles(projectRoot);
 
     expect(result.status).toBe(1);
@@ -296,8 +332,8 @@ describe("skapxd-lint", () => {
     writeFileSync(path.join(projectRoot, "bad.js"), "missingReference;\n", "utf8");
     symlinkSync(CLI_PATH, aliasPath);
 
-    const changed = runCli(["--changed", "--yes"], projectRoot);
-    const alias = runCli(["--yes"], projectRoot, aliasPath);
+    const changed = runCli(["--changed", "--yes", "--format", "json"], projectRoot);
+    const alias = runCli(["--yes", "--format", "json"], projectRoot, aliasPath);
 
     expect(changed.result.status).toBe(1);
     expect(alias.result.status).toBe(1);

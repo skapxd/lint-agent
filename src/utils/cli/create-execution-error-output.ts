@@ -5,7 +5,7 @@ export function createExecutionErrorOutput(
   mode: SkapxdLintOutput["mode"] = "evaluate",
 ): SkapxdLintOutput {
   return {
-    errorCount: 0,
+    errorCount: 1,
     files: [
       {
         errorCount: 1,

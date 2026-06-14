@@ -8,5 +8,5 @@ export function getCliOutputFormat(
     return argumentsValue.format;
   }
 
-  return interactive ? "interactive" : "json";
+  return interactive ? "interactive" : "compact";
 }

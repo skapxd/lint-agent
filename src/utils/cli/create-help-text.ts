@@ -15,7 +15,7 @@ Flags:
   --preset <name>         Preset a usar. Unidad: uno de astro, base, nest, next, package. Default: autodetectado por senales del proyecto.
   --changed               Lintea solo archivos JS/TS cambiados por git. Unidad: archivos ACMR + untracked. Default: false.
   --base <git-ref>        Ref base para --changed. Unidad: revision git (ej. origin/main). Default: HEAD + untracked.
-  --format <json|compact|toon> Formato de salida de maquina. Unidad: json, compact o toon. Default: json sin TTY; texto legible con TTY.
+  --format <json|compact|toon> Formato de salida de maquina. Unidad: json, compact o toon. Default: compact sin TTY; texto legible con TTY.
   --no-interactive        Fuerza modo no-interactivo aunque haya TTY. Unidad: booleano. Default: false.
   --yes                   Alias de --no-interactive para scripts/agentes. Unidad: booleano. Default: false.
   --help                  Muestra esta ayuda. Unidad: booleano. Default: false.
@@ -29,7 +29,8 @@ Deteccion de preset:
 
 Salida:
   TTY interactivo: texto legible.
-  Sin TTY, --no-interactive o --yes: JSON determinista.
+  Sin TTY, --no-interactive o --yes: compact determinista por default.
+  --format json: JSON parseable estricto para integraciones.
   --format compact: resumen y hallazgos agrupados por archivo, sin color ni codigos ANSI.
   --format toon: TOON compacto y parseable para agentes, con mensajes deduplicados por id.
 

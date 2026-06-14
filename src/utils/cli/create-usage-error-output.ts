@@ -2,7 +2,7 @@ import type { SkapxdLintOutput } from "./types";
 
 export function createUsageErrorOutput(message: string): SkapxdLintOutput {
   return {
-    errorCount: 0,
+    errorCount: 1,
     files: [
       {
         errorCount: 1,
