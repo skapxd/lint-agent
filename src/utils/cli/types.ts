@@ -26,6 +26,7 @@ export type CliArguments = {
   forceNonInteractive: boolean;
   format: CliOutputFormat | null;
   help: boolean;
+  includeTests: boolean;
   path: string | null;
   preset: CliPreset | null;
   rawPreset: string | null;
@@ -46,6 +47,7 @@ export type SkapxdLintOutput = {
   errorCount: number;
   files: LintFileResult[];
   mode: "changed" | "evaluate";
+  omittedFileCount?: number;
   preset?: CliPreset;
   status: CliStatus;
   targetPath?: string;
@@ -77,6 +79,7 @@ export type PromptStreams = {
 export type RunRequestedModeInput = {
   base: string | null;
   changed: boolean;
+  includeTests: boolean;
   path: string;
   preset: CliPreset | null;
   streams: CliStreams;

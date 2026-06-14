@@ -16,6 +16,7 @@ Flags:
   --changed               Lintea solo archivos JS/TS cambiados por git. Unidad: archivos ACMR + untracked. Default: false.
   --base <git-ref>        Ref base para --changed. Unidad: revision git (ej. origin/main). Default: HEAD + untracked.
   --format <json|compact|toon> Formato de salida de maquina. Unidad: json, compact o toon. Default: compact sin TTY; texto legible con TTY.
+  --include-tests         Incluye tests en evaluacion efimera. Unidad: booleano. Default: false.
   --no-interactive        Fuerza modo no-interactivo aunque haya TTY. Unidad: booleano. Default: false.
   --yes                   Alias de --no-interactive para scripts/agentes. Unidad: booleano. Default: false.
   --help                  Muestra esta ayuda. Unidad: booleano. Default: false.
@@ -34,6 +35,11 @@ Salida:
   --format json: salida estructurada para parsear con JSON.parse.
   --format toon: salida estructurada para parsear con TOON; compacta y con mensajes deduplicados por id.
 
+Ignorados en evaluacion efimera:
+  Siempre: node_modules, dist, build, coverage, configs, fixtures y mocks.
+  Tests: ignorados por default; usa --include-tests para evaluarlos.
+  Archivos fuera del tsconfig/project service: omitidos y contados aparte.
+
 Exit codes:
   0  Sin hallazgos.
   1  Hallazgos de lint.
@@ -42,6 +48,7 @@ Exit codes:
 Ejemplos:
   Humano:  skapxd-lint .
   Humano:  skapxd-lint --changed --base origin/main
+  Humano:  skapxd-lint . --include-tests
   Agente:  skapxd-lint . --preset package --yes
   Agente:  skapxd-lint . --preset package --yes --format toon
   Agente:  skapxd-lint . --preset package --yes --format json

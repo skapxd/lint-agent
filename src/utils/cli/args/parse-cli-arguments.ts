@@ -14,6 +14,7 @@ export function parseCliArguments(args: readonly string[]): CliParseResult {
         changed: { type: "boolean" },
         format: { type: "string" },
         help: { short: "h", type: "boolean" },
+        "include-tests": { type: "boolean" },
         "no-interactive": { type: "boolean" },
         preset: { type: "string" },
         yes: { type: "boolean" },
@@ -75,6 +76,7 @@ export function parseCliArguments(args: readonly string[]): CliParseResult {
         parsed.value.values["no-interactive"] === true ||
         parsed.value.values.yes === true,
       help: parsed.value.values.help === true || helpCommand,
+      includeTests: parsed.value.values["include-tests"] === true,
       path,
       preset,
       rawPreset,

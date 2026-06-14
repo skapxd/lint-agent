@@ -59,6 +59,7 @@ export function createToonLintOutput(output: SkapxdLintOutput) {
     changedFiles: output.changedFiles ?? [],
     errors: output.errorCount,
     warnings: output.warningCount,
+    omittedFiles: output.omittedFileCount ?? 0,
     files: new Set(findings.map((finding) => finding.file)).size,
     findingCount: findings.length,
     messages,

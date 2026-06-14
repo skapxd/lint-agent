@@ -1,5 +1,6 @@
 import {
   existsSync,
+  mkdirSync,
   mkdtempSync,
   readFileSync,
   readdirSync,
@@ -12,7 +13,9 @@ import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { decode } from "@toon-format/toon";
 import { beforeAll, describe, expect, it } from "vitest";
+import { omitProjectServiceParseErrorResults } from "../src/utils/cli/eslint-run/omit-project-service-parse-error-results";
 import { detectCliPreset } from "../src/utils/project/detect-cli-preset";
+import type { ESLint } from "eslint";
 
 const PROJECT_ROOT = fileURLToPath(new URL("..", import.meta.url));
 const CLI_PATH = path.join(PROJECT_ROOT, "dist", "cli.mjs");
@@ -30,6 +33,7 @@ type CliJson = {
     }>;
   }>;
   mode: "changed" | "evaluate";
+  omittedFileCount?: number;
   preset?: string;
   status: string;
 };
@@ -75,6 +79,44 @@ function writeBaseFixture(projectRoot: string, source: string) {
   return sourcePath;
 }
 
+function writeScopedFixture(projectRoot: string) {
+  mkdirSync(path.join(projectRoot, "src"), { recursive: true });
+  mkdirSync(path.join(projectRoot, "tests"), { recursive: true });
+  mkdirSync(path.join(projectRoot, "fixtures"), { recursive: true });
+  writeFileSync(
+    path.join(projectRoot, "tsconfig.json"),
+    JSON.stringify({
+      include: ["src/**/*.ts", "tests/**/*.ts"],
+      compilerOptions: {
+        noImplicitReturns: true,
+        noUncheckedIndexedAccess: true,
+        strict: true,
+      },
+    }),
+    "utf8",
+  );
+  writeFileSync(
+    path.join(projectRoot, "src", "index.ts"),
+    "const value = 1;\nconsole.log(value);\n",
+    "utf8",
+  );
+  writeFileSync(
+    path.join(projectRoot, "vitest.config.ts"),
+    "export default { test: { globals: true } };\n",
+    "utf8",
+  );
+  writeFileSync(
+    path.join(projectRoot, "tests", "bad.test.ts"),
+    "const enabled = true;\nif (enabled) {\n  console.log(enabled);\n} else {\n  console.log(false);\n}\n",
+    "utf8",
+  );
+  writeFileSync(
+    path.join(projectRoot, "fixtures", "bad.ts"),
+    "const enabled = true;\nif (enabled) {\n  console.log(enabled);\n} else {\n  console.log(false);\n}\n",
+    "utf8",
+  );
+}
+
 function listProjectFiles(projectRoot: string) {
   return readdirSync(projectRoot).sort();
 }
@@ -86,6 +128,10 @@ function runGit(args: string[], cwd: string) {
   });
 
   expect(result.status, result.stderr || result.stdout).toBe(0);
+}
+
+function includesReportedPath(filePaths: string[], suffix: string) {
+  return filePaths.some((filePath) => filePath.endsWith(suffix));
 }
 
 beforeAll(() => {
@@ -266,6 +312,147 @@ describe("skapxd-lint", () => {
     expect(json?.errorCount).toBe(0);
   });
 
+  it("ignora configs, tests y fixtures por default en evaluacion efimera", () => {
+    const projectRoot = createTempProject("skapxd-cli-default-ignores-");
+    writeScopedFixture(projectRoot);
+
+    const { json, result } = runCli([
+      projectRoot,
+      "--preset",
+      "base",
+      "--yes",
+      "--format",
+      "json",
+    ]);
+
+    expect(result.status).toBe(0);
+    expect(json?.errorCount).toBe(0);
+    expect(json?.omittedFileCount).toBe(0);
+    const reportedFiles = json?.files.map((file) => file.filePath) ?? [];
+
+    expect(reportedFiles).toHaveLength(1);
+    expect(includesReportedPath(reportedFiles, path.join("src", "index.ts"))).toBe(
+      true,
+    );
+  });
+
+  it("--include-tests evalua tests sin incluir configs ni fixtures", () => {
+    const projectRoot = createTempProject("skapxd-cli-include-tests-");
+    writeScopedFixture(projectRoot);
+
+    const { json, result } = runCli([
+      projectRoot,
+      "--preset",
+      "base",
+      "--yes",
+      "--format",
+      "json",
+      "--include-tests",
+    ]);
+    const reportedFiles = json?.files.map((file) => file.filePath) ?? [];
+
+    expect(result.status).toBe(1);
+    expect(includesReportedPath(reportedFiles, path.join("src", "index.ts"))).toBe(
+      true,
+    );
+    expect(
+      includesReportedPath(reportedFiles, path.join("tests", "bad.test.ts")),
+    ).toBe(true);
+    expect(includesReportedPath(reportedFiles, "vitest.config.ts")).toBe(false);
+    expect(includesReportedPath(reportedFiles, path.join("fixtures", "bad.ts"))).toBe(
+      false,
+    );
+    expect(
+      json?.files
+        .find((file) => file.filePath.endsWith(path.join("tests", "bad.test.ts")))
+        ?.messages.some((message) => message.ruleId === "skapxd/no-else"),
+    ).toBe(true);
+  });
+
+  it("omite parse errors residuales fuera del tsconfig sin contarlos como hallazgos", () => {
+    const results: ESLint.LintResult[] = [
+      {
+        errorCount: 1,
+        fatalErrorCount: 1,
+        filePath: "/repo/scripts/task.ts",
+        fixableErrorCount: 0,
+        fixableWarningCount: 0,
+        messages: [
+          {
+            column: 0,
+            fatal: true,
+            line: 0,
+            message:
+              "Parsing error: /repo/scripts/task.ts was not found by the project service.",
+            ruleId: null,
+            severity: 2,
+          },
+        ],
+        suppressedMessages: [],
+        usedDeprecatedRules: [],
+        warningCount: 0,
+      },
+      {
+        errorCount: 0,
+        fatalErrorCount: 0,
+        filePath: "/repo/src/index.ts",
+        fixableErrorCount: 0,
+        fixableWarningCount: 0,
+        messages: [],
+        suppressedMessages: [],
+        usedDeprecatedRules: [],
+        warningCount: 0,
+      },
+    ];
+
+    const filtered = omitProjectServiceParseErrorResults(results);
+
+    expect(filtered.omittedFileCount).toBe(1);
+    expect(filtered.results).toHaveLength(1);
+    expect(filtered.results[0]?.filePath).toBe("/repo/src/index.ts");
+  });
+
+  it("expone parse errors residuales como omitidos en el CLI", () => {
+    const { json, result } = runCli([
+      PROJECT_ROOT,
+      "--preset",
+      "package",
+      "--yes",
+      "--format",
+      "json",
+    ]);
+
+    expect(result.status).toBe(1);
+    expect(json?.omittedFileCount).toBeGreaterThan(0);
+    expect(JSON.stringify(json?.files ?? [])).not.toContain(
+      "was not found by the project service",
+    );
+  });
+
+  it("no reporta configs, tests, fixtures ni parse errors del propio repo", () => {
+    const { json } = runCli([
+      PROJECT_ROOT,
+      "--preset",
+      "package",
+      "--yes",
+      "--format",
+      "json",
+    ]);
+    const reportedPaths = json?.files.map((file) => file.filePath) ?? [];
+    const messages = JSON.stringify(json?.files ?? []);
+
+    expect(includesReportedPath(reportedPaths, "eslint.config.ts")).toBe(false);
+    expect(
+      reportedPaths.some((filePath) => filePath.includes(`${path.sep}tests${path.sep}`)),
+    ).toBe(false);
+    expect(
+      reportedPaths.some((filePath) =>
+        filePath.includes(`${path.sep}fixtures${path.sep}`),
+      ),
+    ).toBe(false);
+    expect(messages).not.toContain("was not found by the project service");
+  });
+
   it("evalua con config efimero y no deja archivos temporales", () => {
     const projectRoot = createTempProject("skapxd-cli-ephemeral-");
     writeBaseFixture(
@@ -301,8 +488,11 @@ describe("skapxd-lint", () => {
     expect(result.stdout).toContain("--preset <name>");
     expect(result.stdout).toContain("--base <git-ref>");
     expect(result.stdout).toContain("--format <json|compact|toon>");
+    expect(result.stdout).toContain("--include-tests");
     expect(result.stdout).toContain("--no-interactive");
     expect(result.stdout).toContain("Exit codes:");
+    expect(result.stdout).toContain("Ignorados en evaluacion efimera:");
+    expect(result.stdout).toContain("Tests: ignorados por default; usa --include-tests");
     expect(result.stdout).toContain("--format compact: lectura humana;");
     expect(result.stdout).toContain("Para agentes:");
     expect(result.stdout).toContain("Prefiere --format toon");

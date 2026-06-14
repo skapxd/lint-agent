@@ -76,6 +76,7 @@ export async function runSkapxdLint(streams: CliStreams) {
     runRequestedMode({
       base: parsed.value.base,
       changed: parsed.value.changed,
+      includeTests: parsed.value.includeTests,
       path: pathFromPrompt ?? streams.cwd,
       preset: parsed.value.preset,
       streams,
