@@ -8,10 +8,7 @@ assignees: ""
 
 ## Por que existe
 
-Como se contrajo la deuda y que decision la origino. Si fue un trade-off
-deliberado (ej.: la fase 1 del RuleNode acepto un tipo que miente para
-eliminar 187 pragmas), DECLARALO: una deuda escondida en un comentario es
-peor que la deuda misma.
+Como se contrajo la deuda y que decision la origino. Si fue un trade-off deliberado (ej.: la fase 1 del RuleNode acepto un tipo que miente para eliminar 187 pragmas), DECLARALO: una deuda escondida en un comentario es peor que la deuda misma.
 
 ## Estado actual, medido
 
@@ -21,13 +18,11 @@ Conteos reproducibles, con el comando que los produce:
 # ej.: grep -rl "@ts-nocheck" src/ | wc -l
 ```
 
-Si la deuda esta apagando una regla del dogfood, di cual linea de la lista
-de pendientes del eslint.config.ts le corresponde.
+Si la deuda esta apagando una regla del dogfood, di cual linea de la lista de pendientes del eslint.config.ts le corresponde.
 
 ## Acciones ya ejecutadas
 
-Historial con fechas: que se intento, que se decidio, que quedo a medias.
-Este issue debe poder retomarse en frio por un agente que no vio el chat.
+Historial con fechas: que se intento, que se decidio, que quedo a medias. Este issue debe poder retomarse en frio por un agente que no vio el chat.
 
 ## Analisis de implementacion
 
@@ -45,8 +40,7 @@ pnpm build && pnpm typecheck && pnpm test && pnpm lint
 
 ## Definicion de hecho
 
-Checkboxes verificables — la mejor DoD es greppeable (ej.: "el grep X
-devuelve 0", "la linea Y sale de la lista de pendientes"):
+Checkboxes verificables — la mejor DoD es greppeable (ej.: "el grep X devuelve 0", "la linea Y sale de la lista de pendientes"):
 
 - [ ] ...
 - [ ] Verificacion completa en verde (build, typecheck, tests, lint).
