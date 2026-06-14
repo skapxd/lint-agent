@@ -1,8 +1,8 @@
 import type { TSESTree } from "@typescript-eslint/utils";
 import {
-  createCrossProjectDuplicateReporter,
+  createCrossFileDuplicateReporter,
   type DuplicateSignatureOccurrence,
-} from "#/utils/cross-project/create-cross-project-duplicate-reporter";
+} from "#/utils/cross-file/create-cross-file-duplicate-reporter";
 import { getRepeatedJsxRequiresComponentOptions } from "#/utils/options/get-repeated-jsx-requires-component-options";
 import { getJsxDuplicateSignatures } from "#/utils/react/get-jsx-duplicate-signatures";
 import { isJsxInsideIterationCallback } from "#/utils/react/is-jsx-inside-iteration-callback";
@@ -48,7 +48,7 @@ export const repeatedJsxRequiresComponent: RuleModule = {
       getText,
     };
     const occurrences: DuplicateSignatureOccurrence[] = [];
-    const reporter = createCrossProjectDuplicateReporter({
+    const reporter = createCrossFileDuplicateReporter({
       context,
       getOccurrences: () => occurrences,
       messageId: "repeatedJsx",

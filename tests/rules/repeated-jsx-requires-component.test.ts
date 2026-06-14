@@ -2,7 +2,7 @@ import { Linter } from "eslint";
 import tseslint from "typescript-eslint";
 import { afterEach, describe, expect, it } from "vitest";
 import { rules } from "../../src/shared/rules";
-import { resetCrossProjectDuplicateReporters } from "../../src/utils/cross-project/reset-cross-project-duplicate-reporters";
+import { resetCrossFileDuplicateReporters } from "../../src/utils/cross-file/reset-cross-file-duplicate-reporters";
 
 const ruleName = "skapxd/repeated-jsx-requires-component";
 
@@ -54,7 +54,7 @@ function verifyRepeatedJsx(options: VerifyOptions) {
 }
 
 afterEach(() => {
-  resetCrossProjectDuplicateReporters();
+  resetCrossFileDuplicateReporters();
 });
 
 describe("repeated-jsx-requires-component", () => {
@@ -178,7 +178,7 @@ describe("repeated-jsx-requires-component", () => {
     expect(messages).toHaveLength(0);
   });
 
-  it("reporta las tres ocurrencias cross-proyecto sin depender del archivo que cruza el umbral", () => {
+  it("reporta las tres ocurrencias cross-file sin depender del archivo que cruza el umbral", () => {
     const files = [
       {
         code: `export function A() { return <div className="rounded-lg border p-4 shadow-sm"><h3 className="text-lg font-bold">{a.title}</h3></div>; }`,

@@ -1,10 +1,10 @@
 import type { TSESTree } from "@typescript-eslint/utils";
 import {
-  crossProjectDuplicateIndexes,
-  type CrossProjectDuplicateGroup,
-  type CrossProjectDuplicateIndex,
-  type CrossProjectDuplicateOccurrence,
-} from "./cross-project-duplicate-indexes";
+  crossFileDuplicateIndexes,
+  type CrossFileDuplicateGroup,
+  type CrossFileDuplicateIndex,
+  type CrossFileDuplicateOccurrence,
+} from "./cross-file-duplicate-indexes";
 import type { RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export type DuplicateSignatureOccurrence = {
@@ -12,7 +12,7 @@ export type DuplicateSignatureOccurrence = {
   signature: string;
 };
 
-type CrossProjectDuplicateReporterOptions = {
+type CrossFileDuplicateReporterOptions = {
   context: RuleContext;
   getOccurrences: () => DuplicateSignatureOccurrence[];
   messageId: string;
@@ -20,20 +20,20 @@ type CrossProjectDuplicateReporterOptions = {
   namespace: string;
 };
 
-export function createCrossProjectDuplicateReporter(
-  options: CrossProjectDuplicateReporterOptions,
+export function createCrossFileDuplicateReporter(
+  options: CrossFileDuplicateReporterOptions,
 ) {
   const index =
-    crossProjectDuplicateIndexes.get(options.namespace) ??
+    crossFileDuplicateIndexes.get(options.namespace) ??
     ({
-      groups: new Map<string, CrossProjectDuplicateGroup>(),
-    } satisfies CrossProjectDuplicateIndex);
-  crossProjectDuplicateIndexes.set(options.namespace, index);
+      groups: new Map<string, CrossFileDuplicateGroup>(),
+    } satisfies CrossFileDuplicateIndex);
+  crossFileDuplicateIndexes.set(options.namespace, index);
 
   function removeCurrentFileOccurrences(fileName: string) {
     for (const group of index.groups.values()) {
       group.occurrences = group.occurrences.filter(
-        (occurrence: CrossProjectDuplicateOccurrence) => {
+        (occurrence: CrossFileDuplicateOccurrence) => {
           const belongsToCurrentFile = occurrence.fileName === fileName;
           return !belongsToCurrentFile;
         },
@@ -49,7 +49,7 @@ export function createCrossProjectDuplicateReporter(
       index.groups.get(occurrence.signature) ??
       ({
         occurrences: [],
-      } satisfies CrossProjectDuplicateGroup);
+      } satisfies CrossFileDuplicateGroup);
     index.groups.set(occurrence.signature, group);
     group.occurrences.push({
       context: options.context,

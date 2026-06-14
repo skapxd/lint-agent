@@ -37,8 +37,8 @@ un string plano con las mismas clases no matchean.
 El JSX producido por callbacks de iteracion (`.map`/`.forEach`) no cuenta: eso
 ya es repeticion por datos, no copy-paste estructural.
 
-La deteccion cross-proyecto usa un indice global en memoria para que tres
-archivos con la misma firma reporten las tres ocurrencias. Eso hace que
+La deteccion cross-file usa un indice global en memoria para que tres archivos
+del mismo repo con la misma firma reporten las tres ocurrencias. Eso hace que
 `--cache` sea incompatible: el resultado de un archivo depende de los otros
 archivos lintados en el mismo proceso. Corre la medicion sin cache.
 

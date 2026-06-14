@@ -4,7 +4,7 @@ import {
   type ClassNameSignature,
 } from "./get-class-name-signature";
 import { getJsxClassAttribute } from "./get-jsx-class-attribute";
-import type { DuplicateSignatureOccurrence } from "#/utils/cross-project/create-cross-project-duplicate-reporter";
+import type { DuplicateSignatureOccurrence } from "#/utils/cross-file/create-cross-file-duplicate-reporter";
 import type { TextRuleSourceCode } from "#/utils/rule-authoring/rule-types";
 
 type JsxDuplicateSignatureOptions = {
