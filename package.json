@@ -7,7 +7,8 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "bin": {
-    "skapxd-lint-changed": "./dist/cli.js"
+    "skapxd-lint": "./dist/cli.mjs",
+    "skapxd-lint-changed": "./dist/cli.mjs"
   },
   "exports": {
     ".": {
@@ -69,8 +70,10 @@
     "dev": "tsup --watch",
     "lint": "tsup && eslint src",
     "lint:fix": "tsup && eslint src --fix",
-    "lint:changed": "tsup && node dist/cli.js",
+    "lint:changed": "tsup && node dist/cli.mjs --changed",
     "measure:rules": "pnpm build && node scripts/measure-rule-timing.mjs",
+    "skapxd-lint": "node dist/cli.mjs",
+    "skapxd-lint:build": "pnpm build && node dist/cli.mjs",
     "test:peer-minimum": "pnpm build && node scripts/check-peer-minimum.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -87,7 +90,10 @@
   "author": "skapxd",
   "license": "MIT",
   "dependencies": {
+    "@clack/prompts": "^1.5.1",
     "@skapxd/result": "^1.0.1",
+    "@toon-format/toon": "^2.3.0",
+    "picocolors": "^1.1.1",
     "picomatch": "^4.0.4"
   },
   "peerDependencies": {
@@ -100,7 +106,6 @@
     "@types/picomatch": "^4.0.3",
     "@typescript-eslint/rule-tester": "^8.60.1",
     "@typescript-eslint/utils": "8.59.4",
-    "commander": "^15.0.0",
     "eslint": "9.39.4",
     "jiti": "^2.7.0",
     "tsup": "8.5.1",

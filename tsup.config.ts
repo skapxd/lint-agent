@@ -16,9 +16,6 @@ export default defineConfig({
     "src/cli.ts",
   ],
   format: ["esm", "cjs"],
-  // commander se empaqueta dentro del bin (no es dependencia externa): quien solo
-  // usa las reglas no carga commander.
-  noExternal: ["commander"],
   sourcemap: true,
   target: "es2022",
   tsconfig: "tsconfig.build.json",
