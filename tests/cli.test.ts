@@ -958,6 +958,77 @@ describe("skapxd-lint", () => {
     expect(result.stderr).not.toContain("Definition for rule");
   });
 
+  it("el config efimero conserva reglas de plugins scoped registrados", () => {
+    const projectRoot = createTempProject("skapxd-cli-ephemeral-scoped-rule-");
+    const pluginPath = path.join(projectRoot, "fake-plugin.mjs");
+    const configPath = path.join(projectRoot, ".tmp-skapxd-lint-test.config.mjs");
+
+    writeFileSync(path.join(projectRoot, "index.js"), "const value = 1;\n", "utf8");
+    writeFileSync(
+      pluginPath,
+      `export default {
+  configs: {
+    base: {
+      plugins: {
+        "@fake-scope": {
+          rules: {
+            ban: {
+              meta: {
+                type: "problem",
+                schema: [],
+                messages: { banned: "scoped rule survived" },
+              },
+              create(context) {
+                return {
+                  Program(node) {
+                    context.report({ node, messageId: "banned" });
+                  },
+                };
+              },
+            },
+          },
+        },
+      },
+      rules: { "@fake-scope/ban": "error" },
+    },
+  },
+};
+`,
+      "utf8",
+    );
+    writeFileSync(
+      configPath,
+      createEphemeralConfigContent(pathToFileURL(pluginPath).href, "base", false),
+      "utf8",
+    );
+
+    const result = spawnSync(
+      process.execPath,
+      [
+        path.join(PROJECT_ROOT, "node_modules", "eslint", "bin", "eslint.js"),
+        "--no-config-lookup",
+        "--config",
+        configPath,
+        "--format",
+        "json",
+        "index.js",
+      ],
+      {
+        cwd: projectRoot,
+        encoding: "utf8",
+      },
+    );
+    const results = JSON.parse(result.stdout) as ESLint.LintResult[];
+
+    expect(result.status, result.stderr || result.stdout).toBe(1);
+    expect(results[0]?.messages).toEqual([
+      expect.objectContaining({
+        message: "scoped rule survived",
+        ruleId: "@fake-scope/ban",
+      }),
+    ]);
+  });
+
   it("documenta flags con placeholders en help", () => {
     const result = spawnSync(process.execPath, [CLI_PATH, "--help"], {
       cwd: PROJECT_ROOT,

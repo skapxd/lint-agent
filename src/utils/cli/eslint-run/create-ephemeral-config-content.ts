@@ -39,8 +39,9 @@ const getRulePluginName = (ruleId) => {
     return null;
   }
 
-  const [first, second] = ruleId.split("/");
-  return first.startsWith("@") ? \`\${first}/\${second}\` : first;
+  const parts = ruleId.split("/");
+  parts.pop();
+  return parts.join("/");
 };
 const omitRulesWithoutRegisteredPlugin = (rules, registeredPlugins) =>
   Object.fromEntries(
