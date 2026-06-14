@@ -50,6 +50,7 @@ import { noNestedIf } from "#/rules/no-nested-if";
 import { noPromiseChain } from "#/rules/no-promise-chain";
 import { noRuntimeStateGuard } from "#/rules/no-runtime-state-guard";
 import { packageRequiresTypedExports } from "#/rules/package-requires-typed-exports";
+import { repeatedJsxRequiresComponent } from "#/rules/repeated-jsx-requires-component";
 import { untrustedModuleRequiresAdapter } from "#/rules/untrusted-module-requires-adapter";
 
 export const rules = {
@@ -106,5 +107,6 @@ export const rules = {
   "no-promise-chain": noPromiseChain,
   "no-runtime-state-guard": noRuntimeStateGuard,
   "package-requires-typed-exports": packageRequiresTypedExports,
+  "repeated-jsx-requires-component": repeatedJsxRequiresComponent,
   "untrusted-module-requires-adapter": untrustedModuleRequiresAdapter,
 } satisfies Record<string, RuleModule>;
