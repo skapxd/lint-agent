@@ -7,7 +7,7 @@
 ```text
 src/
 ├── index.ts            ← entrypoint del plugin (registro de reglas y presets)
-├── cli.ts              ← bin skapxd-lint-changed
+├── cli.ts              ← bin skapxd-lint
 ├── rules/              ← una regla por archivo
 ├── constants/          ← convenciones de frameworks (entrypoints, hooks, stems)
 ├── shared/             ← reglas base + presets base/backend/frontend/package + strict

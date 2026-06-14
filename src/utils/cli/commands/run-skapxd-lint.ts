@@ -11,13 +11,12 @@ import { createStateResetOutput } from "#/utils/cli/state/create-state-reset-out
 import { removeAdoptionState } from "#/utils/cli/state/remove-adoption-state";
 import { resolveStateBackedVerifySeed } from "#/utils/cli/state/resolve-state-backed-verify-seed";
 import { runRequestedMode } from "./run-requested-mode";
-import { withChangedAlias } from "#/utils/cli/args/with-changed-alias";
 import { writeAdoptionState } from "#/utils/cli/state/write-adoption-state";
 import { writeCliOutput } from "#/utils/cli/output/machine/write-cli-output";
 import type { CliStreams } from "#/utils/cli/types";
 
 export async function runSkapxdLint(streams: CliStreams) {
-  const args = withChangedAlias(streams.argv);
+  const args = streams.argv.slice(2);
   const parsed = parseCliArguments(args);
   const hasParseError = !parsed.ok;
 
