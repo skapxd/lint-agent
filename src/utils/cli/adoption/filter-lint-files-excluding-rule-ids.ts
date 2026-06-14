@@ -8,9 +8,11 @@ export function filterLintFilesExcludingRuleIds(
   const excludedRuleIds = new Set(ruleIds);
 
   return files.flatMap((file) => {
-    const messages = file.messages.filter(
-      (message) => !excludedRuleIds.has(getLintMessageRuleId(message)),
-    );
+    const messages = file.messages.filter((message) => {
+      const ruleId = getLintMessageRuleId(message);
+
+      return ruleId === null || !excludedRuleIds.has(ruleId);
+    });
     const errorCount = messages.filter((message) => message.severity === 2).length;
     const warningCount = messages.filter((message) => message.severity === 1).length;
     const hasSelectedMessages = messages.length > 0;
