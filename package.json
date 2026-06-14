@@ -9,6 +9,9 @@
   "bin": {
     "skapxd-lint": "./dist/cli.mjs"
   },
+  "engines": {
+    "node": ">=20.12.0"
+  },
   "exports": {
     ".": {
       "import": {
