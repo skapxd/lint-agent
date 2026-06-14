@@ -39,7 +39,7 @@ Los enlaces apuntan a GitHub de forma absoluta para que funcionen tambien desde 
 | [Adopcion incremental y legacy](https://github.com/skapxd/eslint-opinionated/blob/main/docs/adopcion-legacy.md) | Lint sobre cambios, olas de adopcion, overrides y propuestas de reglas. |
 | [Pipeline Result](https://github.com/skapxd/eslint-opinionated/blob/main/docs/pipeline-result.md) | Como encajan @skapxd/result, ts-pattern y el trace global. |
 | [Notas type-aware](https://github.com/skapxd/eslint-opinionated/blob/main/docs/notas-type-aware.md) | Supuestos, limites conocidos y notas de reglas que dependen del checker. |
-| [Indice de reglas](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/README.md) | Las 52 fichas individuales en docs/reglas/. |
+| [Indice de reglas](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/README.md) | Las 53 fichas individuales en docs/reglas/. |
 
 ## Reglas
 
@@ -97,6 +97,7 @@ Los enlaces apuntan a GitHub de forma absoluta para que funcionen tambien desde 
 | [`skapxd/package-requires-typed-exports`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/package-requires-typed-exports.md) | Los `exports` del package.json declaran `types` por condición (`import` → `.d.mts`, `require` → `.d.ts`): mata el bug FalseCJS. Preset `package`. |
 | [`skapxd/untrusted-module-requires-adapter`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/untrusted-module-requires-adapter.md) | Los paquetes con tipos mentirosos (@types desfasados) solo se importan desde su adaptador: la mentira vive en UN archivo. Preset `package`. |
 | [`skapxd/no-jsx-ternary-null`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/no-jsx-ternary-null.md) | Prefiere `cond && <El />` sobre `cond ? <El /> : null` en JSX. |
+| [`skapxd/repeated-jsx-requires-component`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/repeated-jsx-requires-component.md) | Detecta patrones JSX repetidos tres veces que ya son un componente sin nombre. |
 
 ## Licencia
 
