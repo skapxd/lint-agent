@@ -31,6 +31,7 @@ export type CliArguments = {
   path: string | null;
   preset: CliPreset | null;
   rawPreset: string | null;
+  verifySeed: string | null;
 };
 
 export type CliParseResult =
@@ -48,11 +49,12 @@ export type SkapxdLintOutput = {
   configDeleted?: boolean;
   errorCount: number;
   files: LintFileResult[];
-  mode: "adopt" | "changed" | "evaluate";
+  mode: "adopt" | "changed" | "evaluate" | "verify";
   omittedFileCount?: number;
   preset?: CliPreset;
   status: CliStatus;
   targetPath?: string;
+  verification?: VerificationOutput;
   warningCount: number;
 };
 
@@ -70,6 +72,18 @@ export type AdoptionRuleSummary = {
   affectedFileCount: number;
   ruleId: string;
   violationCount: number;
+};
+
+export type VerificationOutput = {
+  completed: boolean;
+  fixedRuleCount: number;
+  fixedRules: string[];
+  outsideViolationCount: number;
+  remainingRuleCount: number;
+  remainingRules: AdoptionRuleSummary[];
+  remainingViolationCount: number;
+  seed: string;
+  targetRules: string[];
 };
 
 export type LintFileResult = {
@@ -102,4 +116,5 @@ export type RunRequestedModeInput = {
   path: string;
   preset: CliPreset | null;
   streams: CliStreams;
+  verifySeed: string | null;
 };

@@ -49,6 +49,21 @@ type CliJson = {
   omittedFileCount?: number;
   preset?: string;
   status: string;
+  verification?: {
+    completed: boolean;
+    fixedRuleCount: number;
+    fixedRules: string[];
+    outsideViolationCount: number;
+    remainingRuleCount: number;
+    remainingRules: Array<{
+      affectedFileCount: number;
+      ruleId: string;
+      violationCount: number;
+    }>;
+    remainingViolationCount: number;
+    seed: string;
+    targetRules: string[];
+  };
 };
 
 function runBuild() {
@@ -131,15 +146,19 @@ function writeScopedFixture(projectRoot: string) {
 }
 
 function writeAdoptionFixture(projectRoot: string) {
-  writeBaseFixture(
+  const indexPath = writeBaseFixture(
     projectRoot,
     "const outer = Boolean(process.env.OUTER);\nconst inner = Boolean(process.env.INNER);\nif (outer) {\n  if (inner) {\n    console.log(inner);\n  }\n}\n",
   );
+  const otherPath = path.join(projectRoot, "other.ts");
+
   writeFileSync(
-    path.join(projectRoot, "other.ts"),
+    otherPath,
     "const enabled = Boolean(process.env.ENABLED);\nif (enabled) {\n  console.log(enabled);\n} else {\n  console.log(false);\n}\n",
     "utf8",
   );
+
+  return { indexPath, otherPath };
 }
 
 function listProjectFiles(projectRoot: string) {
@@ -413,6 +432,102 @@ describe("skapxd-lint", () => {
     expect(result.stdout).toContain("recibi 0.1");
   });
 
+  it("--verify cierra la seed y reporta errores fuera del objetivo como info", () => {
+    const projectRoot = createTempProject("skapxd-cli-verify-");
+    const fixture = writeAdoptionFixture(projectRoot);
+    const adoption = runCli([
+      projectRoot,
+      "--preset",
+      "base",
+      "--yes",
+      "--format",
+      "json",
+      "--adopt",
+      "1",
+    ]);
+    const seed = adoption.json?.adoption?.seed;
+
+    expect(seed).toEqual(expect.stringMatching(/^skapxd1\./u));
+
+    writeFileSync(
+      fixture.otherPath,
+      "const enabled = Boolean(process.env.ENABLED);\nif (enabled) {\n  console.log(enabled);\n}\n",
+      "utf8",
+    );
+    writeFileSync(
+      fixture.indexPath,
+      "const outer = Boolean(process.env.OUTER);\nconst inner = Boolean(process.env.INNER);\nif (outer) {\n  if (inner) {\n    console.log(inner);\n  }\n}\nexport default outer;\n",
+      "utf8",
+    );
+
+    const verification = runCli([
+      projectRoot,
+      "--preset",
+      "base",
+      "--yes",
+      "--format",
+      "json",
+      "--verify",
+      seed ?? "",
+    ]);
+
+    expect(verification.result.status).toBe(0);
+    expect(verification.json?.mode).toBe("verify");
+    expect(verification.json?.status).toBe("ok");
+    expect(verification.json?.verification).toMatchObject({
+      completed: true,
+      fixedRuleCount: 1,
+      outsideViolationCount: expect.any(Number),
+      remainingRuleCount: 0,
+      remainingViolationCount: 0,
+      seed,
+      targetRules: ["skapxd/no-else"],
+    });
+    expect(verification.json?.verification?.outsideViolationCount).toBeGreaterThan(0);
+    expect(verification.json?.files).toEqual([]);
+  });
+
+  it("--verify reporta restantes solo del conjunto objetivo", () => {
+    const projectRoot = createTempProject("skapxd-cli-verify-pending-");
+    writeAdoptionFixture(projectRoot);
+    const adoption = runCli([
+      projectRoot,
+      "--preset",
+      "base",
+      "--yes",
+      "--format",
+      "json",
+      "--adopt",
+      "1",
+    ]);
+    const seed = adoption.json?.adoption?.seed ?? "";
+
+    const verification = runCli([
+      projectRoot,
+      "--preset",
+      "base",
+      "--yes",
+      "--format",
+      "json",
+      "--verify",
+      seed,
+    ]);
+
+    expect(verification.result.status).toBe(1);
+    expect(verification.json?.mode).toBe("verify");
+    expect(verification.json?.verification?.completed).toBe(false);
+    expect(verification.json?.verification?.remainingRules).toEqual([
+      {
+        affectedFileCount: 1,
+        ruleId: "skapxd/no-else",
+        violationCount: 1,
+      },
+    ]);
+    expect(verification.json?.files.every((file) =>
+      file.messages.every((message) => message.ruleId === "skapxd/no-else"),
+    )).toBe(true);
+  });
+
   it("ignora configs, tests y fixtures por default en evaluacion efimera", () => {
     const projectRoot = createTempProject("skapxd-cli-default-ignores-");
     writeScopedFixture(projectRoot);
@@ -588,6 +703,7 @@ describe("skapxd-lint", () => {
     expect(result.stdout).toContain("skapxd-lint <path>");
     expect(result.stdout).toContain("--preset <name>");
     expect(result.stdout).toContain("--adopt <percent>");
+    expect(result.stdout).toContain("--verify <seed>");
     expect(result.stdout).toContain("--base <git-ref>");
     expect(result.stdout).toContain("--format <json|compact|toon>");
     expect(result.stdout).toContain("--include-tests");
@@ -595,6 +711,7 @@ describe("skapxd-lint", () => {
     expect(result.stdout).toContain("Exit codes:");
     expect(result.stdout).toContain("Ignorados en evaluacion efimera:");
     expect(result.stdout).toContain("Adopcion incremental:");
+    expect(result.stdout).toContain("--verify <seed> reevalua solo esas reglas");
     expect(result.stdout).toContain("Tests: ignorados por default; usa --include-tests");
     expect(result.stdout).toContain("--format compact: lectura humana;");
     expect(result.stdout).toContain("Para agentes:");

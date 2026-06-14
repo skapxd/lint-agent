@@ -5,6 +5,7 @@ Usage:
   skapxd-lint <path>
   skapxd-lint <path> --preset <name>
   skapxd-lint <path> --adopt <percent>
+  skapxd-lint <path> --verify <seed>
   skapxd-lint --changed [--base <git-ref>]
   skapxd-lint help
   skapxd-lint --help
@@ -16,6 +17,7 @@ Flags:
   --preset <name>         Preset a usar. Unidad: uno de astro, base, nest, next, package. Default: autodetectado por senales del proyecto.
   --changed               Lintea solo archivos JS/TS cambiados por git. Unidad: archivos ACMR + untracked. Default: false.
   --adopt <percent>       Selecciona reglas para adopcion incremental. Unidad: entero 0-100, acepta sufijo %. Default: desactivado.
+  --verify <seed>         Verifica solo las reglas objetivo de una seed. Unidad: seed skapxd1. Default: desactivado.
   --base <git-ref>        Ref base para --changed. Unidad: revision git (ej. origin/main). Default: HEAD + untracked.
   --format <json|compact|toon> Formato de salida de maquina. Unidad: json, compact o toon. Default: compact sin TTY; texto legible con TTY.
   --include-tests         Incluye tests en evaluacion efimera. Unidad: booleano. Default: false.
@@ -42,6 +44,7 @@ Adopcion incremental:
   Presupuesto: floor(total de violaciones * percent / 100), sin partir reglas.
   Si ninguna regla cabe, incluye la mas facil para dejar trabajo accionable.
   La salida incluye reglas objetivo y seed deterministica para --verify.
+  --verify <seed> reevalua solo esas reglas; errores fuera del objetivo son info.
 
 Ignorados en evaluacion efimera:
   Siempre: node_modules, dist, build, coverage, configs, fixtures y mocks.
@@ -57,9 +60,11 @@ Ejemplos:
   Humano:  skapxd-lint .
   Humano:  skapxd-lint --changed --base origin/main
   Humano:  skapxd-lint . --adopt 10
+  Humano:  skapxd-lint . --verify skapxd1.<seed>
   Humano:  skapxd-lint . --include-tests
   Agente:  skapxd-lint . --preset package --yes
   Agente:  skapxd-lint . --preset package --yes --adopt 10 --format toon
+  Agente:  skapxd-lint . --preset package --yes --verify skapxd1.<seed> --format toon
   Agente:  skapxd-lint . --preset package --yes --format json
   Agente:  skapxd-lint --changed --base origin/main --yes
 
@@ -69,6 +74,6 @@ Para agentes:
   No dependas del default (compact): no es parseable; pasa siempre --format toon o json.
 
 Fases:
-  Este bin implementa evaluacion efimera, --changed, dual-mode, help y --adopt.
-  --verify, estado persistido y skill pertenecen a fases posteriores de este PR/issue.`;
+  Este bin implementa evaluacion efimera, --changed, dual-mode, help, --adopt y --verify.
+  Estado persistido y skill pertenecen a fases posteriores de este PR/issue.`;
 }

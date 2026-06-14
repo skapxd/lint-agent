@@ -81,6 +81,7 @@ export async function runSkapxdLint(streams: CliStreams) {
       path: pathFromPrompt ?? streams.cwd,
       preset: parsed.value.preset,
       streams,
+      verifySeed: parsed.value.verifySeed,
     }),
   );
 

@@ -19,6 +19,7 @@ export function parseCliArguments(args: readonly string[]): CliParseResult {
         "include-tests": { type: "boolean" },
         "no-interactive": { type: "boolean" },
         preset: { type: "string" },
+        verify: { type: "string" },
         yes: { type: "boolean" },
       },
       strict: true,
@@ -80,6 +81,16 @@ export function parseCliArguments(args: readonly string[]): CliParseResult {
     };
   }
 
+  const verifySeed = parsed.value.values.verify ?? null;
+  const mixesAdoptAndVerify = adoptPercent !== null && verifySeed !== null;
+  if (mixesAdoptAndVerify) {
+    return {
+      message:
+        "Uso invalido: --adopt <percent> crea un lote y --verify <seed> verifica un lote existente; usa solo uno.",
+      ok: false,
+    };
+  }
+
   return {
     ok: true,
     value: {
@@ -95,6 +106,7 @@ export function parseCliArguments(args: readonly string[]): CliParseResult {
       path,
       preset,
       rawPreset,
+      verifySeed,
     },
   };
 }

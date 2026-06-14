@@ -58,6 +58,7 @@ export function createToonLintOutput(output: SkapxdLintOutput) {
     configDeleted: output.configDeleted ?? null,
     changedFiles: output.changedFiles ?? [],
     adoption: output.adoption ?? null,
+    verification: output.verification ?? null,
     errors: output.errorCount,
     warnings: output.warningCount,
     omittedFiles: output.omittedFileCount ?? 0,
