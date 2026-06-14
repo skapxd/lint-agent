@@ -58,8 +58,9 @@ porque el nombre se mueve junto con la funcion extraida.
 reporta. Ese terreno pertenece a `skapxd/no-functions-inside-components`, que
 explica el problema como re-render y separa callbacks idiomaticos de React.
 
-**Presets.** La regla queda registrada pero no activada por defecto hasta que
-el dueno decida con mediciones de solo lectura.
+**Presets.** Activa como `error` en `shared`/`base-rules`; la heredan todos
+los presets compartidos. La regla es agnostica al framework: solo usa AST y
+scope lexico para decidir si hay captura local.
 
 ---
 
