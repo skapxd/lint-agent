@@ -30,9 +30,9 @@ Deteccion de preset:
 Salida:
   TTY interactivo: texto legible.
   Sin TTY, --no-interactive o --yes: compact determinista por default.
-  --format json: JSON parseable estricto para integraciones.
-  --format compact: resumen y hallazgos agrupados por archivo, sin color ni codigos ANSI.
-  --format toon: TOON compacto y parseable para agentes, con mensajes deduplicados por id.
+  --format compact: lectura humana/agente; resumen y hallazgos agrupados por archivo, sin codigos ANSI.
+  --format json: salida estructurada para parsear con JSON.parse.
+  --format toon: salida estructurada para parsear con TOON; compacta y con mensajes deduplicados por id.
 
 Exit codes:
   0  Sin hallazgos.
