@@ -1,6 +1,7 @@
 import {
   existsSync,
   mkdtempSync,
+  readFileSync,
   readdirSync,
   symlinkSync,
   writeFileSync,
@@ -14,6 +15,7 @@ import { detectCliPreset } from "../src/utils/project/detect-cli-preset";
 
 const PROJECT_ROOT = fileURLToPath(new URL("..", import.meta.url));
 const CLI_PATH = path.join(PROJECT_ROOT, "dist", "cli.mjs");
+const ansiEscapePattern = /\x1b\[/u;
 
 type CliJson = {
   changedFiles?: string[];
@@ -141,6 +143,28 @@ describe("skapxd-lint", () => {
     );
   });
 
+  it("no contamina el JSON no-interactivo con codigos ANSI", () => {
+    const projectRoot = createTempProject("skapxd-cli-json-no-ansi-");
+    writeBaseFixture(
+      projectRoot,
+      "const enabled = true;\nif (enabled) {\n  console.log(enabled);\n} else {\n  console.log(false);\n}\n",
+    );
+
+    const result = spawnSync(
+      process.execPath,
+      [CLI_PATH, projectRoot, "--preset", "base", "--yes"],
+      {
+        cwd: PROJECT_ROOT,
+        encoding: "utf8",
+        env: { ...process.env, FORCE_COLOR: "1" },
+      },
+    );
+
+    expect(result.status).toBe(1);
+    expect(result.stdout).not.toMatch(ansiEscapePattern);
+    expect(JSON.parse(result.stdout)).toMatchObject({ status: "findings" });
+  });
+
   it("emite JSON y exit code 0 cuando no hay hallazgos", () => {
     const projectRoot = createTempProject("skapxd-cli-clean-");
     writeBaseFixture(projectRoot, "const value = 1;\nconsole.log(value);\n");
@@ -181,6 +205,16 @@ describe("skapxd-lint", () => {
     expect(result.stdout).toContain("--base <git-ref>");
     expect(result.stdout).toContain("--no-interactive");
     expect(result.stdout).toContain("Exit codes:");
+  });
+
+  it("usa clack para el prompt interactivo, no readline", () => {
+    const promptSource = readFileSync(
+      path.join(PROJECT_ROOT, "src", "utils", "cli", "prompt-for-path.ts"),
+      "utf8",
+    );
+
+    expect(promptSource).toContain("@clack/prompts");
+    expect(promptSource).not.toContain("node:readline");
   });
 
   it("--changed y el alias legacy devuelven el mismo resultado", () => {

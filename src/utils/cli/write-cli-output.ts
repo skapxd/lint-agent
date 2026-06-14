@@ -1,4 +1,4 @@
-import { formatTextOutput } from "./format-text-output";
+import { renderInteractiveOutput } from "./render-interactive-output";
 import type { SkapxdLintOutput } from "./types";
 
 export function writeCliOutput(
@@ -11,5 +11,5 @@ export function writeCliOutput(
     return;
   }
 
-  stream.write(formatTextOutput(output));
+  renderInteractiveOutput(output, stream);
 }
