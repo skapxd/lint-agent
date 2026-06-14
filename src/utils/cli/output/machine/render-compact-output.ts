@@ -1,3 +1,4 @@
+import { formatCompactAdoptionSummary } from "./format-compact-adoption-summary";
 import { formatCompactMessage } from "./format-compact-message";
 import { formatCompactPath } from "./format-compact-path";
 import { formatCompactSummary } from "./format-compact-summary";
@@ -5,7 +6,14 @@ import type { SkapxdLintOutput } from "#/utils/cli/types";
 
 export function renderCompactOutput(output: SkapxdLintOutput) {
   const lines = [formatCompactSummary(output)];
+  const adoptionSummary = formatCompactAdoptionSummary(output);
+  const hasAdoptionSummary = adoptionSummary.length > 0;
   const filesWithFindings = output.files.filter((file) => file.messages.length > 0);
+
+  if (hasAdoptionSummary) {
+    lines.push("");
+    lines.push(...adoptionSummary);
+  }
 
   for (const file of filesWithFindings) {
     const relativeFilePath = formatCompactPath(file.filePath, output.targetPath ?? null);

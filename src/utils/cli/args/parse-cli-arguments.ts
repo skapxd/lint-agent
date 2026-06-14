@@ -1,5 +1,6 @@
 import { parseArgs } from "node:util";
 import { trySafe } from "@skapxd/result";
+import { toCliAdoptPercent } from "./to-cli-adopt-percent";
 import { toCliOutputFormat } from "./to-cli-output-format";
 import { toCliPreset } from "./to-cli-preset";
 import type { CliParseResult } from "#/utils/cli/types";
@@ -10,6 +11,7 @@ export function parseCliArguments(args: readonly string[]): CliParseResult {
       allowPositionals: true,
       args,
       options: {
+        adopt: { type: "string" },
         base: { type: "string" },
         changed: { type: "boolean" },
         format: { type: "string" },
@@ -66,9 +68,22 @@ export function parseCliArguments(args: readonly string[]): CliParseResult {
     };
   }
 
+  const rawAdoptPercent = parsed.value.values.adopt ?? null;
+  const adoptPercent =
+    rawAdoptPercent === null ? null : toCliAdoptPercent(rawAdoptPercent);
+  const hasInvalidAdoptPercent =
+    rawAdoptPercent !== null && adoptPercent === null;
+  if (hasInvalidAdoptPercent) {
+    return {
+      message: `Uso invalido: --adopt <percent> espera un entero entre 0 y 100; recibi ${rawAdoptPercent}.`,
+      ok: false,
+    };
+  }
+
   return {
     ok: true,
     value: {
+      adoptPercent,
       base: parsed.value.values.base ?? null,
       changed: parsed.value.values.changed === true,
       format,

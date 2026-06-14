@@ -74,6 +74,7 @@ export async function runSkapxdLint(streams: CliStreams) {
 
   const requestedOutput = await trySafe(() =>
     runRequestedMode({
+      adoptPercent: parsed.value.adoptPercent,
       base: parsed.value.base,
       changed: parsed.value.changed,
       includeTests: parsed.value.includeTests,

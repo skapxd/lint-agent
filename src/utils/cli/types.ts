@@ -21,6 +21,7 @@ export type CliStreams = {
 };
 
 export type CliArguments = {
+  adoptPercent: number | null;
   base: string | null;
   changed: boolean;
   forceNonInteractive: boolean;
@@ -42,16 +43,33 @@ export type CliRunResult = {
 };
 
 export type SkapxdLintOutput = {
+  adoption?: AdoptionOutput;
   changedFiles?: string[];
   configDeleted?: boolean;
   errorCount: number;
   files: LintFileResult[];
-  mode: "changed" | "evaluate";
+  mode: "adopt" | "changed" | "evaluate";
   omittedFileCount?: number;
   preset?: CliPreset;
   status: CliStatus;
   targetPath?: string;
   warningCount: number;
+};
+
+export type AdoptionOutput = {
+  budget: number;
+  percent: number;
+  seed: string;
+  selectedRuleCount: number;
+  selectedRules: AdoptionRuleSummary[];
+  targetViolationCount: number;
+  totalViolationCount: number;
+};
+
+export type AdoptionRuleSummary = {
+  affectedFileCount: number;
+  ruleId: string;
+  violationCount: number;
 };
 
 export type LintFileResult = {
@@ -77,6 +95,7 @@ export type PromptStreams = {
 };
 
 export type RunRequestedModeInput = {
+  adoptPercent: number | null;
   base: string | null;
   changed: boolean;
   includeTests: boolean;

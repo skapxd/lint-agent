@@ -22,6 +22,19 @@ const CLI_PATH = path.join(PROJECT_ROOT, "dist", "cli.mjs");
 const ansiEscapePattern = /\x1b\[/u;
 
 type CliJson = {
+  adoption?: {
+    budget: number;
+    percent: number;
+    seed: string;
+    selectedRuleCount: number;
+    selectedRules: Array<{
+      affectedFileCount: number;
+      ruleId: string;
+      violationCount: number;
+    }>;
+    targetViolationCount: number;
+    totalViolationCount: number;
+  };
   changedFiles?: string[];
   configDeleted?: boolean;
   errorCount: number;
@@ -113,6 +126,18 @@ function writeScopedFixture(projectRoot: string) {
   writeFileSync(
     path.join(projectRoot, "fixtures", "bad.ts"),
     "const enabled = true;\nif (enabled) {\n  console.log(enabled);\n} else {\n  console.log(false);\n}\n",
+    "utf8",
+  );
+}
+
+function writeAdoptionFixture(projectRoot: string) {
+  writeBaseFixture(
+    projectRoot,
+    "const outer = Boolean(process.env.OUTER);\nconst inner = Boolean(process.env.INNER);\nif (outer) {\n  if (inner) {\n    console.log(inner);\n  }\n}\n",
+  );
+  writeFileSync(
+    path.join(projectRoot, "other.ts"),
+    "const enabled = Boolean(process.env.ENABLED);\nif (enabled) {\n  console.log(enabled);\n} else {\n  console.log(false);\n}\n",
     "utf8",
   );
 }
@@ -312,6 +337,82 @@ describe("skapxd-lint", () => {
     expect(json?.errorCount).toBe(0);
   });
 
+  it("--adopt selecciona reglas en orden determinista y emite seed estable", () => {
+    const projectRoot = createTempProject("skapxd-cli-adopt-");
+    writeAdoptionFixture(projectRoot);
+
+    const firstRun = runCli([
+      projectRoot,
+      "--preset",
+      "base",
+      "--yes",
+      "--format",
+      "json",
+      "--adopt",
+      "50",
+    ]);
+    const secondRun = runCli([
+      projectRoot,
+      "--preset",
+      "base",
+      "--yes",
+      "--format",
+      "json",
+      "--adopt",
+      "50",
+    ]);
+
+    expect(firstRun.result.status).toBe(1);
+    expect(firstRun.json?.mode).toBe("adopt");
+    expect(firstRun.json?.adoption?.percent).toBe(50);
+    expect(firstRun.json?.adoption?.budget).toBe(1);
+    expect(firstRun.json?.adoption?.selectedRules).toEqual([
+      {
+        affectedFileCount: 1,
+        ruleId: "skapxd/no-else",
+        violationCount: 1,
+      },
+    ]);
+    expect(firstRun.json?.adoption?.seed).toBe(secondRun.json?.adoption?.seed);
+    expect(firstRun.json?.files).toHaveLength(1);
+    expect(firstRun.json?.files[0]?.messages.every(
+      (message) => message.ruleId === "skapxd/no-else",
+    )).toBe(true);
+  });
+
+  it("--adopt incluye la regla mas facil aunque no quepa en el porcentaje", () => {
+    const projectRoot = createTempProject("skapxd-cli-adopt-minimum-");
+    writeAdoptionFixture(projectRoot);
+
+    const { json, result } = runCli([
+      projectRoot,
+      "--preset",
+      "base",
+      "--yes",
+      "--format",
+      "json",
+      "--adopt",
+      "1",
+    ]);
+
+    expect(result.status).toBe(1);
+    expect(json?.adoption?.budget).toBe(0);
+    expect(json?.adoption?.targetViolationCount).toBe(1);
+    expect(json?.adoption?.selectedRules[0]?.ruleId).toBe("skapxd/no-else");
+  });
+
+  it("--adopt valida el porcentaje con mensaje claro", () => {
+    const result = spawnSync(process.execPath, [CLI_PATH, ".", "--yes", "--adopt", "0.1"], {
+      cwd: PROJECT_ROOT,
+      encoding: "utf8",
+    });
+
+    expect(result.status).toBe(2);
+    expect(result.stdout).toContain("--adopt <percent>");
+    expect(result.stdout).toContain("entero entre 0 y 100");
+    expect(result.stdout).toContain("recibi 0.1");
+  });
+
   it("ignora configs, tests y fixtures por default en evaluacion efimera", () => {
     const projectRoot = createTempProject("skapxd-cli-default-ignores-");
     writeScopedFixture(projectRoot);
@@ -486,12 +587,14 @@ describe("skapxd-lint", () => {
     expect(result.status).toBe(0);
     expect(result.stdout).toContain("skapxd-lint <path>");
     expect(result.stdout).toContain("--preset <name>");
+    expect(result.stdout).toContain("--adopt <percent>");
     expect(result.stdout).toContain("--base <git-ref>");
     expect(result.stdout).toContain("--format <json|compact|toon>");
     expect(result.stdout).toContain("--include-tests");
     expect(result.stdout).toContain("--no-interactive");
     expect(result.stdout).toContain("Exit codes:");
     expect(result.stdout).toContain("Ignorados en evaluacion efimera:");
+    expect(result.stdout).toContain("Adopcion incremental:");
     expect(result.stdout).toContain("Tests: ignorados por default; usa --include-tests");
     expect(result.stdout).toContain("--format compact: lectura humana;");
     expect(result.stdout).toContain("Para agentes:");
