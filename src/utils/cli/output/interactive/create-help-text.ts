@@ -30,7 +30,7 @@ Deteccion de preset:
 Salida:
   TTY interactivo: texto legible.
   Sin TTY, --no-interactive o --yes: compact determinista por default.
-  --format compact: lectura humana/agente; resumen y hallazgos agrupados por archivo, sin codigos ANSI.
+  --format compact: lectura humana; resumen y hallazgos agrupados por archivo, sin codigos ANSI.
   --format json: salida estructurada para parsear con JSON.parse.
   --format toon: salida estructurada para parsear con TOON; compacta y con mensajes deduplicados por id.
 
@@ -43,9 +43,14 @@ Ejemplos:
   Humano:  skapxd-lint .
   Humano:  skapxd-lint --changed --base origin/main
   Agente:  skapxd-lint . --preset package --yes
-  Agente:  skapxd-lint . --preset package --yes --format compact
   Agente:  skapxd-lint . --preset package --yes --format toon
+  Agente:  skapxd-lint . --preset package --yes --format json
   Agente:  skapxd-lint --changed --base origin/main --yes
+
+Para agentes:
+  Prefiere --format toon (mas eficiente en tokens).
+  Usa --format json si toon es insuficiente o confuso para tu caso.
+  No dependas del default (compact): no es parseable; pasa siempre --format toon o json.
 
 Fase 1:
   Este bin implementa evaluacion efimera, --changed, dual-mode y help.

@@ -303,6 +303,12 @@ describe("skapxd-lint", () => {
     expect(result.stdout).toContain("--format <json|compact|toon>");
     expect(result.stdout).toContain("--no-interactive");
     expect(result.stdout).toContain("Exit codes:");
+    expect(result.stdout).toContain("--format compact: lectura humana;");
+    expect(result.stdout).toContain("Para agentes:");
+    expect(result.stdout).toContain("Prefiere --format toon");
+    expect(result.stdout).toContain("No dependas del default (compact): no es parseable");
+    expect(result.stdout).not.toContain("lectura humana/agente");
+    expect(result.stdout).not.toContain("Agente:  skapxd-lint . --preset package --yes --format compact");
   });
 
   it("usa clack para el prompt interactivo, no readline", () => {
