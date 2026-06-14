@@ -30,7 +30,9 @@ tipos (un release ya falló por saltárselo).
 ## Flujo obligatorio
 
 1. Todo cambio no trivial parte de un issue de GitHub, o deja uno
-   creado/enlazado antes de implementarse.
+   creado/enlazado antes de implementarse. Si propone una regla, el issue
+   explica de qué axioma deriva y por qué; si es deuda, proceso o herramientas
+   sin axioma directo, lo declara en vez de inventarse un anclaje forzado.
 2. **Antes de tomar un issue, leer sus comentarios completos**: el tablero
    registra secuencias (`⛔ SECUENCIADO`), clusters con orden obligatorio y
    gates del dueño. No atacar un issue que otro bloquea o extiende.
@@ -57,8 +59,9 @@ tipos (un release ya falló por saltárselo).
    regla aplica a cambios y entregables, no a leer.
 8. El trabajo queda **sin mergear hasta la revisión del dueño**. La
    revisión aquí es de dos pasadas: la primera valida mecánica, la segunda
-   valida criterio (precedente: en el issue #8 se rechazaron 130 nombres
-   autogenerados con los tests en verde — cumplir la letra no basta).
+   valida criterio contra los axiomas y los criterios de admisión
+   (precedente: en el issue #8 se rechazaron 130 nombres autogenerados con
+   los tests en verde — cumplir la letra no basta).
 
 ## La CLI de gh: recetas
 
@@ -209,9 +212,10 @@ Run del PR: <url>
 - **Los mensajes de regla enseñan el fix** (estilo playbook) y van **sin
   tildes**; los comentarios de código y la documentación, en español
   correcto.
-- **Evidencia sobre convención** (axioma A6 del README): type-checker >
-  provenance de imports > nombres. Si detectas por nombre, justifica por
-  qué no hay evidencia más fuerte disponible.
+- **Evidencia sobre convención** (A6 de [los axiomas](docs/axiomas.md)):
+  type-checker > provenance de imports > nombres. A6 es uno de ocho
+  axiomas, pero gobierna el cómo de toda regla: si detectas por nombre,
+  justifica por qué no hay evidencia más fuerte disponible.
 - **El dogfood manda**: este repo se lintea con su propio preset `package`,
   tipado. La lista de pendientes del `eslint.config.ts` **solo encoge** —
   si tu cambio necesita agregarle una línea, eso es decisión del dueño con
@@ -220,6 +224,37 @@ Run del PR: <url>
   nombres plantilla (`matchesXRule`, `isNotX`, sufijos numerados).
 - Tras un refactor estructural: borra tus codemods/andamiaje, deja
   `git status` limpio y actualiza la doc que describa la estructura.
+
+## Los axiomas como criterio
+
+Los ocho axiomas viven en [docs/axiomas.md](docs/axiomas.md); esa tabla no se
+copia aquí. Este contrato solo fija cómo se usan al proponer, implementar y
+revisar trabajo:
+
+- Toda regla nueva **deriva de un axioma** o no entra. El anclaje es un
+  argumento, no una etiqueta: si no puedes explicar qué axioma protege y por
+  qué, la propuesta no está lista.
+- Los conflictos entre reglas o decisiones se resuelven por **jerarquía**:
+  gana el axioma más fundamental, según el orden definido en
+  `docs/axiomas.md`.
+- **Contradecir un axioma es una decisión declarada** (A5), no un descuido.
+  Se explica en el issue o PR con el trade-off asumido; no se silencia.
+
+### Criterios de admisión de reglas
+
+Estos criterios contestan qué merece convertirse en regla de esta casa; los
+precedentes #3, #9 y #26 archivaron tanto el "sí" como el "no":
+
+- **La fuente de las reglas se mantiene fuera del agente** (#3). Un guardrail
+  no puede ser extensible por quien vigila: la autoridad vive en el catálogo,
+  no en el prompt ni en la comodidad del consumidor.
+- **No pelear contra el ecosistema con beneficio higiénico** (#9). Si una regla
+  contradice cómo el ecosistema ya resolvió algo y solo gana estilo, mete ruido;
+  el ruido erosiona la autoridad de todo el linter.
+- **Determinístico y no-evadible; la clasificación semántica es de la revisión
+  humana** (#26). Una regla reproducible decide por señales ejecutables; si
+  necesita juzgar dominio, intención o calidad, eso pertenece a la revisión
+  humana, no al guardrail.
 
 ## Mediciones de solo lectura (el protocolo)
 
