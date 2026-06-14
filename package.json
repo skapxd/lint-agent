@@ -92,7 +92,6 @@
   "dependencies": {
     "@clack/prompts": "^1.5.1",
     "@skapxd/result": "^1.0.1",
-    "@toon-format/toon": "^2.3.0",
     "picocolors": "^1.1.1",
     "picomatch": "^4.0.4"
   },

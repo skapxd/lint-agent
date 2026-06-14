@@ -10,7 +10,6 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import { decode } from "@toon-format/toon";
 import { beforeAll, describe, expect, it } from "vitest";
 import { detectCliPreset } from "../src/utils/project/detect-cli-preset";
 
@@ -166,8 +165,8 @@ describe("skapxd-lint", () => {
     expect(JSON.parse(result.stdout)).toMatchObject({ status: "findings" });
   });
 
-  it("emite TOON compacto cuando se pide --format toon", () => {
-    const projectRoot = createTempProject("skapxd-cli-toon-");
+  it("emite salida compacta cuando se pide --format compact", () => {
+    const projectRoot = createTempProject("skapxd-cli-compact-");
     writeBaseFixture(
       projectRoot,
       "const enabled = true;\nif (enabled) {\n  console.log(enabled);\n} else {\n  console.log(false);\n}\n",
@@ -175,28 +174,22 @@ describe("skapxd-lint", () => {
 
     const result = spawnSync(
       process.execPath,
-      [CLI_PATH, projectRoot, "--preset", "base", "--yes", "--format", "toon"],
+      [CLI_PATH, projectRoot, "--preset", "base", "--yes", "--format", "compact"],
       {
         cwd: PROJECT_ROOT,
         encoding: "utf8",
         env: { ...process.env, FORCE_COLOR: "1" },
       },
     );
-    const toon = decode(result.stdout);
 
     expect(result.status).toBe(1);
     expect(result.stdout).not.toMatch(ansiEscapePattern);
-    expect(result.stdout).toContain("messages[");
-    expect(result.stdout).toContain("findings[");
+    expect(result.stdout).toContain("errors |");
+    expect(result.stdout).toContain("files | preset base");
+    expect(result.stdout).toContain("index.ts");
+    expect(result.stdout).toContain("skapxd/no-else");
     expect(result.stdout).not.toContain("errorCount:");
-    expect(toon).toMatchObject({
-      errors: expect.any(Number),
-      findings: expect.any(Array),
-      messages: expect.any(Array),
-      mode: "evaluate",
-      preset: "base",
-      status: "findings",
-    });
+    expect(result.stdout).not.toContain("{");
   });
 
   it("emite JSON y exit code 0 cuando no hay hallazgos", () => {
@@ -237,7 +230,7 @@ describe("skapxd-lint", () => {
     expect(result.stdout).toContain("skapxd-lint <path>");
     expect(result.stdout).toContain("--preset <name>");
     expect(result.stdout).toContain("--base <git-ref>");
-    expect(result.stdout).toContain("--format <json|toon>");
+    expect(result.stdout).toContain("--format <json|compact>");
     expect(result.stdout).toContain("--no-interactive");
     expect(result.stdout).toContain("Exit codes:");
   });

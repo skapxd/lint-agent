@@ -10,7 +10,7 @@ export type CliStatus =
   | "ok"
   | "usage-error";
 
-export type CliOutputFormat = "json" | "toon";
+export type CliOutputFormat = "compact" | "json";
 
 export type CliStreams = {
   argv: string[];

@@ -60,6 +60,7 @@ export async function runChangedMode(base: string | null, cwd: string) {
     files,
     mode: "changed",
     status,
+    targetPath: changed.root,
     warningCount: summary.warningCount,
   } satisfies SkapxdLintOutput;
 }

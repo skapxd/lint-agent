@@ -15,7 +15,7 @@ Flags:
   --preset <name>         Preset a usar. Unidad: uno de astro, base, nest, next, package. Default: autodetectado por senales del proyecto.
   --changed               Lintea solo archivos JS/TS cambiados por git. Unidad: archivos ACMR + untracked. Default: false.
   --base <git-ref>        Ref base para --changed. Unidad: revision git (ej. origin/main). Default: HEAD + untracked.
-  --format <json|toon>    Formato de salida de maquina. Unidad: json o toon. Default: json sin TTY; texto legible con TTY.
+  --format <json|compact> Formato de salida de maquina. Unidad: json o compact. Default: json sin TTY; texto legible con TTY.
   --no-interactive        Fuerza modo no-interactivo aunque haya TTY. Unidad: booleano. Default: false.
   --yes                   Alias de --no-interactive para scripts/agentes. Unidad: booleano. Default: false.
   --help                  Muestra esta ayuda. Unidad: booleano. Default: false.
@@ -30,7 +30,7 @@ Deteccion de preset:
 Salida:
   TTY interactivo: texto legible.
   Sin TTY, --no-interactive o --yes: JSON determinista.
-  --format toon: TOON compacto para agentes, con mensajes deduplicados y rutas relativas cuando aplica.
+  --format compact: resumen y hallazgos agrupados por archivo, sin color ni codigos ANSI.
 
 Exit codes:
   0  Sin hallazgos.
@@ -41,7 +41,7 @@ Ejemplos:
   Humano:  skapxd-lint .
   Humano:  skapxd-lint --changed --base origin/main
   Agente:  skapxd-lint . --preset package --yes
-  Agente:  skapxd-lint . --preset package --yes --format toon
+  Agente:  skapxd-lint . --preset package --yes --format compact
   Agente:  skapxd-lint --changed --base origin/main --yes
 
 Fase 1:
