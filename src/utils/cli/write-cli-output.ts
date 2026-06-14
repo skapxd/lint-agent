@@ -1,5 +1,6 @@
 import { renderCompactOutput } from "./render-compact-output";
 import { renderInteractiveOutput } from "./render-interactive-output";
+import { writeToonCliOutput } from "./write-toon-cli-output";
 import type { CliOutputFormat, SkapxdLintOutput } from "./types";
 
 export function writeCliOutput(
@@ -9,6 +10,7 @@ export function writeCliOutput(
 ) {
   const needsCompactOutput = format === "compact";
   const needsJsonOutput = format === "json";
+  const needsToonOutput = format === "toon";
 
   if (needsCompactOutput) {
     stream.write(renderCompactOutput(output));
@@ -17,6 +19,11 @@ export function writeCliOutput(
 
   if (needsJsonOutput) {
     stream.write(`${JSON.stringify(output, null, 2)}\n`);
+    return;
+  }
+
+  if (needsToonOutput) {
+    writeToonCliOutput(output, stream);
     return;
   }
 

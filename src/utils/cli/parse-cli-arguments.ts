@@ -60,7 +60,7 @@ export function parseCliArguments(args: readonly string[]): CliParseResult {
   const hasInvalidFormat = rawFormat !== null && format === null;
   if (hasInvalidFormat) {
     return {
-      message: "Uso invalido: --format <json|compact> espera json o compact.",
+      message: "Uso invalido: --format <json|compact|toon> espera json, compact o toon.",
       ok: false,
     };
   }
