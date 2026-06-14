@@ -8,12 +8,16 @@ import {
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { decode } from "@toon-format/toon";
 import { beforeAll, describe, expect, it } from "vitest";
+import { createAdoptionOutput } from "../src/utils/cli/adoption/create-adoption-output";
+import { decodeAdoptionSeed } from "../src/utils/cli/adoption/decode-adoption-seed";
+import { createEphemeralConfigContent } from "../src/utils/cli/eslint-run/create-ephemeral-config-content";
 import { getUnsupportedNodeVersionMessage } from "../src/utils/cli/env/get-unsupported-node-version-message";
 import { omitProjectServiceParseErrorResults } from "../src/utils/cli/eslint-run/omit-project-service-parse-error-results";
 import { detectCliPreset } from "../src/utils/project/detect-cli-preset";
+import type { SkapxdLintOutput } from "../src/utils/cli/types";
 import type { ESLint } from "eslint";
 
 const PROJECT_ROOT = fileURLToPath(new URL("..", import.meta.url));
@@ -40,11 +44,13 @@ type CliJson = {
   files: Array<{
     filePath: string;
     messages: Array<{
+      fatal?: boolean;
       message: string;
       ruleId: string | null;
+      severity: number;
     }>;
   }>;
-  mode: "changed" | "evaluate";
+  mode: "adopt" | "changed" | "evaluate" | "state" | "verify";
   omittedFileCount?: number;
   preset?: string;
   state?: {
@@ -413,6 +419,66 @@ describe("skapxd-lint", () => {
     expect(firstRun.json?.files[0]?.messages.every(
       (message) => message.ruleId === "skapxd/no-else",
     )).toBe(true);
+  });
+
+  it("--adopt no convierte errores de configuracion en reglas objetivo", () => {
+    const evaluationOutput = {
+      configDeleted: true,
+      errorCount: 3,
+      files: [
+        {
+          errorCount: 3,
+          filePath: "/repo/index.ts",
+          messages: [
+            {
+              column: 1,
+              line: 1,
+              message:
+                "Definition for rule '@typescript-eslint/no-require-imports' was not found.",
+              ruleId: "@typescript-eslint/no-require-imports",
+              severity: 2,
+            },
+            {
+              column: 0,
+              fatal: true,
+              line: 0,
+              message: "Parsing error: token inesperado.",
+              ruleId: null,
+              severity: 2,
+            },
+            {
+              column: 1,
+              line: 2,
+              message: "Evita else: retorna temprano.",
+              ruleId: "skapxd/no-else",
+              severity: 2,
+            },
+          ],
+          warningCount: 0,
+        },
+      ],
+      mode: "evaluate",
+      preset: "base",
+      status: "findings",
+      targetPath: "/repo",
+      warningCount: 0,
+    } satisfies SkapxdLintOutput;
+
+    const output = createAdoptionOutput(evaluationOutput, 100);
+    const seedPayload = decodeAdoptionSeed(output.adoption.seed);
+
+    expect(output.adoption.selectedRules).toEqual([
+      {
+        affectedFileCount: 1,
+        ruleId: "skapxd/no-else",
+        violationCount: 1,
+      },
+    ]);
+    expect(seedPayload.rules).toEqual(["skapxd/no-else"]);
+    expect(output.adoption.totalViolationCount).toBe(1);
+    expect(output.files[0]?.messages).toEqual([
+      expect.objectContaining({ ruleId: "skapxd/no-else" }),
+    ]);
   });
 
   it("--adopt incluye la regla mas facil aunque no quepa en el porcentaje", () => {
@@ -842,6 +908,125 @@ describe("skapxd-lint", () => {
     expect(json?.configDeleted).toBe(true);
     expect(afterFiles).toEqual(beforeFiles);
     expect(afterFiles.some((file) => file.startsWith(".tmp-skapxd-lint-"))).toBe(false);
+  });
+
+  it("el config efimero descarta reglas cuyo plugin no esta registrado", () => {
+    const projectRoot = createTempProject("skapxd-cli-ephemeral-ghost-rule-");
+    const pluginPath = path.join(projectRoot, "fake-plugin.mjs");
+    const configPath = path.join(projectRoot, ".tmp-skapxd-lint-test.config.mjs");
+
+    writeFileSync(path.join(projectRoot, "index.js"), "require('node:fs');\n", "utf8");
+    writeFileSync(
+      pluginPath,
+      `export default {
+  configs: {
+    base: {
+      plugins: { local: { rules: {} } },
+      rules: { "@typescript-eslint/no-require-imports": "error" },
+    },
+  },
+};
+`,
+      "utf8",
+    );
+    writeFileSync(
+      configPath,
+      createEphemeralConfigContent(pathToFileURL(pluginPath).href, "base", false),
+      "utf8",
+    );
+
+    const result = spawnSync(
+      process.execPath,
+      [
+        path.join(PROJECT_ROOT, "node_modules", "eslint", "bin", "eslint.js"),
+        "--no-config-lookup",
+        "--config",
+        configPath,
+        "--format",
+        "json",
+        "index.js",
+      ],
+      {
+        cwd: projectRoot,
+        encoding: "utf8",
+      },
+    );
+    const results = JSON.parse(result.stdout) as ESLint.LintResult[];
+
+    expect(result.status, result.stderr || result.stdout).toBe(0);
+    expect(results[0]?.messages).toEqual([]);
+    expect(result.stderr).not.toContain("Definition for rule");
+  });
+
+  it("el config efimero conserva reglas de plugins scoped registrados", () => {
+    const projectRoot = createTempProject("skapxd-cli-ephemeral-scoped-rule-");
+    const pluginPath = path.join(projectRoot, "fake-plugin.mjs");
+    const configPath = path.join(projectRoot, ".tmp-skapxd-lint-test.config.mjs");
+
+    writeFileSync(path.join(projectRoot, "index.js"), "const value = 1;\n", "utf8");
+    writeFileSync(
+      pluginPath,
+      `export default {
+  configs: {
+    base: {
+      plugins: {
+        "@fake-scope": {
+          rules: {
+            ban: {
+              meta: {
+                type: "problem",
+                schema: [],
+                messages: { banned: "scoped rule survived" },
+              },
+              create(context) {
+                return {
+                  Program(node) {
+                    context.report({ node, messageId: "banned" });
+                  },
+                };
+              },
+            },
+          },
+        },
+      },
+      rules: { "@fake-scope/ban": "error" },
+    },
+  },
+};
+`,
+      "utf8",
+    );
+    writeFileSync(
+      configPath,
+      createEphemeralConfigContent(pathToFileURL(pluginPath).href, "base", false),
+      "utf8",
+    );
+
+    const result = spawnSync(
+      process.execPath,
+      [
+        path.join(PROJECT_ROOT, "node_modules", "eslint", "bin", "eslint.js"),
+        "--no-config-lookup",
+        "--config",
+        configPath,
+        "--format",
+        "json",
+        "index.js",
+      ],
+      {
+        cwd: projectRoot,
+        encoding: "utf8",
+      },
+    );
+    const results = JSON.parse(result.stdout) as ESLint.LintResult[];
+
+    expect(result.status, result.stderr || result.stdout).toBe(1);
+    expect(results[0]?.messages).toEqual([
+      expect.objectContaining({
+        message: "scoped rule survived",
+        ruleId: "@fake-scope/ban",
+      }),
+    ]);
   });
 
   it("documenta flags con placeholders en help", () => {

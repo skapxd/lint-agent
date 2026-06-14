@@ -110,6 +110,7 @@ export type LintFileResult = {
 
 export type LintMessageResult = {
   column: number;
+  fatal?: boolean;
   line: number;
   message: string;
   ruleId: string | null;

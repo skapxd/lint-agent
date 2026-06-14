@@ -12,6 +12,11 @@ export function createAdoptionRuleSummaries(files: LintFileResult[]) {
   for (const file of files) {
     for (const message of file.messages) {
       const ruleId = getLintMessageRuleId(message);
+
+      if (ruleId === null) {
+        continue;
+      }
+
       const summary = summariesByRule.get(ruleId) ?? {
         filePaths: new Set<string>(),
         violationCount: 0,

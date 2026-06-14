@@ -8,6 +8,7 @@ export function toLintFileResults(results: ESLint.LintResult[]): LintFileResult[
     filePath: result.filePath,
     messages: result.messages.map((message) => ({
       column: toCliLocationNumber(message.column),
+      fatal: message.fatal,
       line: toCliLocationNumber(message.line),
       message: message.message,
       ruleId: message.ruleId,
