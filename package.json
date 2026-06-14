@@ -72,7 +72,8 @@
     "lint:fix": "tsup && eslint src --fix",
     "lint:changed": "tsup && node dist/cli.mjs --changed",
     "measure:rules": "pnpm build && node scripts/measure-rule-timing.mjs",
-    "skapxd-lint": "pnpm build && node dist/cli.mjs",
+    "skapxd-lint": "node dist/cli.mjs",
+    "skapxd-lint:build": "pnpm build && node dist/cli.mjs",
     "test:peer-minimum": "pnpm build && node scripts/check-peer-minimum.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -91,6 +92,7 @@
   "dependencies": {
     "@clack/prompts": "^1.5.1",
     "@skapxd/result": "^1.0.1",
+    "@toon-format/toon": "^2.3.0",
     "picocolors": "^1.1.1",
     "picomatch": "^4.0.4"
   },

@@ -1,5 +1,6 @@
 import { parseArgs } from "node:util";
 import { trySafe } from "@skapxd/result";
+import { toCliOutputFormat } from "./to-cli-output-format";
 import { toCliPreset } from "./to-cli-preset";
 import type { CliParseResult } from "./types";
 
@@ -11,6 +12,7 @@ export function parseCliArguments(args: readonly string[]): CliParseResult {
       options: {
         base: { type: "string" },
         changed: { type: "boolean" },
+        format: { type: "string" },
         help: { short: "h", type: "boolean" },
         "no-interactive": { type: "boolean" },
         preset: { type: "string" },
@@ -53,11 +55,22 @@ export function parseCliArguments(args: readonly string[]): CliParseResult {
     };
   }
 
+  const rawFormat = parsed.value.values.format ?? null;
+  const format = rawFormat ? toCliOutputFormat(rawFormat) : null;
+  const hasInvalidFormat = rawFormat !== null && format === null;
+  if (hasInvalidFormat) {
+    return {
+      message: "Uso invalido: --format <json|toon> espera json o toon.",
+      ok: false,
+    };
+  }
+
   return {
     ok: true,
     value: {
       base: parsed.value.values.base ?? null,
       changed: parsed.value.values.changed === true,
+      format,
       forceNonInteractive:
         parsed.value.values["no-interactive"] === true ||
         parsed.value.values.yes === true,

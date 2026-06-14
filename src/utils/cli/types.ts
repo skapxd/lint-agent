@@ -10,6 +10,8 @@ export type CliStatus =
   | "ok"
   | "usage-error";
 
+export type CliOutputFormat = "json" | "toon";
+
 export type CliStreams = {
   argv: string[];
   cwd: string;
@@ -22,6 +24,7 @@ export type CliArguments = {
   base: string | null;
   changed: boolean;
   forceNonInteractive: boolean;
+  format: CliOutputFormat | null;
   help: boolean;
   path: string | null;
   preset: CliPreset | null;

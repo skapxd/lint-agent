@@ -3,6 +3,7 @@ import { createHelpText } from "./create-help-text";
 import { createExecutionErrorOutput } from "./create-execution-error-output";
 import { createUsageErrorOutput } from "./create-usage-error-output";
 import { getCliExitCode } from "./get-cli-exit-code";
+import { getCliOutputFormat } from "./get-cli-output-format";
 import { isInteractiveSession } from "./is-interactive-session";
 import { parseCliArguments } from "./parse-cli-arguments";
 import { promptForPath } from "./prompt-for-path";
@@ -18,7 +19,7 @@ export async function runSkapxdLint(streams: CliStreams) {
 
   if (hasParseError) {
     const output = createUsageErrorOutput(parsed.message);
-    writeCliOutput(output, streams.stdout, true);
+    writeCliOutput(output, streams.stdout, "json");
     process.exitCode = 2;
     return;
   }
@@ -29,8 +30,9 @@ export async function runSkapxdLint(streams: CliStreams) {
     return;
   }
 
-  const interactive = isInteractiveSession(parsed.value, streams);
-  const jsonOutput = !interactive;
+  const canUseInteractiveMode = parsed.value.format === null;
+  const interactive = canUseInteractiveMode && isInteractiveSession(parsed.value, streams);
+  const outputFormat = getCliOutputFormat(parsed.value, interactive);
   const missingPath = parsed.value.path === null && !parsed.value.changed;
   const mustFailBecausePathIsMissing = missingPath && !interactive;
 
@@ -38,7 +40,7 @@ export async function runSkapxdLint(streams: CliStreams) {
     const output = createUsageErrorOutput(
       "Falta <path>. En modo no-interactivo el CLI nunca pregunta; pasa `skapxd-lint <path> --yes` o usa `skapxd-lint --changed --yes`.",
     );
-    writeCliOutput(output, streams.stdout, true);
+    writeCliOutput(output, streams.stdout, outputFormat);
     process.exitCode = 2;
     return;
   }
@@ -55,7 +57,7 @@ export async function runSkapxdLint(streams: CliStreams) {
         : "no pude leer <path> desde stdin.";
     const output = createExecutionErrorOutput(message);
 
-    writeCliOutput(output, streams.stdout, jsonOutput);
+    writeCliOutput(output, streams.stdout, outputFormat);
     process.exitCode = 2;
     return;
   }
@@ -65,7 +67,7 @@ export async function runSkapxdLint(streams: CliStreams) {
 
   if (hasEmptyPromptPath) {
     const output = createUsageErrorOutput("Falta <path>: la respuesta interactiva quedo vacia.");
-    writeCliOutput(output, streams.stdout, jsonOutput);
+    writeCliOutput(output, streams.stdout, outputFormat);
     process.exitCode = 2;
     return;
   }
@@ -87,7 +89,7 @@ export async function runSkapxdLint(streams: CliStreams) {
         : "fallo desconocido";
     const output = createExecutionErrorOutput(message);
 
-    writeCliOutput(output, streams.stdout, jsonOutput);
+    writeCliOutput(output, streams.stdout, outputFormat);
     process.exitCode = 2;
     return;
   }
@@ -95,6 +97,6 @@ export async function runSkapxdLint(streams: CliStreams) {
   const output = requestedOutput.value;
   const exitCode = getCliExitCode(output);
 
-  writeCliOutput(output, streams.stdout, jsonOutput);
+  writeCliOutput(output, streams.stdout, outputFormat);
   process.exitCode = exitCode;
 }
