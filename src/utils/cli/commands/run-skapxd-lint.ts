@@ -12,7 +12,7 @@ import { removeAdoptionState } from "#/utils/cli/state/remove-adoption-state";
 import { resolveStateBackedVerifySeed } from "#/utils/cli/state/resolve-state-backed-verify-seed";
 import { runRequestedMode } from "./run-requested-mode";
 import { writeAdoptionState } from "#/utils/cli/state/write-adoption-state";
-import { writeCliOutput } from "#/utils/cli/output/machine/write-cli-output";
+import { writeCliOutputOrReport } from "#/utils/cli/output/machine/write-cli-output-or-report";
 import type { CliStreams } from "#/utils/cli/types";
 
 export async function runSkapxdLint(streams: CliStreams) {
@@ -22,7 +22,7 @@ export async function runSkapxdLint(streams: CliStreams) {
 
   if (hasParseError) {
     const output = createUsageErrorOutput(parsed.message);
-    writeCliOutput(output, streams.stdout, "json");
+    await writeCliOutputOrReport(output, streams.stdout, streams.stderr, "json");
     process.exitCode = 2;
     return;
   }
@@ -43,7 +43,7 @@ export async function runSkapxdLint(streams: CliStreams) {
     const output = createUsageErrorOutput(
       "Falta <path>. En modo no-interactivo el CLI nunca pregunta; pasa `skapxd-lint <path> --yes` o usa `skapxd-lint --changed --yes`.",
     );
-    writeCliOutput(output, streams.stdout, outputFormat);
+    await writeCliOutputOrReport(output, streams.stdout, streams.stderr, outputFormat);
     process.exitCode = 2;
     return;
   }
@@ -60,7 +60,7 @@ export async function runSkapxdLint(streams: CliStreams) {
         : "no pude leer <path> desde stdin.";
     const output = createExecutionErrorOutput(message);
 
-    writeCliOutput(output, streams.stdout, outputFormat);
+    await writeCliOutputOrReport(output, streams.stdout, streams.stderr, outputFormat);
     process.exitCode = 2;
     return;
   }
@@ -70,7 +70,7 @@ export async function runSkapxdLint(streams: CliStreams) {
 
   if (hasEmptyPromptPath) {
     const output = createUsageErrorOutput("Falta <path>: la respuesta interactiva quedo vacia.");
-    writeCliOutput(output, streams.stdout, outputFormat);
+    await writeCliOutputOrReport(output, streams.stdout, streams.stderr, outputFormat);
     process.exitCode = 2;
     return;
   }
@@ -81,7 +81,7 @@ export async function runSkapxdLint(streams: CliStreams) {
     const statePath = removeAdoptionState(requestedPath);
     const output = createStateResetOutput(statePath);
 
-    writeCliOutput(output, streams.stdout, outputFormat);
+    await writeCliOutputOrReport(output, streams.stdout, streams.stderr, outputFormat);
     process.exitCode = 0;
     return;
   }
@@ -100,7 +100,7 @@ export async function runSkapxdLint(streams: CliStreams) {
         : "no pude resolver el lote persistido.";
     const output = createUsageErrorOutput(message);
 
-    writeCliOutput(output, streams.stdout, outputFormat);
+    await writeCliOutputOrReport(output, streams.stdout, streams.stderr, outputFormat);
     process.exitCode = 2;
     return;
   }
@@ -125,7 +125,7 @@ export async function runSkapxdLint(streams: CliStreams) {
         : "fallo desconocido";
     const output = createExecutionErrorOutput(message);
 
-    writeCliOutput(output, streams.stdout, outputFormat);
+    await writeCliOutputOrReport(output, streams.stdout, streams.stderr, outputFormat);
     process.exitCode = 2;
     return;
   }
@@ -142,6 +142,13 @@ export async function runSkapxdLint(streams: CliStreams) {
     removeAdoptionState(outputTargetPath);
   }
 
-  writeCliOutput(output, streams.stdout, outputFormat);
-  process.exitCode = exitCode;
+  const outputWrite = await writeCliOutputOrReport(
+    output,
+    streams.stdout,
+    streams.stderr,
+    outputFormat,
+  );
+  const finalExitCode = outputWrite.ok ? exitCode : 2;
+
+  process.exitCode = finalExitCode;
 }

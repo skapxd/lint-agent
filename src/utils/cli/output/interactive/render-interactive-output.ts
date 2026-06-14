@@ -1,13 +1,20 @@
-import { intro, log, note, outro } from "@clack/prompts";
+import { Result, trySafe } from "@skapxd/result";
 import { formatInteractiveFileNote } from "./format-interactive-file-note";
 import { getInteractiveOutputTitle } from "./get-interactive-output-title";
 import { getInteractiveSummary } from "./get-interactive-summary";
 import type { SkapxdLintOutput } from "#/utils/cli/types";
 
-export function renderInteractiveOutput(
+export async function renderInteractiveOutput(
   output: SkapxdLintOutput,
   stream: NodeJS.WriteStream,
-) {
+): Promise<Result<void, unknown>> {
+  const clackPrompts = await trySafe(() => import("@clack/prompts"));
+
+  if (!clackPrompts.ok) {
+    return Result.err(clackPrompts.error);
+  }
+
+  const { intro, log, note, outro } = clackPrompts.value;
   const title = getInteractiveOutputTitle(output);
   const summary = getInteractiveSummary(output);
   const hasFindings = output.errorCount > 0 || output.warningCount > 0;
@@ -17,7 +24,7 @@ export function renderInteractiveOutput(
   if (!hasFindings) {
     log.success("Sin hallazgos.", { output: stream });
     outro("Listo.", { output: stream });
-    return;
+    return Result.ok(undefined);
   }
 
   log.error(summary, { output: stream });
@@ -34,4 +41,6 @@ export function renderInteractiveOutput(
   outro("Revisa los hallazgos y vuelve a ejecutar el comando.", {
     output: stream,
   });
+
+  return Result.ok(undefined);
 }

@@ -1,8 +1,14 @@
-import { isCancel, text } from "@clack/prompts";
 import { Result, trySafe } from "@skapxd/result";
 import type { PromptStreams } from "#/utils/cli/types";
 
 export async function promptForPath(streams: PromptStreams) {
+  const clackPrompts = await trySafe(() => import("@clack/prompts"));
+
+  if (!clackPrompts.ok) {
+    return Result.err(clackPrompts.error);
+  }
+
+  const { isCancel, text } = clackPrompts.value;
   const answer = await trySafe(() =>
     text({
       input: streams.input,

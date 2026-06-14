@@ -11,6 +11,7 @@ import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { decode } from "@toon-format/toon";
 import { beforeAll, describe, expect, it } from "vitest";
+import { getUnsupportedNodeVersionMessage } from "../src/utils/cli/env/get-unsupported-node-version-message";
 import { omitProjectServiceParseErrorResults } from "../src/utils/cli/eslint-run/omit-project-service-parse-error-results";
 import { detectCliPreset } from "../src/utils/project/detect-cli-preset";
 import type { ESLint } from "eslint";
@@ -875,7 +876,7 @@ describe("skapxd-lint", () => {
     expect(result.stdout).not.toContain("Agente:  skapxd-lint . --preset package --yes --format compact");
   });
 
-  it("usa clack para el prompt interactivo, no readline", () => {
+  it("usa clack con import diferido solo en rutas interactivas", () => {
     const promptSource = readFileSync(
       path.join(
         PROJECT_ROOT,
@@ -900,6 +901,19 @@ describe("skapxd-lint", () => {
       ),
       "utf8",
     );
+    const interactiveRenderSource = readFileSync(
+      path.join(
+        PROJECT_ROOT,
+        "src",
+        "utils",
+        "cli",
+        "output",
+        "interactive",
+        "render-interactive-output.ts",
+      ),
+      "utf8",
+    );
+    const cliEntrypointSource = readFileSync(path.join(PROJECT_ROOT, "src", "cli.ts"), "utf8");
     const resolverSource = readFileSync(
       path.join(
         PROJECT_ROOT,
@@ -911,12 +925,37 @@ describe("skapxd-lint", () => {
       ),
       "utf8",
     );
+    const staticClackImport = /from\s+["@']@clack\/prompts["@']/u;
 
-    expect(promptSource).toContain("@clack/prompts");
+    expect(promptSource).toContain('import("@clack/prompts")');
+    expect(promptSource).not.toMatch(staticClackImport);
     expect(promptSource).not.toContain("node:readline");
+    expect(interactiveRenderSource).toContain('import("@clack/prompts")');
+    expect(interactiveRenderSource).not.toMatch(staticClackImport);
     expect(resumePromptSource).toContain("confirm");
-    expect(resumePromptSource).toContain("@clack/prompts");
+    expect(resumePromptSource).toContain('import("@clack/prompts")');
+    expect(resumePromptSource).not.toMatch(staticClackImport);
     expect(resolverSource).toContain("promptForResumeLastState");
+    expect(cliEntrypointSource).toContain("getUnsupportedNodeVersionMessage");
+    expect(cliEntrypointSource.indexOf("getUnsupportedNodeVersionMessage")).toBeLessThan(
+      cliEntrypointSource.indexOf('import("#/utils/cli/commands/run-skapxd-lint")'),
+    );
+  });
+
+  it("declara y valida el minimo de Node soportado", () => {
+    const packageJson = JSON.parse(readFileSync(path.join(PROJECT_ROOT, "package.json"), "utf8")) as {
+      engines?: { node?: string };
+    };
+
+    expect(packageJson.engines?.node).toBe(">=20.12.0");
+    expect(getUnsupportedNodeVersionMessage("16.20.2")).toBe(
+      "skapxd-lint requiere Node >=20.12.0; detectado v16.20.2.",
+    );
+    expect(getUnsupportedNodeVersionMessage("20.11.1")).toBe(
+      "skapxd-lint requiere Node >=20.12.0; detectado v20.11.1.",
+    );
+    expect(getUnsupportedNodeVersionMessage("20.12.0")).toBeNull();
+    expect(getUnsupportedNodeVersionMessage("22.14.0")).toBeNull();
   });
 
   it("--changed lintea solo archivos modificados por git", () => {
