@@ -98,6 +98,7 @@ export function getJsxDuplicateSignatures(
 
     occurrences.push({
       node,
+      reportPriority: 1,
       signature: `class:${classSignature.signature}`,
     });
   }
@@ -109,6 +110,7 @@ export function getJsxDuplicateSignatures(
   if (reachesStructuralDensity) {
     occurrences.push({
       node,
+      reportPriority: 0,
       signature: `tree:${summary.structuralSignature}`,
     });
   }

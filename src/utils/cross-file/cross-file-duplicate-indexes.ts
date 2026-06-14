@@ -5,6 +5,7 @@ export type CrossFileDuplicateOccurrence = {
   context: RuleContext;
   fileName: string;
   node: TSESTree.Node;
+  reportPriority: number;
   reported: boolean;
   signature: string;
 };
@@ -15,6 +16,12 @@ export type CrossFileDuplicateGroup = {
 
 export type CrossFileDuplicateIndex = {
   groups: Map<string, CrossFileDuplicateGroup>;
+};
+
+export type CrossFileReportCandidate = {
+  count: number;
+  occurrence: CrossFileDuplicateOccurrence;
+  reportNode: TSESTree.Node;
 };
 
 export const crossFileDuplicateIndexes = new Map<

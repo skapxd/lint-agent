@@ -1,14 +1,17 @@
 import type { TSESTree } from "@typescript-eslint/utils";
+import { chooseCrossFileReportCandidateByNode } from "./choose-cross-file-report-candidate-by-node";
 import {
   crossFileDuplicateIndexes,
   type CrossFileDuplicateGroup,
   type CrossFileDuplicateIndex,
   type CrossFileDuplicateOccurrence,
+  type CrossFileReportCandidate,
 } from "./cross-file-duplicate-indexes";
 import type { RuleContext } from "#/utils/rule-authoring/rule-types";
 
 export type DuplicateSignatureOccurrence = {
   node: TSESTree.Node;
+  reportPriority?: number;
   signature: string;
 };
 
@@ -55,12 +58,15 @@ export function createCrossFileDuplicateReporter(
       context: options.context,
       fileName,
       node: occurrence.node,
+      reportPriority: occurrence.reportPriority ?? 0,
       reported: false,
       signature: occurrence.signature,
     });
   }
 
-  function reportReadyGroups(fileName: string) {
+  function collectReadyReportCandidates(fileName: string) {
+    const candidates: CrossFileReportCandidate[] = [];
+
     for (const group of index.groups.values()) {
       const count = group.occurrences.length;
       const reachesRepetitionThreshold = count >= options.minRepetitions;
@@ -84,13 +90,39 @@ export function createCrossFileDuplicateReporter(
           continue;
         }
 
-        options.context.report({
-          data: { count: String(count) },
-          messageId: options.messageId,
-          node: occurrence.fileName === fileName ? occurrence.node : reportNode,
+        candidates.push({
+          count,
+          occurrence,
+          reportNode: occurrence.fileName === fileName ? occurrence.node : reportNode,
         });
-        occurrence.reported = true;
       }
+    }
+
+    return candidates;
+  }
+
+  function markNodeOccurrencesAsReported(node: TSESTree.Node) {
+    for (const group of index.groups.values()) {
+      for (const occurrence of group.occurrences) {
+        const belongsToReportedNode = occurrence.node === node;
+        if (belongsToReportedNode) {
+          occurrence.reported = true;
+        }
+      }
+    }
+  }
+
+  function reportReadyGroups(fileName: string) {
+    const candidates = collectReadyReportCandidates(fileName);
+    const candidateByNode = chooseCrossFileReportCandidateByNode(candidates);
+
+    for (const candidate of candidateByNode.values()) {
+      options.context.report({
+        data: { count: String(candidate.count) },
+        messageId: options.messageId,
+        node: candidate.reportNode,
+      });
+      markNodeOccurrencesAsReported(candidate.occurrence.node);
     }
   }
 
