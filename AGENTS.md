@@ -282,6 +282,22 @@ Convenciones y trampas de ESTE repo:
 - Si aparecen cambios ajenos, no revertirlos: separarlos del scope y
   trabajar alrededor.
 
+## Doctrina de presets
+
+- **Severidad:** `off` o `error`, **nunca `warn`**. Las mediciones se
+  presentan y el dueño decide, pero una regla activa no entra tibia.
+- **Ubicación de reglas: agnóstica → shared, sin tibieza.** Una regla que
+  aplica a todo el ecosistema, independientemente del framework, vive en
+  `shared` (`base-rules`) y la heredan todos los presets, en `error`. Nada
+  de dejarla como opt-in "por si acaso": si es agnóstica y aporta, va a
+  `shared` con firmeza. Lo único que baja una regla a un preset específico
+  es el acoplamiento real a un framework o librería (Nest, Next, Astro,
+  React, un paquete concreto), que vive en su preset (`nest`, `next`,
+  `astro`). Una frontera defensiva contra otra regla —por ejemplo, la
+  exención PascalCase de `nested-function-requires-capture`— no acopla la
+  regla: sigue siendo agnóstica. Esta regla de ubicación y la de severidad
+  son las dos mitades de no ser tibios.
+
 ## Lo que el agente NO hace
 
 - **Releases**: el tag lo dispara solo el dueño. La versión se actualiza en un
@@ -290,7 +306,7 @@ Convenciones y trampas de ESTE repo:
 - Push directo a `main` (excepción: solo el dueño, y el issue queda
   comentado con commit, validaciones y razón).
 - Decidir severidades de presets: las mediciones se presentan, el dueño
-  decide. Doctrina: `off` o `error`, **nunca `warn`**.
+  decide; la doctrina anterior fija cómo entra una regla cuando se activa.
 - Cerrar issues con DoD incompleta, revertir cambios ajenos del working
   tree, o "mejorar" trabajo ya aprobado fuera del scope de tu issue.
 
