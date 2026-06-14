@@ -21,6 +21,7 @@ export type CliStreams = {
 };
 
 export type CliArguments = {
+  adoptPercent: number | null;
   base: string | null;
   changed: boolean;
   forceNonInteractive: boolean;
@@ -30,6 +31,9 @@ export type CliArguments = {
   path: string | null;
   preset: CliPreset | null;
   rawPreset: string | null;
+  resetState: boolean;
+  resumeLast: boolean;
+  verifySeed: string | null;
 };
 
 export type CliParseResult =
@@ -42,16 +46,59 @@ export type CliRunResult = {
 };
 
 export type SkapxdLintOutput = {
+  adoption?: AdoptionOutput;
   changedFiles?: string[];
   configDeleted?: boolean;
   errorCount: number;
   files: LintFileResult[];
-  mode: "changed" | "evaluate";
+  mode: "adopt" | "changed" | "evaluate" | "state" | "verify";
   omittedFileCount?: number;
   preset?: CliPreset;
+  state?: StateOutput;
   status: CliStatus;
   targetPath?: string;
+  verification?: VerificationOutput;
   warningCount: number;
+};
+
+export type AdoptionOutput = {
+  budget: number;
+  percent: number;
+  seed: string;
+  selectedRuleCount: number;
+  selectedRules: AdoptionRuleSummary[];
+  targetViolationCount: number;
+  totalViolationCount: number;
+};
+
+export type AdoptionRuleSummary = {
+  affectedFileCount: number;
+  ruleId: string;
+  violationCount: number;
+};
+
+export type VerificationOutput = {
+  completed: boolean;
+  fixedRuleCount: number;
+  fixedRules: string[];
+  outsideViolationCount: number;
+  remainingRuleCount: number;
+  remainingRules: AdoptionRuleSummary[];
+  remainingViolationCount: number;
+  seed: string;
+  targetRules: string[];
+};
+
+export type AdoptionState = {
+  percent: number;
+  seed: string;
+  targetRules: string[];
+  timestamp: string;
+};
+
+export type StateOutput = {
+  action: "reset";
+  statePath: string;
 };
 
 export type LintFileResult = {
@@ -77,10 +124,12 @@ export type PromptStreams = {
 };
 
 export type RunRequestedModeInput = {
+  adoptPercent: number | null;
   base: string | null;
   changed: boolean;
   includeTests: boolean;
   path: string;
   preset: CliPreset | null;
   streams: CliStreams;
+  verifySeed: string | null;
 };

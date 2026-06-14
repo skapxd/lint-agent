@@ -1,5 +1,6 @@
 import { parseArgs } from "node:util";
 import { trySafe } from "@skapxd/result";
+import { toCliAdoptPercent } from "./to-cli-adopt-percent";
 import { toCliOutputFormat } from "./to-cli-output-format";
 import { toCliPreset } from "./to-cli-preset";
 import type { CliParseResult } from "#/utils/cli/types";
@@ -10,6 +11,7 @@ export function parseCliArguments(args: readonly string[]): CliParseResult {
       allowPositionals: true,
       args,
       options: {
+        adopt: { type: "string" },
         base: { type: "string" },
         changed: { type: "boolean" },
         format: { type: "string" },
@@ -17,6 +19,9 @@ export function parseCliArguments(args: readonly string[]): CliParseResult {
         "include-tests": { type: "boolean" },
         "no-interactive": { type: "boolean" },
         preset: { type: "string" },
+        "reset-state": { type: "boolean" },
+        "resume-last": { type: "boolean" },
+        verify: { type: "string" },
         yes: { type: "boolean" },
       },
       strict: true,
@@ -66,9 +71,55 @@ export function parseCliArguments(args: readonly string[]): CliParseResult {
     };
   }
 
+  const rawAdoptPercent = parsed.value.values.adopt ?? null;
+  const adoptPercent =
+    rawAdoptPercent === null ? null : toCliAdoptPercent(rawAdoptPercent);
+  const hasInvalidAdoptPercent =
+    rawAdoptPercent !== null && adoptPercent === null;
+  if (hasInvalidAdoptPercent) {
+    return {
+      message: `Uso invalido: --adopt <percent> espera un entero entre 0 y 100; recibi ${rawAdoptPercent}.`,
+      ok: false,
+    };
+  }
+
+  const verifySeed = parsed.value.values.verify ?? null;
+  const mixesAdoptAndVerify = adoptPercent !== null && verifySeed !== null;
+  const resumeLast = parsed.value.values["resume-last"] === true;
+  const resetState = parsed.value.values["reset-state"] === true;
+  if (mixesAdoptAndVerify) {
+    return {
+      message:
+        "Uso invalido: --adopt <percent> crea un lote y --verify <seed> verifica un lote existente; usa solo uno.",
+      ok: false,
+    };
+  }
+
+  const mixesResumeWithExplicitBatch =
+    resumeLast && (adoptPercent !== null || verifySeed !== null);
+  if (mixesResumeWithExplicitBatch) {
+    return {
+      message:
+        "Uso invalido: --resume-last usa el lote persistido; no lo mezcles con --adopt <percent> ni --verify <seed>.",
+      ok: false,
+    };
+  }
+
+  const mixesResetWithBatch =
+    resetState &&
+    (adoptPercent !== null || verifySeed !== null || resumeLast);
+  if (mixesResetWithBatch) {
+    return {
+      message:
+        "Uso invalido: --reset-state solo limpia el lote persistido; no lo mezcles con --adopt, --verify ni --resume-last.",
+      ok: false,
+    };
+  }
+
   return {
     ok: true,
     value: {
+      adoptPercent,
       base: parsed.value.values.base ?? null,
       changed: parsed.value.values.changed === true,
       format,
@@ -80,6 +131,9 @@ export function parseCliArguments(args: readonly string[]): CliParseResult {
       path,
       preset,
       rawPreset,
+      resetState,
+      resumeLast,
+      verifySeed,
     },
   };
 }
