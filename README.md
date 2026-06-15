@@ -20,12 +20,12 @@ Luego pide al agente que la use:
 - "Adopta las reglas skapxd de forma incremental (10%) en este repo legacy."
 - "Verifica el lote de adopcion skapxd con la seed que acaba de generar el CLI."
 
-La skill esta indexada en skills.sh, invoca el CLI publicado `@skapxd/eslint-opinionated@latest` y no modifica el proyecto medido: la evaluacion es efimera y solo lectura salvo que pidas aplicar fixes.
+La skill esta indexada en skills.sh, invoca el CLI publicado `@skapxd/eslint-opinionated@5` con npm provenance y no modifica el proyecto medido: la evaluacion es efimera y solo lectura salvo que pidas aplicar fixes.
 
 Si no usas la skill, puedes invocar el CLI directo:
 
 ```bash
-npx @skapxd/eslint-opinionated@latest <path> --yes --format toon
+npx @skapxd/eslint-opinionated@5 <path> --yes --format toon
 ```
 
 ## Uso rapido
