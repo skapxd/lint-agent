@@ -8,6 +8,7 @@ Cada ficha vive en un archivo propio. El indice conserva la descripcion corta de
 | --- | --- |
 | [`skapxd/one-root-function-per-file`](./one-root-function-per-file.md) | Un archivo, una función top-level semántica. |
 | [`skapxd/filename-matches-root-function`](./filename-matches-root-function.md) | El nombre del archivo es la versión kebab de su función raíz exportada. |
+| [`skapxd/dense-function-requires-comment`](./dense-function-requires-comment.md) | Funciones exportadas densas en líneas, literales y ramas declaran su motivación en un comentario de bloque. |
 | [`skapxd/async-functions-return-result`](./async-functions-return-result.md) | Funciones async de dominio deben retornar `Promise<Result<...>>`. **Apagada por defecto; opt-in** (ver motivos en su sección). |
 | [`skapxd/requires-strict-tsconfig`](./requires-strict-tsconfig.md) | El `tsconfig` debe ser implacable (`strict`, `noImplicitReturns`, `noUncheckedIndexedAccess`): sin ellos, el compilador no puede hacer irrepresentable lo inválido. |
 | [`skapxd/result-error-requires-cause`](./result-error-requires-cause.md) | Un `Result.err` derivado debe preservar `cause: result.error`. |

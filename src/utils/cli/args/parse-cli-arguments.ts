@@ -5,6 +5,13 @@ import { toCliOutputFormat } from "./to-cli-output-format";
 import { toCliPreset } from "./to-cli-preset";
 import type { CliParseResult } from "#/utils/cli/types";
 
+/**
+ * Convierte la superficie cruda de `skapxd-lint` en un contrato tipado para los modos de ejecucion. La funcion separa errores de uso, coercion de opciones y combinaciones incompatibles para que el resto del CLI no tenga que revalidar strings ni flags cruzados.
+ *
+ * Prioridad: primero parseo sintactico de `node:util`, luego path/help, despues presets/formato/adopcion, y al final exclusiones entre `--adopt`, `--verify`, `--resume-last` y `--reset-state`.
+ *
+ * Ej.: `["src", "--preset", "package", "--adopt", "10", "--yes"]` -> `{ ok: true, value: { path: "src", preset: "package", adoptPercent: 10, forceNonInteractive: true } }`; `["src", "--adopt", "10", "--verify", "seed"]` -> error de uso.
+ */
 export function parseCliArguments(args: readonly string[]): CliParseResult {
   const parsed = trySafe(() =>
     parseArgs({

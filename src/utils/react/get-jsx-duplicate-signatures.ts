@@ -12,6 +12,13 @@ type JsxDuplicateSignatureOptions = {
   minPatternNodes: number;
 };
 
+/**
+ * Convierte un arbol JSX en ocurrencias comparables para detectar repeticion visual sin depender del nombre del componente. La funcion produce dos familias de firma: una local por `className` denso y otra estructural por subarbol con clases.
+ *
+ * Prioridad de reporte: `tree:` tiene prioridad sobre `class:` cuando ambas apuntan al mismo nodo, porque una estructura repetida contiene mas decision de componente que una lista de clases aislada.
+ *
+ * Ej.: tres cards con el mismo tag, mismas clases y mismos hijos generan la misma firma `tree:...`; tres botones con solo una clase larga compartida generan `class:...`.
+ */
 export function getJsxDuplicateSignatures(
   node: TSESTree.JSXElement | TSESTree.JSXFragment,
   sourceCode: TextRuleSourceCode,

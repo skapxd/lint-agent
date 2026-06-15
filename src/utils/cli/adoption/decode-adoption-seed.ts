@@ -1,5 +1,12 @@
 import { trySafe } from "@skapxd/result";
 
+/**
+ * Decodifica una seed de adopcion incremental y la reduce a la lista de reglas que debe revalidar `--verify`. La seed es una frontera externa: puede venir truncada, con version vieja o con JSON arbitrario, asi que la salida solo existe si todo el payload respeta el contrato `skapxd1`.
+ *
+ * Reglas: prefijo obligatorio -> base64url JSON -> objeto -> version soportada -> `rules` como lista de strings. Cualquier desviacion devuelve el mismo error de uso para no filtrar detalles ni dejar estados parciales.
+ *
+ * Ej.: `skapxd1.<base64url({"v":1,"rules":["no-else"]})>` -> `{ v: 1, rules: ["no-else"] }`; `foo` o una regla no-string -> error de seed invalida.
+ */
 export function decodeAdoptionSeed(seed: string) {
   const prefix = "skapxd1.";
   const hasExpectedPrefix = seed.startsWith(prefix);

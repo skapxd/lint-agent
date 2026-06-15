@@ -11,6 +11,13 @@ export type ClassNameSignature = {
   signature: string;
 };
 
+/**
+ * Resume cualquier forma estatica o semi-estatica de `className` en una firma comparable entre JSX repetidos. El objetivo no es evaluar Tailwind ni ejecutar expresiones, sino conservar la forma estructural suficiente para detectar "este patron visual ya quiere ser componente".
+ *
+ * Reglas de lectura: literales y templates aportan clases; ternarios, arrays, objetos, llamadas y logicos conservan su shape; lo que no se puede entender queda como `dynamic:<tipo>:<texto>` para no inventar equivalencias.
+ *
+ * Ej.: `className={cn("p-2", active && "bg-blue-500")}` -> firma `call:cn(literal(p-2),logical:&&(literal(bg-blue-500)))` con clases `["bg-blue-500", "p-2"]`.
+ */
 export function getClassNameSignature(
   attribute: TSESTree.JSXAttribute,
   sourceCode: TextRuleSourceCode,
