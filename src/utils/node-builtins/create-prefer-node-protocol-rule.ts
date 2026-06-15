@@ -9,6 +9,19 @@ import type {
 
 type StringSpecifierNode = TSESTree.StringLiteral;
 
+/**
+ * Fabrica la regla `prefer-node-protocol-for-builtins` dejando inyectable la deteccion de builtins para cubrir runtimes y tests. La intencion es normalizar solo imports que el host reconoce como modulos nativos de Node, sin tocar paquetes npm ni specifiers con protocolo.
+ *
+ * ### Flujo
+ * descartar archivos permitidos o runtimes sin detector -> leer specifiers literales de import/export/require/import() -> ignorar cualquier protocolo existente -> preguntar `isBuiltin("node:" + specifier)` -> autofix anteponiendo `node:`.
+ *
+ * ### Ejemplo
+ * ```ts
+ * import fs from "fs"; // -> import fs from "node:fs";
+ * import sqlite from "bun:sqlite"; // no se reporta
+ * import x from "fs-extra"; // no se reporta
+ * ```
+ */
 export function createPreferNodeProtocolRule(
   builtinDetectorCandidate: unknown,
 ): RuleModule {

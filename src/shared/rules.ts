@@ -7,6 +7,7 @@ import { awaitRequiresResult } from "#/rules/await-requires-result";
 import { resultErrorRequiresCause } from "#/rules/result-error-requires-cause";
 import { resultErrorRequiresHandling } from "#/rules/result-error-requires-handling";
 import { classPropertiesRequireReadonly } from "#/rules/class-properties-require-readonly";
+import { denseFunctionRequiresComment } from "#/rules/dense-function-requires-comment";
 import { noAccessors } from "#/rules/no-accessors";
 import type { RuleModule } from "#/utils/rule-authoring/rule-types";
 import { maxHookSize } from "#/rules/max-hook-size";
@@ -57,6 +58,7 @@ import { untrustedModuleRequiresAdapter } from "#/rules/untrusted-module-require
 
 export const rules = {
   "class-properties-require-readonly": classPropertiesRequireReadonly,
+  "dense-function-requires-comment": denseFunctionRequiresComment,
   "filename-matches-root-function": filenameMatchesRootFunction,
   "no-accessors": noAccessors,
   "one-root-function-per-file": oneRootFunctionPerFile,

@@ -2,6 +2,7 @@ import type { Linter } from "eslint";
 
 export const baseRules = {
   "skapxd/class-properties-require-readonly": "error",
+  "skapxd/dense-function-requires-comment": "error",
   "skapxd/filename-matches-root-function": "error",
   "skapxd/max-public-methods": "error",
   "skapxd/no-accessors": "error",

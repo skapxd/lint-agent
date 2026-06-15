@@ -6,6 +6,18 @@ import { summarizeLintResults } from "#/utils/cli/output/machine/summarize-lint-
 import { toLintFileResults } from "#/utils/cli/output/machine/to-lint-file-results";
 import type { SkapxdLintOutput } from "#/utils/cli/types";
 
+/**
+ * Ejecuta el modo `--changed`: limita ESLint a los archivos modificados contra una base Git y devuelve el mismo contrato de salida que los modos completos. La funcion existe para que el CLI pueda fallar de forma estable cuando Git no puede calcular el diff, en vez de mezclar ese error con errores de lint.
+ *
+ * ### Orden
+ * resolver root + archivos cambiados -> sintetizar execution-error si Git falla -> saltar ESLint si no hay archivos -> lint con `warnIgnored: false` -> normalizar mensajes y resumen.
+ *
+ * ### Ejemplo
+ * ```ts
+ * await runChangedMode("origin/main", cwd); // dos .ts modificados -> lintea solo esos paths
+ * await runChangedMode("origin/main", cwd); // sin cambios -> { status: "ok", files: [] }
+ * ```
+ */
 export async function runChangedMode(base: string | null, cwd: string) {
   const changed = getChangedLintFiles(base, cwd);
   const hasGitFailure = changed === null;

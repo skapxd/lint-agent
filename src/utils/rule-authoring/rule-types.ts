@@ -12,7 +12,14 @@ export type RuleValue = unknown;
 
 export type RuleOptions = Record<string, unknown>;
 
+export type RuleComment = {
+  loc: TSESTree.SourceLocation;
+  type: string;
+  value: string;
+};
+
 export type RuleSourceCode = {
+  getCommentsBefore?: (node: unknown) => RuleComment[];
   getScope?: (node: unknown) => RuleScope;
   getText?: (node?: unknown) => string;
   parserServices?: ParserServices;

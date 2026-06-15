@@ -15,6 +15,18 @@ import { writeAdoptionState } from "#/utils/cli/state/write-adoption-state";
 import { writeCliOutputOrReport } from "#/utils/cli/output/machine/write-cli-output-or-report";
 import type { CliStreams } from "#/utils/cli/types";
 
+/**
+ * Orquesta el CLI completo sin mezclar UX interactiva, persistencia de lotes y ejecucion de ESLint en los helpers de bajo nivel. La funcion decide el modo, normaliza la salida y traduce cada fallo a un payload estable para humanos o maquinas.
+ *
+ * ### Orden de control
+ * parsear args -> ayuda/uso invalido -> resolver path interactivo o explicito -> reset/state-backed verify -> ejecutar modo solicitado -> persistir o limpiar seed -> escribir salida y exit code.
+ *
+ * ### Ejemplo
+ * ```ts
+ * await runSkapxdLint(streams); // sin <path> + --yes -> usage-error
+ * await runSkapxdLint(streams); // --verify vacio -> recupera la seed persistida
+ * ```
+ */
 export async function runSkapxdLint(streams: CliStreams) {
   const args = streams.argv.slice(2);
   const parsed = parseCliArguments(args);

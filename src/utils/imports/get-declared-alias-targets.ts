@@ -12,6 +12,19 @@ type AliasTarget = {
   represents: "error" | "result";
 };
 
+/**
+ * Lee el lado izquierdo de una asignacion y decide que aliases siguen cargando un `Result` completo o su `error` completo. Esto sostiene las reglas de consumo de Result: un destructuring puede preservar el error o puede proyectarlo y perder `cause`.
+ *
+ * ### Reglas
+ * Identificador directo hereda lo que representa la referencia; sobre un Result, `{ error }` representa el error completo y `...rest` representa el Result restante; cualquier otra propiedad (`ok`, `value`) se considera proyeccion y no se sigue.
+ *
+ * ### Ejemplo
+ * ```ts
+ * getDeclaredAliasTargets(idOf("const { error } = result"), "result");
+ * // -> [{ name: "error", represents: "error" }]
+ * getDeclaredAliasTargets(idOf("const { value } = result"), "result"); // -> []
+ * ```
+ */
 export function getDeclaredAliasTargets(
   id: TSESTree.BindingName,
   represents: "error" | "result",

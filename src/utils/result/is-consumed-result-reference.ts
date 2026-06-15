@@ -4,15 +4,20 @@ import { getDeclaredAliasTargets } from "#/utils/imports/get-declared-alias-targ
 import { isInsideNode } from "#/utils/ast/is-inside-node";
 import { isMemberPropertyNamed } from "#/utils/ast/is-member-property-named";
 
-// ¿La referencia consume el error de verdad? El contrato:
-// - El ERROR debe fluir COMPLETO: `result.error` (o su alias) como argumento,
-//   retorno o propiedad. Una proyección (`result.error.message`, `e.type`)
-//   pierde el `cause` y NO cuenta — la UI puede leer el mensaje, pero el
-//   objeto entero tiene que salir hacia alguna parte.
-// - El result completo (`return result`, `fn(result)`) también vale: el
-//   error viaja adentro.
-// - Descartes no cuentan: `void x`, expresión suelta, alias nunca consumido
-//   (se siguen recursivamente, destructuring incluido).
+/**
+ * Decide si una referencia a `Result` o a su `error` preserva la informacion completa hasta un consumidor real. La regla protege `cause`: leer `message` o `type` puede ser util para UI, pero no cuenta como manejar el error si el objeto completo no fluye a ningun lado.
+ *
+ * ### Reglas
+ * `return result`, `fn(result)` o `fn(result.error)` consumen; `result.error.message`, `void result`, expresiones sueltas y aliases nunca usados no consumen; los aliases por asignacion/destructuring se siguen recursivamente.
+ *
+ * ### Ejemplo
+ * ```ts
+ * const { error } = result;
+ * return Result.err({ cause: error }); // -> consumido
+ * const message = result.error.message;
+ * return message; // -> no consumido
+ * ```
+ */
 export function isConsumedResultReference(
   identifier: TSESTree.Node,
   searchRoot: TSESTree.Node | null,

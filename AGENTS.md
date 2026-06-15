@@ -158,6 +158,14 @@ Run del PR: <url>
 - Código nuevo no hereda deuda vieja: nada de `@ts-nocheck`, `as any` ni nombres plantilla (`matchesXRule`, `isNotX`, sufijos numerados).
 - Tras un refactor estructural: borra tus codemods/andamiaje, deja `git status` limpio y actualiza la doc que describa la estructura.
 
+### Comentarios de motivación en funciones densas
+
+No toda función lleva comentario. La convención aplica cuando una función exportada cruza la señal combinada de `dense-function-requires-comment`: al menos 30 líneas, 10 literales (`string`/`number`/template) y 5 ramas (`if`, ternario o `switch case`), salvo `allowFilePatterns`.
+
+El comentario va en bloque (`/** ... */` o `/* ... */`) inmediatamente antes de la función y explica la motivación: qué problema resuelve en alto nivel, qué prioridad/reglas gobiernan el cuerpo si aplica, y un ejemplo entrada→salida o pseudocódigo. Para que el hover de VSCode sea legible, incluye al menos un header markdown discreto (`###` o `####`) y un ejemplo en bloque de código. No narres la implementación línea por línea; el código ya hace eso.
+
+Esto no es JSDoc de API: no se exigen `@param`, `@returns` ni tags. La regla solo verifica presencia y estructura markdown mínima; la calidad del comentario queda en revisión humana: un bloque vacío, redundante o desactualizado falla el criterio aunque pase ESLint.
+
 ## Los axiomas como criterio
 
 Los ocho axiomas viven en [docs/axiomas.md](docs/axiomas.md); esa tabla no se copia aquí. Este contrato solo fija cómo se usan al proponer, implementar y revisar trabajo:
