@@ -38,6 +38,21 @@ export function getCellClass(state) {
 }
 `;
 
+const denseFunctionWithMarkdownComment = [
+  "/**",
+  " * Traduce el estado visual de una celda al modo auditoria: cursor, seleccion,",
+  " * precedentes/dependientes y celdas neutras compiten por el color final.",
+  " *",
+  " * ### Prioridad",
+  " * cursor -> seleccion -> relaciones directas -> relaciones profundas -> formula/ciclo/normal.",
+  " *",
+  " * ### Ejemplo",
+  " * ```ts",
+  ' * getCellClass({ precedent: true }); // -> "precedent"',
+  " * ```",
+  " */",
+].join("\n") + denseFunctionWithoutComment;
+
 ruleTester.run(
   "dense-function-requires-comment",
   rules["dense-function-requires-comment"]!,
@@ -52,17 +67,29 @@ ruleTester.run(
 ${denseFunctionWithoutComment}`,
         errors: [{ messageId: "missingMotivationComment" }],
       },
+      {
+        code: `/**
+ * Traduce el estado visual de una celda al modo auditoria.
+ *
+ * ### Ejemplo
+ * getCellClass({ precedent: true }) -> "precedent"
+ */${denseFunctionWithoutComment}`,
+        errors: [{ messageId: "markdownStructureMissing" }],
+      },
+      {
+        code: `/**
+ * Traduce el estado visual de una celda al modo auditoria.
+ *
+ * Ejemplo:
+ * \`\`\`ts
+ * getCellClass({ precedent: true }); // -> "precedent"
+ * \`\`\`
+ */${denseFunctionWithoutComment}`,
+        errors: [{ messageId: "markdownStructureMissing" }],
+      },
     ],
     valid: [
-      `/**
- * Traduce el estado visual de una celda al modo auditoria: cursor, seleccion,
- * precedentes/dependientes y celdas neutras compiten por el color final.
- *
- * Prioridad: cursor -> seleccion -> relaciones directas -> relaciones
- * profundas -> formula/ciclo/normal.
- *
- * Ej.: una celda precedente directa de A1 devuelve la clase de precedente.
- */${denseFunctionWithoutComment}`,
+      denseFunctionWithMarkdownComment,
       `
 export function buildConfig() {
   const one = "one";

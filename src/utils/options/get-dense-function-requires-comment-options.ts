@@ -1,3 +1,4 @@
+import { booleanOption } from "#/utils/options/boolean-option";
 import { numberOption } from "#/utils/options/number-option";
 import { stringArrayOption } from "#/utils/options/string-array-option";
 import type { RuleOptions } from "#/utils/rule-authoring/rule-types";
@@ -14,5 +15,7 @@ export function getDenseFunctionRequiresCommentOptions(
     minBranches: numberOption(options, "minBranches", DEFAULT_MIN_BRANCHES),
     minLines: numberOption(options, "minLines", DEFAULT_MIN_LINES),
     minLiterals: numberOption(options, "minLiterals", DEFAULT_MIN_LITERALS),
+    requireCodeFence: booleanOption(options, "requireCodeFence", true),
+    requireHeader: booleanOption(options, "requireHeader", true),
   };
 }

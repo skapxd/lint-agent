@@ -7,9 +7,16 @@ import { isMemberPropertyNamed } from "#/utils/ast/is-member-property-named";
 /**
  * Decide si una referencia a `Result` o a su `error` preserva la informacion completa hasta un consumidor real. La regla protege `cause`: leer `message` o `type` puede ser util para UI, pero no cuenta como manejar el error si el objeto completo no fluye a ningun lado.
  *
- * Reglas: `return result`, `fn(result)` o `fn(result.error)` consumen; `result.error.message`, `void result`, expresiones sueltas y aliases nunca usados no consumen; los aliases por asignacion/destructuring se siguen recursivamente.
+ * ### Reglas
+ * `return result`, `fn(result)` o `fn(result.error)` consumen; `result.error.message`, `void result`, expresiones sueltas y aliases nunca usados no consumen; los aliases por asignacion/destructuring se siguen recursivamente.
  *
- * Ej.: `const { error } = result; return Result.err({ cause: error })` -> consumido; `const message = result.error.message; return message` -> no consumido.
+ * ### Ejemplo
+ * ```ts
+ * const { error } = result;
+ * return Result.err({ cause: error }); // -> consumido
+ * const message = result.error.message;
+ * return message; // -> no consumido
+ * ```
  */
 export function isConsumedResultReference(
   identifier: TSESTree.Node,

@@ -13,9 +13,14 @@ type UntypedExportViolation = {
 /**
  * Recorre `package.json#exports` y devuelve las ramas que rompen el contrato de tipos duales. El problema de alto nivel es FalseCJS: consumidores ESM con `moduleResolution: node16` reciben tipos CJS cuando `import` y `require` comparten un `types` ambiguo.
  *
- * Reglas: un export string es no tipado; cada condicion `import`/`require` debe ser objeto con su propio `types`; `import` exige `.d.mts`; `require` exige `.d.ts` o `.d.cts`; el archivo declarado debe existir.
+ * ### Reglas
+ * Un export string es no tipado; cada condicion `import`/`require` debe ser objeto con su propio `types`; `import` exige `.d.mts`; `require` exige `.d.ts` o `.d.cts`; el archivo declarado debe existir.
  *
- * Ej.: `{ ".": { "import": { "default": "./dist/index.mjs", "types": "./dist/index.d.mts" }, "require": { "default": "./dist/index.js" } } }` -> violacion `untyped` para `require`.
+ * ### Ejemplo
+ * ```ts
+ * getUntypedExportConditions({ ".": { import: { default: "./dist/index.mjs", types: "./dist/index.d.mts" }, require: { default: "./dist/index.js" } } }, packageDir);
+ * // -> [{ kind: "untyped", condition: "require", subpath: "." }]
+ * ```
  */
 export function getUntypedExportConditions(
   exportsField: Record<string, unknown>,

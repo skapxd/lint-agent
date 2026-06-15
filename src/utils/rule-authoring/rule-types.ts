@@ -15,6 +15,7 @@ export type RuleOptions = Record<string, unknown>;
 export type RuleComment = {
   loc: TSESTree.SourceLocation;
   type: string;
+  value: string;
 };
 
 export type RuleSourceCode = {

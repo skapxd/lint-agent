@@ -1,4 +1,5 @@
 import type { TSESTree } from "@typescript-eslint/utils";
+import { getCommentMarkdownStructure } from "#/utils/dense-function/get-comment-markdown-structure";
 import {
   getDenseFunctionMetrics,
   type DenseFunctionMetrics,
@@ -8,7 +9,11 @@ import { getFunctionNodeName } from "#/utils/ast/get-function-node-name";
 import { getVariableDeclaratorName } from "#/utils/ast/get-variable-declarator-name";
 import { isFunctionNode, type FunctionNode } from "#/utils/ast/is-function-node";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
-import type { RuleContext, RuleModule } from "#/utils/rule-authoring/rule-types";
+import type {
+  RuleComment,
+  RuleContext,
+  RuleModule,
+} from "#/utils/rule-authoring/rule-types";
 
 type DenseFunctionSubject = {
   commentTargetNode: TSESTree.Node;
@@ -25,6 +30,8 @@ export const denseFunctionRequiresComment: RuleModule = {
         "Exige un comentario de bloque de motivacion antes de funciones exportadas densas.",
     },
     messages: {
+      markdownStructureMissing:
+        "El comentario de la funcion densa {{name}} necesita estructura markdown para un hover util en el editor: al menos un ejemplo en bloque de codigo (entrada -> salida) y un header markdown. Asi VSCode lo renderiza legible al hacer hover sobre la funcion.",
       missingMotivationComment:
         "La funcion {{name}} es densa ({{lines}} lineas, {{literals}} literales, {{branches}} ramas) y no explica su intencion. Anade un comentario de bloque de motivacion ANTES de la funcion: que problema resuelve (alto nivel), y un ejemplo o pseudocodigo. No documentes la implementacion (el codigo ya la cuenta); documenta el porque, para que se entienda de un vistazo.",
     },
@@ -45,6 +52,12 @@ export const denseFunctionRequiresComment: RuleModule = {
           minLiterals: {
             type: "number",
           },
+          requireCodeFence: {
+            type: "boolean",
+          },
+          requireHeader: {
+            type: "boolean",
+          },
         },
         type: "object",
       },
@@ -60,15 +73,15 @@ export const denseFunctionRequiresComment: RuleModule = {
       return {};
     }
 
-    function hasBlockCommentImmediatelyBefore(node: TSESTree.Node) {
+    function getBlockCommentImmediatelyBefore(node: TSESTree.Node): RuleComment | null {
       const commentsBefore = sourceCode.getCommentsBefore?.(node) ?? [];
 
-      return commentsBefore.some((comment) => {
+      return commentsBefore.find((comment) => {
         const isBlockComment = comment.type === "Block";
         const endsOnPreviousLine = comment.loc.end.line === node.loc.start.line - 1;
 
         return isBlockComment && endsOnPreviousLine;
-      });
+      }) ?? null;
     }
 
     function isDenseFunction(metrics: DenseFunctionMetrics) {
@@ -86,23 +99,37 @@ export const denseFunctionRequiresComment: RuleModule = {
         return;
       }
 
-      const hasMotivationBlock = hasBlockCommentImmediatelyBefore(
+      const motivationBlock = getBlockCommentImmediatelyBefore(
         subject.commentTargetNode,
       );
-      if (hasMotivationBlock) {
+      const lacksMotivationBlock = !motivationBlock;
+      if (lacksMotivationBlock) {
+        context.report({
+          data: {
+            branches: String(metrics.branches),
+            lines: String(metrics.lines),
+            literals: String(metrics.literals),
+            name: subject.name,
+          },
+          messageId: "missingMotivationComment",
+          node: subject.reportNode,
+        });
         return;
       }
 
-      context.report({
-        data: {
-          branches: String(metrics.branches),
-          lines: String(metrics.lines),
-          literals: String(metrics.literals),
-          name: subject.name,
-        },
-        messageId: "missingMotivationComment",
-        node: subject.reportNode,
-      });
+      const structure = getCommentMarkdownStructure(motivationBlock);
+      const lacksRequiredCodeFence =
+        options.requireCodeFence && !structure.hasCodeFence;
+      const lacksRequiredHeader = options.requireHeader && !structure.hasHeader;
+      const lacksMarkdownStructure =
+        lacksRequiredCodeFence || lacksRequiredHeader;
+      if (lacksMarkdownStructure) {
+        context.report({
+          data: { name: subject.name },
+          messageId: "markdownStructureMissing",
+          node: subject.reportNode,
+        });
+      }
     }
 
     return {

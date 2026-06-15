@@ -12,23 +12,34 @@ La regla protege el punto ciego que dejan las reglas de nombres y tamaño: una f
 
 Las tres señales deben cruzar el umbral al mismo tiempo. Un config builder largo con muchos literales pero pocas ramas no dispara; una función ramificada pero corta tampoco. La densidad es combinada, no una excusa para comentar cualquier función.
 
-El comentario válido es un bloque inmediatamente anterior a la función (`/** ... */` o `/* ... */`). Un `//` de una línea no cuenta porque no escala bien para una explicación markdown-friendly:
+El comentario válido es un bloque inmediatamente anterior a la función (`/** ... */` o `/* ... */`). Un `//` de una línea no cuenta porque no escala bien para una explicación markdown-friendly. Además, el bloque debe tener estructura markdown mínima para que VSCode lo renderice como hover útil:
 
-```ts
+| Estructura | Qué exige |
+| --- | --- |
+| Header | Al menos una línea que empiece con uno a seis `#` y espacio. Usa niveles discretos como `###` o `####`. |
+| Code fence | Al menos un par de fences markdown con tres backticks, para un ejemplo entrada→salida o pseudocódigo. |
+
+````ts
 /**
  * Traduce el estado visual de una celda al modo auditoria: cursor, seleccion,
  * precedentes/dependientes y celdas neutras compiten por el color final.
  *
- * Prioridad: cursor -> seleccion -> relaciones directas -> relaciones profundas -> formula/ciclo/normal.
+ * ### Prioridad
+ * cursor -> seleccion -> relaciones directas -> relaciones profundas -> formula/ciclo/normal.
  *
- * Ej.: una celda precedente directa de A1 devuelve la clase de precedente.
+ * ### Ejemplo
+ * ```ts
+ * getCellClass({ precedent: true }); // -> "precedent"
+ * ```
  */
 export function getCellClass(state: CellState) {
   // ...
 }
-```
+````
 
-El contenido del comentario no se valida. La regla solo verifica presencia porque la calidad semántica pertenece a la revisión humana: debe explicar qué problema resuelve la función en alto nivel, qué reglas o prioridades gobiernan el cuerpo si aplica, y un ejemplo entrada→salida o pseudocódigo. No debe narrar la implementación línea por línea.
+La regla no exige `@param`, `@returns` ni tags JSDoc. Esto es motivación de diseño, no documentación de API: debe explicar qué problema resuelve la función en alto nivel, qué reglas o prioridades gobiernan el cuerpo si aplica, y un ejemplo entrada→salida o pseudocódigo. No debe narrar la implementación línea por línea.
+
+La calidad semántica no se valida. ESLint solo comprueba que existe un bloque y que tiene header + code fence; si el comentario está vacío, redundante o desactualizado, eso falla en revisión humana.
 
 Opciones:
 
@@ -39,6 +50,8 @@ Opciones:
     minLines: 30,
     minLiterals: 10,
     minBranches: 5,
+    requireCodeFence: true,
+    requireHeader: true,
     allowFilePatterns: ["src/generated/**"],
   },
 ],

@@ -162,9 +162,9 @@ Run del PR: <url>
 
 No toda función lleva comentario. La convención aplica cuando una función exportada cruza la señal combinada de `dense-function-requires-comment`: al menos 30 líneas, 10 literales (`string`/`number`/template) y 5 ramas (`if`, ternario o `switch case`), salvo `allowFilePatterns`.
 
-El comentario va en bloque (`/** ... */` o `/* ... */`) inmediatamente antes de la función y explica la motivación: qué problema resuelve en alto nivel, qué prioridad/reglas gobiernan el cuerpo si aplica, y un ejemplo entrada→salida o pseudocódigo. No narres la implementación línea por línea; el código ya hace eso.
+El comentario va en bloque (`/** ... */` o `/* ... */`) inmediatamente antes de la función y explica la motivación: qué problema resuelve en alto nivel, qué prioridad/reglas gobiernan el cuerpo si aplica, y un ejemplo entrada→salida o pseudocódigo. Para que el hover de VSCode sea legible, incluye al menos un header markdown discreto (`###` o `####`) y un ejemplo en bloque de código. No narres la implementación línea por línea; el código ya hace eso.
 
-La regla solo verifica presencia. La calidad del comentario queda en revisión humana: un bloque vacío, redundante o desactualizado falla el criterio aunque pase ESLint.
+Esto no es JSDoc de API: no se exigen `@param`, `@returns` ni tags. La regla solo verifica presencia y estructura markdown mínima; la calidad del comentario queda en revisión humana: un bloque vacío, redundante o desactualizado falla el criterio aunque pase ESLint.
 
 ## Los axiomas como criterio
 
