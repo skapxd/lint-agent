@@ -357,6 +357,9 @@ describe("reglas type-driven (wrappers de typescript-eslint) en presets tipados"
     expect(messageOf("no-magic-numbers", "noMagic")).toContain(
       "nombre de dominio",
     );
+    expect(messageOf("no-magic-numbers", "useConst")).toContain(
+      "inmutable por defecto",
+    );
     expect(messageOf("no-non-null-assertion", "noNonNull")).toContain(
       "callate, yo se mas que tu",
     );

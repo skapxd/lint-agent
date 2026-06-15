@@ -17,8 +17,22 @@ createRuleTester().run("no-magic-numbers", rules["no-magic-numbers"]!, {
       errors: [{ messageId: "noMagic" }],
       options: [calibratedNoMagicNumbersOptions],
     },
+    {
+      code: "let TIMEOUT_MS = 3000;",
+      errors: [{ messageId: "useConst" }],
+      options: [calibratedNoMagicNumbersOptions],
+    },
+    {
+      code: "var TIMEOUT_MS = 3000;",
+      errors: [{ messageId: "useConst" }],
+      options: [calibratedNoMagicNumbersOptions],
+    },
   ],
   valid: [
+    {
+      code: "const TIMEOUT_MS = 3000;",
+      options: [calibratedNoMagicNumbersOptions],
+    },
     {
       code: "for (let i = 0; i < items.length; i += 1) {}",
       options: [calibratedNoMagicNumbersOptions],
