@@ -371,7 +371,7 @@ async function writeFixtureProject(projectDir) {
   );
   await writeFile(path.join(projectDir, "nest-cli.json"), nestCliFixture());
   await writeFile(path.join(projectDir, "src", "index.ts"), sourceFixture());
-  await writeFile(path.join(projectDir, "src", "main.ts"), sourceFixture());
+  await writeFile(path.join(projectDir, "src", "main.ts"), sourceFixture("main"));
   await writeFile(
     path.join(projectDir, "src", "server", "index.ts"),
     sourceFixture(),
@@ -394,13 +394,13 @@ function nestCliFixture() {
   )}\n`;
 }
 
-function sourceFixture() {
+function sourceFixture(functionName = "createPeerValue") {
   return [
     "export type PeerValue = {",
     "  readonly label: string;",
     "};",
     "",
-    "export function createPeerValue(label: string): PeerValue {",
+    `export function ${functionName}(label: string): PeerValue {`,
     "  return { label };",
     "}",
     "",

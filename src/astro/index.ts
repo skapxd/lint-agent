@@ -1,1 +1,1 @@
-export { createAstroConfigs } from "./configs";
+export { createAstroConfigs } from "./create-astro-configs";

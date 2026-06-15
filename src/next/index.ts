@@ -1,1 +1,1 @@
-export { createNextConfigs } from "./configs";
+export { createNextConfigs } from "./create-next-configs";

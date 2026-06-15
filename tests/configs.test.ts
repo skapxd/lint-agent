@@ -103,8 +103,14 @@ describe("reglas React en presets de UI", () => {
         new URL("../src/shared/configs/create-shared-configs.ts", import.meta.url),
         "utf8",
       ),
-      readFileSync(new URL("../src/next/configs.ts", import.meta.url), "utf8"),
-      readFileSync(new URL("../src/astro/configs.ts", import.meta.url), "utf8"),
+      readFileSync(
+        new URL("../src/next/create-next-configs.ts", import.meta.url),
+        "utf8",
+      ),
+      readFileSync(
+        new URL("../src/astro/create-astro-configs.ts", import.meta.url),
+        "utf8",
+      ),
     ];
 
     for (const source of presetSources) {
