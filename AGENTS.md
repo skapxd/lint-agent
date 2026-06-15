@@ -104,17 +104,18 @@ Trampas conocidas de gh + shell:
 Los comentarios son el registro permanente del trabajo — markdown completo,
 escritos para alguien que llega en frío:
 
-- **No hard-wrappear prosa en issues, PRs ni comentarios**: un párrafo es una
-  línea continua y GitHub lo re-fluye al ancho del contenedor. En los `.md` del
-  repo el wrap manual se colapsa, pero en issues/PR/comentarios cada salto
-  simple se renderiza como `<br>`. Reserva saltos de línea para separar
-  párrafos con una línea en blanco, ítems de lista y code fences.
+- **No hard-wrappear prosa en ningún markdown del proyecto**: un párrafo o ítem
+  de lista es una línea continua. GitHub re-fluye los archivos `.md` al ancho
+  del contenedor y además, en issues/PR/comentarios, cada salto simple se
+  renderiza como `<br>`, así que el wrap manual mete ruido visual fuera del
+  repo. Reserva saltos de línea para separar párrafos con una línea en blanco,
+  encabezados, tablas, frontmatter y code fences.
 - Abre con `## <qué pasó> (<fecha>)` — los comentarios se leen como
   bitácora.
 - **Mediciones SIEMPRE en tabla** (qué se midió, dónde, cuánto), nunca en
   prosa: las tablas se comparan, la prosa no.
-- Código con fence y lenguaje (```ts, ```bash); el comando que produjo un
-  número va junto al número (reproducibilidad).
+- Código con fence y lenguaje (`ts`, `bash`); el comando que produjo un número
+  va junto al número (reproducibilidad).
 - Antes/después para cualquier cambio de forma (nombres, mensajes, tipos).
 - Si el avance toca la Definición de Hecho, actualiza los checkboxes del
   body del issue, no solo el comentario.
@@ -146,11 +147,11 @@ estándar es el techo esperado para cambios normales; usa sentido común en PRs
 triviales de una línea o tres: si no hubo sitios dudosos reales, no inventes
 ceremonia.
 
-La prosa del PR tampoco se hard-wrappea: un párrafo = una línea continua.
-GitHub re-fluye ese texto en el body del PR; a diferencia de los `.md` del
-repo, en issues/PR/comentarios un salto simple se vuelve `<br>` visible. Usa
-saltos solo para separar párrafos con una línea en blanco, para ítems de lista
-y para code fences.
+El body del PR sigue la misma convención global del repo: un párrafo o ítem de
+lista = una línea continua. En issues/PR/comentarios el refuerzo es doble:
+GitHub re-fluye el texto y cada salto simple se vuelve `<br>` visible. Usa
+saltos solo para separar párrafos con una línea en blanco, encabezados, tablas
+y code fences.
 
 Partes esperadas:
 
