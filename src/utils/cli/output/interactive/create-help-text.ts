@@ -24,6 +24,7 @@ Flags:
   --reset-state           Borra el lote persistido del repo. Unidad: booleano. Default: false.
   --base <git-ref>        Ref base para --changed. Unidad: revision git (ej. origin/main). Default: HEAD + untracked.
   --format <json|compact|toon> Formato de salida de maquina. Unidad: json, compact o toon. Default: compact sin TTY; texto legible con TTY.
+  --output <archivo>      Vuelca la salida a un archivo; util cuando el output es grande y la terminal lo trunca.
   --include-tests         Incluye tests en evaluacion efimera. Unidad: booleano. Default: false.
   --no-interactive        Fuerza modo no-interactivo aunque haya TTY. Unidad: booleano. Default: false.
   --yes                   Alias de --no-interactive para scripts/agentes. Unidad: booleano. Default: false.
@@ -42,6 +43,7 @@ Salida:
   --format compact: lectura humana; resumen y hallazgos agrupados por archivo, sin codigos ANSI.
   --format json: salida estructurada para parsear con JSON.parse.
   --format toon: salida estructurada para parsear con TOON; compacta y con mensajes deduplicados por id.
+  --output <archivo>: escribe el formato elegido en archivo y deja en stdout solo el resumen.
 
 Adopcion incremental:
   --adopt <percent> ordena reglas por archivos afectados, violaciones y nombre.

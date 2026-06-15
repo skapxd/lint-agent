@@ -28,6 +28,7 @@ export type CliArguments = {
   format: CliOutputFormat | null;
   help: boolean;
   includeTests: boolean;
+  output: string | null;
   path: string | null;
   preset: CliPreset | null;
   rawPreset: string | null;

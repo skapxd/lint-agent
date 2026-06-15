@@ -104,6 +104,19 @@ function runCli(
   return { json, result };
 }
 
+function runCliRaw(
+  args: string[],
+  cwd = PROJECT_ROOT,
+  cliPath = CLI_PATH,
+  env: NodeJS.ProcessEnv = process.env,
+) {
+  return spawnSync(process.execPath, [cliPath, ...args], {
+    cwd,
+    encoding: "utf8",
+    env,
+  });
+}
+
 function writeBaseFixture(projectRoot: string, source: string) {
   const sourcePath = path.join(projectRoot, "index.ts");
   writeFileSync(
@@ -360,6 +373,96 @@ describe("skapxd-lint", () => {
     });
   });
 
+  it("--output escribe JSON al archivo y deja solo resumen en stdout", () => {
+    const projectRoot = createTempProject("skapxd-cli-output-json-");
+    const outputPath = "report.json";
+    writeBaseFixture(
+      projectRoot,
+      "const enabled = true;\nif (enabled) {\n  console.log(enabled);\n} else {\n  console.log(false);\n}\n",
+    );
+
+    const result = runCliRaw([
+      ".",
+      "--preset",
+      "base",
+      "--yes",
+      "--format",
+      "json",
+      "--output",
+      outputPath,
+    ], projectRoot);
+    const report = JSON.parse(readFileSync(path.join(projectRoot, outputPath), "utf8")) as CliJson;
+
+    expect(result.status).toBe(1);
+    expect(report.status).toBe("findings");
+    expect(report.mode).toBe("evaluate");
+    expect(result.stdout).toContain("errors |");
+    expect(result.stdout).toContain(`files | preset base → salida en ${outputPath}`);
+    expect(result.stdout).not.toContain('"files"');
+    expect(result.stdout).not.toContain("skapxd/no-else");
+  });
+
+  it("--output escribe TOON al archivo y deja solo resumen en stdout", () => {
+    const projectRoot = createTempProject("skapxd-cli-output-toon-");
+    const outputPath = "report.toon";
+    writeBaseFixture(
+      projectRoot,
+      "const enabled = true;\nif (enabled) {\n  console.log(enabled);\n} else {\n  console.log(false);\n}\n",
+    );
+
+    const result = runCliRaw([
+      ".",
+      "--preset",
+      "base",
+      "--yes",
+      "--format",
+      "toon",
+      "--output",
+      outputPath,
+    ], projectRoot);
+    const report = readFileSync(path.join(projectRoot, outputPath), "utf8");
+    const toon = decode(report);
+
+    expect(result.status).toBe(1);
+    expect(toon).toMatchObject({
+      mode: "evaluate",
+      preset: "base",
+      status: "findings",
+    });
+    expect(result.stdout).toContain(`files | preset base → salida en ${outputPath}`);
+    expect(result.stdout).not.toContain("messages[");
+    expect(result.stdout).not.toContain("skapxd/no-else");
+  });
+
+  it("--output escribe compact al archivo y deja solo resumen en stdout", () => {
+    const projectRoot = createTempProject("skapxd-cli-output-compact-");
+    const outputPath = "report.txt";
+    writeBaseFixture(
+      projectRoot,
+      "const enabled = true;\nif (enabled) {\n  console.log(enabled);\n} else {\n  console.log(false);\n}\n",
+    );
+
+    const result = runCliRaw([
+      ".",
+      "--preset",
+      "base",
+      "--yes",
+      "--format",
+      "compact",
+      "--output",
+      outputPath,
+    ], projectRoot);
+    const report = readFileSync(path.join(projectRoot, outputPath), "utf8");
+
+    expect(result.status).toBe(1);
+    expect(report).toContain("files | preset base");
+    expect(report).toContain("index.ts");
+    expect(report).toContain("skapxd/no-else");
+    expect(result.stdout).toContain(`files | preset base → salida en ${outputPath}`);
+    expect(result.stdout).not.toContain("index.ts");
+    expect(result.stdout).not.toContain("skapxd/no-else");
+  });
+
   it("emite JSON y exit code 0 cuando no hay hallazgos", () => {
     const projectRoot = createTempProject("skapxd-cli-clean-");
     writeBaseFixture(projectRoot, "const value = 1;\nconsole.log(value);\n");
@@ -419,6 +522,65 @@ describe("skapxd-lint", () => {
     expect(firstRun.json?.files[0]?.messages.every(
       (message) => message.ruleId === "skapxd/no-else",
     )).toBe(true);
+  });
+
+  it("--output funciona con --adopt", () => {
+    const projectRoot = createTempProject("skapxd-cli-output-adopt-");
+    const outputPath = "adopt.json";
+    writeAdoptionFixture(projectRoot);
+
+    const result = runCliRaw([
+      ".",
+      "--preset",
+      "base",
+      "--yes",
+      "--format",
+      "json",
+      "--adopt",
+      "50",
+      "--output",
+      outputPath,
+    ], projectRoot);
+    const report = JSON.parse(readFileSync(path.join(projectRoot, outputPath), "utf8")) as CliJson;
+
+    expect(result.status).toBe(1);
+    expect(report.mode).toBe("adopt");
+    expect(report.adoption?.percent).toBe(50);
+    expect(report.adoption?.selectedRules).toEqual([
+      {
+        affectedFileCount: 1,
+        ruleId: "skapxd/no-else",
+        violationCount: 1,
+      },
+    ]);
+    expect(result.stdout).toContain(`files | preset base → salida en ${outputPath}`);
+    expect(result.stdout).not.toContain('"adoption"');
+  });
+
+  it("--output falla con exit 2 cuando el directorio no existe", () => {
+    const projectRoot = createTempProject("skapxd-cli-output-missing-dir-");
+    const outputPath = path.join("missing", "report.json");
+    writeBaseFixture(
+      projectRoot,
+      "const enabled = true;\nif (enabled) {\n  console.log(enabled);\n} else {\n  console.log(false);\n}\n",
+    );
+
+    const result = runCliRaw([
+      ".",
+      "--preset",
+      "base",
+      "--yes",
+      "--format",
+      "json",
+      "--output",
+      outputPath,
+    ], projectRoot);
+
+    expect(result.status).toBe(2);
+    expect(result.stdout).toBe("");
+    expect(result.stderr).toContain(`skapxd-lint no pudo escribir la salida en ${outputPath}.`);
+    expect(result.stderr).toContain("el directorio");
+    expect(result.stderr).toContain("no existe");
   });
 
   it("--adopt no convierte errores de configuracion en reglas objetivo", () => {
@@ -1044,6 +1206,7 @@ describe("skapxd-lint", () => {
     expect(result.stdout).toContain("--reset-state");
     expect(result.stdout).toContain("--base <git-ref>");
     expect(result.stdout).toContain("--format <json|compact|toon>");
+    expect(result.stdout).toContain("--output <archivo>");
     expect(result.stdout).toContain("--include-tests");
     expect(result.stdout).toContain("--no-interactive");
     expect(result.stdout).toContain("Exit codes:");
@@ -1054,6 +1217,7 @@ describe("skapxd-lint", () => {
     expect(result.stdout).toContain("Args nunca dependen del estado salvo --resume-last");
     expect(result.stdout).toContain("Tests: ignorados por default; usa --include-tests");
     expect(result.stdout).toContain("--format compact: lectura humana;");
+    expect(result.stdout).toContain("--output <archivo>: escribe el formato elegido en archivo");
     expect(result.stdout).toContain("Para agentes:");
     expect(result.stdout).toContain("Prefiere --format toon");
     expect(result.stdout).toContain("No dependas del default (compact): no es parseable");
