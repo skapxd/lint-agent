@@ -2,8 +2,7 @@
 
 Marca hooks que crecen demasiado o acumulan muchos `useState`.
 
-La intención es empujar el diseño hacia `useReducer`, hooks más pequeños o
-módulos de transición de estado.
+La intención es empujar el diseño hacia `useReducer`, hooks más pequeños o módulos de transición de estado.
 
 Opciones (los presets `frontend` y `next` usan `maxLines: 120`, `maxUseState: 1`):
 

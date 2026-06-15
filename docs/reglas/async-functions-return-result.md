@@ -39,10 +39,7 @@ Obliga a que funciones async en dominios configurados declaren un retorno como:
 Promise<Result<Success, DomainError>>
 ```
 
-Es **type-aware** y está atada a `@skapxd/result`: usa el TypeScript checker para
-confirmar que el `Result` viene de ese paquete, no solo que el tipo *se llame*
-`Result`. Un `Result` de otro paquete (o un tipo homónimo hecho a mano) **no**
-cumple la regla.
+Es **type-aware** y está atada a `@skapxd/result`: usa el TypeScript checker para confirmar que el `Result` viene de ese paquete, no solo que el tipo *se llame* `Result`. Un `Result` de otro paquete (o un tipo homónimo hecho a mano) **no** cumple la regla.
 
 ```ts
 import { Result } from "@skapxd/result";

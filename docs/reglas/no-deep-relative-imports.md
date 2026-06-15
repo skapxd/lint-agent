@@ -1,8 +1,6 @@
 ### `skapxd/no-deep-relative-imports`
 
-Limita cuántos niveles puede subir un import relativo. Por defecto **prohíbe
-cualquier `../`**: un import que sube a una carpeta padre suele ser señal de que
-falta un alias de ruta o de que el módulo está mal ubicado.
+Limita cuántos niveles puede subir un import relativo. Por defecto **prohíbe cualquier `../`**: un import que sube a una carpeta padre suele ser señal de que falta un alias de ruta o de que el módulo está mal ubicado.
 
 ```ts
 import { x } from "./sibling";   // ✅ mismo nivel
@@ -19,9 +17,7 @@ rules: {
 }
 ```
 
-Revisa imports estáticos (`import`), re-exports (`export ... from`) e imports
-dinámicos (`import(...)`). El remedio habitual es un alias de ruta (`@/...`) o
-acercar el módulo a quien lo usa.
+Revisa imports estáticos (`import`), re-exports (`export ... from`) e imports dinámicos (`import(...)`). El remedio habitual es un alias de ruta (`@/...`) o acercar el módulo a quien lo usa.
 
 ---
 

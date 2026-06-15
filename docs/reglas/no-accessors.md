@@ -1,10 +1,6 @@
 ### `skapxd/no-accessors`
 
-Prohíbe `get`/`set` en clases y objetos literales. Un accessor es un método
-con sintaxis de propiedad: esconde computación tras un acceso que parece
-inocente (`config.token` que en realidad ejecuta código), y abre la puerta al
-**método disfrazado** — un `get sendMessage() { return (...) => ... }` que
-escapaba de `max-public-methods`:
+Prohíbe `get`/`set` en clases y objetos literales. Un accessor es un método con sintaxis de propiedad: esconde computación tras un acceso que parece inocente (`config.token` que en realidad ejecuta código), y abre la puerta al **método disfrazado** — un `get sendMessage() { return (...) => ... }` que escapaba de `max-public-methods`:
 
 ```ts
 class Connection {
@@ -13,9 +9,7 @@ class Connection {
 }
 ```
 
-Si algo es un dato, es una propiedad `readonly`; si algo es comportamiento,
-es un método explícito que cuenta en la superficie pública. No hay tercera
-categoría.
+Si algo es un dato, es una propiedad `readonly`; si algo es comportamiento, es un método explícito que cuenta en la superficie pública. No hay tercera categoría.
 
 ---
 

@@ -29,9 +29,7 @@ Preferencia de formato:
 
 1. Corre el preset completo sobre el proyecto:
 
-   ```bash
-   npx @skapxd/eslint-opinionated@latest <path> --yes --format toon
-   ```
+   ```bash npx @skapxd/eslint-opinionated@latest <path> --yes --format toon ```
 
 2. Lee los hallazgos por archivo y regla.
 3. Arregla el codigo antes de que la deuda exista, si el usuario pidio aplicar fixes.
@@ -56,9 +54,7 @@ Flujo:
 3. Aplica solo los fixes necesarios para esas reglas objetivo, si el usuario pidio modificar el codigo.
 4. Verifica el mismo lote:
 
-   ```bash
-   npx @skapxd/eslint-opinionated@latest <path> --yes --format toon --verify <seed>
-   ```
+   ```bash npx @skapxd/eslint-opinionated@latest <path> --yes --format toon --verify <seed> ```
 
 5. Si `--verify <seed>` todavia reporta hallazgos del objetivo, sigue corrigiendo ese lote.
 6. Cuando el lote queda limpio, sube el porcentaje o repite `--adopt <percent>` para abrir la siguiente ronda.

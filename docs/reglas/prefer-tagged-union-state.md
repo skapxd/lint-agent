@@ -1,11 +1,8 @@
 ### `skapxd/prefer-tagged-union-state`
 
-La regla temática del paquete: el estado inconsistente que motivó todo esto,
-ahora prohibido en su origen. Detecta las dos formas de la enfermedad:
+La regla temática del paquete: el estado inconsistente que motivó todo esto, ahora prohibido en su origen. Detecta las dos formas de la enfermedad:
 
-**Forma A — el tipo enfermo**: un flag boolean de "en proceso" conviviendo
-con un campo de error como propiedades independientes. Las combinaciones
-imposibles (cargando Y con error, error Y con valor) son *representables*:
+**Forma A — el tipo enfermo**: un flag boolean de "en proceso" conviviendo con un campo de error como propiedades independientes. Las combinaciones imposibles (cargando Y con error, error Y con valor) son *representables*:
 
 ```ts
 // ❌ 2³ combinaciones; solo 3 tienen sentido
@@ -19,17 +16,9 @@ type RequestState =
   | { status: "ok"; value: Data };
 ```
 
-La forma A aplica **igual en el back**: la clase de un job con
-`private isProcessing = false; private lastError?: Error` es la versión OOP
-de la máquina repartida, y un schema de Mongoose con `@Prop() isSyncing` +
-`@Prop() syncError` es la versión más grave — **la inconsistencia se
-persiste en la base de datos**. La regla revisa tipos, interfaces y cuerpos
-de clase por igual, con verbos de ambos mundos (`loading`, `submitting`,
-`deploying`, `migrating`, `retrying`, ...).
+La forma A aplica **igual en el back**: la clase de un job con `private isProcessing = false; private lastError?: Error` es la versión OOP de la máquina repartida, y un schema de Mongoose con `@Prop() isSyncing` + `@Prop() syncError` es la versión más grave — **la inconsistencia se persiste en la base de datos**. La regla revisa tipos, interfaces y cuerpos de clase por igual, con verbos de ambos mundos (`loading`, `submitting`, `deploying`, `migrating`, `retrying`, ...).
 
-**Forma B — la máquina repartida** (front): varios `useState` que en realidad
-son una sola máquina de estados. Cada transición toca varios setters y los
-renders intermedios ven combinaciones imposibles:
+**Forma B — la máquina repartida** (front): varios `useState` que en realidad son una sola máquina de estados. Cada transición toca varios setters y los renders intermedios ven combinaciones imposibles:
 
 ```ts
 // ❌ tres setters para una transición: el render del medio ve mentiras
@@ -41,12 +30,7 @@ const [user, setUser] = useState<User | null>(null);
 const [state, setState] = useState<RequestState>({ status: "idle" });
 ```
 
-**Forma C — la transición repartida (evidencia ESTRUCTURAL, sin depender de
-nombres)**: los setters de `useState` se identifican por *posición en el
-destructuring* (`const [x, setX] = useState()` — el segundo elemento, se
-llame como se llame). Si una misma función llama a dos setters distintos,
-eso **prueba** que esos estados son una sola máquina — entre setter y setter,
-los renders intermedios ven mentiras:
+**Forma C — la transición repartida (evidencia ESTRUCTURAL, sin depender de nombres)**: los setters de `useState` se identifican por *posición en el destructuring* (`const [x, setX] = useState()` — el segundo elemento, se llame como se llame). Si una misma función llama a dos setters distintos, eso **prueba** que esos estados son una sola máquina — entre setter y setter, los renders intermedios ven mentiras:
 
 ```ts
 const cargar = (respuesta, fallo) => {
@@ -55,22 +39,9 @@ const cargar = (respuesta, fallo) => {
 };
 ```
 
-Este detector caza lo que los nombres no ven (estados con nombres exóticos o
-en español ya cubiertos: `cargando`, `procesando`, `fallo`, ...). El filtro
-de precisión: al menos uno de los estados co-actualizados debe ser
-loading/error-ish — resetear dos campos independientes de un formulario no
-es una máquina.
+Este detector caza lo que los nombres no ven (estados con nombres exóticos o en español ya cubiertos: `cargando`, `procesando`, `fallo`, ...). El filtro de precisión: al menos uno de los estados co-actualizados debe ser loading/error-ish — resetear dos campos independientes de un formulario no es una máquina.
 
-Sobre la detección por nombres (formas A y B): es deliberadamente el
-escalón más bajo de evidencia del paquete — para un tipo *declarado* no hay
-comportamiento que observar y el nombre es la única señal disponible. El
-**tipo del campo de error no importa** (`Error`, `string`, código numérico,
-otro boolean — `isSyncing` + `hasError` es la peor forma): la enfermedad es
-la coexistencia. Los **callbacks** quedan excluidos (`onError?: (e) => void`,
-miembros de tipo función): un handler no es estado.
-`loadingPatterns`/`errorPatterns` ajustan las convenciones. Cierra el círculo con el resto del paquete: la unión etiquetada
-es a los estados lo que `Result` es a los errores, y `prefer-ts-pattern` te
-espera con el `match().exhaustive()` al otro lado.
+Sobre la detección por nombres (formas A y B): es deliberadamente el escalón más bajo de evidencia del paquete — para un tipo *declarado* no hay comportamiento que observar y el nombre es la única señal disponible. El **tipo del campo de error no importa** (`Error`, `string`, código numérico, otro boolean — `isSyncing` + `hasError` es la peor forma): la enfermedad es la coexistencia. Los **callbacks** quedan excluidos (`onError?: (e) => void`, miembros de tipo función): un handler no es estado. `loadingPatterns`/`errorPatterns` ajustan las convenciones. Cierra el círculo con el resto del paquete: la unión etiquetada es a los estados lo que `Result` es a los errores, y `prefer-ts-pattern` te espera con el `match().exhaustive()` al otro lado.
 
 ---
 

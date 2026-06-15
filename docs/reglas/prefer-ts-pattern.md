@@ -1,8 +1,6 @@
 ### `skapxd/prefer-ts-pattern`
 
-Prohíbe `switch/case` y ternarios anidados, empujando hacia `match()` de
-[`ts-pattern`](https://github.com/gvergnaud/ts-pattern), que da exhaustividad
-verificada por el compilador.
+Prohíbe `switch/case` y ternarios anidados, empujando hacia `match()` de [`ts-pattern`](https://github.com/gvergnaud/ts-pattern), que da exhaustividad verificada por el compilador.
 
 ```ts
 // ❌ switch                          // ❌ ternario anidado

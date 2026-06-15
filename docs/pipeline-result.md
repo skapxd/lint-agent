@@ -4,8 +4,7 @@
 
 ## Cómo encaja todo: `@skapxd/result` + `ts-pattern`
 
-Este plugin no es una colección de reglas sueltas: es el guardián de un
-pipeline de errores donde cada pieza cierra un hueco que las otras dejan.
+Este plugin no es una colección de reglas sueltas: es el guardián de un pipeline de errores donde cada pieza cierra un hueco que las otras dejan.
 
 ```text
 excepción ──trySafe──▶ Result ──map con cause──▶ error de dominio ──match()──▶ UI/respuesta
@@ -60,19 +59,11 @@ const label = match(user)
   .exhaustive();
 ```
 
-El resultado: ningún error puede escaparse (sin `try/catch` ni `.catch`, todo
-pasa por `trySafe`), ningún error pierde su origen (siempre hay `cause` hasta
-la excepción original), y ningún error queda sin manejar (el `.exhaustive()`
-de ts-pattern no compila si falta una variante). Legibilidad y manejo de
-errores dejan de depender de la disciplina del autor — humano o agente.
+El resultado: ningún error puede escaparse (sin `try/catch` ni `.catch`, todo pasa por `trySafe`), ningún error pierde su origen (siempre hay `cause` hasta la excepción original), y ningún error queda sin manejar (el `.exhaustive()` de ts-pattern no compila si falta una variante). Legibilidad y manejo de errores dejan de depender de la disciplina del autor — humano o agente.
 
 ### El suelo del sistema: el trace global
 
-Toda cadena de errores necesita exactamente **un punto de aterrizaje** — el
-módulo donde la inducción termina. Si el volcadero de errores reportara sus
-propios fallos al volcadero, tendrías recursión infinita; la solución (la
-misma que usa el SDK de Sentry) es que el fallback del suelo sea síncrono e
-infalible — console o un buffer local — nunca el propio suelo:
+Toda cadena de errores necesita exactamente **un punto de aterrizaje** — el módulo donde la inducción termina. Si el volcadero de errores reportara sus propios fallos al volcadero, tendrías recursión infinita; la solución (la misma que usa el SDK de Sentry) es que el fallback del suelo sea síncrono e infalible — console o un buffer local — nunca el propio suelo:
 
 ```ts
 // trace-global.ts — el ÚNICO punto donde la cadena aterriza
@@ -87,10 +78,4 @@ export async function reportDomainError(error: DomainError): Promise<void> {
 }
 ```
 
-Fíjate que este módulo **pasa todas las reglas sin exenciones**: el `await`
-resuelve en Result, y `console.error` recibiendo el error completo es una
-entrega válida para `result-error-requires-handling`. Reglas prácticas para
-el suelo: una sola función pública, sin reintentos hacia sí mismo (si quieres
-resiliencia: buffer local + `navigator.sendBeacon` al cerrar), y si tu setup
-tiene `no-console`, la exención por archivo para *este único módulo* es
-legítima y auditable — es la definición misma del suelo.
+Fíjate que este módulo **pasa todas las reglas sin exenciones**: el `await` resuelve en Result, y `console.error` recibiendo el error completo es una entrega válida para `result-error-requires-handling`. Reglas prácticas para el suelo: una sola función pública, sin reintentos hacia sí mismo (si quieres resiliencia: buffer local + `navigator.sendBeacon` al cerrar), y si tu setup tiene `no-console`, la exención por archivo para *este único módulo* es legítima y auditable — es la definición misma del suelo.
