@@ -6,11 +6,16 @@ export type RepeatedJsxRequiresComponentOptions = {
   minRepetitions: number;
 };
 
+const DEFAULT_MIN_CLASSES = 4;
+const DEFAULT_MIN_REPETITIONS = 3;
+
 export function getRepeatedJsxRequiresComponentOptions(
   rawOptions: RuleOptions | undefined,
 ): RepeatedJsxRequiresComponentOptions {
   const minClasses =
-    typeof rawOptions?.minClasses === "number" ? rawOptions.minClasses : 4;
+    typeof rawOptions?.minClasses === "number"
+      ? rawOptions.minClasses
+      : DEFAULT_MIN_CLASSES;
   const minPatternNodes =
     typeof rawOptions?.minPatternNodes === "number"
       ? rawOptions.minPatternNodes
@@ -18,7 +23,7 @@ export function getRepeatedJsxRequiresComponentOptions(
   const minRepetitions =
     typeof rawOptions?.minRepetitions === "number"
       ? rawOptions.minRepetitions
-      : 3;
+      : DEFAULT_MIN_REPETITIONS;
 
   return {
     minClasses,

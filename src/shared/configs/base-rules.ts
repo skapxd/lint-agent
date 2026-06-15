@@ -13,6 +13,17 @@ export const baseRules = {
   "skapxd/no-default-export": "error",
   "skapxd/no-else": "error",
   "skapxd/no-emoji": "error",
+  "skapxd/no-magic-numbers": [
+    "error",
+    {
+      ignore: [-1, 0, 1, 2],
+      ignoreArrayIndexes: true,
+      ignoreEnums: true,
+      ignoreReadonlyClassProperties: true,
+      ignoreDefaultValues: true,
+      enforceConst: true,
+    },
+  ],
   "skapxd/no-nested-if": "error",
   "skapxd/nested-function-requires-capture": "error",
   "skapxd/no-runtime-state-guard": "error",

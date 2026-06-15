@@ -1,5 +1,7 @@
 import type { CliPreset } from "#/utils/cli/types";
 
+const GENERATED_CONFIG_JSON_INDENT = 6;
+
 export function createEphemeralConfigContent(
   packageEntryUrl: string,
   preset: CliPreset,
@@ -67,7 +69,7 @@ const sanitizeConfigs = (items) => {
 
 export default [
   {
-    ignores: ${JSON.stringify(ignorePatterns, null, 6)},
+    ignores: ${JSON.stringify(ignorePatterns, null, GENERATED_CONFIG_JSON_INDENT)},
   },
   ...sanitizeConfigs(configsWithFiles),
 ];

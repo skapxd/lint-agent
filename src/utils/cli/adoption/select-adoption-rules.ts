@@ -1,5 +1,7 @@
 import type { AdoptionRuleSummary } from "#/utils/cli/types";
 
+const PERCENT_BASE = 100;
+
 export function selectAdoptionRules(
   ruleSummaries: AdoptionRuleSummary[],
   percent: number,
@@ -8,7 +10,7 @@ export function selectAdoptionRules(
     (total, rule) => total + rule.violationCount,
     0,
   );
-  const budget = Math.floor((totalViolationCount * percent) / 100);
+  const budget = Math.floor((totalViolationCount * percent) / PERCENT_BASE);
   const selectedRules: AdoptionRuleSummary[] = [];
   let selectedViolationCount = 0;
 
