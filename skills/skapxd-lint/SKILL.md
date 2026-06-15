@@ -47,6 +47,14 @@ Usa el bucle `--adopt` y `--verify` para limpiar reglas completas por lotes repr
 npx @skapxd/eslint-opinionated@6 <path> --yes --format toon --adopt 10
 ```
 
+Para repos con mucha deuda el reporte puede ser enorme y saturar el contexto del agente o la terminal. Vuelca la salida a un archivo con `--output <archivo>` y leelo por partes (grep, por regla, por archivo) en vez de stdout:
+
+```bash
+npx @skapxd/eslint-opinionated@6 <path> --yes --format toon --output skapxd-report.toon
+```
+
+Luego lee `skapxd-report.toon` selectivamente; no lo vuelques entero al contexto. El stdout muestra solo el resumen.
+
 La salida de `--adopt <percent>` incluye una seed con forma `skapxd1...`. Esa seed es el contrato reproducible del lote: fija el conjunto de reglas objetivo para que la ronda no cambie mientras editas.
 
 Flujo:
