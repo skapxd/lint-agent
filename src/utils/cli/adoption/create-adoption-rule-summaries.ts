@@ -1,4 +1,6 @@
 import { getLintMessageRuleId } from "./get-lint-message-rule-id";
+import { getRuleLayer } from "./get-rule-layer";
+import { RULE_DEPENDENCIES } from "./rule-dependencies";
 import type { AdoptionRuleSummary, LintFileResult } from "#/utils/cli/types";
 
 type RuleAccumulator = {
@@ -28,18 +30,31 @@ export function createAdoptionRuleSummaries(files: LintFileResult[]) {
     }
   }
 
+  const ruleIdsWithFindings = new Set(summariesByRule.keys());
+
   return [...summariesByRule.entries()]
-    .map(([ruleId, summary]) => ({
-      affectedFileCount: summary.filePaths.size,
-      ruleId,
-      violationCount: summary.violationCount,
-    }))
+    .map(([ruleId, summary]) => {
+      const dependencies = RULE_DEPENDENCIES[ruleId] ?? [];
+      const blockedBy = dependencies.filter((dependency) =>
+        ruleIdsWithFindings.has(dependency),
+      );
+
+      return {
+        affectedFileCount: summary.filePaths.size,
+        dependencyLayer: getRuleLayer(ruleId),
+        ...(blockedBy.length > 0 ? { blockedBy } : {}),
+        ruleId,
+        violationCount: summary.violationCount,
+      };
+    })
     .sort((left, right) => {
+      const layerDelta = left.dependencyLayer - right.dependencyLayer;
       const affectedFileDelta =
         left.affectedFileCount - right.affectedFileCount;
       const violationDelta = left.violationCount - right.violationCount;
 
       return (
+        layerDelta ||
         affectedFileDelta ||
         violationDelta ||
         left.ruleId.localeCompare(right.ruleId)

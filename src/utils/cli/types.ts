@@ -74,6 +74,8 @@ export type AdoptionOutput = {
 
 export type AdoptionRuleSummary = {
   affectedFileCount: number;
+  blockedBy?: readonly string[];
+  dependencyLayer: number;
   ruleId: string;
   violationCount: number;
 };

@@ -32,6 +32,8 @@ type CliJson = {
     selectedRuleCount: number;
     selectedRules: Array<{
       affectedFileCount: number;
+      blockedBy?: readonly string[];
+      dependencyLayer: number;
       ruleId: string;
       violationCount: number;
     }>;
@@ -66,6 +68,8 @@ type CliJson = {
     remainingRuleCount: number;
     remainingRules: Array<{
       affectedFileCount: number;
+      blockedBy?: readonly string[];
+      dependencyLayer: number;
       ruleId: string;
       violationCount: number;
     }>;
@@ -513,6 +517,7 @@ describe("skapxd-lint", () => {
     expect(firstRun.json?.adoption?.selectedRules).toEqual([
       {
         affectedFileCount: 1,
+        dependencyLayer: 0,
         ruleId: "skapxd/no-else",
         violationCount: 1,
       },
@@ -549,6 +554,7 @@ describe("skapxd-lint", () => {
     expect(report.adoption?.selectedRules).toEqual([
       {
         affectedFileCount: 1,
+        dependencyLayer: 0,
         ruleId: "skapxd/no-else",
         violationCount: 1,
       },
@@ -632,6 +638,7 @@ describe("skapxd-lint", () => {
     expect(output.adoption.selectedRules).toEqual([
       {
         affectedFileCount: 1,
+        dependencyLayer: 0,
         ruleId: "skapxd/no-else",
         violationCount: 1,
       },
@@ -763,6 +770,7 @@ describe("skapxd-lint", () => {
     expect(verification.json?.verification?.remainingRules).toEqual([
       {
         affectedFileCount: 1,
+        dependencyLayer: 0,
         ruleId: "skapxd/no-else",
         violationCount: 1,
       },
