@@ -16,6 +16,15 @@ type SilencedCompilerOptions = {
   "ts-nocheck": boolean;
 };
 
+type NoMagicNumbersOptions = {
+  ignore: readonly number[];
+  ignoreArrayIndexes: boolean;
+  ignoreEnums: boolean;
+  ignoreReadonlyClassProperties: boolean;
+  ignoreDefaultValues: boolean;
+  enforceConst: boolean;
+};
+
 function getRuleOptionsEntry(ruleEntry: unknown, message: string) {
   expect(Array.isArray(ruleEntry)).toBe(true);
 
@@ -101,6 +110,20 @@ describe("preset package", () => {
     // En las bases por decisión del dueño (issue #2): los legacy la apagan
     // en su lista de pendientes.
     expect(preset.rules["skapxd/no-anonymous-condition"]).toBe("error");
+    const [noMagicSeverity, noMagicOptions] = getRuleOptionsEntry(
+      preset.rules["skapxd/no-magic-numbers"],
+      "no-magic-numbers debe configurarse con opciones calibradas.",
+    );
+
+    expect(noMagicSeverity).toBe("error");
+    expect(noMagicOptions).toEqual({
+      ignore: [-1, 0, 1, 2],
+      ignoreArrayIndexes: true,
+      ignoreEnums: true,
+      ignoreReadonlyClassProperties: true,
+      ignoreDefaultValues: true,
+      enforceConst: true,
+    } satisfies NoMagicNumbersOptions);
     expect(preset.rules["skapxd/prefer-node-protocol-for-builtins"]).toBe(
       "error",
     );
@@ -216,8 +239,8 @@ describe("preset nest", () => {
   });
 });
 
-// Wrappers de typescript-eslint: regla skapxd → regla upstream que envuelve.
-const wrappedRules = {
+// Wrappers type-aware de typescript-eslint: regla skapxd → regla upstream que envuelve.
+const typeDrivenWrappedRules = {
   "no-explicit-any": "no-explicit-any",
   "no-floating-promises": "no-floating-promises",
   "no-unsafe-argument": "no-unsafe-argument",
@@ -230,6 +253,11 @@ const wrappedRules = {
   "no-non-null-assertion": "no-non-null-assertion",
   "no-silenced-compiler": "ban-ts-comment",
   "prefer-type-over-interface": "consistent-type-definitions",
+};
+
+const wrappedRules = {
+  ...typeDrivenWrappedRules,
+  "no-magic-numbers": "no-magic-numbers",
 };
 
 const ownTypeDrivenRules = ["prefer-schema-validation"];
@@ -248,7 +276,9 @@ describe("reglas type-driven (wrappers de typescript-eslint) en presets tipados"
     ];
 
     for (const preset of typedPresets) {
-      for (const [skapxdName, upstreamName] of Object.entries(wrappedRules)) {
+      for (const [skapxdName, upstreamName] of Object.entries(
+        typeDrivenWrappedRules,
+      )) {
         const entry = preset.rules[`skapxd/${skapxdName}`];
         const severity = Array.isArray(entry) ? entry[0] : entry;
 
@@ -284,9 +314,7 @@ describe("reglas type-driven (wrappers de typescript-eslint) en presets tipados"
       }
     ).rules;
 
-    for (const [skapxdName, upstreamName] of Object.entries({
-      ...wrappedRules,
-    })) {
+    for (const [skapxdName, upstreamName] of Object.entries(wrappedRules)) {
       const wrapped = plugin.rules[skapxdName]!;
       const original = upstreamRules[upstreamName]!;
 
@@ -326,6 +354,12 @@ describe("reglas type-driven (wrappers de typescript-eslint) en presets tipados"
       "No silencies al compilador",
     );
     expect(messageOf("no-explicit-any", "unexpectedAny")).toContain("unknown");
+    expect(messageOf("no-magic-numbers", "noMagic")).toContain(
+      "nombre de dominio",
+    );
+    expect(messageOf("no-magic-numbers", "useConst")).toContain(
+      "inmutable por defecto",
+    );
     expect(messageOf("no-non-null-assertion", "noNonNull")).toContain(
       "callate, yo se mas que tu",
     );

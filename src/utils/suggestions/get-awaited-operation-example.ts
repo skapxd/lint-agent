@@ -3,6 +3,9 @@ import type { RuleSourceCode } from "#/utils/rule-authoring/rule-types";
 import { getCallExpressionExample } from "./get-call-expression-example";
 import { unwrapExpression } from "#/utils/ast/unwrap-expression";
 
+const MAX_AWAITED_OPERATION_EXAMPLE_LENGTH = 80;
+const TRUNCATED_AWAITED_OPERATION_PREFIX_LENGTH = 77;
+
 export function getAwaitedOperationExample(
   node: TSESTree.Node,
   sourceCode: RuleSourceCode,
@@ -17,7 +20,7 @@ export function getAwaitedOperationExample(
   const expressionText =
     sourceCode.getText?.(unwrappedNode).replace(/\s+/g, " ") ?? "operacion";
 
-  return expressionText.length > 80
-    ? `${expressionText.slice(0, 77)}...`
+  return expressionText.length > MAX_AWAITED_OPERATION_EXAMPLE_LENGTH
+    ? `${expressionText.slice(0, TRUNCATED_AWAITED_OPERATION_PREFIX_LENGTH)}...`
     : expressionText;
 }

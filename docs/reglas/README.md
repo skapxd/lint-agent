@@ -34,6 +34,7 @@ Cada ficha vive en un archivo propio. El indice conserva la descripcion corta de
 | [`skapxd/no-emoji`](./no-emoji.md) | Prohíbe emojis en strings y JSX; cada sistema los renderiza distinto. Usa un icono SVG. |
 | [`skapxd/no-explicit-any`](./no-explicit-any.md) | Prohíbe `any`: apaga el sistema de tipos donde más se necesita. `unknown` para lo desconocido, el tipo real para lo demás. Wrapper de typescript-eslint. |
 | [`skapxd/no-floating-promises`](./no-floating-promises.md) | Promesas sin `await` ni `void`: el rechazo muere sin pasar por trySafe. El mensaje corrige el consejo upstream (`.then/.catch` aquí están prohibidos). Wrapper de typescript-eslint. |
+| [`skapxd/no-magic-numbers`](./no-magic-numbers.md) | Prohíbe números mágicos: un literal numérico significativo debe extraerse a una `const` con nombre de dominio. Wrapper de typescript-eslint. |
 | [`skapxd/no-unsafe-argument`](./no-unsafe-argument.md) | Impide pasar un `any` invisible como argumento: la frontera debe declararse `unknown` y estrecharse con schema o predicate. Wrapper de typescript-eslint. |
 | [`skapxd/no-unsafe-assignment`](./no-unsafe-assignment.md) | Impide asignar un `any` invisible a variables o propiedades: la frontera debe declararse `unknown` y validarse. Wrapper de typescript-eslint. |
 | [`skapxd/no-unsafe-call`](./no-unsafe-call.md) | Impide invocar valores `any`: antes de llamar hay que probar el tipo real con evidencia runtime. Wrapper de typescript-eslint. |

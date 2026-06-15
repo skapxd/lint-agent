@@ -26,6 +26,7 @@ import { noElse } from "#/rules/no-else";
 import { noEmoji } from "#/rules/no-emoji";
 import { noExplicitAny } from "#/rules/no-explicit-any";
 import { noFloatingPromises } from "#/rules/no-floating-promises";
+import { noMagicNumbers } from "#/rules/no-magic-numbers";
 import { noUnsafeArgument } from "#/rules/no-unsafe-argument";
 import { noUnsafeAssignment } from "#/rules/no-unsafe-assignment";
 import { noUnsafeCall } from "#/rules/no-unsafe-call";
@@ -83,6 +84,7 @@ export const rules = {
   // mensajes propios (ver src/utils/wrap-tseslint-rule.ts):
   "no-explicit-any": noExplicitAny,
   "no-floating-promises": noFloatingPromises,
+  "no-magic-numbers": noMagicNumbers,
   "no-unsafe-argument": noUnsafeArgument,
   "no-unsafe-assignment": noUnsafeAssignment,
   "no-unsafe-call": noUnsafeCall,

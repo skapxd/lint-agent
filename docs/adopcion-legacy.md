@@ -160,6 +160,7 @@ Referencia rápida de qué se puede configurar (detalle y defaults en la secció
 | `no-emoji` | `allowFilePatterns` (globs) |
 | `no-explicit-any` | las de la regla original de typescript-eslint (`fixToUnknown`, ...) |
 | `no-floating-promises` | las de la regla original de typescript-eslint (`ignoreVoid`, `allowList`, ...) |
+| `no-magic-numbers` | las de la regla original de typescript-eslint (`ignore`, `ignoreArrayIndexes`, `ignoreEnums`, `ignoreReadonlyClassProperties`, `ignoreDefaultValues`, `enforceConst`) |
 | `no-unsafe-assignment` | las de la regla original de typescript-eslint |
 | `no-unsafe-member-access` | las de la regla original de typescript-eslint |
 | `no-unsafe-call` | las de la regla original de typescript-eslint |
