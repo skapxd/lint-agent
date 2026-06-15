@@ -1,1 +1,1 @@
-export { createNestConfigs } from "./configs";
+export { createNestConfigs } from "./create-nest-configs";

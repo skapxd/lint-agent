@@ -61,13 +61,14 @@ Los enlaces apuntan a GitHub de forma absoluta para que funcionen tambien desde 
 | [Adopcion incremental y legacy](https://github.com/skapxd/eslint-opinionated/blob/main/docs/adopcion-legacy.md) | Lint sobre cambios, olas de adopcion, overrides y propuestas de reglas. |
 | [Pipeline Result](https://github.com/skapxd/eslint-opinionated/blob/main/docs/pipeline-result.md) | Como encajan @skapxd/result, ts-pattern y el trace global. |
 | [Notas type-aware](https://github.com/skapxd/eslint-opinionated/blob/main/docs/notas-type-aware.md) | Supuestos, limites conocidos y notas de reglas que dependen del checker. |
-| [Indice de reglas](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/README.md) | Las 53 fichas individuales en docs/reglas/. |
+| [Indice de reglas](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/README.md) | Las 54 fichas individuales en docs/reglas/. |
 
 ## Reglas
 
 | Regla | Que protege |
 | --- | --- |
 | [`skapxd/one-root-function-per-file`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/one-root-function-per-file.md) | Un archivo, una función top-level semántica. |
+| [`skapxd/filename-matches-root-function`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/filename-matches-root-function.md) | El nombre del archivo es la versión kebab de su función raíz exportada. |
 | [`skapxd/async-functions-return-result`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/async-functions-return-result.md) | Funciones async de dominio deben retornar `Promise<Result<...>>`. **Apagada por defecto; opt-in** (ver motivos en su sección). |
 | [`skapxd/requires-strict-tsconfig`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/requires-strict-tsconfig.md) | El `tsconfig` debe ser implacable (`strict`, `noImplicitReturns`, `noUncheckedIndexedAccess`): sin ellos, el compilador no puede hacer irrepresentable lo inválido. |
 | [`skapxd/result-error-requires-cause`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/result-error-requires-cause.md) | Un `Result.err` derivado debe preservar `cause: result.error`. |
