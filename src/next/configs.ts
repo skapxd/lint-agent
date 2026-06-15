@@ -4,6 +4,7 @@ import {
   baseRules,
   createBaseLanguageOptions,
   createTypedLanguageOptions,
+  reactRules,
   type OpinionatedConfigList,
   type OpinionatedPluginReference,
 } from "#/shared/configs";
@@ -55,20 +56,7 @@ export function createNextConfigs(
       languageOptions: baseLanguageOptions,
       name: "skapxd/next/react",
       plugins: { skapxd: pluginReference },
-      rules: {
-        "skapxd/jsx-return-name-pascal-case": "error",
-        "skapxd/no-functions-inside-components": "error",
-        "skapxd/no-tunnel-props": "error",
-        "skapxd/prefer-abort-signal": "error",
-        "skapxd/no-jsx-ternary-null": "error",
-        "skapxd/max-hook-size": [
-          "error",
-          {
-            maxLines: 120,
-            maxUseState: 1,
-          },
-        ],
-      },
+      rules: reactRules,
     },
   ] satisfies OpinionatedConfigList;
 }
