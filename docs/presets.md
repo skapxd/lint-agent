@@ -39,17 +39,11 @@ src/
 
 ## Presets
 
-Los presets tipados ya traen `parserOptions.projectService: true`. Si necesitas
-sumar reglas type-aware propias, no agregues `parserOptions.project`: reutiliza
-el `languageOptions` del preset. Ver
-[la nota sobre `projectService` y `parserOptions.project`](./notas-type-aware.md#no-mezclar-projectservice-con-parseroptionsproject).
+Los presets tipados ya traen `parserOptions.projectService: true`. Si necesitas sumar reglas type-aware propias, no agregues `parserOptions.project`: reutiliza el `languageOptions` del preset. Ver [la nota sobre `projectService` y `parserOptions.project`](./notas-type-aware.md#no-mezclar-projectservice-con-parseroptionsproject).
 
 ### Shared
 
-Las reglas agnosticas al framework viven en `shared.base` como `error`. Por
-eso `skapxd/nested-function-requires-capture`, que solo depende de AST y scope,
-queda en las bases y la heredan `shared.backend`, `shared.frontend`,
-`shared.package` y los presets de framework que extienden las bases.
+Las reglas agnosticas al framework viven en `shared.base` como `error`. Por eso `skapxd/nested-function-requires-capture`, que solo depende de AST y scope, queda en las bases y la heredan `shared.backend`, `shared.frontend`, `shared.package` y los presets de framework que extienden las bases.
 
 ```js
 import skapxd from "@skapxd/eslint-opinionated";
@@ -74,12 +68,7 @@ export default [
 ];
 ```
 
-El contrato del back es el mismo que el del front: todo `await` debe resolver
-en un `Result` (`skapxd/await-requires-result`). Exigir además la firma
-`Promise<Result<...>>` en cada función async
-(`skapxd/async-functions-return-result`) está **apagado por defecto** — los
-motivos están documentados en la sección de esa regla. Si quieres el contrato
-duro, actívala encima del preset:
+El contrato del back es el mismo que el del front: todo `await` debe resolver en un `Result` (`skapxd/await-requires-result`). Exigir además la firma `Promise<Result<...>>` en cada función async (`skapxd/async-functions-return-result`) está **apagado por defecto** — los motivos están documentados en la sección de esa regla. Si quieres el contrato duro, actívala encima del preset:
 
 ```js
 export default [
@@ -110,11 +99,7 @@ export default [
 ];
 ```
 
-El contrato del front: ninguna función está obligada a retornar `Result`, pero
-toda llamada asíncrona debe ir envuelta en `trySafe` — salvo que lo llamado ya
-retorne `Result`/`Promise<Result<...>>` (exención type-aware de
-`skapxd/await-requires-result`). Aplica el preset a TODO el código del front
-(componentes, hooks, servicios), no solo a los componentes.
+El contrato del front: ninguna función está obligada a retornar `Result`, pero toda llamada asíncrona debe ir envuelta en `trySafe` — salvo que lo llamado ya retorne `Result`/`Promise<Result<...>>` (exención type-aware de `skapxd/await-requires-result`). Aplica el preset a TODO el código del front (componentes, hooks, servicios), no solo a los componentes.
 
 ### Next.js
 
@@ -166,9 +151,7 @@ export default [
 ];
 ```
 
-Nest trae un modelo de errores por excepciones (`HttpException` + exception
-filters). El preset no pelea contra eso: asigna a cada capa su rol en el
-pipeline de Result:
+Nest trae un modelo de errores por excepciones (`HttpException` + exception filters). El preset no pelea contra eso: asigna a cada capa su rol en el pipeline de Result:
 
 | Capa Nest | Rol | Contrato |
 | --- | --- | --- |
@@ -178,45 +161,14 @@ pipeline de Result:
 
 Detalles del preset:
 
-- Aplica a `src/**/*.ts` — `dev/`, `scripts/`, `e2e/` e `integration-test/`
-  quedan fuera a propósito: no son la app.
-- Los entrypoints (`main.ts`, `instrumentation.ts`, `app-cluster.ts`) están
-  exentos de `await-requires-result`: el bootstrap debe crashear ruidoso.
-  Con `no-floating-promises` activa, el clásico `bootstrap();` del `main.ts`
-  se escribe `void bootstrap();` — fire-and-forget declarado.
-- Los specs colocados (`*.spec.ts`, `*.e2e-spec.ts`) relajan
-  `await-requires-result`, `no-try-catch`, `result-error-requires-handling` y
-  `no-non-null-assertion` (el `!` sobre un fixture es el
-  arrange del test): un test awaitea helpers libremente y descartar un Result
-  en una aserción no es perder un trace. `no-floating-promises` sigue activa
-  en specs: un `await` olvidado es un falso verde.
-- Activa `skapxd/nest-no-result-response` (ver su sección): un controller
-  jamás retorna el Result crudo.
-- **El contrato Swagger vive en los DTOs, no en el controller.** El preset
-  asume el plugin `@nestjs/swagger` activo en `nest-cli.json` (introspecciona
-  query/params/body y tipo de retorno solo): `nest-dto-requires-api-property`
-  exige `@ApiProperty` en toda propiedad pública de un `*.dto.ts`, y
-  `nest-no-swagger-in-controllers` prohíbe los decoradores redundantes
-  (`@ApiOperation`, `@ApiResponse`, `@ApiParam`, ...) en los controllers —
-  solo se permiten los que el plugin no puede inferir: `ApiExcludeEndpoint`,
-  `ApiTags`, `ApiBearerAuth`, `ApiConsumes`/`ApiBody` (uploads multipart).
-- **Los DTOs de input validan en runtime**: `nest-dto-requires-validation`
-  exige class-validator en cada propiedad, coherencia `?` ↔ `@IsOptional`, y
-  `@Type` de class-transformer junto a `@ValidateNested`. Los DTOs de
-  respuesta (`out-*`, `*-response`, ...) quedan exentos.
-- **Una clase = una responsabilidad**: `max-public-methods` (de las reglas
-  base) corre con los hooks de Nest inyectados vía `ignore`, y se apaga en
-  `*.controller.ts`/`*.gateway.ts` donde el framework dicta la forma.
-  `nest-no-direct-instantiation` (dependencias por constructor, no `new`) en
-  `*.service.ts`; `nest-no-inline-query-params` en `*.controller.ts` (2+
-  query params → DTO consolidado).
-- **La configuración del proyecto también se lintea**: las premisas de las
-  que dependen las demás reglas se verifican, no se asumen.
-  `nest-requires-swagger-plugin` lee el `nest-cli.json` real (subiendo desde
-  `src/main.ts`) y exige el plugin `@nestjs/swagger`;
-  `nest-validation-pipe-config` exige `transform: true` (sin él, los `@Type`
-  de los DTOs no hacen nada) y `whitelist: true` (sin él, las props sin
-  decorador pasan crudas) en todo `new ValidationPipe`.
+- Aplica a `src/**/*.ts` — `dev/`, `scripts/`, `e2e/` e `integration-test/` quedan fuera a propósito: no son la app.
+- Los entrypoints (`main.ts`, `instrumentation.ts`, `app-cluster.ts`) están exentos de `await-requires-result`: el bootstrap debe crashear ruidoso. Con `no-floating-promises` activa, el clásico `bootstrap();` del `main.ts` se escribe `void bootstrap();` — fire-and-forget declarado.
+- Los specs colocados (`*.spec.ts`, `*.e2e-spec.ts`) relajan `await-requires-result`, `no-try-catch`, `result-error-requires-handling` y `no-non-null-assertion` (el `!` sobre un fixture es el arrange del test): un test awaitea helpers libremente y descartar un Result en una aserción no es perder un trace. `no-floating-promises` sigue activa en specs: un `await` olvidado es un falso verde.
+- Activa `skapxd/nest-no-result-response` (ver su sección): un controller jamás retorna el Result crudo.
+- **El contrato Swagger vive en los DTOs, no en el controller.** El preset asume el plugin `@nestjs/swagger` activo en `nest-cli.json` (introspecciona query/params/body y tipo de retorno solo): `nest-dto-requires-api-property` exige `@ApiProperty` en toda propiedad pública de un `*.dto.ts`, y `nest-no-swagger-in-controllers` prohíbe los decoradores redundantes (`@ApiOperation`, `@ApiResponse`, `@ApiParam`, ...) en los controllers — solo se permiten los que el plugin no puede inferir: `ApiExcludeEndpoint`, `ApiTags`, `ApiBearerAuth`, `ApiConsumes`/`ApiBody` (uploads multipart).
+- **Los DTOs de input validan en runtime**: `nest-dto-requires-validation` exige class-validator en cada propiedad, coherencia `?` ↔ `@IsOptional`, y `@Type` de class-transformer junto a `@ValidateNested`. Los DTOs de respuesta (`out-*`, `*-response`, ...) quedan exentos.
+- **Una clase = una responsabilidad**: `max-public-methods` (de las reglas base) corre con los hooks de Nest inyectados vía `ignore`, y se apaga en `*.controller.ts`/`*.gateway.ts` donde el framework dicta la forma. `nest-no-direct-instantiation` (dependencias por constructor, no `new`) en `*.service.ts`; `nest-no-inline-query-params` en `*.controller.ts` (2+ query params → DTO consolidado).
+- **La configuración del proyecto también se lintea**: las premisas de las que dependen las demás reglas se verifican, no se asumen. `nest-requires-swagger-plugin` lee el `nest-cli.json` real (subiendo desde `src/main.ts`) y exige el plugin `@nestjs/swagger`; `nest-validation-pipe-config` exige `transform: true` (sin él, los `@Type` de los DTOs no hacen nada) y `whitelist: true` (sin él, las props sin decorador pasan crudas) en todo `new ValidationPipe`.
 
 ### Astro
 
@@ -256,25 +208,16 @@ export default [
 ];
 ```
 
-Para librerías npm escritas en TypeScript (tsup o equivalente). Trae las
-bases completas + el set type-driven (tipado, con `projectService`) +
-`await-requires-result` + el contrato de empaquetado:
+Para librerías npm escritas en TypeScript (tsup o equivalente). Trae las bases completas + el set type-driven (tipado, con `projectService`) + `await-requires-result` + el contrato de empaquetado:
 
-- `skapxd/package-requires-typed-exports` — los `exports` del package.json
-  cablean los tipos **por condición** (`import` → `.d.mts`, `require` →
-  `.d.ts`); el `types` único por subpath es el bug "FalseCJS".
-- `skapxd/untrusted-module-requires-adapter` — inerte hasta que declares tu
-  inventario de paquetes con tipos mentirosos (ver su sección).
+- `skapxd/package-requires-typed-exports` — los `exports` del package.json cablean los tipos **por condición** (`import` → `.d.mts`, `require` → `.d.ts`); el `types` único por subpath es el bug "FalseCJS".
+- `skapxd/untrusted-module-requires-adapter` — inerte hasta que declares tu inventario de paquetes con tipos mentirosos (ver su sección).
 
-**Este mismo repo se lintea con este preset** — dogfood: la regla de exports
-nos obligó a corregir nuestro propio package.json al nacer.
+**Este mismo repo se lintea con este preset** — dogfood: la regla de exports nos obligó a corregir nuestro propio package.json al nacer.
 
 ### Strict (sin escape via `eslint-disable`)
 
-Un prompt o un agente puede saltarse cualquier regla con
-`// eslint-disable-next-line`. El preset `strict` activa `noInlineConfig`, que
-hace que ESLint **ignore todas las directivas inline** en los archivos que cubre:
-ningún `eslint-disable` surte efecto, así que las reglas no se pueden bypassear.
+Un prompt o un agente puede saltarse cualquier regla con `// eslint-disable-next-line`. El preset `strict` activa `noInlineConfig`, que hace que ESLint **ignore todas las directivas inline** en los archivos que cubre: ningún `eslint-disable` surte efecto, así que las reglas no se pueden bypassear.
 
 ```js
 import skapxd from "@skapxd/eslint-opinionated";
@@ -289,5 +232,4 @@ export default [
 ];
 ```
 
-Si necesitas una excepción puntual (p. ej. archivos generados), añade después un
-bloque con `linterOptions: { noInlineConfig: false }` para esos globs.
+Si necesitas una excepción puntual (p. ej. archivos generados), añade después un bloque con `linterOptions: { noInlineConfig: false }` para esos globs.

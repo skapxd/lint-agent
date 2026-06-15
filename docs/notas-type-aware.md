@@ -4,8 +4,7 @@
 
 ## Supuestos y límites conocidos
 
-Tres reglas se apoyan en **convenciones de React/JS** para identificar lo que
-miran. No son fallos: son el contrato de la regla. Conviene conocerlos:
+Tres reglas se apoyan en **convenciones de React/JS** para identificar lo que miran. No son fallos: son el contrato de la regla. Conviene conocerlos:
 
 | Regla | Supuesto | Implicación |
 | --- | --- | --- |
@@ -13,22 +12,13 @@ miran. No son fallos: son el contrato de la regla. Conviene conocerlos:
 | `jsx-return-name-pascal-case` | Detecta **JSX literal** en el cuerpo de la función. | Si devuelves JSX por indirección (`return render()`), no se detecta. |
 | `max-hook-size` | "Hook" = nombre que empieza con **`use`**; el tamaño se mide en líneas. | Una función con lógica de hook pero sin prefijo `use` no se mide. |
 
-Estos supuestos **se auto-refuerzan** con el resto del plugin: si nombras un
-componente en minúscula, `jsx-return-name-pascal-case` te obliga a pasarlo a
-PascalCase, y entonces `no-functions-inside-components` ya lo reconoce. Por eso no
-perseguimos "robustez" más allá de la convención: las reglas que la imponen
-cierran el hueco.
+Estos supuestos **se auto-refuerzan** con el resto del plugin: si nombras un componente en minúscula, `jsx-return-name-pascal-case` te obliga a pasarlo a PascalCase, y entonces `no-functions-inside-components` ya lo reconoce. Por eso no perseguimos "robustez" más allá de la convención: las reglas que la imponen cierran el hueco.
 
-En cambio, las reglas atadas a `@skapxd/result`
-(`async-functions-return-result`, `result-error-requires-cause`,
-`await-requires-result`) **no** dependen de nombres: resuelven el símbolo hasta
-el paquete real (vía el `name` de su `package.json`), así que funcionan con
-alias, re-exports y en monorepos.
+En cambio, las reglas atadas a `@skapxd/result` (`async-functions-return-result`, `result-error-requires-cause`, `await-requires-result`) **no** dependen de nombres: resuelven el símbolo hasta el paquete real (vía el `name` de su `package.json`), así que funcionan con alias, re-exports y en monorepos.
 
 ## Notas sobre reglas type-aware
 
-Algunas reglas necesitan información real de TypeScript. Los presets que la
-necesitan configuran:
+Algunas reglas necesitan información real de TypeScript. Los presets que la necesitan configuran:
 
 ```js
 languageOptions: {
@@ -38,23 +28,15 @@ languageOptions: {
 }
 ```
 
-Esto hace el lint un poco más lento, pero reduce falsos positivos importantes:
-por ejemplo, distinguir un `Result` real de `@skapxd/result` de otro objeto que
-casualmente también tenga propiedades `ok` y `error`.
+Esto hace el lint un poco más lento, pero reduce falsos positivos importantes: por ejemplo, distinguir un `Result` real de `@skapxd/result` de otro objeto que casualmente también tenga propiedades `ok` y `error`.
 
 ### No mezclar `projectService` con `parserOptions.project`
 
-Los presets tipados (`shared.backend`, `shared.frontend`, `shared.package` y los
-presets de framework que se apoyan en ellos) ya traen el parser de
-`typescript-eslint` y `parserOptions.projectService: true`.
+Los presets tipados (`shared.backend`, `shared.frontend`, `shared.package` y los presets de framework que se apoyan en ellos) ya traen el parser de `typescript-eslint` y `parserOptions.projectService: true`.
 
-Ese es el contrato por defecto porque deja que `typescript-eslint` encuentre el
-proyecto TypeScript correcto para cada archivo sin pedirle al consumidor que
-mantenga una lista manual de `tsconfig`. Es el camino recomendado para flat
-config en proyectos con varios paquetes, tests, scripts o entrypoints.
+Ese es el contrato por defecto porque deja que `typescript-eslint` encuentre el proyecto TypeScript correcto para cada archivo sin pedirle al consumidor que mantenga una lista manual de `tsconfig`. Es el camino recomendado para flat config en proyectos con varios paquetes, tests, scripts o entrypoints.
 
-El anti-patrón es tomar un preset tipado y volver a declarar
-`parserOptions.project` encima:
+El anti-patrón es tomar un preset tipado y volver a declarar `parserOptions.project` encima:
 
 ```js
 import skapxd from "@skapxd/eslint-opinionated";
@@ -74,8 +56,7 @@ export default [
 ];
 ```
 
-Reproducido con `eslint@9.39.4`, `typescript-eslint@8.59.4` y
-`typescript@5.9.3`, ese choque falla antes de ejecutar reglas:
+Reproducido con `eslint@9.39.4`, `typescript-eslint@8.59.4` y `typescript@5.9.3`, ese choque falla antes de ejecutar reglas:
 
 ```text
 /private/tmp/eslint-opinionated-issue-6-repro/src/index.ts
@@ -84,9 +65,7 @@ Reproducido con `eslint@9.39.4`, `typescript-eslint@8.59.4` y
 ✖ 1 problem (1 error, 0 warnings)
 ```
 
-Si necesitas sumar reglas type-aware propias, reutiliza el `languageOptions` del
-preset y agrega solo `rules` o `plugins`; no declares otro parser ni otro
-proyecto TypeScript:
+Si necesitas sumar reglas type-aware propias, reutiliza el `languageOptions` del preset y agrega solo `rules` o `plugins`; no declares otro parser ni otro proyecto TypeScript:
 
 ```js
 import customPlugin from "eslint-plugin-custom";
@@ -113,11 +92,7 @@ export default [
 
 ## Contrato mínimo de `typescript-eslint`
 
-Los presets type-aware se publican como contrato: si una regla u opción entra
-al preset, el `peerDependency` debe declarar la versión mínima real que la
-soporta. El script `pnpm test:peer-minimum` construye el paquete, lo instala en
-un proyecto temporal con los peers mínimos exactos y carga cada preset tipado
-con ESLint.
+Los presets type-aware se publican como contrato: si una regla u opción entra al preset, el `peerDependency` debe declarar la versión mínima real que la soporta. El script `pnpm test:peer-minimum` construye el paquete, lo instala en un proyecto temporal con los peers mínimos exactos y carga cada preset tipado con ESLint.
 
 | Requisito del catálogo | Versión mínima de `typescript-eslint` | Por qué importa |
 | --- | --- | --- |

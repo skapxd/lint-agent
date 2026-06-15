@@ -22,10 +22,7 @@
 
 Hay dos caminos válidos, y la regla recomienda el primero:
 
-**1. El camino preferido: extrae la operación a una función que retorne
-`Promise<Result<...>>`** y modela ahí los errores de dominio. El `trySafe` vive
-dentro de esa función, en la frontera con el código que lanza, y el resto del
-código habla en errores con significado:
+**1. El camino preferido: extrae la operación a una función que retorne `Promise<Result<...>>`** y modela ahí los errores de dominio. El `trySafe` vive dentro de esa función, en la frontera con el código que lanza, y el resto del código habla en errores con significado:
 
 ```ts
 async function getUser(id: string): Promise<Result<User, UserError>> {
@@ -46,8 +43,7 @@ async function getUser(id: string): Promise<Result<User, UserError>> {
 const user = await getUser(id); // ✅
 ```
 
-La detección es type-aware: la regla resuelve el símbolo hasta `@skapxd/result`,
-así que un `Result` casero (homónimo, de otra librería) no exime.
+La detección es type-aware: la regla resuelve el símbolo hasta `@skapxd/result`, así que un `Result` casero (homónimo, de otra librería) no exime.
 
 **2. La alternativa rápida: envuelve el `await` en `trySafe` ahí mismo:**
 
@@ -64,9 +60,7 @@ const result = await trySafe(async () => {
 });
 ```
 
-Sirve para código de pegamento, pero deja el error sin modelar (`Result<T,
-unknown>`). Cuando la misma operación se repite o el error importa, el mensaje
-de la regla empuja hacia el camino 1.
+Sirve para código de pegamento, pero deja el error sin modelar (`Result<T, unknown>`). Cuando la misma operación se repite o el error importa, el mensaje de la regla empuja hacia el camino 1.
 
 ---
 
