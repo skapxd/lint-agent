@@ -11,13 +11,13 @@ La skill no reimplementa reglas, presets ni deteccion. Invoca siempre el CLI pub
 
 ## Comando base
 
-Ejecuta el paquete publicado, anclado al major `@5`:
+Ejecuta el paquete publicado, anclado al major `@6`:
 
 ```bash
-npx @skapxd/eslint-opinionated@5 <path> --yes --format toon
+npx @skapxd/eslint-opinionated@6 <path> --yes --format toon
 ```
 
-Anclado a major `@5` (no `@latest` mutable): recibes parches y minors sin saltar a un major que pueda romper o estar comprometido. El paquete se publica en npm con provenance (procedencia verificable). Para adopcion permanente, instala el paquete como devDependency (version fija + lockfile con integridad) y corre el bin `skapxd-lint`; reserva `npx` para auditorias puntuales.
+Anclado a major `@6` (no `@latest` mutable): recibes parches y minors sin saltar a un major que pueda romper o estar comprometido. El paquete se publica en npm con provenance (procedencia verificable). Para adopcion permanente, instala el paquete como devDependency (version fija + lockfile con integridad) y corre el bin `skapxd-lint`; reserva `npx` para auditorias puntuales.
 
 No uses builds locales, no asumas que el paquete esta instalado en el proyecto medido y no dependas del formato `compact` por defecto.
 
@@ -31,7 +31,7 @@ Preferencia de formato:
 
 1. Corre el preset completo sobre el proyecto:
 
-   ```bash npx @skapxd/eslint-opinionated@5 <path> --yes --format toon ```
+   ```bash npx @skapxd/eslint-opinionated@6 <path> --yes --format toon ```
 
 2. Lee los hallazgos por archivo y regla.
 3. Arregla el codigo antes de que la deuda exista, si el usuario pidio aplicar fixes.
@@ -44,7 +44,7 @@ El objetivo en un proyecto nuevo es que el codigo nazca cumpliendo el preset com
 Usa el bucle `--adopt` y `--verify` para limpiar reglas completas por lotes reproducibles:
 
 ```bash
-npx @skapxd/eslint-opinionated@5 <path> --yes --format toon --adopt 10
+npx @skapxd/eslint-opinionated@6 <path> --yes --format toon --adopt 10
 ```
 
 La salida de `--adopt <percent>` incluye una seed con forma `skapxd1...`. Esa seed es el contrato reproducible del lote: fija el conjunto de reglas objetivo para que la ronda no cambie mientras editas.
@@ -56,7 +56,7 @@ Flujo:
 3. Aplica solo los fixes necesarios para esas reglas objetivo, si el usuario pidio modificar el codigo.
 4. Verifica el mismo lote:
 
-   ```bash npx @skapxd/eslint-opinionated@5 <path> --yes --format toon --verify <seed> ```
+   ```bash npx @skapxd/eslint-opinionated@6 <path> --yes --format toon --verify <seed> ```
 
 5. Si `--verify <seed>` todavia reporta hallazgos del objetivo, sigue corrigiendo ese lote.
 6. Cuando el lote queda limpio, sube el porcentaje o repite `--adopt <percent>` para abrir la siguiente ronda.
@@ -86,7 +86,7 @@ No modifiques el proyecto medido salvo que el usuario pida aplicar los fixes. Si
 Para revisar solo lo tocado por git:
 
 ```bash
-npx @skapxd/eslint-opinionated@5 <path> --yes --format toon --changed --base origin/main
+npx @skapxd/eslint-opinionated@6 <path> --yes --format toon --changed --base origin/main
 ```
 
 Usa este modo para evitar que deuda legacy fuera del diff bloquee una tarea acotada. No lo confundas con adopcion completa del repo.
