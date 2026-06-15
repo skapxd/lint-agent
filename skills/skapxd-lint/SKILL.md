@@ -57,6 +57,8 @@ Luego lee `skapxd-report.toon` selectivamente; no lo vuelques entero al contexto
 
 La salida de `--adopt <percent>` incluye una seed con forma `skapxd1...`. Esa seed es el contrato reproducible del lote: fija el conjunto de reglas objetivo para que la ronda no cambie mientras editas.
 
+`--adopt` ordena las reglas objetivo por capa de dependencia primero: las premisas van antes que sus dependientes, y dentro de la misma capa conserva el desempate por archivos afectados, violaciones y nombre. En `toon`/`json`, cada regla objetivo expone `dependencyLayer` y, cuando aplica, `blockedBy` con las premisas que todavia tienen hallazgos en esa corrida.
+
 Flujo:
 
 1. Corre `--adopt <percent>`.

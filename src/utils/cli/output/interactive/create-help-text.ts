@@ -46,7 +46,7 @@ Salida:
   --output <archivo>: escribe el formato elegido en archivo y deja en stdout solo el resumen.
 
 Adopcion incremental:
-  --adopt <percent> ordena reglas por archivos afectados, violaciones y nombre.
+  --adopt <percent> ordena reglas por capa de dependencia (premisas primero), archivos afectados, violaciones y nombre.
   Presupuesto: floor(total de violaciones * percent / 100), sin partir reglas.
   Si ninguna regla cabe, incluye la mas facil para dejar trabajo accionable.
   La salida incluye reglas objetivo y seed deterministica para --verify.
