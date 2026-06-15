@@ -128,7 +128,7 @@ export function createCrossFileDuplicateReporter(
 
   return {
     collectAndReport() {
-      const fileName = options.context.getFilename();
+      const fileName = options.context.filename ?? options.context.getFilename();
       removeCurrentFileOccurrences(fileName);
 
       for (const occurrence of options.getOccurrences()) {

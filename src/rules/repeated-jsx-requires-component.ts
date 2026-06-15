@@ -36,7 +36,7 @@ export const repeatedJsxRequiresComponent: RuleModule = {
   },
   create(context: RuleContext) {
     const options = getRepeatedJsxRequiresComponentOptions(context.options[0]);
-    const sourceCodeCandidate = context.getSourceCode();
+    const sourceCodeCandidate = context.sourceCode ?? context.getSourceCode();
     const getText = sourceCodeCandidate.getText;
     const lacksTextSourceCode = !getText;
     if (lacksTextSourceCode) {
