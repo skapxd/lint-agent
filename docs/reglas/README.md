@@ -59,4 +59,4 @@ Cada ficha vive en un archivo propio. El indice conserva la descripcion corta de
 | [`skapxd/package-requires-typed-exports`](./package-requires-typed-exports.md) | Los `exports` del package.json declaran `types` por condición (`import` → `.d.mts`, `require` → `.d.ts`): mata el bug FalseCJS. Preset `package`. |
 | [`skapxd/untrusted-module-requires-adapter`](./untrusted-module-requires-adapter.md) | Los paquetes con tipos mentirosos (@types desfasados) solo se importan desde su adaptador: la mentira vive en UN archivo. Preset `package`. |
 | [`skapxd/no-jsx-ternary-null`](./no-jsx-ternary-null.md) | Prefiere `cond && <El />` sobre `cond ? <El /> : null` en JSX. |
-| [`skapxd/repeated-jsx-requires-component`](./repeated-jsx-requires-component.md) | Detecta patrones JSX repetidos tres veces que ya son un componente sin nombre. |
+| [`skapxd/repeated-jsx-requires-component`](./repeated-jsx-requires-component.md) | Detecta patrones JSX repetidos tres veces que ya son un componente sin nombre. Activa como `error` en `frontend`, `next/react` y `astro/react`. |

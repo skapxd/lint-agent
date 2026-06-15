@@ -27,7 +27,7 @@ La repeticion es el disparador: `minRepetitions` default `3`. La densidad solo f
 
 El JSX producido por callbacks de iteracion (`.map`/`.forEach`) no cuenta: eso ya es repeticion por datos, no copy-paste estructural.
 
-La deteccion cross-file usa un indice global en memoria para que tres archivos del mismo repo con la misma firma reporten las tres ocurrencias. Eso hace que `--cache` sea incompatible: el resultado de un archivo depende de los otros archivos lintados en el mismo proceso. Corre la medicion sin cache.
+La deteccion cross-file usa un indice global en memoria. Dentro del runner por archivo de ESLint sigue siendo best-effort: el conteo global existe, pero las ubicaciones cross-file pueden concentrarse en el archivo que cruza el umbral porque ESLint no reabre resultados ya emitidos. El reporte cross-file exacto queda para el runner de dos pasadas (#53); mientras tanto, lo que los presets activan con seguridad es la señal intra-archivo y el conteo cross-file latente. `--cache` es incompatible: el resultado de un archivo depende de los otros archivos lintados en el mismo proceso.
 
 Opciones:
 
@@ -44,7 +44,7 @@ rules: {
 }
 ```
 
-**Presets.** Registrada en el plugin, pero no activada aun en `frontend`, `next` ni `astro`. El #55 deja la severidad y activacion para decision del dueño tras medicion sobre frontends reales.
+**Presets.** Activa como `error` en `frontend`, `next/react` y `astro/react` con los defaults actuales (`minPatternNodes: 2`, `minClasses: 4`, `minRepetitions: 3`). No se pasa configuración en los presets: usan los defaults de la regla.
 
 ---
 

@@ -2,6 +2,7 @@ import {
   baseRules,
   createBaseLanguageOptions,
   createTypedLanguageOptions,
+  reactRules,
   type OpinionatedConfigList,
   type OpinionatedPluginReference,
 } from "#/shared/configs";
@@ -38,6 +39,13 @@ export function createAstroConfigs(
         "skapxd/result-error-requires-cause": "error",
         "skapxd/result-error-requires-handling": "error",
       },
+    },
+    {
+      files: ["src/**/*.tsx"],
+      languageOptions: baseLanguageOptions,
+      name: "skapxd/astro/react",
+      plugins: { skapxd: pluginReference },
+      rules: reactRules,
     },
   ] satisfies OpinionatedConfigList;
 }

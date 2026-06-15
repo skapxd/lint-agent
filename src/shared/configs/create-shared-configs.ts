@@ -1,6 +1,7 @@
 import { baseRules } from "./base-rules";
 import { createBaseLanguageOptions } from "./create-base-language-options";
 import { createTypedLanguageOptions } from "./create-typed-language-options";
+import { reactRules } from "./react-rules";
 import { typeDrivenRules } from "./type-driven-rules";
 import type { OpinionatedPluginReference, SharedConfigs } from "./types";
 
@@ -49,23 +50,7 @@ export function createSharedConfigs(
         // (camino preferido: errores modelados en el dominio) o se envuelve
         // en trySafe en el sitio.
         "skapxd/await-requires-result": "error",
-        "skapxd/jsx-return-name-pascal-case": "error",
-        // Anti prop-drilling: ninguna prop viaja más de un nivel. Quien la
-        // crea puede pasarla a UN hijo; quien la recibe no la reenvía —
-        // estado y acciones a un store global o custom hook.
-        "skapxd/no-functions-inside-components": "error",
-        "skapxd/no-tunnel-props": "error",
-        // Listeners en efectos: un AbortController por efecto, cleanup con
-        // un solo abort() en vez de removeEventListener por listener.
-        "skapxd/prefer-abort-signal": "error",
-        "skapxd/no-jsx-ternary-null": "error",
-        "skapxd/max-hook-size": [
-          "error",
-          {
-            maxLines: 120,
-            maxUseState: 1,
-          },
-        ],
+        ...reactRules,
       },
     },
     // Para librerias npm en TypeScript (tsup o equivalente): las bases

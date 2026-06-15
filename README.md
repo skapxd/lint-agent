@@ -120,7 +120,7 @@ Los enlaces apuntan a GitHub de forma absoluta para que funcionen tambien desde 
 | [`skapxd/package-requires-typed-exports`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/package-requires-typed-exports.md) | Los `exports` del package.json declaran `types` por condición (`import` → `.d.mts`, `require` → `.d.ts`): mata el bug FalseCJS. Preset `package`. |
 | [`skapxd/untrusted-module-requires-adapter`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/untrusted-module-requires-adapter.md) | Los paquetes con tipos mentirosos (@types desfasados) solo se importan desde su adaptador: la mentira vive en UN archivo. Preset `package`. |
 | [`skapxd/no-jsx-ternary-null`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/no-jsx-ternary-null.md) | Prefiere `cond && <El />` sobre `cond ? <El /> : null` en JSX. |
-| [`skapxd/repeated-jsx-requires-component`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/repeated-jsx-requires-component.md) | Detecta patrones JSX repetidos tres veces que ya son un componente sin nombre. |
+| [`skapxd/repeated-jsx-requires-component`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/repeated-jsx-requires-component.md) | Detecta patrones JSX repetidos tres veces que ya son un componente sin nombre. Activa como `error` en `frontend`, `next/react` y `astro/react`. |
 
 ## Licencia
 

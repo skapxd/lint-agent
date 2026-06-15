@@ -1,6 +1,8 @@
+import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { describe, expect, it } from "vitest";
 import plugin from "../src/index";
+import { reactRules } from "../src/shared/configs";
 import { matchesAnyGlob } from "../src/utils/matching/matches-any-glob";
 
 const require = createRequire(import.meta.url);
@@ -25,6 +27,11 @@ type NoMagicNumbersOptions = {
   enforceConst: boolean;
 };
 
+type NamedConfig = {
+  name?: string;
+  rules?: Record<string, unknown>;
+};
+
 function getRuleOptionsEntry(ruleEntry: unknown, message: string) {
   expect(Array.isArray(ruleEntry)).toBe(true);
 
@@ -33,6 +40,18 @@ function getRuleOptionsEntry(ruleEntry: unknown, message: string) {
   }
 
   return ruleEntry;
+}
+
+function findConfigByName(configs: readonly NamedConfig[], name: string) {
+  const config = configs.find((candidate) => candidate.name === name);
+
+  expect(config, name).toBeDefined();
+
+  if (config === undefined) {
+    throw new Error(`No existe el config ${name}.`);
+  }
+
+  return config;
 }
 
 describe("plugin.meta.version", () => {
@@ -53,6 +72,46 @@ describe("configs.frontend", () => {
 
     expect(config.rules["skapxd/await-requires-result"]).toBe("error");
     expect(config.rules["skapxd/async-functions-return-result"]).toBeUndefined();
+  });
+});
+
+describe("reglas React en presets de UI", () => {
+  it("frontend, next y astro consumen el mismo reactRules, incluyendo repeated-jsx", () => {
+    const uiPresets = [
+      plugin.configs.frontend,
+      findConfigByName(plugin.configs.next, "skapxd/next/react"),
+      findConfigByName(plugin.configs.astro, "skapxd/astro/react"),
+    ];
+
+    for (const preset of uiPresets) {
+      for (const [ruleName, expectedEntry] of Object.entries(reactRules)) {
+        expect(preset.rules?.[ruleName], `${preset.name} → ${ruleName}`).toEqual(
+          expectedEntry,
+        );
+      }
+
+      expect(
+        preset.rules?.["skapxd/repeated-jsx-requires-component"],
+        preset.name,
+      ).toBe("error");
+    }
+  });
+
+  it("no reintroduce literales React inline en los presets", () => {
+    const presetSources = [
+      readFileSync(
+        new URL("../src/shared/configs/create-shared-configs.ts", import.meta.url),
+        "utf8",
+      ),
+      readFileSync(new URL("../src/next/configs.ts", import.meta.url), "utf8"),
+      readFileSync(new URL("../src/astro/configs.ts", import.meta.url), "utf8"),
+    ];
+
+    for (const source of presetSources) {
+      for (const ruleName of Object.keys(reactRules)) {
+        expect(source, ruleName).not.toContain(`"${ruleName}"`);
+      }
+    }
   });
 });
 
