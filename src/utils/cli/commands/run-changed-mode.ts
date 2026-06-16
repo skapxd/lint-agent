@@ -1,5 +1,6 @@
 import { Result, trySafe } from "@skapxd/result";
 import { ESLint } from "eslint";
+import { createAdoptionRuleSummaries } from "#/utils/cli/adoption/create-adoption-rule-summaries";
 import { createExecutionErrorOutput } from "#/utils/cli/output/machine/create-execution-error-output";
 import { getChangedLintFiles } from "#/utils/cli/eslint-run/get-changed-lint-files";
 import { summarizeLintResults } from "#/utils/cli/output/machine/summarize-lint-results";
@@ -63,6 +64,7 @@ export async function runChangedMode(base: string | null, cwd: string) {
   }
 
   const files = toLintFileResults(lintResults.value);
+  const ruleSummaries = createAdoptionRuleSummaries(files);
   const summary = summarizeLintResults(files);
   const status = summary.errorCount > 0 || summary.warningCount > 0 ? "findings" : "ok";
 
@@ -71,6 +73,7 @@ export async function runChangedMode(base: string | null, cwd: string) {
     errorCount: summary.errorCount,
     files,
     mode: "changed",
+    ruleSummaries,
     status,
     targetPath: changed.root,
     warningCount: summary.warningCount,

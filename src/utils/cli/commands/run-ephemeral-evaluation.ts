@@ -4,6 +4,7 @@ import { trySafe } from "@skapxd/result";
 import { detectCliPreset } from "#/utils/project/detect-cli-preset";
 import { createEphemeralConfig } from "#/utils/cli/eslint-run/create-ephemeral-config";
 import { createEphemeralTypeConfig } from "#/utils/cli/tsconfig/create-ephemeral-type-config";
+import { createAdoptionRuleSummaries } from "#/utils/cli/adoption/create-adoption-rule-summaries";
 import { createLintTargetPattern } from "#/utils/cli/eslint-run/create-lint-target-pattern";
 import { getProjectRoot } from "#/utils/cli/env/get-project-root";
 import { omitProjectServiceParseErrorResults } from "#/utils/cli/eslint-run/omit-project-service-parse-error-results";
@@ -51,6 +52,7 @@ export function runEphemeralEvaluation(
 
   const filteredResults = omitProjectServiceParseErrorResults(lintResults.value);
   const files = toLintFileResults(filteredResults.results);
+  const ruleSummaries = createAdoptionRuleSummaries(files);
   const summary = summarizeLintResults(files);
   const status =
     summary.errorCount > 0 || summary.warningCount > 0 ? "findings" : "ok";
@@ -61,6 +63,7 @@ export function runEphemeralEvaluation(
     mode: "evaluate",
     omittedFileCount: filteredResults.omittedFileCount,
     preset,
+    ruleSummaries,
     status,
     targetPath,
     typeConfig: typeConfig.typeConfig,

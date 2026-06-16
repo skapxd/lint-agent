@@ -24,19 +24,21 @@ const PROJECT_ROOT = fileURLToPath(new URL("..", import.meta.url));
 const CLI_PATH = path.join(PROJECT_ROOT, "dist", "cli.mjs");
 const ansiEscapePattern = /\x1b\[/u;
 
+type CliRuleSummary = {
+  affectedFileCount: number;
+  blockedBy?: readonly string[];
+  dependencyLayer: number;
+  ruleId: string;
+  violationCount: number;
+};
+
 type CliJson = {
   adoption?: {
     budget: number;
     percent: number;
     seed: string;
     selectedRuleCount: number;
-    selectedRules: Array<{
-      affectedFileCount: number;
-      blockedBy?: readonly string[];
-      dependencyLayer: number;
-      ruleId: string;
-      violationCount: number;
-    }>;
+    selectedRules: CliRuleSummary[];
     targetViolationCount: number;
     totalViolationCount: number;
   };
@@ -55,6 +57,7 @@ type CliJson = {
   mode: "adopt" | "changed" | "evaluate" | "state" | "verify";
   omittedFileCount?: number;
   preset?: string;
+  ruleSummaries?: CliRuleSummary[];
   state?: {
     action: "reset";
     statePath: string;
@@ -70,13 +73,7 @@ type CliJson = {
     fixedRules: string[];
     outsideViolationCount: number;
     remainingRuleCount: number;
-    remainingRules: Array<{
-      affectedFileCount: number;
-      blockedBy?: readonly string[];
-      dependencyLayer: number;
-      ruleId: string;
-      violationCount: number;
-    }>;
+    remainingRules: CliRuleSummary[];
     remainingViolationCount: number;
     seed: string;
     targetRules: string[];
@@ -313,6 +310,14 @@ describe("skapxd-lint", () => {
     expect(json?.status).toBe("findings");
     expect(json?.mode).toBe("evaluate");
     expect(json?.preset).toBe("base");
+    expect(json?.ruleSummaries).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          dependencyLayer: 0,
+          ruleId: "skapxd/no-else",
+        }),
+      ]),
+    );
     expect(json?.files[0]?.messages.some((message) => message.message.length > 0)).toBe(
       true,
     );
@@ -372,8 +377,12 @@ describe("skapxd-lint", () => {
     expect(explicitResult.stdout).not.toMatch(ansiEscapePattern);
     expect(result.stdout).toContain("errors |");
     expect(result.stdout).toContain("files | preset base");
+    expect(result.stdout).toContain("rules (orden de resolucion, premisas primero):");
     expect(result.stdout).toContain("index.ts");
     expect(result.stdout).toContain("skapxd/no-else");
+    expect(result.stdout.indexOf("rules (orden de resolucion, premisas primero):")).toBeLessThan(
+      result.stdout.indexOf("index.ts"),
+    );
     expect(result.stdout).not.toContain("errorCount:");
     expect(result.stdout).not.toContain("{");
     expect(explicitResult.stdout).toBe(result.stdout);
@@ -408,6 +417,12 @@ describe("skapxd-lint", () => {
       messages: expect.any(Array),
       mode: "evaluate",
       preset: "base",
+      ruleSummaries: expect.arrayContaining([
+        expect.objectContaining({
+          dependencyLayer: 0,
+          ruleId: "skapxd/no-else",
+        }),
+      ]),
       status: "findings",
       typeConfig: {
         addedFlags: [],
@@ -1488,5 +1503,13 @@ describe("skapxd-lint", () => {
     expect(changed.json?.status).toBe("findings");
     expect(changed.json?.errorCount).toBe(1);
     expect(changed.json?.changedFiles?.map((file) => path.basename(file))).toEqual(["bad.js"]);
+    expect(changed.json?.ruleSummaries).toEqual([
+      {
+        affectedFileCount: 1,
+        dependencyLayer: 0,
+        ruleId: "no-undef",
+        violationCount: 1,
+      },
+    ]);
   });
 });

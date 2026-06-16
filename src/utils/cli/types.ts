@@ -56,6 +56,7 @@ export type SkapxdLintOutput = {
   mode: "adopt" | "changed" | "evaluate" | "state" | "verify";
   omittedFileCount?: number;
   preset?: CliPreset;
+  ruleSummaries?: readonly AdoptionRuleSummary[];
   state?: StateOutput;
   status: CliStatus;
   targetPath?: string;
