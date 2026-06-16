@@ -20,7 +20,7 @@ export const maxHookSize: RuleModule = {
           tooLargeHook:
             "El hook `{{name}}` es demasiado grande: tiene {{lines}} lineas. Maximo permitido: {{maxLines}} lineas. Extrae efectos, handlers o flujos a hooks/archivos semanticos.",
           tooManyUseState:
-            "El hook `{{name}}` declara {{useStateCount}} useState. Maximo permitido: {{maxUseState}}. Usa useReducer con acciones semanticas cuando varios campos cambian juntos, o extrae estado a hooks especializados.",
+            "El hook `{{name}}` declara {{useStateCount}} useState. Maximo permitido: {{maxUseState}}. Si son fases de un mismo estado, colapsalos en UN useState con union discriminada (evita isLoading+error+value simultaneo); si cambian juntos por transiciones, usa useReducer con acciones de union discriminada; si son independientes entre si, divide el componente/hook para acotar su estado.",
         },
         schema: [
           {

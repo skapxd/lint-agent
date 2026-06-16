@@ -1,7 +1,18 @@
+import { expect, it } from "vitest";
 import { rules } from "../../src/shared/rules";
 import { createRuleTester } from "../rule-tester";
 
-createRuleTester().run("max-hook-size", rules["max-hook-size"]!, {
+const maxHookSizeRule = rules["max-hook-size"]!;
+
+it("mantiene el contrato educativo de tooManyUseState", () => {
+  const message = maxHookSizeRule.meta.messages?.tooManyUseState ?? "";
+
+  expect(message).toContain("union discriminada");
+  expect(message).toContain("useReducer");
+  expect(message).toContain("divide el componente/hook");
+});
+
+createRuleTester().run("max-hook-size", maxHookSizeRule, {
   invalid: [
     {
       code: "function useThing() { const [a] = useState(); const [b] = useState(); }",
