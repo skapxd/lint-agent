@@ -1,12 +1,15 @@
 import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
+import { fileURLToPath } from "node:url";
+import { ESLint } from "eslint";
 import { describe, expect, it } from "vitest";
 import plugin from "../src/index";
-import { reactRules } from "../src/shared/configs";
+import { reactRules, typeDrivenRules } from "../src/shared/configs";
 import { matchesAnyGlob } from "../src/utils/matching/matches-any-glob";
 
 const require = createRequire(import.meta.url);
 const packageJson = require("../package.json") as { version: string };
+type ESLintOptions = ConstructorParameters<typeof ESLint>[0];
 
 type AllowFilePatternsOptions = {
   allowFilePatterns: readonly string[];
@@ -330,13 +333,16 @@ const ownTypeDrivenRules = ["prefer-schema-validation"];
 const wrapperWithLocalOptions = ["no-unverified-cast"];
 
 describe("reglas type-driven (wrappers de typescript-eslint) en presets tipados", () => {
-  it("activa el set curado completo en backend, frontend, package y nest/base", () => {
+  it("activa el set curado completo en backend, frontend, package, nest/base y astro/typescript", () => {
     const typedPresets = [
       plugin.configs.backend,
       plugin.configs.frontend,
       plugin.configs.package,
       plugin.configs.nest.find(
         (config: { name: string }) => config.name === "skapxd/nest/base",
+      )!,
+      plugin.configs.astro.find(
+        (config: { name: string }) => config.name === "skapxd/astro/typescript",
       )!,
     ];
 
@@ -363,6 +369,71 @@ describe("reglas type-driven (wrappers de typescript-eslint) en presets tipados"
       // Y los presets ya no registran el plugin upstream: el consumidor
       // puede registrar su propia instancia de tseslint sin chocar.
       expect(preset.plugins["@typescript-eslint"], preset.name).toBeUndefined();
+    }
+  });
+
+  it("astro/typescript consume exactamente typeDrivenRules sin duplicar reglas base de Result", () => {
+    const astroTypescript = findConfigByName(
+      plugin.configs.astro,
+      "skapxd/astro/typescript",
+    );
+    const astroBase = findConfigByName(plugin.configs.astro, "skapxd/astro/base");
+    const astroFiles = findConfigByName(
+      plugin.configs.astro,
+      "skapxd/astro/astro-files",
+    );
+
+    for (const [ruleName, expectedEntry] of Object.entries(typeDrivenRules)) {
+      expect(astroTypescript.rules?.[ruleName], ruleName).toEqual(
+        expectedEntry,
+      );
+      expect(astroFiles.rules?.[ruleName], ruleName).toBeUndefined();
+    }
+
+    expect(astroTypescript.rules?.["skapxd/await-requires-result"]).toBe("error");
+    expect(
+      astroTypescript.rules?.["skapxd/result-error-requires-cause"],
+    ).toBeUndefined();
+    expect(
+      astroTypescript.rules?.["skapxd/result-error-requires-handling"],
+    ).toBeUndefined();
+    expect(astroBase.rules?.["skapxd/result-error-requires-cause"]).toBe("error");
+    expect(astroBase.rules?.["skapxd/result-error-requires-handling"]).toBe(
+      "error",
+    );
+  });
+
+  it("el preset astro ejecuta no-unsafe-argument en .ts y .tsx sin fatal", async () => {
+    const eslint = new ESLint({
+      cwd: fileURLToPath(new URL("./fixtures/astro", import.meta.url)),
+      ignore: false,
+      overrideConfig: plugin.configs.astro as unknown as NonNullable<
+        ESLintOptions
+      >["overrideConfig"],
+      overrideConfigFile: true,
+    });
+    const results = await eslint.lintFiles([
+      "src/clean.ts",
+      "src/clean-view.tsx",
+      "src/unsafe.ts",
+      "src/unsafe-view.tsx",
+    ]);
+    const messagesByFile = Object.fromEntries(
+      results.map((result) => [
+        result.filePath.split("/").at(-1),
+        result.messages.map((message) => message.ruleId),
+      ]),
+    );
+
+    expect(messagesByFile["clean.ts"]).toEqual([]);
+    expect(messagesByFile["clean-view.tsx"]).toEqual([]);
+    expect(messagesByFile["unsafe.ts"]).toContain("skapxd/no-unsafe-argument");
+    expect(messagesByFile["unsafe-view.tsx"]).toContain(
+      "skapxd/no-unsafe-argument",
+    );
+
+    for (const result of results) {
+      expect(result.fatalErrorCount, result.filePath).toBe(0);
     }
   });
 
