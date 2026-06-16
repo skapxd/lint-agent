@@ -5,6 +5,9 @@ import { computeRuleLayers } from "../src/utils/cli/adoption/compute-rule-layers
 import { getRuleLayer } from "../src/utils/cli/adoption/get-rule-layer";
 import { RULE_DEPENDENCIES } from "../src/utils/cli/adoption/rule-dependencies";
 import { selectAdoptionRules } from "../src/utils/cli/adoption/select-adoption-rules";
+import { createVerificationOutput } from "../src/utils/cli/adoption/create-verification-output";
+import { formatCompactAdoptionSummary } from "../src/utils/cli/output/machine/format-compact-adoption-summary";
+import { formatCompactVerificationSummary } from "../src/utils/cli/output/machine/format-compact-verification-summary";
 import { createToonLintOutput } from "../src/utils/cli/output/machine/create-toon-lint-output";
 import { rules } from "../src/shared/rules";
 import type { LintFileResult, SkapxdLintOutput } from "../src/utils/cli/types";
@@ -172,5 +175,70 @@ describe("dependencias de adopcion", () => {
       },
     ]);
     expect(toonOutput.adoption?.selectedRules).toEqual(output.adoption.selectedRules);
+  });
+
+  it("formatea el compact plano como orden numerado sin ruido de capa ni anotaciones", () => {
+    const output = createAdoptionOutput(
+      createEvaluationOutput([
+        createLintFile("/repo/else.ts", ["skapxd/no-else"]),
+        createLintFile("/repo/nested.ts", ["skapxd/no-nested-if"]),
+      ]),
+      100,
+    );
+
+    expect(formatCompactAdoptionSummary(output)).toEqual([
+      `adopt 100% | seed ${output.adoption.seed}`,
+      "target 2/2 violations | budget 2",
+      "rules (orden de resolucion, premisas primero):",
+      "  1. skapxd/no-else: 1 viol, 1 file",
+      "  2. skapxd/no-nested-if: 1 viol, 1 file",
+    ]);
+    expect(formatCompactAdoptionSummary(output).join("\n")).not.toContain("capa 0");
+    expect(formatCompactAdoptionSummary(output).join("\n")).not.toContain("[premisa]");
+    expect(formatCompactAdoptionSummary(output).join("\n")).not.toContain("[bloqueada por:");
+  });
+
+  it("formatea el compact con premisa y dependiente sin prefijo skapxd en blockedBy", () => {
+    const output = createAdoptionOutput(
+      createEvaluationOutput([
+        createLintFile("/repo/strict.ts", ["skapxd/requires-strict-tsconfig"]),
+        createLintFile("/repo/branch.ts", ["skapxd/no-impossible-branch"]),
+      ]),
+      100,
+    );
+
+    expect(formatCompactAdoptionSummary(output)).toEqual([
+      `adopt 100% | seed ${output.adoption.seed}`,
+      "target 2/2 violations | budget 2",
+      "rules (orden de resolucion, premisas primero):",
+      "  1. skapxd/requires-strict-tsconfig: 1 viol, 1 file [premisa]",
+      "  2. skapxd/no-impossible-branch: 1 viol, 1 file [bloqueada por: requires-strict-tsconfig]",
+    ]);
+  });
+
+  it("aplica el mismo orden compacto a reglas restantes de --verify", () => {
+    const adoption = createAdoptionOutput(
+      createEvaluationOutput([
+        createLintFile("/repo/strict.ts", ["skapxd/requires-strict-tsconfig"]),
+        createLintFile("/repo/branch.ts", ["skapxd/no-impossible-branch"]),
+      ]),
+      100,
+    );
+    const verification = createVerificationOutput(
+      createEvaluationOutput([
+        createLintFile("/repo/strict.ts", ["skapxd/requires-strict-tsconfig"]),
+        createLintFile("/repo/branch.ts", ["skapxd/no-impossible-branch"]),
+      ]),
+      adoption.adoption.seed,
+    );
+
+    expect(formatCompactVerificationSummary(verification)).toEqual([
+      `verify pending | seed ${adoption.adoption.seed}`,
+      "target 2 remaining | 0/2 rules fixed",
+      "outside target: 0 info violations",
+      "remaining rules (orden de resolucion, premisas primero):",
+      "  1. skapxd/requires-strict-tsconfig: 1 remaining, 1 file [premisa]",
+      "  2. skapxd/no-impossible-branch: 1 remaining, 1 file [bloqueada por: requires-strict-tsconfig]",
+    ]);
   });
 });

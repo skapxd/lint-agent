@@ -1,3 +1,4 @@
+import { formatCompactAdoptionRuleSummaries } from "./format-compact-adoption-rule-summaries";
 import type { SkapxdLintOutput } from "#/utils/cli/types";
 
 export function formatCompactVerificationSummary(output: SkapxdLintOutput) {
@@ -8,15 +9,15 @@ export function formatCompactVerificationSummary(output: SkapxdLintOutput) {
   }
 
   const state = verification.completed ? "complete" : "pending";
-  const remainingRules = verification.remainingRules.map(
-    (rule) =>
-      `  - ${rule.ruleId}: ${rule.violationCount} remaining, ${rule.affectedFileCount} files`,
-  );
 
   return [
     `verify ${state} | seed ${verification.seed}`,
     `target ${verification.remainingViolationCount} remaining | ${verification.fixedRuleCount}/${verification.targetRules.length} rules fixed`,
     `outside target: ${verification.outsideViolationCount} info violations`,
-    ...remainingRules,
+    ...formatCompactAdoptionRuleSummaries({
+      countLabel: "remaining",
+      header: "remaining rules (orden de resolucion, premisas primero):",
+      rules: verification.remainingRules,
+    }),
   ];
 }
