@@ -51,17 +51,30 @@ export type SkapxdLintOutput = {
   adoption?: AdoptionOutput;
   changedFiles?: string[];
   configDeleted?: boolean;
+  countBreakdown?: CountBreakdownOutput;
   errorCount: number;
   files: LintFileResult[];
   mode: "adopt" | "changed" | "evaluate" | "state" | "verify";
   omittedFileCount?: number;
   preset?: CliPreset;
+  resolutionPrompt?: string;
+  rulePlan?: readonly RulePlanEntry[];
   ruleSummaries?: readonly AdoptionRuleSummary[];
   state?: StateOutput;
   status: CliStatus;
   targetPath?: string;
   typeConfig?: TypeConfigOutput;
+  unattributedFindings?: readonly UnattributedFindingOutput[];
   verification?: VerificationOutput;
+  warningCount: number;
+};
+
+export type CountBreakdownOutput = {
+  actionableErrorCount: number;
+  filesWithFindings: number;
+  skapxdRuleViolationCount: number;
+  totalErrorCount: number;
+  unattributedErrorCount: number;
   warningCount: number;
 };
 
@@ -96,6 +109,29 @@ export type AdoptionRuleSummary = {
   dependencyLayer: number;
   ruleId: string;
   violationCount: number;
+};
+
+export type RuleResolutionRole = "blocked" | "independent" | "premise";
+
+export type RulePlanEntry = AdoptionRuleSummary & {
+  resolutionRole: RuleResolutionRole;
+  unblocks?: readonly string[];
+};
+
+export type UnattributedFindingCategory =
+  | "external-rule"
+  | "fatal"
+  | "parse"
+  | "rule-definition-missing";
+
+export type UnattributedFindingOutput = {
+  actionability: "cli-config-not-project-debt";
+  category: UnattributedFindingCategory;
+  column: number;
+  filePath: string;
+  line: number;
+  message: string;
+  ruleId: string | null;
 };
 
 export type VerificationOutput = {

@@ -16,8 +16,8 @@ export function formatCompactVerificationSummary(output: SkapxdLintOutput) {
     `outside target: ${verification.outsideViolationCount} info violations`,
     ...formatCompactAdoptionRuleSummaries({
       countLabel: "remaining",
-      header: "remaining rules (orden de resolucion, premisas primero):",
-      rules: verification.remainingRules,
+      header: "rules (plan de resolucion):",
+      rules: output.rulePlan ?? [],
     }),
   ];
 }

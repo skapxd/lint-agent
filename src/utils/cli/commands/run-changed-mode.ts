@@ -3,6 +3,7 @@ import { ESLint } from "eslint";
 import { createAdoptionRuleSummaries } from "#/utils/cli/adoption/create-adoption-rule-summaries";
 import { createExecutionErrorOutput } from "#/utils/cli/output/machine/create-execution-error-output";
 import { getChangedLintFiles } from "#/utils/cli/eslint-run/get-changed-lint-files";
+import { createReportGuidance } from "#/utils/cli/output/report/create-report-guidance";
 import { summarizeLintResults } from "#/utils/cli/output/machine/summarize-lint-results";
 import { toLintFileResults } from "#/utils/cli/output/machine/to-lint-file-results";
 import type { SkapxdLintOutput } from "#/utils/cli/types";
@@ -70,6 +71,12 @@ export async function runChangedMode(base: string | null, cwd: string) {
 
   return {
     changedFiles: changed.files,
+    ...createReportGuidance({
+      errorCount: summary.errorCount,
+      files,
+      ruleSummaries,
+      warningCount: summary.warningCount,
+    }),
     errorCount: summary.errorCount,
     files,
     mode: "changed",

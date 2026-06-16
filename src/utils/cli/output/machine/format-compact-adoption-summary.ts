@@ -13,8 +13,8 @@ export function formatCompactAdoptionSummary(output: SkapxdLintOutput) {
     `target ${adoption.targetViolationCount}/${adoption.totalViolationCount} violations | budget ${adoption.budget}`,
     ...formatCompactAdoptionRuleSummaries({
       countLabel: "viol",
-      header: "rules (orden de resolucion, premisas primero):",
-      rules: adoption.selectedRules,
+      header: "rules (plan de resolucion):",
+      rules: output.rulePlan ?? [],
     }),
   ];
 }

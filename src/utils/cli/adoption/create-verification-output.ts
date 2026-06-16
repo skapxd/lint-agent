@@ -3,6 +3,7 @@ import { decodeAdoptionSeed } from "./decode-adoption-seed";
 import { filterLintFilesByRuleIds } from "./filter-lint-files-by-rule-ids";
 import { filterLintFilesExcludingRuleIds } from "./filter-lint-files-excluding-rule-ids";
 import { summarizeLintResults } from "#/utils/cli/output/machine/summarize-lint-results";
+import { createReportGuidance } from "#/utils/cli/output/report/create-report-guidance";
 import type { SkapxdLintOutput } from "#/utils/cli/types";
 
 export function createVerificationOutput(
@@ -25,12 +26,22 @@ export function createVerificationOutput(
   const fixedRules = seedPayload.rules.filter((rule) => !remainingRuleIds.has(rule));
   const completed =
     targetSummary.errorCount === 0 && targetSummary.warningCount === 0;
+  const reportGuidance = createReportGuidance({
+    errorCount: targetSummary.errorCount,
+    files: targetFiles,
+    ruleSummaries: remainingRules,
+    seed,
+    warningCount: targetSummary.warningCount,
+  });
 
   return {
     ...evaluationOutput,
+    ...reportGuidance,
     errorCount: targetSummary.errorCount,
     files: targetFiles,
     mode: "verify",
+    resolutionPrompt: reportGuidance.resolutionPrompt,
+    rulePlan: reportGuidance.rulePlan,
     status: completed ? "ok" : "findings",
     verification: {
       completed,

@@ -32,6 +32,30 @@ type CliRuleSummary = {
   violationCount: number;
 };
 
+type CliCountBreakdown = {
+  actionableErrorCount: number;
+  filesWithFindings: number;
+  skapxdRuleViolationCount: number;
+  totalErrorCount: number;
+  unattributedErrorCount: number;
+  warningCount: number;
+};
+
+type CliRulePlanEntry = CliRuleSummary & {
+  resolutionRole: "blocked" | "independent" | "premise";
+  unblocks?: readonly string[];
+};
+
+type CliUnattributedFinding = {
+  actionability: "cli-config-not-project-debt";
+  category: "external-rule" | "fatal" | "parse" | "rule-definition-missing";
+  column: number;
+  filePath: string;
+  line: number;
+  message: string;
+  ruleId: string | null;
+};
+
 type CliJson = {
   adoption?: {
     budget: number;
@@ -44,6 +68,7 @@ type CliJson = {
   };
   changedFiles?: string[];
   configDeleted?: boolean;
+  countBreakdown?: CliCountBreakdown;
   errorCount: number;
   files: Array<{
     filePath: string;
@@ -57,6 +82,8 @@ type CliJson = {
   mode: "adopt" | "changed" | "evaluate" | "state" | "verify";
   omittedFileCount?: number;
   preset?: string;
+  resolutionPrompt?: string;
+  rulePlan?: CliRulePlanEntry[];
   ruleSummaries?: CliRuleSummary[];
   state?: {
     action: "reset";
@@ -67,6 +94,7 @@ type CliJson = {
     addedFlags: string[];
     source: "cloned" | "generated" | "project";
   };
+  unattributedFindings?: CliUnattributedFinding[];
   verification?: {
     completed: boolean;
     fixedRuleCount: number;
@@ -318,6 +346,22 @@ describe("skapxd-lint", () => {
         }),
       ]),
     );
+    expect(json?.countBreakdown).toEqual({
+      actionableErrorCount: 1,
+      filesWithFindings: 1,
+      skapxdRuleViolationCount: 1,
+      totalErrorCount: 1,
+      unattributedErrorCount: 0,
+      warningCount: 0,
+    });
+    expect(json?.resolutionPrompt).toContain("como resolver:");
+    expect(json?.rulePlan).toEqual([
+      expect.objectContaining({
+        resolutionRole: "independent",
+        ruleId: "skapxd/no-else",
+      }),
+    ]);
+    expect(json?.unattributedFindings).toEqual([]);
     expect(json?.files[0]?.messages.some((message) => message.message.length > 0)).toBe(
       true,
     );
@@ -377,10 +421,22 @@ describe("skapxd-lint", () => {
     expect(explicitResult.stdout).not.toMatch(ansiEscapePattern);
     expect(result.stdout).toContain("errors |");
     expect(result.stdout).toContain("files | preset base");
-    expect(result.stdout).toContain("rules (orden de resolucion, premisas primero):");
+    expect(result.stdout).toContain("conteo:");
+    expect(result.stdout).toContain("tipos:");
+    expect(result.stdout).toContain("como resolver:");
+    expect(result.stdout).toContain("rules (plan de resolucion):");
     expect(result.stdout).toContain("index.ts");
     expect(result.stdout).toContain("skapxd/no-else");
-    expect(result.stdout.indexOf("rules (orden de resolucion, premisas primero):")).toBeLessThan(
+    expect(result.stdout.indexOf("conteo:")).toBeLessThan(
+      result.stdout.indexOf("tipos:"),
+    );
+    expect(result.stdout.indexOf("tipos:")).toBeLessThan(
+      result.stdout.indexOf("como resolver:"),
+    );
+    expect(result.stdout.indexOf("como resolver:")).toBeLessThan(
+      result.stdout.indexOf("rules (plan de resolucion):"),
+    );
+    expect(result.stdout.indexOf("rules (plan de resolucion):")).toBeLessThan(
       result.stdout.indexOf("index.ts"),
     );
     expect(result.stdout).not.toContain("errorCount:");
@@ -412,11 +468,28 @@ describe("skapxd-lint", () => {
     expect(result.stdout).toContain("findings[");
     expect(result.stdout).not.toContain("errorCount:");
     expect(toon).toMatchObject({
+      countBreakdown: {
+        actionableErrorCount: 1,
+        filesWithFindings: 1,
+        skapxdRuleViolationCount: 1,
+        totalErrorCount: 1,
+        unattributedErrorCount: 0,
+        warningCount: 0,
+      },
       errors: expect.any(Number),
       findings: expect.any(Array),
       messages: expect.any(Array),
       mode: "evaluate",
       preset: "base",
+      resolutionPrompt: expect.arrayContaining([
+        expect.stringContaining("como resolver:"),
+      ]),
+      rulePlan: [
+        expect.objectContaining({
+          resolutionRole: "independent",
+          ruleId: "skapxd/no-else",
+        }),
+      ],
       ruleSummaries: expect.arrayContaining([
         expect.objectContaining({
           dependencyLayer: 0,
@@ -428,6 +501,7 @@ describe("skapxd-lint", () => {
         addedFlags: [],
         source: "cloned",
       },
+      unattributedFindings: [],
     });
   });
 
@@ -454,6 +528,9 @@ describe("skapxd-lint", () => {
     expect(result.status).toBe(1);
     expect(report.status).toBe("findings");
     expect(report.mode).toBe("evaluate");
+    expect(report.countBreakdown?.actionableErrorCount).toBe(1);
+    expect(report.resolutionPrompt).toContain("como resolver:");
+    expect(report.rulePlan?.[0]?.resolutionRole).toBe("independent");
     expect(result.stdout).toContain("errors |");
     expect(result.stdout).toContain(`files | preset base → salida en ${outputPath}`);
     expect(result.stdout).not.toContain('"files"');
@@ -483,8 +560,14 @@ describe("skapxd-lint", () => {
 
     expect(result.status).toBe(1);
     expect(toon).toMatchObject({
+      countBreakdown: expect.objectContaining({
+        actionableErrorCount: 1,
+      }),
       mode: "evaluate",
       preset: "base",
+      rulePlan: expect.arrayContaining([
+        expect.objectContaining({ resolutionRole: "independent" }),
+      ]),
       status: "findings",
     });
     expect(result.stdout).toContain(`files | preset base → salida en ${outputPath}`);
@@ -514,6 +597,9 @@ describe("skapxd-lint", () => {
 
     expect(result.status).toBe(1);
     expect(report).toContain("files | preset base");
+    expect(report).toContain("conteo:");
+    expect(report).toContain("como resolver:");
+    expect(report).toContain("rules (plan de resolucion):");
     expect(report).toContain("index.ts");
     expect(report).toContain("skapxd/no-else");
     expect(result.stdout).toContain(`files | preset base → salida en ${outputPath}`);
@@ -537,6 +623,16 @@ describe("skapxd-lint", () => {
     expect(result.status).toBe(0);
     expect(json?.status).toBe("ok");
     expect(json?.errorCount).toBe(0);
+    expect(json?.countBreakdown).toEqual({
+      actionableErrorCount: 0,
+      filesWithFindings: 0,
+      skapxdRuleViolationCount: 0,
+      totalErrorCount: 0,
+      unattributedErrorCount: 0,
+      warningCount: 0,
+    });
+    expect(json?.resolutionPrompt).toBeUndefined();
+    expect(json?.rulePlan).toBeUndefined();
   });
 
   it("--adopt selecciona reglas en orden determinista y emite seed estable", () => {
@@ -577,6 +673,23 @@ describe("skapxd-lint", () => {
       },
     ]);
     expect(firstRun.json?.adoption?.seed).toBe(secondRun.json?.adoption?.seed);
+    expect(firstRun.json?.countBreakdown).toEqual({
+      actionableErrorCount: 1,
+      filesWithFindings: 1,
+      skapxdRuleViolationCount: 1,
+      totalErrorCount: 1,
+      unattributedErrorCount: 0,
+      warningCount: 0,
+    });
+    expect(firstRun.json?.resolutionPrompt).toContain(
+      `cierra este lote con \`--verify ${firstRun.json?.adoption?.seed}\``,
+    );
+    expect(firstRun.json?.rulePlan).toEqual([
+      expect.objectContaining({
+        resolutionRole: "independent",
+        ruleId: "skapxd/no-else",
+      }),
+    ]);
     expect(firstRun.json?.files).toHaveLength(1);
     expect(firstRun.json?.files[0]?.messages.every(
       (message) => message.ruleId === "skapxd/no-else",
@@ -613,6 +726,10 @@ describe("skapxd-lint", () => {
         violationCount: 1,
       },
     ]);
+    expect(report.resolutionPrompt).toContain(
+      `cierra este lote con \`--verify ${report.adoption?.seed}\``,
+    );
+    expect(report.rulePlan?.[0]?.resolutionRole).toBe("independent");
     expect(result.stdout).toContain(`files | preset base → salida en ${outputPath}`);
     expect(result.stdout).not.toContain('"adoption"');
   });
@@ -699,6 +816,15 @@ describe("skapxd-lint", () => {
     ]);
     expect(seedPayload.rules).toEqual(["skapxd/no-else"]);
     expect(output.adoption.totalViolationCount).toBe(1);
+    expect(output.countBreakdown).toEqual({
+      actionableErrorCount: 1,
+      filesWithFindings: 1,
+      skapxdRuleViolationCount: 1,
+      totalErrorCount: 1,
+      unattributedErrorCount: 0,
+      warningCount: 0,
+    });
+    expect(output.unattributedFindings).toEqual([]);
     expect(output.files[0]?.messages).toEqual([
       expect.objectContaining({ ruleId: "skapxd/no-else" }),
     ]);
@@ -789,6 +915,16 @@ describe("skapxd-lint", () => {
       targetRules: ["skapxd/no-else"],
     });
     expect(verification.json?.verification?.outsideViolationCount).toBeGreaterThan(0);
+    expect(verification.json?.countBreakdown).toEqual({
+      actionableErrorCount: 0,
+      filesWithFindings: 0,
+      skapxdRuleViolationCount: 0,
+      totalErrorCount: 0,
+      unattributedErrorCount: 0,
+      warningCount: 0,
+    });
+    expect(verification.json?.resolutionPrompt).toBeUndefined();
+    expect(verification.json?.rulePlan).toBeUndefined();
     expect(verification.json?.files).toEqual([]);
   });
 
@@ -828,6 +964,15 @@ describe("skapxd-lint", () => {
         ruleId: "skapxd/no-else",
         violationCount: 1,
       },
+    ]);
+    expect(verification.json?.resolutionPrompt).toContain(
+      `cierra este lote con \`--verify ${seed}\``,
+    );
+    expect(verification.json?.rulePlan).toEqual([
+      expect.objectContaining({
+        resolutionRole: "independent",
+        ruleId: "skapxd/no-else",
+      }),
     ]);
     expect(verification.json?.files.every((file) =>
       file.messages.every((message) => message.ruleId === "skapxd/no-else"),

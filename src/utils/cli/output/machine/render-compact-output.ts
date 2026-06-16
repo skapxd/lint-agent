@@ -1,10 +1,13 @@
 import { formatCompactAdoptionSummary } from "./format-compact-adoption-summary";
 import { formatCompactAdoptionRuleSummaries } from "./format-compact-adoption-rule-summaries";
+import { formatCompactCountBreakdown } from "./format-compact-count-breakdown";
 import { formatCompactMessage } from "./format-compact-message";
 import { formatCompactPath } from "./format-compact-path";
+import { formatCompactResolutionPrompt } from "./format-compact-resolution-prompt";
 import { formatCompactStateSummary } from "./format-compact-state-summary";
 import { formatCompactSummary } from "./format-compact-summary";
 import { formatCompactTypeConfig } from "./format-compact-type-config";
+import { formatCompactUnattributedFindings } from "./format-compact-unattributed-findings";
 import { formatCompactVerificationSummary } from "./format-compact-verification-summary";
 import type { SkapxdLintOutput } from "#/utils/cli/types";
 
@@ -24,21 +27,41 @@ import type { SkapxdLintOutput } from "#/utils/cli/types";
 export function renderCompactOutput(output: SkapxdLintOutput) {
   const lines = [formatCompactSummary(output)];
   const adoptionSummary = formatCompactAdoptionSummary(output);
+  const countBreakdown = formatCompactCountBreakdown(output.countBreakdown);
+  const resolutionPrompt = formatCompactResolutionPrompt(output.resolutionPrompt);
   const stateSummary = formatCompactStateSummary(output);
   const typeConfigSummary = formatCompactTypeConfig(output.typeConfig);
+  const unattributedFindings = formatCompactUnattributedFindings({
+    findings: output.unattributedFindings,
+    targetPath: output.targetPath,
+  });
   const verificationSummary = formatCompactVerificationSummary(output);
   const hasAdoptionSummary = adoptionSummary.length > 0;
+  const hasCountBreakdown = countBreakdown.length > 0;
+  const hasResolutionPrompt = resolutionPrompt.length > 0;
   const hasStateSummary = stateSummary.length > 0;
+  const hasUnattributedFindings = unattributedFindings.length > 0;
   const hasVerificationSummary = verificationSummary.length > 0;
-  const ruleSummaries = output.ruleSummaries ?? [];
+  const rulePlan = output.rulePlan ?? [];
   const shouldShowRuleSummaries =
     !hasAdoptionSummary &&
     !hasVerificationSummary &&
-    ruleSummaries.length > 0;
+    rulePlan.length > 0;
   const filesWithFindings = output.files.filter((file) => file.messages.length > 0);
 
+  if (hasCountBreakdown) {
+    lines.push("");
+    lines.push(...countBreakdown);
+  }
+
   if (typeConfigSummary) {
+    lines.push("");
     lines.push(typeConfigSummary);
+  }
+
+  if (hasResolutionPrompt) {
+    lines.push("");
+    lines.push(...resolutionPrompt);
   }
 
   if (shouldShowRuleSummaries) {
@@ -46,8 +69,8 @@ export function renderCompactOutput(output: SkapxdLintOutput) {
     lines.push(
       ...formatCompactAdoptionRuleSummaries({
         countLabel: "viol",
-        header: "rules (orden de resolucion, premisas primero):",
-        rules: ruleSummaries,
+        header: "rules (plan de resolucion):",
+        rules: rulePlan,
       }),
     );
   }
@@ -65,6 +88,11 @@ export function renderCompactOutput(output: SkapxdLintOutput) {
   if (hasVerificationSummary) {
     lines.push("");
     lines.push(...verificationSummary);
+  }
+
+  if (hasUnattributedFindings) {
+    lines.push("");
+    lines.push(...unattributedFindings);
   }
 
   for (const file of filesWithFindings) {
