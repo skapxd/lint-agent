@@ -10,6 +10,36 @@ Cuando el exceso viene de varios `useState`, la salida depende de la relación e
 - Estados relacionados porque cambian juntos mediante transiciones explícitas → moverlos a `useReducer` con acciones de unión discriminada, para que cada transición quede nombrada y atómica.
 - Estados independientes entre sí → dividir el componente o hook. Si no forman una máquina común, juntarlos en un reducer sería teatro: el problema es que la unidad hace demasiado.
 
+El caso típico es un hook de fetch, que tiene cuatro fases (`idle | loading | success | error`) pero suele modelarse con flags sueltos:
+
+```tsx
+// ❌ tres useState para el mismo fetch → dispara max-hook-size, y nada impide
+//    el estado imposible: loading, error y user llenos a la vez
+function useUser(id: string) {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+  // useEffect: setLoading(true) → al resolver, setUser(...) o setError(...), y setLoading(false)
+  return { user, loading, error };
+}
+```
+
+```tsx
+// ✅ un useState con unión discriminada → loading + error + user juntos es irrepresentable
+type UserState =
+  | { status: "idle" }
+  | { status: "loading" }
+  | { status: "success"; user: User }
+  | { status: "error"; error: Error };
+
+function useUser(id: string) {
+  const [state, setState] = useState<UserState>({ status: "idle" });
+  // useEffect: setState({ status: "loading" }) → setState({ status: "success", user })
+  //            o setState({ status: "error", error })
+  return state; // el consumidor decide con match(state)...exhaustive(): cada fase, una rama
+}
+```
+
 Las reglas hermanas [`skapxd/prefer-tagged-union-state`](./prefer-tagged-union-state.md) y [`skapxd/no-runtime-state-guard`](./no-runtime-state-guard.md) materializan la primera salida: el estado inválido debe quedar fuera del tipo, no vigilado en runtime ni repartido entre flags.
 
 Opciones (los presets `frontend` y `next` usan `maxLines: 120`, `maxUseState: 1`):
