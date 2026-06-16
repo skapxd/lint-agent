@@ -3,6 +3,12 @@ import process from "node:process";
 import { getEslintBin } from "./get-eslint-bin";
 import { parseEslintJson } from "./parse-eslint-json";
 
+const BYTES_PER_KIBIBYTE = Number("1024");
+const BYTES_PER_MEBIBYTE = BYTES_PER_KIBIBYTE * BYTES_PER_KIBIBYTE;
+const ESLINT_JSON_MAX_BUFFER_MEBIBYTES = Number("100");
+const ESLINT_JSON_MAX_BUFFER_BYTES =
+  BYTES_PER_MEBIBYTE * ESLINT_JSON_MAX_BUFFER_MEBIBYTES;
+
 export function runEslintJson(
   projectRoot: string,
   configPath: string,
@@ -22,6 +28,7 @@ export function runEslintJson(
     {
       cwd: projectRoot,
       encoding: "utf8",
+      maxBuffer: ESLINT_JSON_MAX_BUFFER_BYTES,
       stdio: ["pipe", "pipe", "pipe"],
     },
   );

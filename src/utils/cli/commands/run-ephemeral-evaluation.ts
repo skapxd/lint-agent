@@ -1,7 +1,9 @@
 import path from "node:path";
+import { realpathSync } from "node:fs";
 import { trySafe } from "@skapxd/result";
 import { detectCliPreset } from "#/utils/project/detect-cli-preset";
 import { createEphemeralConfig } from "#/utils/cli/eslint-run/create-ephemeral-config";
+import { createEphemeralTypeConfig } from "#/utils/cli/tsconfig/create-ephemeral-type-config";
 import { createLintTargetPattern } from "#/utils/cli/eslint-run/create-lint-target-pattern";
 import { getProjectRoot } from "#/utils/cli/env/get-project-root";
 import { omitProjectServiceParseErrorResults } from "#/utils/cli/eslint-run/omit-project-service-parse-error-results";
@@ -15,17 +17,33 @@ export function runEphemeralEvaluation(
   rawTargetPath: string,
   explicitPreset: CliPreset | null,
   includeTests: boolean,
+  useProjectTsconfig: boolean,
 ) {
-  const targetPath = path.resolve(rawTargetPath);
+  const targetPath = realpathSync(path.resolve(rawTargetPath));
   const projectRoot = getProjectRoot(targetPath);
   const lintTargetPattern = createLintTargetPattern(targetPath, projectRoot);
   const preset = explicitPreset ?? detectCliPreset(projectRoot);
-  const configPath = createEphemeralConfig(projectRoot, preset, includeTests);
+  const typeConfig = createEphemeralTypeConfig(projectRoot, useProjectTsconfig);
+  let configPath = "";
+  const lintResults = trySafe(() => {
+    configPath = createEphemeralConfig(
+      projectRoot,
+      preset,
+      includeTests,
+      typeConfig.path,
+    );
 
-  const lintResults = trySafe(() =>
-    runEslintJson(projectRoot, configPath, lintTargetPattern),
-  );
-  removeFileIfExists(configPath);
+    return runEslintJson(projectRoot, configPath, lintTargetPattern);
+  });
+  const hasConfigPath = configPath.length > 0;
+
+  if (hasConfigPath) {
+    removeFileIfExists(configPath);
+  }
+
+  if (typeConfig.path) {
+    removeFileIfExists(typeConfig.path);
+  }
 
   if (!lintResults.ok) {
     throw lintResults.error;
@@ -45,6 +63,7 @@ export function runEphemeralEvaluation(
     preset,
     status,
     targetPath,
+    typeConfig: typeConfig.typeConfig,
     warningCount: summary.warningCount,
   };
 

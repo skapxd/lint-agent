@@ -26,6 +26,7 @@ Flags:
   --format <json|compact|toon> Formato de salida de maquina. Unidad: json, compact o toon. Default: compact sin TTY; texto legible con TTY.
   --output <archivo>      Vuelca la salida a un archivo; util cuando el output es grande y la terminal lo trunca.
   --include-tests         Incluye tests en evaluacion efimera. Unidad: booleano. Default: false.
+  --use-project-tsconfig  Usa el tsconfig del proyecto tal cual. Unidad: booleano. Default: false; por default el CLI clona/endurece la config de tipos.
   --no-interactive        Fuerza modo no-interactivo aunque haya TTY. Unidad: booleano. Default: false.
   --yes                   Alias de --no-interactive para scripts/agentes. Unidad: booleano. Default: false.
   --help                  Muestra esta ayuda. Unidad: booleano. Default: false.
@@ -62,6 +63,7 @@ Ignorados en evaluacion efimera:
   Siempre: node_modules, dist, build, coverage, configs, fixtures y mocks.
   Tests: ignorados por default; usa --include-tests para evaluarlos.
   Archivos fuera del tsconfig/project service: omitidos y contados aparte.
+  Tipos: por default se evalua con un tsconfig temporal que clona el del proyecto y activa strict, noImplicitReturns y noUncheckedIndexedAccess; usa --use-project-tsconfig para desactivar ese endurecimiento.
 
 Exit codes:
   0  Sin hallazgos.

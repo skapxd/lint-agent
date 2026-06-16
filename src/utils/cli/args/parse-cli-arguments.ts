@@ -36,6 +36,7 @@ export function parseCliArguments(args: readonly string[]): CliParseResult {
         preset: { type: "string" },
         "reset-state": { type: "boolean" },
         "resume-last": { type: "boolean" },
+        "use-project-tsconfig": { type: "boolean" },
         verify: { type: "string" },
         yes: { type: "boolean" },
       },
@@ -149,6 +150,7 @@ export function parseCliArguments(args: readonly string[]): CliParseResult {
       rawPreset,
       resetState,
       resumeLast,
+      useProjectTsconfig: parsed.value.values["use-project-tsconfig"] === true,
       verifySeed,
     },
   };

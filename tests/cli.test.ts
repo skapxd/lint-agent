@@ -60,6 +60,10 @@ type CliJson = {
     statePath: string;
   };
   status: string;
+  typeConfig?: {
+    addedFlags: string[];
+    source: "cloned" | "generated" | "project";
+  };
   verification?: {
     completed: boolean;
     fixedRuleCount: number;
@@ -173,6 +177,37 @@ function writeScopedFixture(projectRoot: string) {
   writeFileSync(
     path.join(projectRoot, "fixtures", "bad.ts"),
     "const enabled = true;\nif (enabled) {\n  console.log(enabled);\n} else {\n  console.log(false);\n}\n",
+    "utf8",
+  );
+}
+
+function writeLooseIndexedAccessAstroFixture(projectRoot: string) {
+  mkdirSync(path.join(projectRoot, "src"), { recursive: true });
+  writeFileSync(path.join(projectRoot, "astro.config.mjs"), "export default {};\n", "utf8");
+  writeFileSync(
+    path.join(projectRoot, "tsconfig.json"),
+    JSON.stringify({
+      include: ["src/**/*.ts"],
+      compilerOptions: {
+        noImplicitReturns: true,
+        strict: true,
+      },
+    }),
+    "utf8",
+  );
+  writeFileSync(
+    path.join(projectRoot, "src", "index.ts"),
+    "const rows = [\"ready\"];\nconst first = rows[0];\n\nif (first === undefined) {\n  throw new Error(\"missing row\");\n}\n\nconsole.log(first.toUpperCase());\n",
+    "utf8",
+  );
+}
+
+function writeNoTsconfigAstroFixture(projectRoot: string) {
+  mkdirSync(path.join(projectRoot, "src"), { recursive: true });
+  writeFileSync(path.join(projectRoot, "astro.config.mjs"), "export default {};\n", "utf8");
+  writeFileSync(
+    path.join(projectRoot, "src", "index.ts"),
+    "const value = \"ready\";\nconsole.log(value);\n",
     "utf8",
   );
 }
@@ -374,6 +409,10 @@ describe("skapxd-lint", () => {
       mode: "evaluate",
       preset: "base",
       status: "findings",
+      typeConfig: {
+        addedFlags: [],
+        source: "cloned",
+      },
     });
   });
 
@@ -1023,6 +1062,7 @@ describe("skapxd-lint", () => {
       "--yes",
       "--format",
       "json",
+      "--use-project-tsconfig",
     ]);
 
     expect(result.status).toBe(1);
@@ -1078,6 +1118,117 @@ describe("skapxd-lint", () => {
     expect(json?.configDeleted).toBe(true);
     expect(afterFiles).toEqual(beforeFiles);
     expect(afterFiles.some((file) => file.startsWith(".tmp-skapxd-lint-"))).toBe(false);
+    expect(afterFiles.some((file) => file.startsWith(".tmp-skapxd-tsconfig-"))).toBe(false);
+  });
+
+  it("endurece el tsconfig clonado y evita falsos positivos de no-impossible-branch por acceso indexado", () => {
+    const projectRoot = createTempProject("skapxd-cli-type-config-indexed-");
+    writeLooseIndexedAccessAstroFixture(projectRoot);
+
+    const hardened = runCli([
+      projectRoot,
+      "--preset",
+      "astro",
+      "--yes",
+      "--format",
+      "json",
+    ]);
+    const projectConfig = runCli([
+      projectRoot,
+      "--preset",
+      "astro",
+      "--yes",
+      "--format",
+      "json",
+      "--use-project-tsconfig",
+    ]);
+    const hardenedMessages = JSON.stringify(hardened.json?.files ?? []);
+    const projectMessages = JSON.stringify(projectConfig.json?.files ?? []);
+
+    expect(hardened.result.status).toBe(1);
+    expect(hardened.json?.typeConfig).toEqual({
+      addedFlags: ["noUncheckedIndexedAccess"],
+      source: "cloned",
+    });
+    expect(hardenedMessages).not.toContain("skapxd/no-impossible-branch");
+    expect(hardenedMessages).toContain("skapxd/requires-strict-tsconfig");
+    expect(projectConfig.result.status).toBe(1);
+    expect(projectConfig.json?.typeConfig).toEqual({
+      addedFlags: [],
+      source: "project",
+    });
+    expect(projectMessages).toContain("skapxd/no-impossible-branch");
+  });
+
+  it("genera tsconfig base cuando el proyecto no tiene uno y limpia el temporal", () => {
+    const projectRoot = createTempProject("skapxd-cli-type-config-generated-");
+    writeNoTsconfigAstroFixture(projectRoot);
+    const beforeFiles = listProjectFiles(projectRoot);
+
+    const { json, result } = runCli([
+      projectRoot,
+      "--preset",
+      "astro",
+      "--yes",
+      "--format",
+      "json",
+    ]);
+    const afterFiles = listProjectFiles(projectRoot);
+    const messages = JSON.stringify(json?.files ?? []);
+
+    expect(result.status).toBe(1);
+    expect(json?.status).toBe("findings");
+    expect(json?.typeConfig).toEqual({
+      addedFlags: ["strict", "noImplicitReturns", "noUncheckedIndexedAccess"],
+      source: "generated",
+    });
+    expect(messages).toContain("skapxd/requires-strict-tsconfig");
+    expect(messages).not.toContain("Parsing error");
+    expect(afterFiles).toEqual(beforeFiles);
+    expect(afterFiles.some((file) => file.startsWith(".tmp-skapxd-tsconfig-"))).toBe(false);
+  });
+
+  it("declara la config de tipos en compact, json y toon", () => {
+    const projectRoot = createTempProject("skapxd-cli-type-config-output-");
+    writeLooseIndexedAccessAstroFixture(projectRoot);
+
+    const compact = runCliRaw([
+      projectRoot,
+      "--preset",
+      "astro",
+      "--yes",
+      "--format",
+      "compact",
+    ]);
+    const { json } = runCli([
+      projectRoot,
+      "--preset",
+      "astro",
+      "--yes",
+      "--format",
+      "json",
+    ]);
+    const toonResult = runCliRaw([
+      projectRoot,
+      "--preset",
+      "astro",
+      "--yes",
+      "--format",
+      "toon",
+    ]);
+    const toon = decode(toonResult.stdout);
+
+    expect(compact.stdout).toContain("tipos: config endurecida (noUncheckedIndexedAccess)");
+    expect(json?.typeConfig).toEqual({
+      addedFlags: ["noUncheckedIndexedAccess"],
+      source: "cloned",
+    });
+    expect(toon).toMatchObject({
+      typeConfig: {
+        addedFlags: ["noUncheckedIndexedAccess"],
+        source: "cloned",
+      },
+    });
   });
 
   it("el config efimero descarta reglas cuyo plugin no esta registrado", () => {
@@ -1216,6 +1367,7 @@ describe("skapxd-lint", () => {
     expect(result.stdout).toContain("--format <json|compact|toon>");
     expect(result.stdout).toContain("--output <archivo>");
     expect(result.stdout).toContain("--include-tests");
+    expect(result.stdout).toContain("--use-project-tsconfig");
     expect(result.stdout).toContain("--no-interactive");
     expect(result.stdout).toContain("Exit codes:");
     expect(result.stdout).toContain("Ignorados en evaluacion efimera:");

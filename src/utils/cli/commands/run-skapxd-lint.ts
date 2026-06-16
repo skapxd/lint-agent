@@ -154,6 +154,7 @@ export async function runSkapxdLint(streams: CliStreams) {
       path: requestedPath,
       preset: cliArguments.preset,
       streams,
+      useProjectTsconfig: cliArguments.useProjectTsconfig,
       verifySeed: verifySeedResult.value,
     }),
   );
