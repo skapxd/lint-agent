@@ -3,6 +3,7 @@ import {
   createBaseLanguageOptions,
   createTypedLanguageOptions,
   reactRules,
+  typeDrivenRules,
   type OpinionatedConfigList,
   type OpinionatedPluginReference,
 } from "#/shared/configs";
@@ -35,9 +36,8 @@ export function createAstroConfigs(
       name: "skapxd/astro/typescript",
       plugins: { skapxd: pluginReference },
       rules: {
+        ...typeDrivenRules,
         "skapxd/await-requires-result": "error",
-        "skapxd/result-error-requires-cause": "error",
-        "skapxd/result-error-requires-handling": "error",
       },
     },
     {

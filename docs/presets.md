@@ -184,6 +184,10 @@ export default [
 > `eslint-plugin-astro` configurado (su preset recomendado ya lo aporta).
 > Los `.ts/.tsx` sí traen el parser de `typescript-eslint` incluido.
 
+El bloque `src/**/*.{ts,tsx}` de Astro trae el mismo set type-driven de `shared.frontend` (`no-unsafe-*`, `no-explicit-any`, `no-impossible-branch`, `no-floating-promises`, `no-unverified-cast`, etc.) sobre `projectService`, además de `await-requires-result`. Los archivos `.astro` quedan fuera de ese bloque type-aware: reciben las reglas base, y el parser/procesador específico lo sigue aportando `eslint-plugin-astro`.
+
+Si `skapxd/requires-strict-tsconfig` reporta que faltan `noImplicitReturns` o `noUncheckedIndexedAccess`, corrige el `tsconfig` antes de limpiar en masa `no-impossible-branch`: sin esos flags, TypeScript finge que accesos como `rows[0]` o `record[key]` nunca devuelven `undefined`, y esa mentira puede convertir guards necesarios en falsos positivos.
+
 También puedes importar solo el factory de Astro:
 
 ```js
