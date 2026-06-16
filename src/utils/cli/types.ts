@@ -34,6 +34,7 @@ export type CliArguments = {
   rawPreset: string | null;
   resetState: boolean;
   resumeLast: boolean;
+  useProjectTsconfig: boolean;
   verifySeed: string | null;
 };
 
@@ -58,8 +59,24 @@ export type SkapxdLintOutput = {
   state?: StateOutput;
   status: CliStatus;
   targetPath?: string;
+  typeConfig?: TypeConfigOutput;
   verification?: VerificationOutput;
   warningCount: number;
+};
+
+export type TypeConfigFlag =
+  | "noImplicitReturns"
+  | "noUncheckedIndexedAccess"
+  | "strict";
+
+export type TypeConfigOutput = {
+  addedFlags: TypeConfigFlag[];
+  source: "cloned" | "generated" | "project";
+};
+
+export type EphemeralTypeConfig = {
+  path: string | null;
+  typeConfig: TypeConfigOutput;
 };
 
 export type AdoptionOutput = {
@@ -135,5 +152,6 @@ export type RunRequestedModeInput = {
   path: string;
   preset: CliPreset | null;
   streams: CliStreams;
+  useProjectTsconfig: boolean;
   verifySeed: string | null;
 };

@@ -6,6 +6,8 @@ export function createEphemeralConfigContent(
   packageEntryUrl: string,
   preset: CliPreset,
   includeTests: boolean,
+  typeConfigPath: string | null = null,
+  projectRoot: string | null = null,
 ) {
   const testIgnorePatterns = includeTests
     ? []
@@ -17,6 +19,7 @@ export function createEphemeralConfigContent(
       ];
   const ignorePatterns = [
     "**/.tmp-skapxd-lint-*.config.mjs",
+    "**/.tmp-skapxd-tsconfig-*.json",
     "**/node_modules/**",
     "**/dist/**",
     "**/build/**",
@@ -27,6 +30,19 @@ export function createEphemeralConfigContent(
     "**/__mocks__/**",
     ...testIgnorePatterns,
   ];
+  const typeConfigOverride = typeConfigPath === null
+    ? ""
+    : `
+  {
+    files: typeConfigFiles,
+    languageOptions: {
+      parserOptions: {
+        projectService: false,
+        project: ${JSON.stringify(typeConfigPath)},
+        tsconfigRootDir: ${JSON.stringify(projectRoot)},
+      },
+    },
+  },`;
 
   return `import plugin from ${JSON.stringify(packageEntryUrl)};
 
@@ -36,6 +52,9 @@ const lintableFiles = ["**/*.{js,cjs,mjs,ts,cts,mts,jsx,tsx}"];
 const configsWithFiles = configs.map((config) =>
   config.files ? config : { ...config, files: lintableFiles },
 );
+const typeConfigFiles = [
+  ...new Set(configsWithFiles.flatMap((config) => config.files ?? lintableFiles)),
+].filter((pattern) => /[cm]?[jt]sx?/u.test(pattern));
 const getRulePluginName = (ruleId) => {
   if (!ruleId.includes("/")) {
     return null;
@@ -72,6 +91,7 @@ export default [
     ignores: ${JSON.stringify(ignorePatterns, null, GENERATED_CONFIG_JSON_INDENT)},
   },
   ...sanitizeConfigs(configsWithFiles),
+${typeConfigOverride}
 ];
 `;
 }

@@ -8,6 +8,7 @@ export function createEphemeralConfig(
   projectRoot: string,
   preset: CliPreset,
   includeTests: boolean,
+  typeConfigPath: string | null,
 ) {
   const filename = `.tmp-skapxd-lint-${process.pid}-${Date.now()}.config.mjs`;
   const configPath = path.join(projectRoot, filename);
@@ -15,6 +16,8 @@ export function createEphemeralConfig(
     getPackageEntryUrl(),
     preset,
     includeTests,
+    typeConfigPath,
+    projectRoot,
   );
 
   fs.writeFileSync(configPath, content, "utf8");

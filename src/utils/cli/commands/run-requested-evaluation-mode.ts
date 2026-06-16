@@ -7,7 +7,12 @@ import type { RunRequestedModeInput } from "#/utils/cli/types";
 
 export function runRequestedEvaluationMode(input: RunRequestedModeInput) {
   const evaluationOutput = trySafe(() =>
-    runEphemeralEvaluation(input.path, input.preset, input.includeTests),
+    runEphemeralEvaluation(
+      input.path,
+      input.preset,
+      input.includeTests,
+      input.useProjectTsconfig,
+    ),
   );
 
   if (!evaluationOutput.ok) {
