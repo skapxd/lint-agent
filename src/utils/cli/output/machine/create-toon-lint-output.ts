@@ -20,6 +20,7 @@ export function createToonLintOutput(output: SkapxdLintOutput) {
   const messages: ToonLintMessage[] = [];
   const findings: ToonLintFinding[] = [];
   const rootPath = output.targetPath ?? "";
+  const resolutionPrompt = output.resolutionPrompt?.split("\n") ?? [];
 
   for (const file of output.files) {
     for (const message of file.messages) {
@@ -57,6 +58,10 @@ export function createToonLintOutput(output: SkapxdLintOutput) {
     targetPath: output.targetPath ?? null,
     configDeleted: output.configDeleted ?? null,
     changedFiles: output.changedFiles ?? [],
+    countBreakdown: output.countBreakdown ?? null,
+    resolutionPrompt,
+    rulePlan: output.rulePlan ?? [],
+    unattributedFindings: output.unattributedFindings ?? [],
     adoption: output.adoption ?? null,
     ruleSummaries: output.ruleSummaries ?? [],
     verification: output.verification ?? null,

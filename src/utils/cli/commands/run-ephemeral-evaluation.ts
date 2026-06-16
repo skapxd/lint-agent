@@ -10,6 +10,7 @@ import { getProjectRoot } from "#/utils/cli/env/get-project-root";
 import { omitProjectServiceParseErrorResults } from "#/utils/cli/eslint-run/omit-project-service-parse-error-results";
 import { removeFileIfExists } from "#/utils/cli/eslint-run/remove-file-if-exists";
 import { runEslintJson } from "#/utils/cli/eslint-run/run-eslint-json";
+import { createReportGuidance } from "#/utils/cli/output/report/create-report-guidance";
 import { summarizeLintResults } from "#/utils/cli/output/machine/summarize-lint-results";
 import { toLintFileResults } from "#/utils/cli/output/machine/to-lint-file-results";
 import type { CliPreset, SkapxdLintOutput } from "#/utils/cli/types";
@@ -58,6 +59,12 @@ export function runEphemeralEvaluation(
     summary.errorCount > 0 || summary.warningCount > 0 ? "findings" : "ok";
   const output: SkapxdLintOutput = {
     configDeleted: false,
+    ...createReportGuidance({
+      errorCount: summary.errorCount,
+      files,
+      ruleSummaries,
+      warningCount: summary.warningCount,
+    }),
     errorCount: summary.errorCount,
     files,
     mode: "evaluate",
