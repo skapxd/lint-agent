@@ -11,15 +11,19 @@ La skill no reimplementa reglas, presets ni deteccion. Invoca siempre el CLI pub
 
 ## Comando base
 
-Ejecuta el paquete publicado, anclado al major `@6`:
+Ejecuta el paquete publicado, anclado al major `@7`:
 
 ```bash
-npx @skapxd/eslint-opinionated@6 <path> --yes --format toon
+npx @skapxd/eslint-opinionated@7 <path> --yes --format toon
 ```
 
-Anclado a major `@6` (no `@latest` mutable): recibes parches y minors sin saltar a un major que pueda romper o estar comprometido. El paquete se publica en npm con provenance (procedencia verificable). Para adopcion permanente, instala el paquete como devDependency (version fija + lockfile con integridad) y corre el bin `skapxd-lint`; reserva `npx` para auditorias puntuales.
+Anclado a major `@7` (no `@latest` mutable): recibes parches y minors sin saltar a un major que pueda romper o estar comprometido. El paquete se publica en npm con provenance (procedencia verificable). Para adopcion permanente, instala el paquete como devDependency (version fija + lockfile con integridad) y corre el bin `skapxd-lint`; reserva `npx` para auditorias puntuales.
 
 No uses builds locales, no asumas que el paquete esta instalado en el proyecto medido y no dependas del formato `compact` por defecto.
+
+## Tipos autocontenidos (default desde `@7`)
+
+Por defecto el CLI **clona el `tsconfig` del proyecto** a uno temporal y activa `strict`, `noImplicitReturns` y `noUncheckedIndexedAccess`, para que las reglas type-aware (`no-unsafe-*`, `no-impossible-branch`, etc.) opinen con la verdad de runtime aunque el proyecto no tenga esos flags. Esto **reduce falsos positivos** (p. ej. `no-impossible-branch` deja de acusar guards de acceso por indice que son necesarios). La salida lo declara con transparencia: el campo `typeConfig` en `toon`/`json` (`source: cloned|generated|project`, `addedFlags: [...]`) y una linea `tipos:` en `compact`. Usa `--use-project-tsconfig` para evaluar con el `tsconfig` del proyecto tal cual, sin endurecer.
 
 Preferencia de formato:
 
@@ -31,7 +35,7 @@ Preferencia de formato:
 
 1. Corre el preset completo sobre el proyecto:
 
-   ```bash npx @skapxd/eslint-opinionated@6 <path> --yes --format toon ```
+   ```bash npx @skapxd/eslint-opinionated@7 <path> --yes --format toon ```
 
 2. Lee los hallazgos por archivo y regla.
 3. Arregla el codigo antes de que la deuda exista, si el usuario pidio aplicar fixes.
@@ -44,13 +48,13 @@ El objetivo en un proyecto nuevo es que el codigo nazca cumpliendo el preset com
 Usa el bucle `--adopt` y `--verify` para limpiar reglas completas por lotes reproducibles:
 
 ```bash
-npx @skapxd/eslint-opinionated@6 <path> --yes --format toon --adopt 10
+npx @skapxd/eslint-opinionated@7 <path> --yes --format toon --adopt 10
 ```
 
 Para repos con mucha deuda el reporte puede ser enorme y saturar el contexto del agente o la terminal. Vuelca la salida a un archivo con `--output <archivo>` y leelo por partes (grep, por regla, por archivo) en vez de stdout:
 
 ```bash
-npx @skapxd/eslint-opinionated@6 <path> --yes --format toon --output skapxd-report.toon
+npx @skapxd/eslint-opinionated@7 <path> --yes --format toon --output skapxd-report.toon
 ```
 
 Luego lee `skapxd-report.toon` selectivamente; no lo vuelques entero al contexto. El stdout muestra solo el resumen.
@@ -66,7 +70,7 @@ Flujo:
 3. Aplica solo los fixes necesarios para esas reglas objetivo, si el usuario pidio modificar el codigo.
 4. Verifica el mismo lote:
 
-   ```bash npx @skapxd/eslint-opinionated@6 <path> --yes --format toon --verify <seed> ```
+   ```bash npx @skapxd/eslint-opinionated@7 <path> --yes --format toon --verify <seed> ```
 
 5. Si `--verify <seed>` todavia reporta hallazgos del objetivo, sigue corrigiendo ese lote.
 6. Cuando el lote queda limpio, sube el porcentaje o repite `--adopt <percent>` para abrir la siguiente ronda.
@@ -76,6 +80,8 @@ No cierres una ronda por conteo global. Cierra la ronda solo cuando `--verify <s
 ## Lectura de la salida
 
 El valor de la salida no es el conteo bruto. El valor son los mensajes-playbook: cada mensaje ensena que contrato se rompio y que forma de fix espera la regla.
+
+Desde `@7`, el reporte **por defecto** (con o sin `--adopt`) abre con una seccion `rules (orden de resolucion, premisas primero)`: lista numerada de las reglas con hallazgos, ordenada por capa de dependencia y luego esfuerzo, marcando `[premisa]` y `[bloqueada por: ...]`. Empieza por arriba: las premisas primero desbloquean a sus dependientes y evitan trabajo en vano. En `toon`/`json` cada regla expone `dependencyLayer` y `blockedBy`.
 
 Agrupa el trabajo por:
 
@@ -96,7 +102,7 @@ No modifiques el proyecto medido salvo que el usuario pida aplicar los fixes. Si
 Para revisar solo lo tocado por git:
 
 ```bash
-npx @skapxd/eslint-opinionated@6 <path> --yes --format toon --changed --base origin/main
+npx @skapxd/eslint-opinionated@7 <path> --yes --format toon --changed --base origin/main
 ```
 
 Usa este modo para evitar que deuda legacy fuera del diff bloquee una tarea acotada. No lo confundas con adopcion completa del repo.
