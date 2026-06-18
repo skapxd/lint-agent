@@ -86,7 +86,7 @@ describe("dependencias de adopcion", () => {
     }
 
     expect(edgeCount).toBe(9);
-    expect(histogram.get(0)).toBe(49);
+    expect(histogram.get(0)).toBe(50);
     expect(histogram.get(1)).toBe(8);
     expect([...histogram.keys()].sort()).toEqual([0, 1]);
   });
