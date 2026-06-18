@@ -1,6 +1,6 @@
 {
   "name": "@skapxd/eslint-opinionated",
-  "version": "7.3.0",
+  "version": "8.0.0",
   "description": "Reusable ESLint architectural rules for TypeScript, React, backend, frontend, and package projects",
   "packageManager": "pnpm@11.2.2",
   "main": "./dist/index.js",
@@ -94,7 +94,7 @@
   "license": "MIT",
   "dependencies": {
     "@clack/prompts": "^1.5.1",
-    "@skapxd/result": "^1.0.1",
+    "@skapxd/result": "^2.0.1",
     "@toon-format/toon": "^2.3.0",
     "picocolors": "^1.1.1",
     "picomatch": "^4.0.4"
