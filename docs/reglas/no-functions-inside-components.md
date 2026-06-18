@@ -32,7 +32,7 @@ function Card() {
 }
 ```
 
-"Componente" se detecta por nombre PascalCase, así que un hook (`useX`) o un helper en minúscula **sí** pueden tener funciones dentro — ahí es donde se mueve la lógica.
+"Componente" se detecta por nombre PascalCase, así que un hook (`useX`) o un helper en minúscula **sí** pueden tener funciones dentro — ahí es donde se mueve la lógica. **El criterio para elegir destino**: si la función necesita **estado, efectos o APIs de React**, va a un hook (`useX`); si es **lógica pura**, a un helper fuera del componente.
 
 **Opciones.** Las exenciones aplican solo a **flechas de expresión** (sin cuerpo `{ }`) en esa posición exacta: el valor directo de una prop JSX, o el primer argumento de `.map(...)`. La distinción importa: una flecha de expresión solo puede contener una expresión — es declarativa por construcción —, mientras que un bloque da pie a `if`s, variables y llamadas que pertenecen fuera:
 

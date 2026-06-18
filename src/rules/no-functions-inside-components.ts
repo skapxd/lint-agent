@@ -17,7 +17,7 @@ export const noFunctionsInsideComponents: RuleModule = {
     },
     messages: {
       functionInsideComponent:
-        "No definas funciones dentro del componente `{{component}}`: se recrean en cada render. Muevela a un hook (`useX`) o a un helper fuera del componente. Los callbacks inline de JSX y .map solo se permiten como flecha de expresion (sin cuerpo `{ }`): un bloque ya da pie a ifs y logica que pertenece fuera.",
+        "No definas funciones dentro del componente `{{component}}`: se recrean en cada render. Si necesita estado, efectos o APIs de React, muevela a un hook (`useX`); si es logica pura, a un helper fuera del componente. Los callbacks inline de JSX y .map solo se permiten como flecha de expresion (sin cuerpo `{ }`): un bloque ya da pie a ifs y logica que pertenece fuera.",
     },
     schema: [
       {

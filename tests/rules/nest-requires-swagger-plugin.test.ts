@@ -1,5 +1,12 @@
+import { expect, it } from "vitest";
 import { rules } from "../../src/shared/rules";
 import { createRuleTester } from "../rule-tester";
+
+it("missingNestCli da una accion concreta", () => {
+  const message = rules["nest-requires-swagger-plugin"]!.meta.messages?.missingNestCli ?? "";
+
+  expect(message).toContain("Crea o corrige el nest-cli.json");
+});
 
 // La regla lee el nest-cli.json real subiendo desde el archivo linteado:
 // los fixtures simulan un proyecto con y sin el plugin.

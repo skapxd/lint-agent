@@ -13,6 +13,8 @@ Las reglas de swagger del preset (`nest-no-swagger-in-controllers`, `nest-dto-re
 
 Sin el plugin, el swagger queda vacío — y como el preset prohíbe documentarlo a mano en los controllers, el error te lo dice en el primer lint, no en el primer deploy.
 
+Si la regla **no encuentra un `nest-cli.json` legible**, la acción es crear o corregir el `nest-cli.json` en la raíz Nest, o ejecutar el lint desde el paquete correcto; con el archivo resuelto, ya configuras el plugin en `compilerOptions`.
+
 ---
 
 [Indice de reglas](./README.md) | [README principal](../../README.md)

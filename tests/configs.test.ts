@@ -506,10 +506,11 @@ describe("reglas type-driven (wrappers de typescript-eslint) en presets tipados"
       "QUE DECIDE el if",
     );
     expect(messageOf("no-anonymous-condition", "anonymousCondition")).toContain(
-      "nombres-AST concatenados a maquina",
+      "is/has/needs/lacks/exceeds/reached",
     );
+    // El catalogo de anti-nombres y excepciones se mudo a la ficha (issue #112).
     expect(messageOf("no-anonymous-condition", "anonymousCondition")).toContain(
-      "type predicate descriptivo largo",
+      "ficha de la regla",
     );
   });
 

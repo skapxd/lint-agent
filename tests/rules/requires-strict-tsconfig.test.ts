@@ -1,5 +1,12 @@
+import { expect, it } from "vitest";
 import { rules } from "../../src/shared/rules";
 import { createRuleTester } from "../rule-tester";
+
+it("missingTsconfig da una accion concreta", () => {
+  const message = rules["requires-strict-tsconfig"]!.meta.messages?.missingTsconfig ?? "";
+
+  expect(message).toContain("Crea o ubica un tsconfig.json");
+});
 
 // La regla lee el tsconfig.json REAL subiendo desde el archivo linteado,
 // con la API de TypeScript (soporta JSONC y resuelve `extends`).

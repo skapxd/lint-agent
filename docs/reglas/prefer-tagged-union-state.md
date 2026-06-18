@@ -2,6 +2,8 @@
 
 La regla temática del paquete: el estado inconsistente que motivó todo esto, ahora prohibido en su origen. Detecta las dos formas de la enfermedad:
 
+El nombre de la regla usa "tagged union"; en español lo llamamos **unión discriminada** (es el mismo concepto: *discriminated/tagged union*).
+
 **Forma A — el tipo enfermo**: un flag boolean de "en proceso" conviviendo con un campo de error como propiedades independientes. Las combinaciones imposibles (cargando Y con error, error Y con valor) son *representables*:
 
 ```ts
@@ -30,6 +32,8 @@ const [user, setUser] = useState<User | null>(null);
 const [state, setState] = useState<RequestState>({ status: "idle" });
 ```
 
+**¿`useState` con unión o `useReducer`?** Mismo criterio que [`max-hook-size`](./max-hook-size.md) (`tooManyUseState`), para no contradecir reglas hermanas: si son **fases de un mismo dato**, basta UN `useState` con una unión discriminada; si las **transiciones se repiten o concentran reglas**, un `useReducer` con acciones de unión discriminada deja la transición en un solo lugar. En ambos casos el estado es uno y `match().exhaustive()` lo consume.
+
 **Forma C — la transición repartida (evidencia ESTRUCTURAL, sin depender de nombres)**: los setters de `useState` se identifican por *posición en el destructuring* (`const [x, setX] = useState()` — el segundo elemento, se llame como se llame). Si una misma función llama a dos setters distintos, eso **prueba** que esos estados son una sola máquina — entre setter y setter, los renders intermedios ven mentiras:
 
 ```ts
@@ -41,7 +45,7 @@ const cargar = (respuesta, fallo) => {
 
 Este detector caza lo que los nombres no ven (estados con nombres exóticos o en español ya cubiertos: `cargando`, `procesando`, `fallo`, ...). El filtro de precisión: al menos uno de los estados co-actualizados debe ser loading/error-ish — resetear dos campos independientes de un formulario no es una máquina.
 
-Sobre la detección por nombres (formas A y B): es deliberadamente el escalón más bajo de evidencia del paquete — para un tipo *declarado* no hay comportamiento que observar y el nombre es la única señal disponible. El **tipo del campo de error no importa** (`Error`, `string`, código numérico, otro boolean — `isSyncing` + `hasError` es la peor forma): la enfermedad es la coexistencia. Los **callbacks** quedan excluidos (`onError?: (e) => void`, miembros de tipo función): un handler no es estado. `loadingPatterns`/`errorPatterns` ajustan las convenciones. Cierra el círculo con el resto del paquete: la unión etiquetada es a los estados lo que `Result` es a los errores, y `prefer-ts-pattern` te espera con el `match().exhaustive()` al otro lado.
+Sobre la detección por nombres (formas A y B): es deliberadamente el escalón más bajo de evidencia del paquete — para un tipo *declarado* no hay comportamiento que observar y el nombre es la única señal disponible. El **tipo del campo de error no importa** (`Error`, `string`, código numérico, otro boolean — `isSyncing` + `hasError` es la peor forma): la enfermedad es la coexistencia. Los **callbacks** quedan excluidos (`onError?: (e) => void`, miembros de tipo función): un handler no es estado. `loadingPatterns`/`errorPatterns` ajustan las convenciones. Cierra el círculo con el resto del paquete: la unión discriminada es a los estados lo que `Result` es a los errores, y `prefer-ts-pattern` te espera con el `match().exhaustive()` al otro lado.
 
 ---
 

@@ -1,5 +1,18 @@
+import { expect, it } from "vitest";
 import { rules } from "../../src/shared/rules";
 import { createRuleTester } from "../rule-tester";
+
+it("forwardedProp y spreadTunnel dan el criterio store/hook-vs-children", () => {
+  const messages = rules["no-tunnel-props"]!.meta.messages ?? {};
+
+  for (const messageId of ["forwardedProp", "spreadTunnel"] as const) {
+    const message = messages[messageId] ?? "";
+
+    expect(message).toContain("store");
+    expect(message).toContain("custom hook");
+    expect(message).toContain("children");
+  }
+});
 
 createRuleTester().run("no-tunnel-props", rules["no-tunnel-props"]!, {
   invalid: [

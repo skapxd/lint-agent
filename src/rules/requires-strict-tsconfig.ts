@@ -16,7 +16,7 @@ export const requiresStrictTsconfig: RuleModule = {
     },
     messages: {
       missingTsconfig:
-        "No encontre un tsconfig.json legible en el proyecto. El sistema completo descansa en que el compilador verifique los tipos: sin tsconfig resoluble, esa premisa no se puede comprobar.",
+        "No encontre un tsconfig.json legible en el proyecto. El sistema completo descansa en que el compilador verifique los tipos: sin tsconfig resoluble, esa premisa no se puede comprobar. Crea o ubica un tsconfig.json en la raiz del proyecto, o corrige la ejecucion (cwd/ruta del archivo) para que la regla lo resuelva.",
       missingStrictFlags:
         "El tsconfig no activa: {{missing}}. Sin `strict`, el sistema de tipos esta apagado a medias; sin `noImplicitReturns`, una rama puede salir sin valor y el compilador calla; sin `noUncheckedIndexedAccess`, acceder a un array/objeto dinamico finge que nunca devuelve undefined. Estos flags son los que convierten los estados invalidos en errores de compilacion — agregalos en compilerOptions.",
     },

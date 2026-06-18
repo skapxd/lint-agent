@@ -1,5 +1,12 @@
+import { expect, it } from "vitest";
 import { rules } from "../../src/shared/rules";
 import { createRuleTester } from "../rule-tester";
+
+it("unreadablePackageJson da una accion concreta", () => {
+  const message = rules["package-requires-typed-exports"]!.meta.messages?.unreadablePackageJson ?? "";
+
+  expect(message).toContain("Ejecuta desde el paquete correcto");
+});
 
 // La regla lee el package.json REAL subiendo desde el archivo ancla y exige
 // el contrato de tipos duales: cada condicion import/require con su propio

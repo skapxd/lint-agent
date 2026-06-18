@@ -14,7 +14,7 @@ export const noSilencedCompiler = wrapTseslintRule("ban-ts-comment", {
     tsDirectiveComment:
       "No silencies al compilador: `@ts-{{directive}}` apaga la alarma en vez de arreglar el incendio. Un error de tipos se resuelve modelando mejor el dominio. Para testear que un estado invalido de verdad NO compila, usa `@ts-expect-error` con descripcion.",
     tsDirectiveCommentDescriptionNotMatchPattern:
-      "La descripcion de `@ts-{{directive}}` debe cumplir el formato {{format}}.",
+      "La descripcion de `@ts-{{directive}}` debe cumplir el formato {{format}}. Reescribe la descripcion para que encaje en el patron conservando la razon real de la supresion — no pegues un patron vacio solo para pasar el lint.",
     tsDirectiveCommentRequiresDescription:
       "Explica el porque: `@ts-{{directive}}` exige una descripcion (minimo {{minimumDescriptionLength}} caracteres) que justifique la supresion — si la trampa existe, queda declarada y auditable, no escondida.",
     tsIgnoreInsteadOfExpectError:

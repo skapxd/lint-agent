@@ -1,5 +1,16 @@
+import { expect, it } from "vitest";
 import { rules } from "../../src/shared/rules";
 import { createRuleTester } from "../rule-tester";
+
+it("anonymousCondition es la accion + criterios minimos de nombre", () => {
+  const message = rules["no-anonymous-condition"]!.meta.messages?.anonymousCondition ?? "";
+
+  // Accion y criterio de nombre conservados.
+  expect(message).toContain("Extraelo a una const");
+  expect(message).toContain("is/has/needs/lacks/exceeds/reached");
+  // El catalogo extenso se mudo a la ficha.
+  expect(message).toContain("ficha de la regla");
+});
 
 createRuleTester().run(
   "no-anonymous-condition",

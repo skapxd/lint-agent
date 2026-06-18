@@ -14,6 +14,8 @@ const invalidStatus: "ready" = "loading";
 const invalidStatus: "ready" = "loading";
 ```
 
+Cuando la descripción de un `@ts-expect-error` **no cumple el formato** exigido (`minimumDescriptionLength` / patrón), la acción no es pegar un patrón vacío para callar el lint: reescribe la descripción para que encaje en el patrón **conservando la razón real** de la supresión — el formato existe para que la trampa quede declarada y auditable, no para tacharla.
+
 La puerta que queda abierta, a propósito: `@ts-expect-error` **con descripción**. Es la forma legítima de testear que un estado inválido de verdad NO compila (la otra mitad son los tests de tipos con `expectTypeOf`, ver la sección de `requires-strict-tsconfig`) — y a diferencia de `@ts-ignore`, avisa cuando la supresión deja de hacer falta. Bajo el capó es `@typescript-eslint/ban-ts-comment` ([doc original](https://typescript-eslint.io/rules/ban-ts-comment/)) con un nombre que dice lo que defiende y mensajes propios.
 
 ---
