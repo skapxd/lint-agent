@@ -7,6 +7,7 @@ import { awaitRequiresResult } from "#/rules/await-requires-result";
 import { noRethrowResultError } from "#/rules/no-rethrow-result-error";
 import { resultErrorRequiresCause } from "#/rules/result-error-requires-cause";
 import { resultErrorRequiresHandling } from "#/rules/result-error-requires-handling";
+import { trysafeOnlyAtBoundary } from "#/rules/trysafe-only-at-boundary";
 import { classPropertiesRequireReadonly } from "#/rules/class-properties-require-readonly";
 import { denseFunctionRequiresComment } from "#/rules/dense-function-requires-comment";
 import { noAccessors } from "#/rules/no-accessors";
@@ -70,6 +71,7 @@ export const rules = {
   "no-rethrow-result-error": noRethrowResultError,
   "result-error-requires-cause": resultErrorRequiresCause,
   "result-error-requires-handling": resultErrorRequiresHandling,
+  "trysafe-only-at-boundary": trysafeOnlyAtBoundary,
   "max-hook-size": maxHookSize,
   "max-public-methods": maxPublicMethods,
   "nest-dto-requires-api-property": nestDtoRequiresApiProperty,
