@@ -23,7 +23,9 @@ match(state)
   .exhaustive()                                                   // ✅
 ```
 
-**Detección: `null` y `undefined` (nullish completo).** La regla marca cualquier rama que renderice nada — el literal `null` **o** el identificador `undefined` —, no solo `null`. Ambos pintan lo mismo en JSX y esconden el mismo bug de estado silenciado; el contrato no cambia (mismo `messageId`), solo se cubren más casos. Si en un proyecto la rama `undefined` generara ruido, se puede acotar a `null` desde el helper `rendersNothing` de la regla, pero la decisión por defecto es cubrir el nullish completo.
+**Detección: `null` y `undefined` (nullish completo).** La regla marca cualquier rama que renderice nada — el literal `null` **o** el identificador `undefined` —, no solo `null`. Ambos pintan lo mismo en JSX y esconden el mismo bug de estado silenciado.
+
+> **Nota de migración (v7.3.0).** El `messageId` no cambia, pero esto **endurece la detección**: código que antes pasaba el lint (`cond ? <X/> : undefined`) ahora se marca. Al actualizar desde una versión que solo detectaba `null`, puede aflorar en proyectos que ya tenían la regla en `error` (preset react). El fix es el mismo que para `null` (`cond && <X/>`, o `match().exhaustive()` si esconde un estado). Si la rama `undefined` generara ruido, se puede acotar a `null` desde el helper `rendersNothing` de la regla, pero la decisión por defecto es cubrir el nullish completo.
 
 ---
 
