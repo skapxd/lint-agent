@@ -112,18 +112,17 @@ jobs:
           node-version: 22.x
           registry-url: 'https://registry.npmjs.org'
 
-      # El Trusted Publisher (OIDC) requiere npm >= 11.5.1; node 22.x trae npm 10.x.
-      - name: Update npm for OIDC trusted publishing
-        run: npm install -g npm@latest
-
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Build Package
         run: pnpm build
 
-      # Sin NODE_AUTH_TOKEN: el Trusted Publisher (OIDC) configurado en npm
-      # autentica via el id-token de Actions (permissions.id-token: write).
-      # La provenance se genera automaticamente al publicar via OIDC.
+      # Sin NODE_AUTH_TOKEN: el Trusted Publisher (OIDC) autentica via el id-token
+      # de Actions (permissions.id-token: write); la provenance se genera sola.
+      # OJO: `Setup pnpm` altera el prefix global de npm, asi que `npm install -g
+      # npm@latest` NO actualizaba el npm que corre el publish (quedaba en 10.x, sin
+      # OIDC -> caia al token placeholder de setup-node y daba 404). `npx npm@latest`
+      # garantiza npm >= 11.5.1 (requisito de OIDC) en el publish mismo.
       - name: Publish to NPM (OIDC trusted publisher)
-        run: npm publish --access public
+        run: npx -y npm@latest publish --access public
