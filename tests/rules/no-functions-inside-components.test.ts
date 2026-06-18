@@ -1,7 +1,16 @@
+import { expect, it } from "vitest";
 import { rules } from "../../src/shared/rules";
 import { createRuleTester } from "../rule-tester";
 
 const tsx = (code: string) => ({ code, filename: "test.tsx" });
+
+it("functionInsideComponent da el criterio hook-vs-helper", () => {
+  const message = rules["no-functions-inside-components"]!.meta.messages?.functionInsideComponent ?? "";
+
+  expect(message).toContain("hook");
+  expect(message).toContain("logica pura");
+  expect(message).toContain("helper");
+});
 
 createRuleTester().run(
   "no-functions-inside-components",

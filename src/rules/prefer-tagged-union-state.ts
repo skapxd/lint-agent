@@ -30,9 +30,9 @@ export const preferTaggedUnionState: RuleModule = {
       inconsistentStateShape:
         "Este estado declara `{{flag}}` y `{{error}}` como miembros independientes: las combinaciones imposibles (en proceso Y con error, error Y con valor) son representables — y si esto es un schema, la inconsistencia se PERSISTE. Modela una union etiquetada: `{ status: \"idle\" } | { status: \"processing\" } | { status: \"error\"; error: E } | { status: \"ok\"; value: T }`. Cada variante carga SOLO los datos que existen en ese estado, y `match().exhaustive()` obliga a manejar todas.",
       splitStateMachine:
-        "Esta funcion reparte UNA maquina de estados entre varios useState ({{names}}): cada transicion toca varios setters y los renders intermedios ven combinaciones imposibles. Usa UN useState con una union etiquetada (`{ status: \"loading\" } | { status: \"error\"; error: E } | ...`) o un useReducer: la transicion se vuelve atomica y `match()` la consume exhaustiva.",
+        "Esta funcion reparte UNA maquina de estados entre varios useState ({{names}}): cada transicion toca varios setters y los renders intermedios ven combinaciones imposibles. Consolida en UN estado: si son fases de un mismo dato, UN useState con union etiquetada (`{ status: \"loading\" } | { status: \"error\"; error: E } | ...`); si las transiciones se repiten o concentran reglas, un useReducer con acciones de union etiquetada. La transicion se vuelve atomica y `match()` la consume exhaustiva.",
       splitTransition:
-        "Esta funcion llama a varios setters de useState en una sola transicion ({{names}}): eso PRUEBA que esos estados son una sola maquina repartida — entre setter y setter, los renders intermedios ven combinaciones imposibles. Consolida en UN useState con union etiquetada (o useReducer) para que la transicion sea atomica.",
+        "Esta funcion llama a varios setters de useState en una sola transicion ({{names}}): eso PRUEBA que esos estados son una sola maquina repartida — entre setter y setter, los renders intermedios ven combinaciones imposibles. Consolida en UN estado: si son fases de un mismo dato, UN useState con union etiquetada; si las transiciones se repiten o concentran reglas, un useReducer con acciones de union etiquetada. Asi la transicion es atomica.",
     },
     schema: [
       {

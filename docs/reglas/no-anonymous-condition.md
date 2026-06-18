@@ -18,6 +18,15 @@ Lo **ya nombrado** no se extrae (la lista blanca — extraerlo sería ceremonia 
 
 Lo que **sí dispara**: llamadas, comparaciones (`a.length <= b.max`, `status === "ready"`), combinaciones `&&`/`||` y aritmética (`if (total % 2)`). La extracción directa a `const` conserva el narrowing (TS 4.4+, aliased conditions).
 
+**El nombre tiene que informar — anti-nombres que traicionan la regla.** Cumplirla con un nombre vacío es peor que no extraer: el lint queda verde y el lector sigue sin saber qué decide el `if`. El nombre lleva `is/has/needs/lacks/exceeds/reached` + el concepto del dominio (`reachedProjectRoot`, `exceedsStateBudget`). Lo que **no** vale:
+
+- Sufijos `Rule`/`Condition` mecánicos (`isXRule`, `passesCondition`).
+- `isNot…` mecánico (niega en el nombre en vez de modelar el concepto positivo).
+- Sufijos numerados (`isResult2`): el número no es significado.
+- Nombres-AST concatenados a máquina (ruta del nodo + sufijo `Rule`) **sin** una firma type predicate que lo justifique.
+
+Un type predicate descriptivo largo como `isPublicClassMethod` **es legítimo**: lo que sobra es la concatenación mecánica, no la longitud.
+
 **Está en las reglas base** — y es la más invasiva del catálogo: la calibración contra 4 proyectos reales (2026-06-12) midió 473/95/308 hallazgos en tres backends NestJS en producción y 44 en un front pequeño (señal genuina en la muestra revisada a mano). En un proyecto existente, trátala con el playbook de adopción: entra apagada en la lista de pendientes y se enciende por carpetas, nombrando con criterio — el valor de la regla son los nombres, y un nombre autogenerado la traiciona. Este mismo repo la tiene en su lista de pendientes (245 condiciones heredadas) — la regla nació subiendo la vara que su propio código aún está alcanzando.
 
 ---

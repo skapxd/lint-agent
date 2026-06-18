@@ -21,7 +21,7 @@ const Padre = ({ ...props }) => <Hijo {...props} />;
 
 La detección es local y exacta: si el identifier que pones en una prop de otro componente viene de tus **props destructuradas**, no lo creaste tú — es su segundo salto.
 
-Las salidas que sugiere el mensaje:
+Las salidas que sugiere el mensaje — **el criterio para elegir**: si lo que viaja es **estado o una acción compartida**, sácalo a un store/hook (salida 1); si el padre **solo compone UI**, deja que arme el JSX y baje `children` (salida 2).
 
 1. **Store global o custom hook**: la acción/estado vive en un store (p. ej. [zustand](https://github.com/pmndrs/zustand)) o un hook, y el componente que la necesita la consume directo — la cadena desaparece:
 

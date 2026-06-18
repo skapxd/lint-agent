@@ -18,7 +18,7 @@ export const nestRequiresSwaggerPlugin: RuleModule = {
     },
     messages: {
       missingNestCli:
-        "No encontre un nest-cli.json legible en el proyecto. El preset nest asume el plugin @nestjs/swagger activo (introspecciona DTOs y tipos de retorno); sin nest-cli.json esa premisa no se puede verificar.",
+        "No encontre un nest-cli.json legible en el proyecto. El preset nest asume el plugin @nestjs/swagger activo (introspecciona DTOs y tipos de retorno); sin nest-cli.json esa premisa no se puede verificar. Crea o corrige el nest-cli.json en la raiz Nest, o ejecuta el lint desde el paquete correcto; luego configura el plugin en compilerOptions.",
       missingSwaggerPlugin:
         "nest-cli.json no tiene el plugin @nestjs/swagger. Sin el, los DTOs y tipos de retorno NO se introspeccionan y el swagger queda vacio (las reglas del preset prohiben documentarlo a mano en los controllers). Agrega en compilerOptions: `\"plugins\": [\"@nestjs/swagger\"]`.",
     },

@@ -1,5 +1,22 @@
+import { expect, it } from "vitest";
 import { rules } from "../../src/shared/rules";
 import { createRuleTester } from "../rule-tester";
+
+it("split* da el criterio union-vs-reducer y lo comparte con tooManyUseState", () => {
+  const messages = rules["prefer-tagged-union-state"]!.meta.messages ?? {};
+  const tooManyUseState = rules["max-hook-size"]!.meta.messages?.tooManyUseState ?? "";
+
+  for (const messageId of ["splitStateMachine", "splitTransition"] as const) {
+    const message = messages[messageId] ?? "";
+
+    expect(message).toContain("union etiquetada");
+    expect(message).toContain("useReducer");
+  }
+
+  // Coherencia entre reglas hermanas: ambas hablan de union + reducer.
+  expect(tooManyUseState).toContain("union");
+  expect(tooManyUseState).toContain("useReducer");
+});
 
 createRuleTester().run(
   "prefer-tagged-union-state",

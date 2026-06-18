@@ -20,9 +20,9 @@ export const noTunnelProps: RuleModule = {
     },
     messages: {
       forwardedProp:
-        "La prop `{{prop}}` que `{{component}}` recibe se reenvia a otro componente: ya va por su segundo salto (abuelo -> padre -> hijo). Quien CREA un valor puede pasarlo UN nivel; quien lo recibe no lo reenvia. Mueve el estado/accion a un store global (p. ej. zustand) o a un custom hook y consumelo donde se usa, o deja que el padre componga el JSX (`children`).",
+        "La prop `{{prop}}` que `{{component}}` recibe se reenvia a otro componente: ya va por su segundo salto (abuelo -> padre -> hijo). Quien CREA un valor puede pasarlo UN nivel; quien lo recibe no lo reenvia. Si es estado o accion compartida, muevelo a un store global (p. ej. zustand) o a un custom hook y consumelo donde se usa; si el padre solo compone UI, deja que componga el JSX (`children`).",
       spreadTunnel:
-        "`{{component}}` reenvia TODAS sus props con `{...{{name}}}` a otro componente: es un tunel puro. Mueve el estado a un store global (p. ej. zustand) o a un custom hook, o deja que el padre componga el JSX (`children`).",
+        "`{{component}}` reenvia TODAS sus props con `{...{{name}}}` a otro componente: es un tunel puro. Si es estado o accion compartida, muevelo a un store global (p. ej. zustand) o a un custom hook; si el padre solo compone UI, deja que componga el JSX (`children`).",
     },
     schema: [
       {

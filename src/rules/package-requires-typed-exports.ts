@@ -29,7 +29,7 @@ export const packageRequiresTypedExports: RuleModule = {
       missingTypesFile:
         "En exports[\"{{subpath}}\"].{{condition}}, el archivo de `types` declarado no existe en disco. El contrato apunta a un fantasma: o falta el build (dts) o la ruta esta mal escrita.",
       unreadablePackageJson:
-        "No encontre un package.json legible subiendo desde este archivo. Esta regla valida el contrato de tipos de la libreria y necesita leerlo.",
+        "No encontre un package.json legible subiendo desde este archivo. Esta regla valida el contrato de tipos de la libreria y necesita leerlo. Ejecuta desde el paquete correcto, crea el package.json, o corrige el JSON ilegible antes de validar los exports.",
       untypedCondition:
         "exports[\"{{subpath}}\"] → `{{condition}}` no declara su propio `types`. Un `types` unico a nivel del subpath es el bug \"FalseCJS\": el consumidor ESM con moduleResolution node16 recibe los tipos CJS. Cada condicion declara los suyos — `import` como objeto con `types: ./dist/x.d.mts` y `default: ./dist/x.mjs`; `require` como objeto con `types: ./dist/x.d.ts` y `default: ./dist/x.js`.",
       wrongTypesFlavor:

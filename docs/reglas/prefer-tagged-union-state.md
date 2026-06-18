@@ -30,6 +30,8 @@ const [user, setUser] = useState<User | null>(null);
 const [state, setState] = useState<RequestState>({ status: "idle" });
 ```
 
+**¿`useState` con unión o `useReducer`?** Mismo criterio que [`max-hook-size`](./max-hook-size.md) (`tooManyUseState`), para no contradecir reglas hermanas: si son **fases de un mismo dato**, basta UN `useState` con una unión etiquetada; si las **transiciones se repiten o concentran reglas**, un `useReducer` con acciones de unión etiquetada deja la transición en un solo lugar. En ambos casos el estado es uno y `match().exhaustive()` lo consume.
+
 **Forma C — la transición repartida (evidencia ESTRUCTURAL, sin depender de nombres)**: los setters de `useState` se identifican por *posición en el destructuring* (`const [x, setX] = useState()` — el segundo elemento, se llame como se llame). Si una misma función llama a dos setters distintos, eso **prueba** que esos estados son una sola máquina — entre setter y setter, los renders intermedios ven mentiras:
 
 ```ts
