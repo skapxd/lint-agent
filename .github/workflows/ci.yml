@@ -106,11 +106,14 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
 
+      # SIN `registry-url`: esa opcion hace que setup-node escriba un .npmrc con
+      # `_authToken=${NODE_AUTH_TOKEN}` y exporte un NODE_AUTH_TOKEN placeholder
+      # (XXXXX-XXXXX-...). npm lo toma como credencial y NUNCA intenta OIDC -> 404.
+      # Sin authToken + id-token: write + npm >= 11.5.1, npm usa el Trusted Publisher.
       - name: Setup Node.js for Publishing
         uses: actions/setup-node@v6
         with:
           node-version: 22.x
-          registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -118,11 +121,10 @@ jobs:
       - name: Build Package
         run: pnpm build
 
-      # Sin NODE_AUTH_TOKEN: el Trusted Publisher (OIDC) autentica via el id-token
-      # de Actions (permissions.id-token: write); la provenance se genera sola.
-      # OJO: `Setup pnpm` altera el prefix global de npm, asi que `npm install -g
-      # npm@latest` NO actualizaba el npm que corre el publish (quedaba en 10.x, sin
-      # OIDC -> caia al token placeholder de setup-node y daba 404). `npx npm@latest`
-      # garantiza npm >= 11.5.1 (requisito de OIDC) en el publish mismo.
+      # npm >= 11.5.1 via npx (Setup pnpm altera el prefix global, asi que
+      # `npm install -g` no actualiza el npm que corre aqui). El id-token de Actions
+      # autentica contra el Trusted Publisher OIDC; la provenance se genera sola.
       - name: Publish to NPM (OIDC trusted publisher)
-        run: npx -y npm@latest publish --access public
+        run: |
+          npx -y npm@latest --version
+          npx -y npm@latest publish --access public
