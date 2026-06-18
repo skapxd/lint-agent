@@ -1,6 +1,6 @@
 import path from "node:path";
 import { realpathSync } from "node:fs";
-import { trySafe } from "@skapxd/result";
+import { Result, trySafe } from "@skapxd/result";
 import { detectCliPreset } from "#/utils/project/detect-cli-preset";
 import { createEphemeralConfig } from "#/utils/cli/eslint-run/create-ephemeral-config";
 import { createEphemeralTypeConfig } from "#/utils/cli/tsconfig/create-ephemeral-type-config";
@@ -20,14 +20,18 @@ export function runEphemeralEvaluation(
   explicitPreset: CliPreset | null,
   includeTests: boolean,
   useProjectTsconfig: boolean,
-) {
-  const targetPath = realpathSync(path.resolve(rawTargetPath));
-  const projectRoot = getProjectRoot(targetPath);
-  const lintTargetPattern = createLintTargetPattern(targetPath, projectRoot);
-  const preset = explicitPreset ?? detectCliPreset(projectRoot);
-  const typeConfig = createEphemeralTypeConfig(projectRoot, useProjectTsconfig);
+): Result<SkapxdLintOutput, unknown> {
   let configPath = "";
-  const lintResults = trySafe(() => {
+  const cleanupPaths: string[] = [];
+  const evaluationOutput = trySafe(() => {
+    const targetPath = realpathSync(path.resolve(rawTargetPath));
+    const projectRoot = getProjectRoot(targetPath);
+    const lintTargetPattern = createLintTargetPattern(targetPath, projectRoot);
+    const preset = explicitPreset ?? detectCliPreset(projectRoot);
+    const typeConfig = createEphemeralTypeConfig(projectRoot, useProjectTsconfig);
+    if (typeConfig.path) {
+      cleanupPaths.push(typeConfig.path);
+    }
     configPath = createEphemeralConfig(
       projectRoot,
       preset,
@@ -35,7 +39,37 @@ export function runEphemeralEvaluation(
       typeConfig.path,
     );
 
-    return runEslintJson(projectRoot, configPath, lintTargetPattern);
+    const lintResults = runEslintJson(projectRoot, configPath, lintTargetPattern);
+    const filteredResults = omitProjectServiceParseErrorResults(lintResults);
+    const files = toLintFileResults(filteredResults.results);
+    const ruleSummaries = createAdoptionRuleSummaries(files);
+    const summary = summarizeLintResults(files);
+    const status =
+      summary.errorCount > 0 || summary.warningCount > 0 ? "findings" : "ok";
+    const output: SkapxdLintOutput = {
+      configDeleted: false,
+      ...createReportGuidance({
+        errorCount: summary.errorCount,
+        files,
+        ruleSummaries,
+        warningCount: summary.warningCount,
+      }),
+      errorCount: summary.errorCount,
+      files,
+      mode: "evaluate",
+      omittedFileCount: filteredResults.omittedFileCount,
+      preset,
+      ruleSummaries,
+      status,
+      targetPath,
+      typeConfig: typeConfig.typeConfig,
+      warningCount: summary.warningCount,
+    };
+
+    return {
+      ...output,
+      configDeleted: true,
+    } satisfies SkapxdLintOutput;
   });
   const hasConfigPath = configPath.length > 0;
 
@@ -43,44 +77,16 @@ export function runEphemeralEvaluation(
     removeFileIfExists(configPath);
   }
 
-  if (typeConfig.path) {
-    removeFileIfExists(typeConfig.path);
+  for (const cleanupPath of cleanupPaths) {
+    removeFileIfExists(cleanupPath);
   }
 
-  if (!lintResults.ok) {
-    throw new Error("No se pudo ejecutar ESLint con config efimera.", {
-      cause: lintResults.error,
+  if (!evaluationOutput.ok) {
+    return Result.err({
+      cause: evaluationOutput.error,
+      message: "No se pudo ejecutar ESLint con config efimera.",
     });
   }
 
-  const filteredResults = omitProjectServiceParseErrorResults(lintResults.value);
-  const files = toLintFileResults(filteredResults.results);
-  const ruleSummaries = createAdoptionRuleSummaries(files);
-  const summary = summarizeLintResults(files);
-  const status =
-    summary.errorCount > 0 || summary.warningCount > 0 ? "findings" : "ok";
-  const output: SkapxdLintOutput = {
-    configDeleted: false,
-    ...createReportGuidance({
-      errorCount: summary.errorCount,
-      files,
-      ruleSummaries,
-      warningCount: summary.warningCount,
-    }),
-    errorCount: summary.errorCount,
-    files,
-    mode: "evaluate",
-    omittedFileCount: filteredResults.omittedFileCount,
-    preset,
-    ruleSummaries,
-    status,
-    targetPath,
-    typeConfig: typeConfig.typeConfig,
-    warningCount: summary.warningCount,
-  };
-
-  return {
-    ...output,
-    configDeleted: true,
-  } satisfies SkapxdLintOutput;
+  return evaluationOutput;
 }

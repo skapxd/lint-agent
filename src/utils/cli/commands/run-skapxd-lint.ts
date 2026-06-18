@@ -1,4 +1,4 @@
-import { Result, trySafe } from "@skapxd/result";
+import { Result } from "@skapxd/result";
 import { createHelpText } from "#/utils/cli/output/interactive/create-help-text";
 import { createExecutionErrorOutput } from "#/utils/cli/output/machine/create-execution-error-output";
 import { createUsageErrorOutput } from "#/utils/cli/output/machine/create-usage-error-output";
@@ -13,6 +13,7 @@ import { createStateResetOutput } from "#/utils/cli/state/create-state-reset-out
 import { removeAdoptionState } from "#/utils/cli/state/remove-adoption-state";
 import { resolveStateBackedVerifySeed } from "#/utils/cli/state/resolve-state-backed-verify-seed";
 import { runRequestedMode } from "./run-requested-mode";
+import { getUnknownErrorMessage } from "#/utils/unknown/get-unknown-error-message";
 import { writeAdoptionState } from "#/utils/cli/state/write-adoption-state";
 import { writeCliOutputOrReport } from "#/utils/cli/output/machine/write-cli-output-or-report";
 import { writeOutputToFile } from "#/utils/cli/output/machine/write-output-to-file";
@@ -145,25 +146,20 @@ export async function runSkapxdLint(streams: CliStreams) {
     return;
   }
 
-  const requestedOutput = await trySafe(() =>
-    runRequestedMode({
-      adoptPercent: cliArguments.adoptPercent,
-      base: cliArguments.base,
-      changed: cliArguments.changed,
-      includeTests: cliArguments.includeTests,
-      path: requestedPath,
-      preset: cliArguments.preset,
-      streams,
-      useProjectTsconfig: cliArguments.useProjectTsconfig,
-      verifySeed: verifySeedResult.value,
-    }),
-  );
+  const requestedOutput = await runRequestedMode({
+    adoptPercent: cliArguments.adoptPercent,
+    base: cliArguments.base,
+    changed: cliArguments.changed,
+    includeTests: cliArguments.includeTests,
+    path: requestedPath,
+    preset: cliArguments.preset,
+    streams,
+    useProjectTsconfig: cliArguments.useProjectTsconfig,
+    verifySeed: verifySeedResult.value,
+  });
 
   if (!requestedOutput.ok) {
-    const message =
-      requestedOutput.error instanceof Error
-        ? requestedOutput.error.message
-        : "fallo desconocido";
+    const message = getUnknownErrorMessage(requestedOutput.error, "fallo desconocido");
     const output = createExecutionErrorOutput(message);
 
     await emitOutput(output, outputFormat);

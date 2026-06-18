@@ -39,4 +39,5 @@ export const baseRules = {
   "skapxd/no-rethrow-result-error": "error",
   "skapxd/result-error-requires-cause": "error",
   "skapxd/result-error-requires-handling": "error",
+  "skapxd/trysafe-only-at-boundary": "error",
 } satisfies Linter.RulesRecord;
