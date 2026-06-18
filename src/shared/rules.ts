@@ -4,6 +4,7 @@ import { jsxReturnNamePascalCase } from "#/rules/jsx-return-name-pascal-case";
 import { asyncFunctionsReturnResult } from "#/rules/async-functions-return-result";
 import { noAdHocOkResult } from "#/rules/no-ad-hoc-ok-result";
 import { awaitRequiresResult } from "#/rules/await-requires-result";
+import { noRethrowResultError } from "#/rules/no-rethrow-result-error";
 import { resultErrorRequiresCause } from "#/rules/result-error-requires-cause";
 import { resultErrorRequiresHandling } from "#/rules/result-error-requires-handling";
 import { classPropertiesRequireReadonly } from "#/rules/class-properties-require-readonly";
@@ -66,6 +67,7 @@ export const rules = {
   "async-functions-return-result": asyncFunctionsReturnResult,
   "no-ad-hoc-ok-result": noAdHocOkResult,
   "await-requires-result": awaitRequiresResult,
+  "no-rethrow-result-error": noRethrowResultError,
   "result-error-requires-cause": resultErrorRequiresCause,
   "result-error-requires-handling": resultErrorRequiresHandling,
   "max-hook-size": maxHookSize,

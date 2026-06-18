@@ -36,6 +36,7 @@ export const baseRules = {
   "skapxd/prefer-tagged-union-state": "error",
   "skapxd/requires-strict-tsconfig": "error",
   "skapxd/prefer-ts-pattern": "error",
+  "skapxd/no-rethrow-result-error": "error",
   "skapxd/result-error-requires-cause": "error",
   "skapxd/result-error-requires-handling": "error",
 } satisfies Linter.RulesRecord;
