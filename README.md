@@ -61,7 +61,7 @@ Los enlaces apuntan a GitHub de forma absoluta para que funcionen tambien desde 
 | [Adopcion incremental y legacy](https://github.com/skapxd/eslint-opinionated/blob/main/docs/adopcion-legacy.md) | Lint sobre cambios, olas de adopcion, overrides y propuestas de reglas. |
 | [Pipeline Result](https://github.com/skapxd/eslint-opinionated/blob/main/docs/pipeline-result.md) | Como encajan @skapxd/result, ts-pattern y el trace global. |
 | [Notas type-aware](https://github.com/skapxd/eslint-opinionated/blob/main/docs/notas-type-aware.md) | Supuestos, limites conocidos y notas de reglas que dependen del checker. |
-| [Indice de reglas](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/README.md) | Las 55 fichas individuales en docs/reglas/. |
+| [Indice de reglas](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/README.md) | Las 56 fichas individuales en docs/reglas/. |
 
 ## Reglas
 
@@ -75,6 +75,7 @@ Los enlaces apuntan a GitHub de forma absoluta para que funcionen tambien desde 
 | [`skapxd/result-error-requires-cause`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/result-error-requires-cause.md) | Un `Result.err` derivado debe preservar `cause: result.error`. |
 | [`skapxd/result-error-requires-handling`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/result-error-requires-handling.md) | Prohíbe descartar en silencio un Result fallido: el error se transforma o se entrega, nunca se ignora. |
 | [`skapxd/await-requires-result`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/await-requires-result.md) | Todo `await` debe resolver en un `Result`: o la función llamada retorna `Promise<Result<...>>` (preferido) o se envuelve en `trySafe`. **Obligatoria en todos los presets tipados.** |
+| [`skapxd/no-rethrow-result-error`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/no-rethrow-result-error.md) | Prohíbe re-lanzar el error crudo de un `Result`: el flujo no vuelve de `trySafe` a excepción cruda. |
 | [`skapxd/no-ad-hoc-ok-result`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/no-ad-hoc-ok-result.md) | Evita contratos `{ ok: ... }` hechos a mano en async exports. |
 | [`skapxd/max-hook-size`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/max-hook-size.md) | Marca hooks grandes o con demasiados `useState`. |
 | [`skapxd/class-properties-require-readonly`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/class-properties-require-readonly.md) | Toda propiedad de clase es `readonly`: el cambio se modela con instancias nuevas, no con mutación. |

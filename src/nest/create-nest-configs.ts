@@ -98,6 +98,7 @@ export function createNestConfigs(
         // sí queda activa — un await olvidado en un spec es un falso verde.
         "skapxd/await-requires-result": "off",
         "skapxd/no-non-null-assertion": "off",
+        "skapxd/no-rethrow-result-error": "off",
         "skapxd/no-try-catch": "off",
         "skapxd/result-error-requires-handling": "off",
       },

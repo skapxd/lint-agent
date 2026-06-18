@@ -14,6 +14,7 @@ Cada ficha vive en un archivo propio. El indice conserva la descripcion corta de
 | [`skapxd/result-error-requires-cause`](./result-error-requires-cause.md) | Un `Result.err` derivado debe preservar `cause: result.error`. |
 | [`skapxd/result-error-requires-handling`](./result-error-requires-handling.md) | Prohíbe descartar en silencio un Result fallido: el error se transforma o se entrega, nunca se ignora. |
 | [`skapxd/await-requires-result`](./await-requires-result.md) | Todo `await` debe resolver en un `Result`: o la función llamada retorna `Promise<Result<...>>` (preferido) o se envuelve en `trySafe`. **Obligatoria en todos los presets tipados.** |
+| [`skapxd/no-rethrow-result-error`](./no-rethrow-result-error.md) | Prohíbe re-lanzar el error crudo de un `Result`: el flujo no vuelve de `trySafe` a excepción cruda. |
 | [`skapxd/no-ad-hoc-ok-result`](./no-ad-hoc-ok-result.md) | Evita contratos `{ ok: ... }` hechos a mano en async exports. |
 | [`skapxd/max-hook-size`](./max-hook-size.md) | Marca hooks grandes o con demasiados `useState`. |
 | [`skapxd/class-properties-require-readonly`](./class-properties-require-readonly.md) | Toda propiedad de clase es `readonly`: el cambio se modela con instancias nuevas, no con mutación. |

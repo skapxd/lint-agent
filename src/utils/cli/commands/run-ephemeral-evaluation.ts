@@ -48,7 +48,9 @@ export function runEphemeralEvaluation(
   }
 
   if (!lintResults.ok) {
-    throw lintResults.error;
+    throw new Error("No se pudo ejecutar ESLint con config efimera.", {
+      cause: lintResults.error,
+    });
   }
 
   const filteredResults = omitProjectServiceParseErrorResults(lintResults.value);

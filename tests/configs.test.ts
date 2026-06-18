@@ -299,6 +299,7 @@ describe("preset nest", () => {
 
     expect(nestTests.rules["skapxd/await-requires-result"]).toBe("off");
     expect(nestTests.rules["skapxd/no-try-catch"]).toBe("off");
+    expect(nestTests.rules["skapxd/no-rethrow-result-error"]).toBe("off");
     expect(nestTests.rules["skapxd/result-error-requires-handling"]).toBe("off");
     // El ! sobre fixtures es el arrange del test, no una mentira al compilador.
     expect(nestTests.rules["skapxd/no-non-null-assertion"]).toBe("off");
