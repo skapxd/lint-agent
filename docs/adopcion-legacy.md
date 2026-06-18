@@ -104,7 +104,7 @@ El orden no es arbitrario: va de "cada hallazgo es un bug que ya tienes" hacia "
 - `requires-strict-tsconfig` al máximo: `["strict", "noImplicitReturns", "noUncheckedIndexedAccess"]`. Sube un flag a la vez — cada uno aflora errores de compilación que son bugs latentes, no burocracia.
 - `skapxd/no-explicit-any`, `skapxd/no-non-null-assertion` y `skapxd/no-silenced-compiler` — se cierran las tres puertas de escape del compilador.
 - `skapxd/class-properties-require-readonly` — el cambio se modela con instancias nuevas.
-- `skapxd/prefer-tagged-union-state` y `skapxd/no-runtime-state-guard` — los booleanos co-dependientes se vuelven uniones etiquetadas.
+- `skapxd/prefer-tagged-union-state` y `skapxd/no-runtime-state-guard` — los booleanos co-dependientes se vuelven uniones discriminadas.
 - `skapxd/no-impossible-branch` — **la última de todas**: solo es sólida cuando el tsconfig ya está al máximo (sin `noUncheckedIndexedAccess`, acusaría guards necesarios).
 
 ### Los dos ejes se combinan

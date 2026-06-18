@@ -9,12 +9,12 @@ it("split* da el criterio union-vs-reducer y lo comparte con tooManyUseState", (
   for (const messageId of ["splitStateMachine", "splitTransition"] as const) {
     const message = messages[messageId] ?? "";
 
-    expect(message).toContain("union etiquetada");
+    expect(message).toContain("union discriminada");
     expect(message).toContain("useReducer");
   }
 
-  // Coherencia entre reglas hermanas: ambas hablan de union + reducer.
-  expect(tooManyUseState).toContain("union");
+  // Coherencia entre reglas hermanas: ambas usan EXACTAMENTE "union discriminada".
+  expect(tooManyUseState).toContain("union discriminada");
   expect(tooManyUseState).toContain("useReducer");
 });
 
@@ -144,7 +144,7 @@ function useDatos() {
       },
     ],
     valid: [
-      // la cura: unión etiquetada — cada variante carga solo lo que existe
+      // la cura: unión discriminada — cada variante carga solo lo que existe
       {
         code: `
 type RequestState =

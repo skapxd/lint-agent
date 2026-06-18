@@ -24,15 +24,15 @@ export const preferTaggedUnionState: RuleModule = {
     type: "problem",
     docs: {
       description:
-        "Prohibe estados inconsistentes representables: flags booleanos + campos de error independientes se modelan como union etiquetada.",
+        "Prohibe estados inconsistentes representables: flags booleanos + campos de error independientes se modelan como union discriminada.",
     },
     messages: {
       inconsistentStateShape:
-        "Este estado declara `{{flag}}` y `{{error}}` como miembros independientes: las combinaciones imposibles (en proceso Y con error, error Y con valor) son representables — y si esto es un schema, la inconsistencia se PERSISTE. Modela una union etiquetada: `{ status: \"idle\" } | { status: \"processing\" } | { status: \"error\"; error: E } | { status: \"ok\"; value: T }`. Cada variante carga SOLO los datos que existen en ese estado, y `match().exhaustive()` obliga a manejar todas.",
+        "Este estado declara `{{flag}}` y `{{error}}` como miembros independientes: las combinaciones imposibles (en proceso Y con error, error Y con valor) son representables — y si esto es un schema, la inconsistencia se PERSISTE. Modela una union discriminada: `{ status: \"idle\" } | { status: \"processing\" } | { status: \"error\"; error: E } | { status: \"ok\"; value: T }`. Cada variante carga SOLO los datos que existen en ese estado, y `match().exhaustive()` obliga a manejar todas.",
       splitStateMachine:
-        "Esta funcion reparte UNA maquina de estados entre varios useState ({{names}}): cada transicion toca varios setters y los renders intermedios ven combinaciones imposibles. Consolida en UN estado: si son fases de un mismo dato, UN useState con union etiquetada (`{ status: \"loading\" } | { status: \"error\"; error: E } | ...`); si las transiciones se repiten o concentran reglas, un useReducer con acciones de union etiquetada. La transicion se vuelve atomica y `match()` la consume exhaustiva.",
+        "Esta funcion reparte UNA maquina de estados entre varios useState ({{names}}): cada transicion toca varios setters y los renders intermedios ven combinaciones imposibles. Consolida en UN estado: si son fases de un mismo dato, UN useState con union discriminada (`{ status: \"loading\" } | { status: \"error\"; error: E } | ...`); si las transiciones se repiten o concentran reglas, un useReducer con acciones de union discriminada. La transicion se vuelve atomica y `match()` la consume exhaustiva.",
       splitTransition:
-        "Esta funcion llama a varios setters de useState en una sola transicion ({{names}}): eso PRUEBA que esos estados son una sola maquina repartida — entre setter y setter, los renders intermedios ven combinaciones imposibles. Consolida en UN estado: si son fases de un mismo dato, UN useState con union etiquetada; si las transiciones se repiten o concentran reglas, un useReducer con acciones de union etiquetada. Asi la transicion es atomica.",
+        "Esta funcion llama a varios setters de useState en una sola transicion ({{names}}): eso PRUEBA que esos estados son una sola maquina repartida — entre setter y setter, los renders intermedios ven combinaciones imposibles. Consolida en UN estado: si son fases de un mismo dato, UN useState con union discriminada; si las transiciones se repiten o concentran reglas, un useReducer con acciones de union discriminada. Asi la transicion es atomica.",
     },
     schema: [
       {

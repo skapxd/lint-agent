@@ -41,8 +41,8 @@ export const noJsxTernaryNull: RuleModule = {
           return;
         }
 
-        const omitsNullBranch = !rendersNothing(node.alternate) && !rendersNothing(node.consequent);
-        if (omitsNullBranch) {
+        const rendersSomethingOnBothBranches = !rendersNothing(node.alternate) && !rendersNothing(node.consequent);
+        if (rendersSomethingOnBothBranches) {
           return;
         }
 
