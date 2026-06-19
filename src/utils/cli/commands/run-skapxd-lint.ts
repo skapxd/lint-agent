@@ -95,10 +95,10 @@ export async function runSkapxdLint(streams: CliStreams) {
       : Result.ok(cliArguments.path);
 
   if (!pathResult.ok) {
-    const message =
-      pathResult.error instanceof Error
-        ? pathResult.error.message
-        : "no pude leer <path> desde stdin.";
+    const message = getUnknownErrorMessage(
+      pathResult.error,
+      "no pude leer <path> desde stdin.",
+    );
     const output = createExecutionErrorOutput(message);
 
     await emitOutput(output, outputFormat);
@@ -135,10 +135,10 @@ export async function runSkapxdLint(streams: CliStreams) {
   });
 
   if (!verifySeedResult.ok) {
-    const message =
-      verifySeedResult.error instanceof Error
-        ? verifySeedResult.error.message
-        : "no pude resolver el lote persistido.";
+    const message = getUnknownErrorMessage(
+      verifySeedResult.error,
+      "no pude resolver el lote persistido.",
+    );
     const output = createUsageErrorOutput(message);
 
     await emitOutput(output, outputFormat);
@@ -159,7 +159,10 @@ export async function runSkapxdLint(streams: CliStreams) {
   });
 
   if (!requestedOutput.ok) {
-    const message = getUnknownErrorMessage(requestedOutput.error, "fallo desconocido");
+    const message = getUnknownErrorMessage(
+      requestedOutput.error,
+      "fallo desconocido",
+    );
     const output = createExecutionErrorOutput(message);
 
     await emitOutput(output, outputFormat);

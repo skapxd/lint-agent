@@ -13,14 +13,18 @@ import { runEslintJson } from "#/utils/cli/eslint-run/run-eslint-json";
 import { createReportGuidance } from "#/utils/cli/output/report/create-report-guidance";
 import { summarizeLintResults } from "#/utils/cli/output/machine/summarize-lint-results";
 import { toLintFileResults } from "#/utils/cli/output/machine/to-lint-file-results";
-import type { CliPreset, SkapxdLintOutput } from "#/utils/cli/types";
+import type {
+  CliExecutionError,
+  CliPreset,
+  SkapxdLintOutput,
+} from "#/utils/cli/types";
 
 export function runEphemeralEvaluation(
   rawTargetPath: string,
   explicitPreset: CliPreset | null,
   includeTests: boolean,
   useProjectTsconfig: boolean,
-): Result<SkapxdLintOutput, unknown> {
+): Result<SkapxdLintOutput, CliExecutionError> {
   let configPath = "";
   const cleanupPaths: string[] = [];
   const evaluationOutput = trySafe(() => {
@@ -83,10 +87,11 @@ export function runEphemeralEvaluation(
 
   if (!evaluationOutput.ok) {
     return Result.err({
+      _tag: "CliExecutionError",
       cause: evaluationOutput.error,
       message: "No se pudo ejecutar ESLint con config efimera.",
     });
   }
 
-  return evaluationOutput;
+  return Result.ok(evaluationOutput.value);
 }

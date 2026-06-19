@@ -101,6 +101,7 @@ export function createNestConfigs(
         "skapxd/no-rethrow-result-error": "off",
         "skapxd/no-try-catch": "off",
         "skapxd/result-error-requires-handling": "off",
+        "skapxd/result-error-requires-modeling": "off",
       },
     },
   ] satisfies OpinionatedConfigList;

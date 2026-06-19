@@ -2,16 +2,20 @@ import { Result, trySafe } from "@skapxd/result";
 import { formatInteractiveFileNote } from "./format-interactive-file-note";
 import { getInteractiveOutputTitle } from "./get-interactive-output-title";
 import { getInteractiveSummary } from "./get-interactive-summary";
-import type { SkapxdLintOutput } from "#/utils/cli/types";
+import type { CliIoError, SkapxdLintOutput } from "#/utils/cli/types";
 
 export async function renderInteractiveOutput(
   output: SkapxdLintOutput,
   stream: NodeJS.WriteStream,
-): Promise<Result<void, unknown>> {
+): Promise<Result<void, CliIoError>> {
   const clackPrompts = await trySafe(() => import("@clack/prompts"));
 
   if (!clackPrompts.ok) {
-    return Result.err(clackPrompts.error);
+    return Result.err({
+      _tag: "InteractiveRendererUnavailable",
+      cause: clackPrompts.error,
+      message: "No pude cargar el renderer interactivo (@clack/prompts).",
+    });
   }
 
   const { intro, log, note, outro } = clackPrompts.value;

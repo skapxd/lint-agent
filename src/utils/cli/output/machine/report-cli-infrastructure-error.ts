@@ -1,13 +1,16 @@
+import type { CliIoError } from "#/utils/cli/types";
+
 export function reportCliInfrastructureError(
-  error: unknown,
+  error: CliIoError,
   stream: NodeJS.WriteStream,
 ) {
-  const errorIsNativeError = error instanceof Error;
+  const cause = "cause" in error ? error.cause : undefined;
+  const causeIsNativeError = cause instanceof Error;
 
-  if (errorIsNativeError) {
-    stream.write(`${error.stack ?? error.message}\n`);
+  if (causeIsNativeError) {
+    stream.write(`${cause.stack ?? error.message}\n`);
     return;
   }
 
-  stream.write(`${String(error)}\n`);
+  stream.write(`${error.message}\n`);
 }

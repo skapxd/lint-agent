@@ -5,7 +5,7 @@ import { getChangedLintFiles } from "#/utils/cli/eslint-run/get-changed-lint-fil
 import { createReportGuidance } from "#/utils/cli/output/report/create-report-guidance";
 import { summarizeLintResults } from "#/utils/cli/output/machine/summarize-lint-results";
 import { toLintFileResults } from "#/utils/cli/output/machine/to-lint-file-results";
-import type { SkapxdLintOutput } from "#/utils/cli/types";
+import type { CliExecutionError, SkapxdLintOutput } from "#/utils/cli/types";
 
 /**
  * Ejecuta el modo `--changed`: limita ESLint a los archivos modificados contra una base Git y devuelve el mismo contrato de salida que los modos completos dentro de un `Result`. La funcion existe para que el CLI pueda fallar de forma estable cuando Git no puede calcular el diff, en vez de mezclar ese error con errores de lint.
@@ -22,7 +22,7 @@ import type { SkapxdLintOutput } from "#/utils/cli/types";
 export async function runChangedMode(
   base: string | null,
   cwd: string,
-): Promise<Result<SkapxdLintOutput, unknown>> {
+): Promise<Result<SkapxdLintOutput, CliExecutionError>> {
   const changed = getChangedLintFiles(base, cwd);
   const hasGitFailure = changed === null;
 
@@ -53,7 +53,11 @@ export async function runChangedMode(
 
   const eslint = trySafe(() => new ESLint({ cwd: changed.root, warnIgnored: false }));
   if (!eslint.ok) {
-    return Result.err(eslint.error);
+    return Result.err({
+      _tag: "CliExecutionError",
+      cause: eslint.error,
+      message: "No se pudo inicializar ESLint para el modo --changed.",
+    });
   }
 
   const hasNoChangedFiles = changed.files.length === 0;
@@ -62,7 +66,11 @@ export async function runChangedMode(
     : await trySafe(() => eslint.value.lintFiles(changed.files));
 
   if (!lintResults.ok) {
-    return Result.err(lintResults.error);
+    return Result.err({
+      _tag: "CliExecutionError",
+      cause: lintResults.error,
+      message: "ESLint fallo al lintar los archivos cambiados.",
+    });
   }
 
   const files = toLintFileResults(lintResults.value);

@@ -1,7 +1,11 @@
 import { Result } from "@skapxd/result";
 import { promptForResumeLastState } from "#/utils/cli/output/interactive/prompt-for-resume-last-state";
 import { readAdoptionState } from "./read-adoption-state";
-import type { CliArguments, PromptStreams } from "#/utils/cli/types";
+import type {
+  CliArguments,
+  CliIoError,
+  PromptStreams,
+} from "#/utils/cli/types";
 
 type ResolveStateBackedVerifySeedInput = {
   cliArguments: CliArguments;
@@ -12,7 +16,7 @@ type ResolveStateBackedVerifySeedInput = {
 
 export async function resolveStateBackedVerifySeed(
   input: ResolveStateBackedVerifySeedInput,
-) {
+): Promise<Result<string | null, CliIoError>> {
   if (input.cliArguments.verifySeed !== null) {
     return Result.ok(input.cliArguments.verifySeed);
   }
@@ -25,11 +29,11 @@ export async function resolveStateBackedVerifySeed(
 
     return hasStoredState
       ? Result.ok(storedState.state.seed)
-      : Result.err(
-          new Error(
+      : Result.err({
+          _tag: "PersistedStateMissing",
+          message:
             "No hay lote persistido para --resume-last. Ejecuta --adopt <percent> primero o pasa --verify <seed>.",
-          ),
-        );
+        });
   }
 
   const shouldOfferStoredState =

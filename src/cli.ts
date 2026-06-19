@@ -18,7 +18,14 @@ async function runCliEntrypoint() {
 
   if (!cliModule.ok) {
     process.stderr.write("skapxd-lint no pudo cargar el runner del CLI.\n");
-    reportCliInfrastructureError(cliModule.error, process.stderr);
+    reportCliInfrastructureError(
+      {
+        _tag: "CliRunnerUnavailable",
+        cause: cliModule.error,
+        message: "skapxd-lint no pudo cargar el runner del CLI.",
+      },
+      process.stderr,
+    );
     process.exitCode = 2;
     return;
   }

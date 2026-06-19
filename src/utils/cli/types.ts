@@ -47,6 +47,32 @@ export type CliRunResult = {
   output: SkapxdLintOutput;
 };
 
+/**
+ * Error de dominio del canal de EJECUCION del CLI: ESLint o git no pudieron
+ * producir el reporte de lint. La frontera (trySafe sobre ESLint/git/fs) mapea
+ * su error crudo aqui, preservando el original en `cause`.
+ */
+export type CliExecutionError = {
+  _tag: "CliExecutionError";
+  cause: unknown;
+  message: string;
+};
+
+/**
+ * Error de dominio del canal de I/O del CLI: escribir la salida, renderizar el
+ * modo interactivo, leer un prompt o resolver el lote persistido. Union
+ * discriminada para que el consumidor decida con `match()` en vez de tratar
+ * todo fallo como opaco. Cada variante de runtime preserva su `cause`.
+ */
+export type CliIoError =
+  | { _tag: "OutputDirectoryMissing"; message: string }
+  | { _tag: "OutputWriteFailed"; cause: unknown; message: string }
+  | { _tag: "InteractiveRendererUnavailable"; cause: unknown; message: string }
+  | { _tag: "InteractivePromptFailed"; cause: unknown; message: string }
+  | { _tag: "InteractionCancelled"; message: string }
+  | { _tag: "PersistedStateMissing"; message: string }
+  | { _tag: "CliRunnerUnavailable"; cause: unknown; message: string };
+
 export type SkapxdLintOutput = {
   adoption?: AdoptionOutput;
   changedFiles?: string[];

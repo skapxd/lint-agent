@@ -13,6 +13,7 @@ Cada ficha vive en un archivo propio. El indice conserva la descripcion corta de
 | [`skapxd/requires-strict-tsconfig`](./requires-strict-tsconfig.md) | El `tsconfig` debe ser implacable (`strict`, `noImplicitReturns`, `noUncheckedIndexedAccess`): sin ellos, el compilador no puede hacer irrepresentable lo inválido. |
 | [`skapxd/result-error-requires-cause`](./result-error-requires-cause.md) | Un `Result.err` derivado debe preservar `cause: result.error`. |
 | [`skapxd/result-error-requires-handling`](./result-error-requires-handling.md) | Prohíbe descartar en silencio un Result fallido: el error se transforma o se entrega, nunca se ignora. |
+| [`skapxd/result-error-requires-modeling`](./result-error-requires-modeling.md) | Una frontera no puede devolver `Result<_, unknown>`: el canal de error debe modelarse como un error de dominio (tagged union), no quedar opaco. |
 | [`skapxd/await-requires-result`](./await-requires-result.md) | Todo `await` debe resolver en un `Result`: o la función llamada retorna `Promise<Result<...>>` (preferido) o se envuelve en `trySafe`. **Obligatoria en todos los presets tipados.** |
 | [`skapxd/no-rethrow-result-error`](./no-rethrow-result-error.md) | Prohíbe re-lanzar el error crudo de un `Result`: el flujo no vuelve de `trySafe` a excepción cruda. |
 | [`skapxd/trysafe-only-at-boundary`](./trysafe-only-at-boundary.md) | Exige que `trySafe` capture en la frontera runtime/paquete, no una capa arriba sobre código del proyecto. **En las bases** (agnóstica de framework); detección conservadora para acotar falsos positivos. |
