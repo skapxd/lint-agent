@@ -93,6 +93,29 @@ export function run() {
 }
 `;
 
+const validExternalBoundarySignals = `
+import { readFileSync } from "node:fs";
+import { trySafe } from "@skapxd/result";
+
+export async function prompt() {
+  const clackPrompts = await trySafe(() => import("@clack/prompts"));
+  if (!clackPrompts.ok) {
+    return clackPrompts;
+  }
+
+  const { text } = clackPrompts.value;
+  return trySafe(() => text({ message: "Ruta" }));
+}
+
+function parseJsonRecord(source: string): Record<string, unknown> {
+  return JSON.parse(source) as Record<string, unknown>;
+}
+
+export function loadPackage(path: string) {
+  return trySafe(() => parseJsonRecord(readFileSync(path, "utf8")));
+}
+`;
+
 const ruleTester = createTypedRuleTester();
 type RuleArg = Parameters<typeof ruleTester.run>[1];
 
@@ -119,6 +142,10 @@ ruleTester.run(
       { code: validAnyCallee, filename: "any-callee.ts" },
       { code: validSpecFileProjectCall, filename: "upsert-user.spec.ts" },
       { code: validForeignTrySafe, filename: "foreign-trysafe.ts" },
+      {
+        code: validExternalBoundarySignals,
+        filename: "external-boundary-signals.ts",
+      },
     ],
   },
 );

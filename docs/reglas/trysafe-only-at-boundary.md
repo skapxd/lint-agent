@@ -17,18 +17,19 @@ async upsert(input: Input): Promise<Result<Entity | null>> {
 const result = await this.repository.upsert(input); // ✅
 ```
 
-La regla marca solo el caso claro: un `trySafe` real de `@skapxd/result` cuyo callback retorna una única llamada y cuyo callee resuelve, con información de tipos, a declaraciones del proyecto. Se abstiene si no hay type-info, si el callback orquesta varias operaciones, si el callee es `any`, si no puede resolver símbolos o si las declaraciones mezclan origen interno y externo.
+La regla marca solo el caso claro: un `trySafe` real de `@skapxd/result` cuyo callback retorna una única llamada, no contiene llamadas directas a runtime/paquete, y cuyo callee resuelve, con información de tipos, a código del proyecto. Para evitar falsos positivos sigue la declaración real de la signatura del callee (no solo el binding local de un destructuring o re-export) y se abstiene si cualquier llamada dentro del callback resuelve a origen externo. También se abstiene si no hay type-info, si el callback orquesta varias operaciones, si el callee es `any`, si no puede resolver símbolos o si las declaraciones mezclan origen interno y externo.
 
 No marca llamadas directas a runtime o paquetes:
 
 ```ts
 trySafe(() => readFile(path, "utf8")); // ✅ frontera real
 trySafe(() => this.model.findOneAndUpdate(query, update).exec()); // ✅ driver externo
+trySafe(() => parseJsonRecord(readFileSync(path, "utf8"))); // ✅ toca filesystem en el callback
 ```
 
 También permite tests por defecto (`*.spec.ts`, `*.test.ts`, `__tests__`, e2e), porque los specs usan `trySafe` libremente sobre helpers del proyecto sin representar deuda de capas.
 
-La regla nace opt-in y fuera de presets. Tras `result@2.0.0`, el no-op silencioso que motivaba el caso más fuerte ya está resuelto: `trySafe` await-ea thenables y no solo `instanceof Promise`. Lo que queda es disciplina arquitectónica con falsos positivos reales (orquestación legítima o captura puntual de dominio), así que no se activa como `error` global hasta medirla y decidir su promoción.
+La regla está en las bases (`shared/base`) en `error` porque es agnóstica de framework y protege la frontera del patrón Result. Tras `result@2.0.0`, el no-op silencioso que motivaba el caso más fuerte ya está resuelto: `trySafe` await-ea thenables y no solo `instanceof Promise`. Lo que queda es disciplina arquitectónica, por eso la detección es conservadora: si el callback ya toca runtime/paquete, si el origen real viene de `node_modules` o si la evidencia de tipos no alcanza, la regla no acusa.
 
 ```js
 export default [

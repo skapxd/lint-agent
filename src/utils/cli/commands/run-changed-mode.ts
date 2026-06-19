@@ -1,7 +1,6 @@
 import { Result, trySafe } from "@skapxd/result";
 import { ESLint } from "eslint";
 import { createAdoptionRuleSummaries } from "#/utils/cli/adoption/create-adoption-rule-summaries";
-import { createExecutionErrorOutput } from "#/utils/cli/output/machine/create-execution-error-output";
 import { getChangedLintFiles } from "#/utils/cli/eslint-run/get-changed-lint-files";
 import { createReportGuidance } from "#/utils/cli/output/report/create-report-guidance";
 import { summarizeLintResults } from "#/utils/cli/output/machine/summarize-lint-results";
@@ -9,23 +8,26 @@ import { toLintFileResults } from "#/utils/cli/output/machine/to-lint-file-resul
 import type { SkapxdLintOutput } from "#/utils/cli/types";
 
 /**
- * Ejecuta el modo `--changed`: limita ESLint a los archivos modificados contra una base Git y devuelve el mismo contrato de salida que los modos completos. La funcion existe para que el CLI pueda fallar de forma estable cuando Git no puede calcular el diff, en vez de mezclar ese error con errores de lint.
+ * Ejecuta el modo `--changed`: limita ESLint a los archivos modificados contra una base Git y devuelve el mismo contrato de salida que los modos completos dentro de un `Result`. La funcion existe para que el CLI pueda fallar de forma estable cuando Git no puede calcular el diff, en vez de mezclar ese error con errores de lint.
  *
  * ### Orden
  * resolver root + archivos cambiados -> sintetizar execution-error si Git falla -> saltar ESLint si no hay archivos -> lint con `warnIgnored: false` -> normalizar mensajes y resumen.
  *
  * ### Ejemplo
  * ```ts
- * await runChangedMode("origin/main", cwd); // dos .ts modificados -> lintea solo esos paths
- * await runChangedMode("origin/main", cwd); // sin cambios -> { status: "ok", files: [] }
+ * await runChangedMode("origin/main", cwd); // ok -> dos .ts modificados linteados
+ * await runChangedMode("origin/main", cwd); // ok -> { status: "ok", files: [] }
  * ```
  */
-export async function runChangedMode(base: string | null, cwd: string) {
+export async function runChangedMode(
+  base: string | null,
+  cwd: string,
+): Promise<Result<SkapxdLintOutput, unknown>> {
   const changed = getChangedLintFiles(base, cwd);
   const hasGitFailure = changed === null;
 
   if (hasGitFailure) {
-    return {
+    return Result.ok({
       errorCount: 0,
       files: [
         {
@@ -46,22 +48,21 @@ export async function runChangedMode(base: string | null, cwd: string) {
       mode: "changed",
       status: "execution-error",
       warningCount: 0,
-    } satisfies SkapxdLintOutput;
+    } satisfies SkapxdLintOutput);
   }
 
-  const eslint = new ESLint({ cwd: changed.root, warnIgnored: false });
+  const eslint = trySafe(() => new ESLint({ cwd: changed.root, warnIgnored: false }));
+  if (!eslint.ok) {
+    return Result.err(eslint.error);
+  }
+
   const hasNoChangedFiles = changed.files.length === 0;
   const lintResults = hasNoChangedFiles
     ? Result.ok([])
-    : await trySafe(() => eslint.lintFiles(changed.files));
+    : await trySafe(() => eslint.value.lintFiles(changed.files));
 
   if (!lintResults.ok) {
-    const message =
-      lintResults.error instanceof Error
-        ? lintResults.error.message
-        : "ESLint fallo al lintear archivos cambiados.";
-
-    return createExecutionErrorOutput(message, "changed");
+    return Result.err(lintResults.error);
   }
 
   const files = toLintFileResults(lintResults.value);
@@ -69,7 +70,7 @@ export async function runChangedMode(base: string | null, cwd: string) {
   const summary = summarizeLintResults(files);
   const status = summary.errorCount > 0 || summary.warningCount > 0 ? "findings" : "ok";
 
-  return {
+  return Result.ok({
     changedFiles: changed.files,
     ...createReportGuidance({
       errorCount: summary.errorCount,
@@ -84,5 +85,5 @@ export async function runChangedMode(base: string | null, cwd: string) {
     status,
     targetPath: changed.root,
     warningCount: summary.warningCount,
-  } satisfies SkapxdLintOutput;
+  } satisfies SkapxdLintOutput);
 }

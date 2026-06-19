@@ -168,6 +168,25 @@ describe("contrato de errores: await-requires-result manda", () => {
       ).toBeUndefined();
     }
   });
+
+  it("trysafe-only-at-boundary está en las bases agnósticas de framework", () => {
+    const baseConsumers = [
+      plugin.configs.base,
+      plugin.configs.backend,
+      plugin.configs.frontend,
+      plugin.configs.package,
+      findConfigByName(plugin.configs.nest, "skapxd/nest/base"),
+      findConfigByName(plugin.configs.next, "skapxd/next/base"),
+      findConfigByName(plugin.configs.astro, "skapxd/astro/base"),
+    ];
+
+    for (const preset of baseConsumers) {
+      expect(
+        preset.rules?.["skapxd/trysafe-only-at-boundary"],
+        preset.name,
+      ).toBe("error");
+    }
+  });
 });
 
 describe("preset package", () => {
