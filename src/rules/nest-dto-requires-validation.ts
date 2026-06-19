@@ -14,11 +14,11 @@ export const nestDtoRequiresValidation: RuleModule = {
     type: "problem",
     docs: {
       description:
-        "Los DTOs de input validan en runtime con class-validator; el tipo de TypeScript solo existe en compilacion.",
+        "Todo DTO valida en runtime con class-validator; el tipo de TypeScript solo existe en compilacion.",
     },
     messages: {
       missingValidator:
-        "La propiedad `{{name}}` del DTO de input no tiene ningun decorador de class-validator. El tipo de TypeScript desaparece en runtime: sin validador, el ValidationPipe deja pasar cualquier cosa (o la descarta en silencio con whitelist). Decora con @IsString/@IsNumber/@IsEnum/... segun el tipo.",
+        "La propiedad `{{name}}` del DTO no tiene ningun decorador de class-validator. El tipo de TS desaparece en runtime: sin validador no hay contrato (y con Mongo schemaless es la unica garantia). Decora segun el tipo (@IsString/@IsNumber/@IsEnum/...); para uniones discriminadas o genericos que class-validator no expresa bien, modela con zod/valibot (ver prefer-schema-validation), no escapes con @Allow() ni unknown.",
       optionalRequiresIsOptional:
         "La propiedad `{{name}}` es opcional en el tipo (`?`) pero no tiene @IsOptional: en runtime el ValidationPipe la rechazara cuando falte, contradiciendo el tipo. Anota @IsOptional() (o quita el `?` si en realidad es obligatoria).",
       validateNestedRequiresType:
@@ -80,8 +80,8 @@ export const nestDtoRequiresValidation: RuleModule = {
           return;
         }
 
-        // Las clases de respuesta (UploadDocumentResponseDto, *OutputDto)
-        // quedan exentas aunque vivan en un archivo de nombre neutro.
+        // Los consumidores pueden eximir clases concretas por regex cuando
+        // deciden modelar ciertos outputs fuera de class-validator.
         const className = getContainingClassName(node);
 
         const isTrackedOutputDto = className &&

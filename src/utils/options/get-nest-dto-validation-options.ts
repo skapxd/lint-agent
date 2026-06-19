@@ -9,19 +9,9 @@ export function getNestDtoValidationOptions(options: RuleOptions = {}) {
       "IsOptional",
       "ValidateIf",
     ]),
-    // Los DTOs de RESPUESTA no se validan (el server los produce, no los
-    // recibe): quedan exentos por convención de nombre de ARCHIVO...
-    outputDtoFilePatterns: stringArrayOption(options, "outputDtoFilePatterns", [
-      "out-*.dto.ts",
-      "output-*.dto.ts",
-      "*-response.dto.ts",
-      "*-result.dto.ts",
-      "*-output.dto.ts",
-    ]),
-    // ...y también de CLASE (regex): un UploadDocumentResponseDto puede
-    // vivir en un archivo de nombre neutro o compartido con DTOs de input.
-    outputDtoClassPatterns: stringArrayOption(options, "outputDtoClassPatterns", [
-      "(Response|Result|Output)(Dto)?$",
-    ]),
+    // Las exenciones de output siguen existiendo para consumidores que las
+    // decidan explicitamente; por defecto todo DTO declara contrato.
+    outputDtoFilePatterns: stringArrayOption(options, "outputDtoFilePatterns", []),
+    outputDtoClassPatterns: stringArrayOption(options, "outputDtoClassPatterns", []),
   };
 }

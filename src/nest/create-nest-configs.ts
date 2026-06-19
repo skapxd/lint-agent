@@ -48,9 +48,9 @@ export function createNestConfigs(
         // controller: el plugin @nestjs/swagger introspecciona el resto.
         "skapxd/nest-dto-no-inline-object": "error",
         "skapxd/nest-dto-requires-api-property": "error",
-        // Los DTOs de input validan en runtime con class-validator (+ @Type
-        // de class-transformer para anidados); los out-*/-response quedan
-        // exentos: el server los produce, no los recibe.
+        // Todo DTO valida en runtime con class-validator (+ @Type de
+        // class-transformer para anidados); las exenciones de output son
+        // opt-in por configuracion, no convencion de nombres.
         "skapxd/nest-dto-requires-validation": "error",
         // El controller es la frontera: consume el Result con match() y
         // traduce a DTO o HttpException. Devolverlo crudo serializa el
