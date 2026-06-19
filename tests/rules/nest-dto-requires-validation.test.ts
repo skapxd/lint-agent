@@ -33,8 +33,7 @@ export class ListUsersDto {
         filename: "src/users/dto/list-users.dto.ts",
       },
       {
-        // archivo mixto: la exención de la clase Response NO contagia al
-        // DTO de input que comparte archivo
+        // todo DTO declara contrato por defecto, aunque el nombre diga Response
         code: `
 import { ApiProperty } from "@nestjs/swagger";
 
@@ -48,8 +47,50 @@ export class VerifyOtpDto {
   code: string;
 }
 `,
-        errors: [{ messageId: "missingValidator" }],
+        errors: [
+          { messageId: "missingValidator" },
+          { messageId: "missingValidator" },
+        ],
         filename: "src/auto-gestion/dto/auto-gestion.dto.ts",
+      },
+      {
+        // los out-*.dto.ts ya no quedan exentos por default
+        code: `
+import { ApiProperty } from "@nestjs/swagger";
+
+export class OutEvaluatePrequalificationDto {
+  @ApiProperty()
+  status: string;
+}
+`,
+        errors: [{ messageId: "missingValidator" }],
+        filename: "src/camunda/dto/out-evaluate-prequalification.dto.ts",
+      },
+      {
+        // el sufijo *ResponseDto tampoco exime si no se configura
+        code: `
+import { ApiProperty } from "@nestjs/swagger";
+
+export class UploadDocumentResponseDto {
+  @ApiProperty()
+  fileURL: string;
+}
+`,
+        errors: [{ messageId: "missingValidator" }],
+        filename: "src/upload-file/dto/upload-document.dto.ts",
+      },
+      {
+        // *-result.dto.ts tambien valida por default
+        code: `
+import { ApiProperty } from "@nestjs/swagger";
+
+export class BrokerLookupResultDto {
+  @ApiProperty()
+  license: string;
+}
+`,
+        errors: [{ messageId: "missingValidator" }],
+        filename: "src/brokers/dto/broker-lookup-result.dto.ts",
       },
       {
         // el bug silencioso: ValidateNested sin Type no valida nada
@@ -93,8 +134,8 @@ export class CreateLoanDto {
 `,
         filename: "src/loans/dto/create-loan.dto.ts",
       },
-      // los DTOs de respuesta no se validan: el server los produce
       {
+        // exención configurada por nombre de archivo: la opción sigue viva
         code: `
 import { ApiProperty } from "@nestjs/swagger";
 
@@ -104,10 +145,10 @@ export class OutEvaluatePrequalificationDto {
 }
 `,
         filename: "src/camunda/dto/out-evaluate-prequalification.dto.ts",
+        options: [{ outputDtoFilePatterns: ["out-*.dto.ts"] }],
       },
-      // el caso Multer: clase *ResponseDto en un archivo de nombre neutro
-      // (upload-document.dto.ts) — exenta por NOMBRE DE CLASE
       {
+        // exención configurada por nombre de clase: no se removió la lógica
         code: `
 import { ApiProperty } from "@nestjs/swagger";
 
@@ -117,17 +158,7 @@ export class UploadDocumentResponseDto {
 }
 `,
         filename: "src/upload-file/dto/upload-document.dto.ts",
-      },
-      {
-        code: `
-import { ApiProperty } from "@nestjs/swagger";
-
-export class BrokerLookupResultDto {
-  @ApiProperty()
-  license: string;
-}
-`,
-        filename: "src/brokers/dto/broker-lookup-result.dto.ts",
+        options: [{ outputDtoClassPatterns: ["ResponseDto$"] }],
       },
       // @Type para primitivos de query no exige ValidateNested
       {

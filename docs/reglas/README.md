@@ -25,7 +25,7 @@ Cada ficha vive en un archivo propio. El indice conserva la descripcion corta de
 | [`skapxd/jsx-return-name-pascal-case`](./jsx-return-name-pascal-case.md) | Funciones que retornan JSX deben nombrarse como componentes. |
 | [`skapxd/nest-dto-no-inline-object`](./nest-dto-no-inline-object.md) | Los objetos anidados de un DTO se modelan como clases DTO, no como tipos inline ni `type: Object`. Preset `nest`. |
 | [`skapxd/nest-dto-requires-api-property`](./nest-dto-requires-api-property.md) | Toda propiedad pública de un `*.dto.ts` lleva `@ApiProperty`: el contrato HTTP se documenta en el DTO. Preset `nest`. |
-| [`skapxd/nest-dto-requires-validation`](./nest-dto-requires-validation.md) | Los DTOs de input validan en runtime: class-validator en cada propiedad, `@IsOptional` si hay `?`, `@Type` junto a `@ValidateNested`. Preset `nest`. |
+| [`skapxd/nest-dto-requires-validation`](./nest-dto-requires-validation.md) | Todo DTO valida en runtime: class-validator en cada propiedad, `@IsOptional` si hay `?`, `@Type` junto a `@ValidateNested`; zod/valibot para uniones. Preset `nest`. |
 | [`skapxd/nest-no-direct-instantiation`](./nest-no-direct-instantiation.md) | Prohíbe `new` sobre imports internos en services: las dependencias entran por el constructor (DI). Preset `nest`. |
 | [`skapxd/nest-no-inline-query-params`](./nest-no-inline-query-params.md) | Dos o más `@Query('x')`/`@ApiQuery` individuales son un DTO disfrazado: consolida en `@Query() filters: Dto`. Preset `nest`. |
 | [`skapxd/nest-no-result-response`](./nest-no-result-response.md) | Los métodos de un `@Controller` no retornan `Result`: el envelope se serializaría al cliente. La activa el preset `nest`. |
