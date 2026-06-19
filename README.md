@@ -61,7 +61,7 @@ Los enlaces apuntan a GitHub de forma absoluta para que funcionen tambien desde 
 | [Adopcion incremental y legacy](https://github.com/skapxd/eslint-opinionated/blob/main/docs/adopcion-legacy.md) | Lint sobre cambios, olas de adopcion, overrides y propuestas de reglas. |
 | [Pipeline Result](https://github.com/skapxd/eslint-opinionated/blob/main/docs/pipeline-result.md) | Como encajan @skapxd/result, ts-pattern y el trace global. |
 | [Notas type-aware](https://github.com/skapxd/eslint-opinionated/blob/main/docs/notas-type-aware.md) | Supuestos, limites conocidos y notas de reglas que dependen del checker. |
-| [Indice de reglas](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/README.md) | Las 58 fichas individuales en docs/reglas/. |
+| [Indice de reglas](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/README.md) | Las 59 fichas individuales en docs/reglas/. |
 
 ## Reglas
 
@@ -84,6 +84,7 @@ Los enlaces apuntan a GitHub de forma absoluta para que funcionen tambien desde 
 | [`skapxd/max-public-methods`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/max-public-methods.md) | Una clase, una responsabilidad: máximo N métodos públicos (default 1). Agnóstica al framework, en las reglas base; el preset `nest` le inyecta sus hooks. |
 | [`skapxd/no-accessors`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/no-accessors.md) | Prohíbe `get`/`set`: un método explícito dice la verdad; el accessor esconde computación (y métodos disfrazados). |
 | [`skapxd/jsx-return-name-pascal-case`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/jsx-return-name-pascal-case.md) | Funciones que retornan JSX deben nombrarse como componentes. |
+| [`skapxd/nest-dto-no-inline-object`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/nest-dto-no-inline-object.md) | Los objetos anidados de un DTO se modelan como clases DTO, no como tipos inline ni `type: Object`. Preset `nest`. |
 | [`skapxd/nest-dto-requires-api-property`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/nest-dto-requires-api-property.md) | Toda propiedad pública de un `*.dto.ts` lleva `@ApiProperty`: el contrato HTTP se documenta en el DTO. Preset `nest`. |
 | [`skapxd/nest-dto-requires-validation`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/nest-dto-requires-validation.md) | Los DTOs de input validan en runtime: class-validator en cada propiedad, `@IsOptional` si hay `?`, `@Type` junto a `@ValidateNested`. Preset `nest`. |
 | [`skapxd/nest-no-direct-instantiation`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/nest-no-direct-instantiation.md) | Prohíbe `new` sobre imports internos en services: las dependencias entran por el constructor (DI). Preset `nest`. |

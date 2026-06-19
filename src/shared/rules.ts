@@ -15,6 +15,7 @@ import { noAccessors } from "#/rules/no-accessors";
 import type { RuleModule } from "#/utils/rule-authoring/rule-types";
 import { maxHookSize } from "#/rules/max-hook-size";
 import { maxPublicMethods } from "#/rules/max-public-methods";
+import { nestDtoNoInlineObject } from "#/rules/nest-dto-no-inline-object";
 import { nestDtoRequiresApiProperty } from "#/rules/nest-dto-requires-api-property";
 import { nestDtoRequiresValidation } from "#/rules/nest-dto-requires-validation";
 import { nestNoDirectInstantiation } from "#/rules/nest-no-direct-instantiation";
@@ -76,6 +77,7 @@ export const rules = {
   "trysafe-only-at-boundary": trysafeOnlyAtBoundary,
   "max-hook-size": maxHookSize,
   "max-public-methods": maxPublicMethods,
+  "nest-dto-no-inline-object": nestDtoNoInlineObject,
   "nest-dto-requires-api-property": nestDtoRequiresApiProperty,
   "nest-dto-requires-validation": nestDtoRequiresValidation,
   "nest-no-direct-instantiation": nestNoDirectInstantiation,

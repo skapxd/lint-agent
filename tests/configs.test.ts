@@ -288,6 +288,8 @@ describe("preset nest", () => {
         allowOptions.allowFilePatterns,
       ),
     ).toBe(false);
+    expect(nestBase.rules["skapxd/nest-dto-no-inline-object"]).toBe("error");
+    expect(nestBase.rules["skapxd/nest-dto-requires-api-property"]).toBe("error");
     expect(nestBase.rules["skapxd/nest-no-result-response"]).toBe("error");
   });
 
