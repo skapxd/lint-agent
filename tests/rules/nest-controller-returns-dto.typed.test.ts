@@ -70,13 +70,14 @@ export class UsersController {
 }
 `;
 
-const invalidFakeDtoDecorator = `
+const invalidFakeLocalDtoMixin = `
 ${controllerDeclarations}
 
-declare function Dto(): ClassDecorator;
+function Dto() {
+  return class {};
+}
 
-@Dto()
-class UserDto {
+class UserDto extends Dto() {
   id!: string;
 }
 
@@ -111,8 +112,7 @@ import { Dto } from "@skapxd/nest";
 
 ${controllerDeclarations}
 
-@Dto()
-class UserDto {
+class UserDto extends Dto() {
   id!: string;
 }
 
@@ -134,8 +134,7 @@ import { Dto } from "@skapxd/nest";
 
 ${controllerDeclarations}
 
-@Dto()
-class UserDto {
+class UserDto extends Dto() {
   id!: string;
 }
 
@@ -165,8 +164,7 @@ import { Dto } from "@skapxd/nest";
 
 ${controllerDeclarations}
 
-@Dto()
-class UserDto {
+class UserDto extends Dto() {
   id!: string;
 }
 
@@ -184,8 +182,7 @@ import { Dto } from "@skapxd/nest";
 
 ${controllerDeclarations}
 
-@Dto()
-class UserDto {
+class UserDto extends Dto() {
   id!: string;
 }
 
@@ -203,8 +200,7 @@ import { Dto } from "@skapxd/nest";
 
 ${controllerDeclarations}
 
-@Dto()
-class UserDto {
+class UserDto extends Dto() {
   id!: string;
 }
 
@@ -222,13 +218,11 @@ import { Dto } from "@skapxd/nest";
 
 ${controllerDeclarations}
 
-@Dto()
-class UserDto {
+class UserDto extends Dto() {
   id!: string;
 }
 
-@Dto()
-class AdminDto {
+class AdminDto extends Dto() {
   id!: string;
 }
 
@@ -275,6 +269,24 @@ export class UsersController {
   @Get("file")
   file(): StreamableFile {
     return new StreamableFile();
+  }
+}
+`;
+
+const validDtoStreamReturn = `
+import { Dto } from "@skapxd/nest";
+
+${controllerDeclarations}
+
+class StreamableFile {}
+
+class PdfFileDto extends Dto(StreamableFile) {}
+
+@Controller("reports")
+export class ReportsController {
+  @Get("file")
+  file(): Promise<PdfFileDto> {
+    return Promise.resolve(new PdfFileDto());
   }
 }
 `;
@@ -400,7 +412,7 @@ ruleTester.run(
         filename: testFilename,
       },
       {
-        code: invalidFakeDtoDecorator,
+        code: invalidFakeLocalDtoMixin,
         errors: [{ messageId: "missingDtoReturn" }],
         filename: testFilename,
       },
@@ -453,6 +465,10 @@ ruleTester.run(
       },
       {
         code: validStreamReturn,
+        filename: testFilename,
+      },
+      {
+        code: validDtoStreamReturn,
         filename: testFilename,
       },
       {

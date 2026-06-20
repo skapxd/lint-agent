@@ -14,12 +14,12 @@ export const nestControllerReturnsDto: RuleModule = {
     type: "problem",
     docs: {
       description:
-        "Los metodos de ruta de un @Controller retornan una clase @Dto real para que @nestjs/swagger genere el response schema sin exponer interfaces, type aliases ni schemas de persistencia.",
+        "Los metodos de ruta de un @Controller retornan una clase extends Dto() con brand de capa de @skapxd/nest para que @nestjs/swagger genere el response schema sin exponer interfaces, type aliases ni schemas de persistencia.",
       requiresTypeChecking: true,
     },
     messages: {
       missingDtoReturn:
-        "El metodo de ruta `{{name}}` no retorna un `@Dto`. `@nestjs/swagger` genera el response schema introspeccionando CLASES: una interface, un `type` o un schema de Mongoose/TypeORM no producen schema (el cliente generado recibe `any`) y exponer el modelo de persistencia acopla tu API a la DB. Declara una clase decorada con `@Dto` de @skapxd/nest y retornala: `: Promise<FooDto>` (o `FooDto[]`). Sin cuerpo: `Promise<void>`. Archivos binarios: `StreamableFile`/`Buffer`, o una clase `@Dto` que extienda `StreamableFile`.",
+        "El metodo de ruta `{{name}}` no retorna un DTO marcado. `@nestjs/swagger` genera el response schema introspeccionando CLASES: una interface, un `type` o un schema de Mongoose/TypeORM no producen schema (el cliente generado recibe `any`) y exponer el modelo de persistencia acopla tu API a la DB. Declara una clase `extends Dto()` de @skapxd/nest y retornala: `: Promise<FooDto>` (o `FooDto[]`). Sin cuerpo: `Promise<void>`. Binarios: `StreamableFile`/`Buffer`, o `extends Dto(StreamableFile)`.",
     },
     schema: [
       {
@@ -34,11 +34,7 @@ export const nestControllerReturnsDto: RuleModule = {
             items: { type: "string" },
             type: "array",
           },
-          dtoDecoratorNames: {
-            items: { type: "string" },
-            type: "array",
-          },
-          dtoDecoratorSource: { type: "string" },
+          dtoLayerSource: { type: "string" },
           gatewayDecoratorNames: {
             items: { type: "string" },
             type: "array",
