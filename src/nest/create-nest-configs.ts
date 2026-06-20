@@ -38,8 +38,8 @@ export function createNestConfigs(
           "error",
           { ignore: [...nestFrameworkHookNames] },
         ],
-        // Todo await resuelve en Result, salvo los entrypoints (main.ts,
-        // instrumentation): ahí el bootstrap debe crashear ruidoso.
+        // Todo await resuelve en Result, salvo entrypoints (crashean ruidoso)
+        // y composición de otro @UseCase real (ya tradujo Result a DTO/throw).
         "skapxd/await-requires-result": [
           "error",
           { allowFilePatterns: [...nestEntrypointFilePatterns] },
