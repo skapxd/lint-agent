@@ -23,6 +23,7 @@ Cada ficha vive en un archivo propio. El indice conserva la descripcion corta de
 | [`skapxd/max-public-methods`](./max-public-methods.md) | Una clase, una responsabilidad: máximo N métodos públicos (default 1). Agnóstica al framework, en las reglas base; el preset `nest` le inyecta sus hooks. |
 | [`skapxd/no-accessors`](./no-accessors.md) | Prohíbe `get`/`set`: un método explícito dice la verdad; el accessor esconde computación (y métodos disfrazados). |
 | [`skapxd/jsx-return-name-pascal-case`](./jsx-return-name-pascal-case.md) | Funciones que retornan JSX deben nombrarse como componentes. |
+| [`skapxd/nest-controller-injects-use-case`](./nest-controller-injects-use-case.md) | Controllers y gateways inyectan casos de uso con `@UseCase`, no services/repositories directos. Preset `nest`. |
 | [`skapxd/nest-controller-returns-dto`](./nest-controller-returns-dto.md) | Los métodos de ruta de un `@Controller` declaran un DTO explícito como retorno para que Swagger genere el response schema. Preset `nest`. |
 | [`skapxd/nest-dto-no-inline-object`](./nest-dto-no-inline-object.md) | Los objetos anidados de un DTO se modelan como clases DTO, no como tipos inline ni `type: Object`. Preset `nest`. |
 | [`skapxd/nest-dto-requires-api-property`](./nest-dto-requires-api-property.md) | Toda propiedad pública de un `*.dto.ts` lleva `@ApiProperty`: el contrato HTTP se documenta en el DTO. Preset `nest`. |
