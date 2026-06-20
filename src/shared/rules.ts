@@ -25,6 +25,7 @@ import { nestNoInlineQueryParams } from "#/rules/nest-no-inline-query-params";
 import { nestNoResultResponse } from "#/rules/nest-no-result-response";
 import { nestNoSwaggerInControllers } from "#/rules/nest-no-swagger-in-controllers";
 import { nestRequiresSwaggerPlugin } from "#/rules/nest-requires-swagger-plugin";
+import { nestUseCaseNoResultResponse } from "#/rules/nest-use-case-no-result-response";
 import { nestValidationPipeConfig } from "#/rules/nest-validation-pipe-config";
 import { nestedFunctionRequiresCapture } from "#/rules/nested-function-requires-capture";
 import { noDeepRelativeImports } from "#/rules/no-deep-relative-imports";
@@ -89,6 +90,7 @@ export const rules = {
   "nest-no-result-response": nestNoResultResponse,
   "nest-no-swagger-in-controllers": nestNoSwaggerInControllers,
   "nest-requires-swagger-plugin": nestRequiresSwaggerPlugin,
+  "nest-use-case-no-result-response": nestUseCaseNoResultResponse,
   "nest-validation-pipe-config": nestValidationPipeConfig,
   "nested-function-requires-capture": nestedFunctionRequiresCapture,
   "no-anonymous-condition": noAnonymousCondition,

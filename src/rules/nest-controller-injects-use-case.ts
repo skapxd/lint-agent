@@ -4,8 +4,8 @@ import { getConstructorDefinition } from "#/utils/nest/get-constructor-definitio
 import { getTypedConstructorParameter } from "#/utils/nest/get-typed-constructor-parameter";
 import { getTypeContext } from "#/utils/type-aware/get-type-context";
 import { hasClassDecoratorNamed } from "#/utils/nest/has-class-decorator-named";
+import { isClassDecoratedBySkapxdNest } from "#/utils/nest/is-class-decorated-by-skapxd-nest";
 import { isExternalOrigin } from "#/utils/result/is-external-origin";
-import { isSymbolFromSkapxdNest } from "#/utils/nest/is-symbol-from-skapxd-nest";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import { resolveAliasSymbol } from "#/utils/type-aware/resolve-alias-symbol";
 import type { RuleContext, RuleModule } from "#/utils/rule-authoring/rule-types";
@@ -95,45 +95,6 @@ export const nestControllerInjectsUseCase: RuleModule = {
       };
     }
 
-    function decoratorComesFromConfiguredUseCase(decorator: ts.Decorator) {
-      const expression = decorator.expression;
-      const callee = ts.isCallExpression(expression)
-        ? expression.expression
-        : expression;
-      const isIdentifierCallee = ts.isIdentifier(callee);
-      if (!isIdentifierCallee) {
-        return false;
-      }
-
-      const symbol = activeTypeContext.checker.getSymbolAtLocation(callee);
-      const lacksSymbol = !symbol;
-      if (lacksSymbol) {
-        return false;
-      }
-
-      const resolvedSymbol = resolveAliasSymbol(symbol, activeTypeContext);
-      const hasConfiguredName = options.useCaseDecoratorNames.includes(
-        resolvedSymbol.getName(),
-      );
-      if (!hasConfiguredName) {
-        return false;
-      }
-
-      return isSymbolFromSkapxdNest(
-        symbol,
-        activeTypeContext,
-        options.useCaseDecoratorSource,
-      );
-    }
-
-    function classHasConfiguredUseCaseDecorator(declaration: ts.ClassDeclaration) {
-      const decorators = ts.canHaveDecorators(declaration)
-        ? (ts.getDecorators(declaration) ?? [])
-        : [];
-
-      return decorators.some(decoratorComesFromConfiguredUseCase);
-    }
-
     function shouldAllowInjection(dependency: {
       declaration: ts.ClassDeclaration;
       name: string;
@@ -153,7 +114,12 @@ export const nestControllerInjectsUseCase: RuleModule = {
         return true;
       }
 
-      return classHasConfiguredUseCaseDecorator(dependency.declaration);
+      return isClassDecoratedBySkapxdNest(
+        dependency.declaration,
+        activeTypeContext,
+        options.useCaseDecoratorNames,
+        options.useCaseDecoratorSource,
+      );
     }
 
     function checkTransportClass(

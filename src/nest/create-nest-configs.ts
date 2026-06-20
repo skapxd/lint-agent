@@ -59,6 +59,9 @@ export function createNestConfigs(
         // envelope { ok, error } al cliente.
         "skapxd/nest-no-result-response": "error",
         "skapxd/nest-no-swagger-in-controllers": "error",
+        // El @UseCase es la frontera de aplicacion: consume el Result de la
+        // capa baja y lanza la excepcion que los filters de Nest traducen.
+        "skapxd/nest-use-case-no-result-response": "error",
         // Configuración del proyecto verificada por el lint: el plugin de
         // swagger en nest-cli.json (la premisa de las reglas de swagger) y
         // un ValidationPipe con transform + whitelist (la premisa de las

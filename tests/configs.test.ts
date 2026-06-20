@@ -293,6 +293,7 @@ describe("preset nest", () => {
     expect(nestBase.rules["skapxd/nest-dto-no-inline-object"]).toBe("error");
     expect(nestBase.rules["skapxd/nest-dto-requires-api-property"]).toBe("error");
     expect(nestBase.rules["skapxd/nest-no-result-response"]).toBe("error");
+    expect(nestBase.rules["skapxd/nest-use-case-no-result-response"]).toBe("error");
   });
 
   it("inyecta los hooks del framework a la regla agnóstica max-public-methods", () => {
