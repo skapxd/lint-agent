@@ -61,7 +61,7 @@ Los enlaces apuntan a GitHub de forma absoluta para que funcionen tambien desde 
 | [Adopcion incremental y legacy](https://github.com/skapxd/eslint-opinionated/blob/main/docs/adopcion-legacy.md) | Lint sobre cambios, olas de adopcion, overrides y propuestas de reglas. |
 | [Pipeline Result](https://github.com/skapxd/eslint-opinionated/blob/main/docs/pipeline-result.md) | Como encajan @skapxd/result, ts-pattern y el trace global. |
 | [Notas type-aware](https://github.com/skapxd/eslint-opinionated/blob/main/docs/notas-type-aware.md) | Supuestos, limites conocidos y notas de reglas que dependen del checker. |
-| [Indice de reglas](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/README.md) | Las 59 fichas individuales en docs/reglas/. |
+| [Indice de reglas](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/README.md) | Las 60 fichas individuales en docs/reglas/. |
 
 ## Reglas
 
@@ -94,6 +94,7 @@ Los enlaces apuntan a GitHub de forma absoluta para que funcionen tambien desde 
 | [`skapxd/nest-no-result-response`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/nest-no-result-response.md) | Los métodos de un `@Controller` no retornan `Result`: el envelope se serializaría al cliente. La activa el preset `nest`. |
 | [`skapxd/nest-no-swagger-in-controllers`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/nest-no-swagger-in-controllers.md) | Los controllers no se llenan de decoradores de swagger; el plugin introspecciona los DTOs. Preset `nest`. |
 | [`skapxd/nest-requires-swagger-plugin`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/nest-requires-swagger-plugin.md) | `nest-cli.json` debe tener el plugin `@nestjs/swagger`: la premisa de las reglas de swagger, verificada. Preset `nest`. |
+| [`skapxd/nest-use-case-no-result-response`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/nest-use-case-no-result-response.md) | Los métodos públicos de un `@UseCase` real consumen `Result` y lanzan excepciones, no propagan el envelope al controller. Preset `nest`. |
 | [`skapxd/nest-validation-pipe-config`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/nest-validation-pipe-config.md) | Todo `new ValidationPipe` configura `transform` y `whitelist`: la premisa de las reglas de DTOs. Preset `nest`. |
 | [`skapxd/nested-function-requires-capture`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/nested-function-requires-capture.md) | Una funcion anidada nombrada debe capturar scope local; si no, es un helper extraible. Preset `shared`, en `error`. |
 | [`skapxd/no-anonymous-condition`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/no-anonymous-condition.md) | El `if` solo acepta condiciones ya nombradas; todo cómputo (llamada, comparación, `&&`/`||`) se extrae a una `const` con nombre semántico. |
