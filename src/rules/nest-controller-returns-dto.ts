@@ -2,8 +2,9 @@ import type { TSESTree } from "@typescript-eslint/utils";
 import { getNestControllerReturnsDtoOptions } from "#/utils/options/get-nest-controller-returns-dto-options";
 import { getDecoratorName } from "#/utils/nest/get-decorator-name";
 import { getPropertyName } from "#/utils/ast/get-property-name";
-import { getTypeReferenceName } from "#/utils/typescript/get-type-reference-name";
 import { hasClassDecoratorNamed } from "#/utils/nest/has-class-decorator-named";
+import { getTypeContext } from "#/utils/type-aware/get-type-context";
+import { isAllowedNestControllerDtoReturnType } from "#/utils/nest/is-allowed-nest-controller-dto-return-type";
 import { isHttpRouteMethod } from "#/utils/nest/is-http-route-method";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
@@ -13,11 +14,12 @@ export const nestControllerReturnsDto: RuleModule = {
     type: "problem",
     docs: {
       description:
-        "Los metodos de ruta de un @Controller declaran un DTO como tipo de retorno para que @nestjs/swagger genere el response schema.",
+        "Los metodos de ruta de un @Controller retornan una clase @Dto real para que @nestjs/swagger genere el response schema sin exponer interfaces, type aliases ni schemas de persistencia.",
+      requiresTypeChecking: true,
     },
     messages: {
       missingDtoReturn:
-        "El metodo de ruta `{{name}}` no declara un DTO como tipo de retorno. El plugin de @nestjs/swagger genera el response schema desde el tipo de retorno: sin un DTO explicito (clase), el swagger.json queda sin schema y el cliente generado recibe `any`. Declara `: Promise<FooDto>` (o `FooDto[]`). Para respuestas sin cuerpo usa `Promise<void>`.",
+        "El metodo de ruta `{{name}}` no retorna un `@Dto`. `@nestjs/swagger` genera el response schema introspeccionando CLASES: una interface, un `type` o un schema de Mongoose/TypeORM no producen schema (el cliente generado recibe `any`) y exponer el modelo de persistencia acopla tu API a la DB. Declara una clase decorada con `@Dto` de @skapxd/nest y retornala: `: Promise<FooDto>` (o `FooDto[]`). Sin cuerpo: `Promise<void>`. Archivos binarios: `StreamableFile`/`Buffer`, o una clase `@Dto` que extienda `StreamableFile`.",
     },
     schema: [
       {
@@ -32,11 +34,15 @@ export const nestControllerReturnsDto: RuleModule = {
             items: { type: "string" },
             type: "array",
           },
+          dtoDecoratorNames: {
+            items: { type: "string" },
+            type: "array",
+          },
+          dtoDecoratorSource: { type: "string" },
           gatewayDecoratorNames: {
             items: { type: "string" },
             type: "array",
           },
-          requireDtoSuffix: { type: "boolean" },
           responseHandlerParamDecorators: {
             items: { type: "string" },
             type: "array",
@@ -53,73 +59,15 @@ export const nestControllerReturnsDto: RuleModule = {
   create(context: RuleContext) {
     const options = getNestControllerReturnsDtoOptions(context.options[0]);
     const filename = context.filename ?? context.getFilename();
-    const primitiveReturnTypes = new Set([
-      "TSStringKeyword",
-      "TSNumberKeyword",
-      "TSBooleanKeyword",
-    ]);
+    const typeContext = getTypeContext(context);
 
     const isAllowedFilePattern = matchesAnyGlob(filename, options.allowFilePatterns);
-    if (isAllowedFilePattern) {
+    const shouldSkipRule = !typeContext || isAllowedFilePattern;
+    if (shouldSkipRule) {
       return {};
     }
 
-    function isAllowedWrappedReturnType(annotation: TSESTree.TSTypeReference): boolean {
-      const wrappedType = annotation.typeArguments?.params[0];
-      const lacksWrappedType = !wrappedType;
-      if (lacksWrappedType) {
-        return false;
-      }
-
-      return isAllowedReturnType(wrappedType);
-    }
-
-    function isAllowedTypeReference(annotation: TSESTree.TSTypeReference): boolean {
-      const typeName = getTypeReferenceName(annotation.typeName);
-      const isPromiseOrArrayWrapper = typeName === "Promise" || typeName === "Array";
-      if (isPromiseOrArrayWrapper) {
-        return isAllowedWrappedReturnType(annotation);
-      }
-
-      const isStreamReturnType = Boolean(
-        typeName &&
-          options.streamReturnTypes.includes(typeName),
-      );
-      if (isStreamReturnType) {
-        return true;
-      }
-
-      const acceptsAnyTypeReference = !options.requireDtoSuffix;
-      if (acceptsAnyTypeReference) {
-        return Boolean(typeName);
-      }
-
-      return Boolean(typeName?.endsWith("Dto"));
-    }
-
-    function isAllowedReturnType(annotation: TSESTree.TypeNode): boolean {
-      const isArrayType = annotation.type === "TSArrayType";
-      if (isArrayType) {
-        return isAllowedReturnType(annotation.elementType);
-      }
-
-      const isTypeReference = annotation.type === "TSTypeReference";
-      if (isTypeReference) {
-        return isAllowedTypeReference(annotation);
-      }
-
-      const isVoidReturnType = annotation.type === "TSVoidKeyword";
-      if (isVoidReturnType) {
-        return true;
-      }
-
-      const isPrimitiveReturnType = primitiveReturnTypes.has(annotation.type);
-      if (isPrimitiveReturnType) {
-        return options.allowPrimitiveReturns;
-      }
-
-      return false;
-    }
+    const activeTypeContext = typeContext;
 
     function usesManualResponseHandler(node: TSESTree.MethodDefinition) {
       return node.value.params.some((param) =>
@@ -175,7 +123,11 @@ export const nestControllerReturnsDto: RuleModule = {
           return;
         }
 
-        const hasAllowedReturnType = isAllowedReturnType(returnType);
+        const hasAllowedReturnType = isAllowedNestControllerDtoReturnType(
+          returnType,
+          activeTypeContext,
+          options,
+        );
         if (hasAllowedReturnType) {
           return;
         }

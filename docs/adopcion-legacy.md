@@ -146,7 +146,7 @@ Referencia rápida de qué se puede configurar (detalle y defaults en la secció
 | `class-properties-require-readonly` | `allowFilePatterns` (globs), `allowPropertyPatterns` (regex), `ormModuleSources` (default `["@nestjs/mongoose", "typeorm"]`) |
 | `max-public-methods` | `allowFilePatterns` (globs), `max` (default `1`), `ignore` (aditivo a los hooks de Nest) |
 | `no-accessors` | `allowFilePatterns` (globs) |
-| `nest-controller-returns-dto` | `allowFilePatterns` (globs), `controllerDecoratorNames`, `gatewayDecoratorNames`, `responseHandlerParamDecorators`, `streamReturnTypes`, `allowPrimitiveReturns`, `requireDtoSuffix` |
+| `nest-controller-returns-dto` | `allowFilePatterns` (globs), `controllerDecoratorNames`, `dtoDecoratorNames`, `dtoDecoratorSource`, `gatewayDecoratorNames`, `responseHandlerParamDecorators`, `streamReturnTypes`, `allowPrimitiveReturns` |
 | `nest-dto-requires-api-property` | `allowFilePatterns` (globs), `dtoFilePatterns` (default `["*.dto.ts"]`), `apiPropertyDecoratorNames` |
 | `nest-dto-requires-validation` | `allowFilePatterns` (globs), `dtoFilePatterns`, `outputDtoFilePatterns`, `outputDtoClassPatterns` (regex), `optionalDecoratorNames` |
 | `nest-no-direct-instantiation` | `allowFilePatterns` (globs), `internalPatterns` (regex), `allowedPatterns` (regex), `allowedClassPatterns` (regex, default `(Error|Exception|Event)$`) |
