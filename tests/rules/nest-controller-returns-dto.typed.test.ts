@@ -90,6 +90,25 @@ export class UsersController {
 }
 `;
 
+const invalidFakeLocalDtoBrand = `
+${controllerDeclarations}
+
+declare const SKAPXD_LAYER: unique symbol;
+
+class UserDto {
+  readonly [SKAPXD_LAYER]!: "dto";
+  id!: string;
+}
+
+@Controller("users")
+export class UsersController {
+  @Get(":id")
+  findOne(): Promise<UserDto> {
+    return Promise.resolve(new UserDto());
+  }
+}
+`;
+
 const invalidSchemaReturn = `
 ${controllerDeclarations}
 
@@ -147,7 +166,41 @@ export class UsersController {
 }
 `;
 
-const invalidPrimitiveWhenDisabled = `
+const invalidUnionDtos = `
+import { Dto } from "@skapxd/nest";
+
+${controllerDeclarations}
+
+class CatDto extends Dto() {
+  id!: string;
+}
+
+class DogDto extends Dto() {
+  id!: string;
+}
+
+@Controller("pets")
+export class PetsController {
+  @Get(":id")
+  findOne(): Promise<CatDto | DogDto> {
+    return Promise.resolve(new CatDto());
+  }
+}
+`;
+
+const invalidVoidReturn = `
+${controllerDeclarations}
+
+@Controller("users")
+export class UsersController {
+  @Post()
+  create(): Promise<void> {
+    return Promise.resolve();
+  }
+}
+`;
+
+const invalidPrimitiveReturn = `
 ${controllerDeclarations}
 
 @Controller("health")
@@ -155,6 +208,20 @@ export class HealthController {
   @Get()
   ping(): string {
     return "ok";
+  }
+}
+`;
+
+const invalidStreamReturn = `
+${controllerDeclarations}
+
+class StreamableFile {}
+
+@Controller("users")
+export class UsersController {
+  @Get("file")
+  file(): StreamableFile {
+    return new StreamableFile();
   }
 }
 `;
@@ -213,7 +280,7 @@ export class UsersController {
 }
 `;
 
-const validUnionDtos = `
+const validInferredDto = `
 import { Dto } from "@skapxd/nest";
 
 ${controllerDeclarations}
@@ -222,53 +289,11 @@ class UserDto extends Dto() {
   id!: string;
 }
 
-class AdminDto extends Dto() {
-  id!: string;
-}
-
 @Controller("users")
 export class UsersController {
   @Get(":id")
-  findOne(): Promise<UserDto | AdminDto> {
+  findOne() {
     return Promise.resolve(new UserDto());
-  }
-}
-`;
-
-const validVoidReturn = `
-${controllerDeclarations}
-
-@Controller("users")
-export class UsersController {
-  @Post()
-  create(): Promise<void> {
-    return Promise.resolve();
-  }
-}
-`;
-
-const validPrimitiveReturn = `
-${controllerDeclarations}
-
-@Controller("health")
-export class HealthController {
-  @Get()
-  ping(): string {
-    return "ok";
-  }
-}
-`;
-
-const validStreamReturn = `
-${controllerDeclarations}
-
-class StreamableFile {}
-
-@Controller("users")
-export class UsersController {
-  @Get("file")
-  file(): StreamableFile {
-    return new StreamableFile();
   }
 }
 `;
@@ -417,6 +442,11 @@ ruleTester.run(
         filename: testFilename,
       },
       {
+        code: invalidFakeLocalDtoBrand,
+        errors: [{ messageId: "missingDtoReturn" }],
+        filename: testFilename,
+      },
+      {
         code: invalidSchemaReturn,
         errors: [{ messageId: "missingDtoReturn" }],
         filename: testFilename,
@@ -432,10 +462,24 @@ ruleTester.run(
         filename: testFilename,
       },
       {
-        code: invalidPrimitiveWhenDisabled,
+        code: invalidUnionDtos,
         errors: [{ messageId: "missingDtoReturn" }],
         filename: testFilename,
-        options: [{ allowPrimitiveReturns: false }],
+      },
+      {
+        code: invalidVoidReturn,
+        errors: [{ messageId: "missingDtoReturn" }],
+        filename: testFilename,
+      },
+      {
+        code: invalidPrimitiveReturn,
+        errors: [{ messageId: "missingDtoReturn" }],
+        filename: testFilename,
+      },
+      {
+        code: invalidStreamReturn,
+        errors: [{ messageId: "missingDtoReturn" }],
+        filename: testFilename,
       },
     ],
     valid: [
@@ -452,19 +496,7 @@ ruleTester.run(
         filename: testFilename,
       },
       {
-        code: validUnionDtos,
-        filename: testFilename,
-      },
-      {
-        code: validVoidReturn,
-        filename: testFilename,
-      },
-      {
-        code: validPrimitiveReturn,
-        filename: testFilename,
-      },
-      {
-        code: validStreamReturn,
+        code: validInferredDto,
         filename: testFilename,
       },
       {

@@ -7,7 +7,11 @@ import { getTypeContext } from "#/utils/type-aware/get-type-context";
 import { isAllowedNestControllerDtoReturnType } from "#/utils/nest/is-allowed-nest-controller-dto-return-type";
 import { isHttpRouteMethod } from "#/utils/nest/is-http-route-method";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
+import { isAstNode } from "#/utils/ast/is-ast-node";
 import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types";
+import type ts from "typescript";
+
+const typescriptCallSignatureKind = 0;
 
 export const nestControllerReturnsDto: RuleModule = {
   meta: {
@@ -19,7 +23,7 @@ export const nestControllerReturnsDto: RuleModule = {
     },
     messages: {
       missingDtoReturn:
-        "El metodo de ruta `{{name}}` no retorna un DTO marcado. `@nestjs/swagger` genera el response schema introspeccionando CLASES: una interface, un `type` o un schema de Mongoose/TypeORM no producen schema (el cliente generado recibe `any`) y exponer el modelo de persistencia acopla tu API a la DB. Declara una clase `extends Dto()` de @skapxd/nest y retornala: `: Promise<FooDto>` (o `FooDto[]`). Sin cuerpo: `Promise<void>`. Binarios: `StreamableFile`/`Buffer`, o `extends Dto(StreamableFile)`.",
+        "El metodo de ruta `{{name}}` no retorna un DTO marcado. Todo retorno de un `@Controller` debe ser una clase que extienda `Dto()` de @skapxd/nest (su brand permite a @nestjs/swagger generar el response schema y evita exponer interfaces, `type` o entities de DB como contrato HTTP). Declara `class FooDto extends Dto()` y retorna `Promise<FooDto>` o `FooDto[]`. Para una respuesta polimorfica usa un Dto contenedor con discriminador, no una union. (Respuestas manuales: `@Res({ passthrough: true })`.)",
     },
     schema: [
       {
@@ -29,7 +33,6 @@ export const nestControllerReturnsDto: RuleModule = {
             items: { type: "string" },
             type: "array",
           },
-          allowPrimitiveReturns: { type: "boolean" },
           controllerDecoratorNames: {
             items: { type: "string" },
             type: "array",
@@ -40,10 +43,6 @@ export const nestControllerReturnsDto: RuleModule = {
             type: "array",
           },
           responseHandlerParamDecorators: {
-            items: { type: "string" },
-            type: "array",
-          },
-          streamReturnTypes: {
             items: { type: "string" },
             type: "array",
           },
@@ -78,6 +77,30 @@ export const nestControllerReturnsDto: RuleModule = {
       );
     }
 
+    function methodReturnsBrandedDto(node: TSESTree.MethodDefinition) {
+      if (!isAstNode(node.value)) {
+        return false;
+      }
+
+      const methodType = activeTypeContext.services.getTypeAtLocation(node.value);
+      const signatures = activeTypeContext.checker.getSignaturesOfType(
+        methodType,
+        typescriptCallSignatureKind,
+      );
+      const lacksSignature = signatures.length === 0;
+      if (lacksSignature) {
+        return false;
+      }
+
+      return signatures.every((signature: ts.Signature) =>
+        isAllowedNestControllerDtoReturnType(
+          activeTypeContext.checker.getReturnTypeOfSignature(signature),
+          activeTypeContext,
+          options,
+        ),
+      );
+    }
+
     return {
       MethodDefinition(node: TSESTree.MethodDefinition) {
         const isMethodMember = node.kind === "method";
@@ -107,24 +130,8 @@ export const nestControllerReturnsDto: RuleModule = {
           return;
         }
 
-        const returnType = node.value.returnType?.typeAnnotation;
-        const lacksReturnTypeAnnotation = !returnType;
-        if (lacksReturnTypeAnnotation) {
-          context.report({
-            data: { name: getPropertyName(node.key) },
-            messageId: "missingDtoReturn",
-            node: node.key,
-          });
-
-          return;
-        }
-
-        const hasAllowedReturnType = isAllowedNestControllerDtoReturnType(
-          returnType,
-          activeTypeContext,
-          options,
-        );
-        if (hasAllowedReturnType) {
+        const returnsBrandedDto = methodReturnsBrandedDto(node);
+        if (returnsBrandedDto) {
           return;
         }
 
