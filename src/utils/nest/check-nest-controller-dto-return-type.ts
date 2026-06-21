@@ -7,11 +7,16 @@ type NestControllerDtoReturnTypeOptions = {
   dtoLayerSource: string;
 };
 
-export function isAllowedNestControllerDtoReturnType(
+type DtoReturnCheck =
+  | { status: "ok" }
+  | { returned: string; status: "union" }
+  | { returned: string; status: "unmarked" };
+
+export function checkNestControllerDtoReturnType(
   returnType: ts.Type,
   typeContext: TypeContext,
   options: NestControllerDtoReturnTypeOptions,
-): boolean {
+): DtoReturnCheck {
   function getLeafType(type: ts.Type): ts.Type | null {
     const awaitedType = typeContext.checker.getAwaitedType(type);
     const effectiveAwaitedType = awaitedType ?? type;
@@ -36,13 +41,31 @@ export function isAllowedNestControllerDtoReturnType(
   const leafType = getLeafType(returnType);
   const lacksLeafType = !leafType;
   if (lacksLeafType) {
-    return false;
+    return {
+      returned: typeContext.checker.typeToString(returnType),
+      status: "unmarked",
+    };
   }
 
   const isUnionLeafType = leafType.isUnion();
   if (isUnionLeafType) {
-    return false;
+    return {
+      returned: typeContext.checker.typeToString(leafType),
+      status: "union",
+    };
   }
 
-  return getSkapxdLayerOfType(leafType, typeContext, options.dtoLayerSource) === "dto";
+  const hasDtoLayer = getSkapxdLayerOfType(
+    leafType,
+    typeContext,
+    options.dtoLayerSource,
+  ) === "dto";
+  if (hasDtoLayer) {
+    return { status: "ok" };
+  }
+
+  return {
+    returned: typeContext.checker.typeToString(leafType),
+    status: "unmarked",
+  };
 }

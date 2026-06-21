@@ -46,6 +46,16 @@ export class UsersController {
 
 La regla mira solo métodos de ruta (`@Get`, `@Post`, `@Put`, `@Patch`, `@Delete`, `@Options`, `@Head`) dentro de clases `@Controller`. Obtiene el retorno desde el checker, desenvuelve `Promise<T>`, `T[]` y `Array<T>` hasta el tipo base, y exige que ese leaf lleve el brand de capa `SKAPXD_LAYER: "dto"` declarado por `@skapxd/nest`, que aparece cuando la clase extiende `Dto()` o `Dto(Base)`. El sufijo del nombre no cuenta porque un schema de DB puede llamarse `UserDto` y seguir siendo el contrato equivocado. Cualquier unión falla (`FooDto | BarDto`, `FooDto | null`, `FooDto | string`): si la respuesta es polimórfica, usa un DTO contenedor con discriminador.
 
+La regla separa dos fallas porque el fix no es el mismo. Si el leaf no lleva brand (`string`, `void`, `UserSchema`, `interface UserDto`, `type UserDto`, una clase sin `extends Dto()`), el mensaje muestra el tipo real retornado y pide convertirlo a clase `extends Dto()`. Si el leaf es una unión, el mensaje muestra la unión real y exige un DTO contenedor con discriminador:
+
+```ts
+class PaymentDto extends Dto() {
+  @Expose() status!: "approved" | "rejected";
+  @Expose() @Type(() => ApprovedDto) approved?: ApprovedDto;
+  @Expose() @Type(() => RejectedDto) rejected?: RejectedDto;
+}
+```
+
 Fuera de alcance: métodos que reciben `@Res()`/`@Next()` porque manejan la respuesta manualmente, gateways `@WebSocketGateway` porque no producen Swagger HTTP, métodos no-ruta y archivos permitidos por `allowFilePatterns`. `void`, primitivos, interfaces, `type` aliases, entities, streams crudos y uniones no son respuestas válidas para esta regla; si necesitas enviar un archivo, retorna una clase `extends Dto(StreamableFile)`.
 
 Opciones: `allowFilePatterns`, `controllerDecoratorNames`, `dtoLayerSource`, `gatewayDecoratorNames` y `responseHandlerParamDecorators`.

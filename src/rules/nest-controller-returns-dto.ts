@@ -4,7 +4,7 @@ import { getDecoratorName } from "#/utils/nest/get-decorator-name";
 import { getPropertyName } from "#/utils/ast/get-property-name";
 import { hasClassDecoratorNamed } from "#/utils/nest/has-class-decorator-named";
 import { getTypeContext } from "#/utils/type-aware/get-type-context";
-import { isAllowedNestControllerDtoReturnType } from "#/utils/nest/is-allowed-nest-controller-dto-return-type";
+import { checkNestControllerDtoReturnType } from "#/utils/nest/check-nest-controller-dto-return-type";
 import { isHttpRouteMethod } from "#/utils/nest/is-http-route-method";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import { isAstNode } from "#/utils/ast/is-ast-node";
@@ -23,7 +23,9 @@ export const nestControllerReturnsDto: RuleModule = {
     },
     messages: {
       missingDtoReturn:
-        "El metodo de ruta `{{name}}` no retorna un DTO marcado. Todo retorno de un `@Controller` debe ser una clase que extienda `Dto()` de @skapxd/nest (su brand permite a @nestjs/swagger generar el response schema y evita exponer interfaces, `type` o entities de DB como contrato HTTP). Declara `class FooDto extends Dto()` y retorna `Promise<FooDto>` o `FooDto[]`. Para una respuesta polimorfica usa un Dto contenedor con discriminador, no una union. (Respuestas manuales: `@Res({ passthrough: true })`.)",
+        "El metodo de ruta `{{name}}` retorna `{{returned}}`, que no es un DTO marcado. @nestjs/swagger genera el schema desde clases con brand: una interface, un `type` o una entity de DB da `any` en el cliente y filtra tu modelo de persistencia. Conviertelo en una clase `extends Dto()` y retornala: `getUser(): Promise<UserDto>` con `class UserDto extends Dto() { @Expose() id!: string }`. Binarios: `class FileDto extends Dto(StreamableFile)`. Respuesta manual: `@Res({ passthrough: true })`.",
+      returnsUnionType:
+        "El metodo de ruta `{{name}}` retorna una union (`{{returned}}`): un endpoint declara UNA forma, no \"una cosa u otra\". Modela lo polimorfico con un Dto contenedor y un discriminador, no `A | B`: `class PaymentDto extends Dto() { @Expose() status!: \"approved\" | \"rejected\"; @Expose() @Type(() => ApprovedDto) approved?: ApprovedDto; @Expose() @Type(() => RejectedDto) rejected?: RejectedDto }`.",
     },
     schema: [
       {
@@ -77,9 +79,14 @@ export const nestControllerReturnsDto: RuleModule = {
       );
     }
 
-    function methodReturnsBrandedDto(node: TSESTree.MethodDefinition) {
+    function evaluateMethodReturn(
+      node: TSESTree.MethodDefinition,
+    ): { messageId: "missingDtoReturn" | "returnsUnionType"; returned: string } | null {
       if (!isAstNode(node.value)) {
-        return false;
+        return {
+          messageId: "missingDtoReturn",
+          returned: "un retorno sin tipo",
+        };
       }
 
       const methodType = activeTypeContext.services.getTypeAtLocation(node.value);
@@ -89,16 +96,31 @@ export const nestControllerReturnsDto: RuleModule = {
       );
       const lacksSignature = signatures.length === 0;
       if (lacksSignature) {
-        return false;
+        return {
+          messageId: "missingDtoReturn",
+          returned: "un retorno sin tipo",
+        };
       }
 
-      return signatures.every((signature: ts.Signature) =>
-        isAllowedNestControllerDtoReturnType(
+      for (const signature of signatures) {
+        const result = checkNestControllerDtoReturnType(
           activeTypeContext.checker.getReturnTypeOfSignature(signature),
           activeTypeContext,
           options,
-        ),
-      );
+        );
+
+        const hasInvalidReturnContract = result.status !== "ok";
+        if (hasInvalidReturnContract) {
+          const reportsUnionReturn = result.status === "union";
+
+          return {
+            messageId: reportsUnionReturn ? "returnsUnionType" : "missingDtoReturn",
+            returned: result.returned,
+          };
+        }
+      }
+
+      return null;
     }
 
     return {
@@ -130,14 +152,14 @@ export const nestControllerReturnsDto: RuleModule = {
           return;
         }
 
-        const returnsBrandedDto = methodReturnsBrandedDto(node);
-        if (returnsBrandedDto) {
+        const failure = evaluateMethodReturn(node);
+        if (!failure) {
           return;
         }
 
         context.report({
-          data: { name: getPropertyName(node.key) },
-          messageId: "missingDtoReturn",
+          data: { name: getPropertyName(node.key), returned: failure.returned },
+          messageId: failure.messageId,
           node: node.key,
         });
       },

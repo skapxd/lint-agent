@@ -453,17 +453,22 @@ ruleTester.run(
       },
       {
         code: invalidUnionWithNonDto,
-        errors: [{ messageId: "missingDtoReturn" }],
+        errors: [{ messageId: "returnsUnionType" }],
         filename: testFilename,
       },
       {
         code: invalidUnionWithPrimitive,
-        errors: [{ messageId: "missingDtoReturn" }],
+        errors: [{ messageId: "returnsUnionType" }],
         filename: testFilename,
       },
       {
         code: invalidUnionDtos,
-        errors: [{ messageId: "missingDtoReturn" }],
+        errors: [
+          {
+            data: { name: "findOne", returned: "CatDto | DogDto" },
+            messageId: "returnsUnionType",
+          },
+        ],
         filename: testFilename,
       },
       {
@@ -473,7 +478,12 @@ ruleTester.run(
       },
       {
         code: invalidPrimitiveReturn,
-        errors: [{ messageId: "missingDtoReturn" }],
+        errors: [
+          {
+            data: { name: "ping", returned: "string" },
+            messageId: "missingDtoReturn",
+          },
+        ],
         filename: testFilename,
       },
       {
