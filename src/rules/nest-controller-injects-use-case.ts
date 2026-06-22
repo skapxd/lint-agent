@@ -7,9 +7,9 @@ import { hasClassDecoratorNamed } from "#/utils/nest/has-class-decorator-named";
 import { isClassDecoratedBySkapxdNest } from "#/utils/nest/is-class-decorated-by-skapxd-nest";
 import { isExternalOrigin } from "#/utils/result/is-external-origin";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
-import { resolveAliasSymbol } from "#/utils/type-aware/resolve-alias-symbol";
+import { resolveClassDeclarationOfNode } from "#/utils/nest/resolve-class-declaration-of-node";
 import type { RuleContext, RuleModule } from "#/utils/rule-authoring/rule-types";
-import ts from "typescript";
+import type ts from "typescript";
 
 export const nestControllerInjectsUseCase: RuleModule = {
   meta: {
@@ -64,36 +64,6 @@ export const nestControllerInjectsUseCase: RuleModule = {
     }
 
     const activeTypeContext = typeContext;
-
-    function getParameterClassDeclaration(parameterNode: TSESTree.Node) {
-      const parameterType = activeTypeContext.services.getTypeAtLocation(parameterNode);
-      const isAnyOrUnknownType = Boolean(
-        parameterType.flags & (ts.TypeFlags.Any | ts.TypeFlags.Unknown),
-      );
-      if (isAnyOrUnknownType) {
-        return null;
-      }
-
-      const symbol = parameterType.getSymbol();
-      const lacksSymbol = !symbol;
-      if (lacksSymbol) {
-        return null;
-      }
-
-      const resolvedSymbol = resolveAliasSymbol(symbol, activeTypeContext);
-      const declaration = (resolvedSymbol.getDeclarations() ?? []).find((candidate: ts.Declaration) =>
-        ts.isClassDeclaration(candidate),
-      );
-      const lacksClassDeclaration = !declaration;
-      if (lacksClassDeclaration) {
-        return null;
-      }
-
-      return {
-        declaration,
-        name: resolvedSymbol.getName(),
-      };
-    }
 
     function shouldAllowInjection(dependency: {
       declaration: ts.ClassDeclaration;
@@ -151,7 +121,10 @@ export const nestControllerInjectsUseCase: RuleModule = {
           continue;
         }
 
-        const dependency = getParameterClassDeclaration(parameterNode);
+        const dependency = resolveClassDeclarationOfNode(
+          parameterNode,
+          activeTypeContext,
+        );
         const lacksDependencyClass = !dependency;
         if (lacksDependencyClass) {
           continue;
