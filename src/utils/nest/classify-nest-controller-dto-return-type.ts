@@ -7,16 +7,19 @@ type NestControllerDtoReturnTypeOptions = {
   dtoLayerSource: string;
 };
 
-type DtoReturnCheck =
+type DtoReturnCause =
   | { status: "ok" }
   | { returned: string; status: "union" }
-  | { returned: string; status: "unmarked" };
+  | { returned: string; status: "void" }
+  | { returned: string; status: "primitive" }
+  | { returned: string; status: "non-class" }
+  | { returned: string; status: "unmarked-class" };
 
-export function checkNestControllerDtoReturnType(
+export function classifyNestControllerDtoReturnType(
   returnType: ts.Type,
   typeContext: TypeContext,
   options: NestControllerDtoReturnTypeOptions,
-): DtoReturnCheck {
+): DtoReturnCause {
   function getLeafType(type: ts.Type): ts.Type | null {
     const awaitedType = typeContext.checker.getAwaitedType(type);
     const effectiveAwaitedType = awaitedType ?? type;
@@ -43,7 +46,7 @@ export function checkNestControllerDtoReturnType(
   if (lacksLeafType) {
     return {
       returned: typeContext.checker.typeToString(returnType),
-      status: "unmarked",
+      status: "non-class",
     };
   }
 
@@ -52,6 +55,30 @@ export function checkNestControllerDtoReturnType(
     return {
       returned: typeContext.checker.typeToString(leafType),
       status: "union",
+    };
+  }
+
+  const isVoidType = Boolean(
+    leafType.flags & (tslib.TypeFlags.Void | tslib.TypeFlags.Undefined),
+  );
+  if (isVoidType) {
+    return {
+      returned: typeContext.checker.typeToString(leafType),
+      status: "void",
+    };
+  }
+
+  const isPrimitiveType = Boolean(
+    leafType.flags &
+      (tslib.TypeFlags.StringLike |
+        tslib.TypeFlags.NumberLike |
+        tslib.TypeFlags.BooleanLike |
+        tslib.TypeFlags.BigIntLike),
+  );
+  if (isPrimitiveType) {
+    return {
+      returned: typeContext.checker.typeToString(leafType),
+      status: "primitive",
     };
   }
 
@@ -64,8 +91,15 @@ export function checkNestControllerDtoReturnType(
     return { status: "ok" };
   }
 
+  const leafSymbol = leafType.getSymbol();
+  const isClassType = Boolean(
+    leafSymbol
+      ?.getDeclarations()
+      ?.some((declaration) => tslib.isClassDeclaration(declaration)),
+  );
+
   return {
     returned: typeContext.checker.typeToString(leafType),
-    status: "unmarked",
+    status: isClassType ? "unmarked-class" : "non-class",
   };
 }

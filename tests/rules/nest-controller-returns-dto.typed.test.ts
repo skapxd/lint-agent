@@ -418,37 +418,37 @@ ruleTester.run(
     invalid: [
       {
         code: invalidMissingReturnType,
-        errors: [{ messageId: "missingDtoReturn" }],
+        errors: [{ messageId: "returnsNonClass" }],
         filename: testFilename,
       },
       {
         code: invalidInterfaceDto,
-        errors: [{ messageId: "missingDtoReturn" }],
+        errors: [{ messageId: "returnsNonClass" }],
         filename: testFilename,
       },
       {
         code: invalidTypeAliasDto,
-        errors: [{ messageId: "missingDtoReturn" }],
+        errors: [{ messageId: "returnsNonClass" }],
         filename: testFilename,
       },
       {
         code: invalidClassWithoutDto,
-        errors: [{ messageId: "missingDtoReturn" }],
+        errors: [{ messageId: "returnsUnmarkedClass" }],
         filename: testFilename,
       },
       {
         code: invalidFakeLocalDtoMixin,
-        errors: [{ messageId: "missingDtoReturn" }],
+        errors: [{ messageId: "returnsUnmarkedClass" }],
         filename: testFilename,
       },
       {
         code: invalidFakeLocalDtoBrand,
-        errors: [{ messageId: "missingDtoReturn" }],
+        errors: [{ messageId: "returnsUnmarkedClass" }],
         filename: testFilename,
       },
       {
         code: invalidSchemaReturn,
-        errors: [{ messageId: "missingDtoReturn" }],
+        errors: [{ messageId: "returnsUnmarkedClass" }],
         filename: testFilename,
       },
       {
@@ -473,7 +473,12 @@ ruleTester.run(
       },
       {
         code: invalidVoidReturn,
-        errors: [{ messageId: "missingDtoReturn" }],
+        errors: [
+          {
+            data: { name: "create", returned: "void" },
+            messageId: "returnsVoid",
+          },
+        ],
         filename: testFilename,
       },
       {
@@ -481,14 +486,14 @@ ruleTester.run(
         errors: [
           {
             data: { name: "ping", returned: "string" },
-            messageId: "missingDtoReturn",
+            messageId: "returnsPrimitive",
           },
         ],
         filename: testFilename,
       },
       {
         code: invalidStreamReturn,
-        errors: [{ messageId: "missingDtoReturn" }],
+        errors: [{ messageId: "returnsUnmarkedClass" }],
         filename: testFilename,
       },
     ],

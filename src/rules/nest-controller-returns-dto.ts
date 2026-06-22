@@ -4,7 +4,7 @@ import { getDecoratorName } from "#/utils/nest/get-decorator-name";
 import { getPropertyName } from "#/utils/ast/get-property-name";
 import { hasClassDecoratorNamed } from "#/utils/nest/has-class-decorator-named";
 import { getTypeContext } from "#/utils/type-aware/get-type-context";
-import { checkNestControllerDtoReturnType } from "#/utils/nest/check-nest-controller-dto-return-type";
+import { classifyNestControllerDtoReturnType } from "#/utils/nest/classify-nest-controller-dto-return-type";
 import { isHttpRouteMethod } from "#/utils/nest/is-http-route-method";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import { isAstNode } from "#/utils/ast/is-ast-node";
@@ -12,6 +12,13 @@ import type { RuleModule, RuleContext } from "#/utils/rule-authoring/rule-types"
 import type ts from "typescript";
 
 const typescriptCallSignatureKind = 0;
+const CAUSE_TO_MESSAGE = {
+  union: "returnsUnionType",
+  void: "returnsVoid",
+  primitive: "returnsPrimitive",
+  "non-class": "returnsNonClass",
+  "unmarked-class": "returnsUnmarkedClass",
+} as const;
 
 export const nestControllerReturnsDto: RuleModule = {
   meta: {
@@ -22,10 +29,16 @@ export const nestControllerReturnsDto: RuleModule = {
       requiresTypeChecking: true,
     },
     messages: {
-      missingDtoReturn:
-        "El metodo de ruta `{{name}}` retorna `{{returned}}`, que no es un DTO marcado. @nestjs/swagger genera el schema desde clases con brand: una interface, un `type` o una entity de DB da `any` en el cliente y filtra tu modelo de persistencia. Conviertelo en una clase `extends Dto()` y retornala: `getUser(): Promise<UserDto>` con `class UserDto extends Dto() { @Expose() id!: string }`. Binarios: `class FileDto extends Dto(StreamableFile)`. Respuesta manual: `@Res({ passthrough: true })`.",
+      returnsNonClass:
+        "El metodo de ruta `{{name}}` retorna `{{returned}}`, que no es una clase. @nestjs/swagger solo introspecciona CLASES: una interface, un `type` o `any` dan `any` en el cliente. Conviertelo en una clase que extienda `Dto()`: `class FooDto extends Dto() { @Expose() id!: string }`.",
+      returnsPrimitive:
+        "El metodo de ruta `{{name}}` retorna un primitivo (`{{returned}}`). Un escalar suelto no documenta nada en swagger; envuelvelo en un Dto con un campo nombrado: `class TokenDto extends Dto() { @Expose() token!: string }` y retorna `Promise<TokenDto>`.",
       returnsUnionType:
-        "El metodo de ruta `{{name}}` retorna una union (`{{returned}}`): un endpoint declara UNA forma, no \"una cosa u otra\". Modela lo polimorfico con un Dto contenedor y un discriminador, no `A | B`: `class PaymentDto extends Dto() { @Expose() status!: \"approved\" | \"rejected\"; @Expose() @Type(() => ApprovedDto) approved?: ApprovedDto; @Expose() @Type(() => RejectedDto) rejected?: RejectedDto }`.",
+        "El metodo de ruta `{{name}}` retorna una union (`{{returned}}`): un endpoint declara UNA forma, no \"una cosa u otra\". Modela lo polimorfico con un Dto contenedor y un discriminador, no `A | B`: `class PaymentDto extends Dto() { @Expose() status!: \"approved\" | \"rejected\"; @Expose() @Type(() => ApprovedDto) approved?: ApprovedDto }`.",
+      returnsUnmarkedClass:
+        "El metodo de ruta `{{name}}` retorna la clase `{{returned}}`, que no lleva el brand de DTO. Ya es una clase; solo falta marcarla: `class {{returned}} extends Dto()` (de @skapxd/nest). Si es una entity de persistencia, no la expongas — crea un DTO de presentacion aparte y mapea.",
+      returnsVoid:
+        "El metodo de ruta `{{name}}` no retorna cuerpo (`{{returned}}`). Aun una respuesta sin contenido declara su forma: retorna un Dto de confirmacion, `class DeletedDto extends Dto() { @Expose() id!: string }`, para que @nestjs/swagger documente el 200.",
     },
     schema: [
       {
@@ -81,10 +94,13 @@ export const nestControllerReturnsDto: RuleModule = {
 
     function evaluateMethodReturn(
       node: TSESTree.MethodDefinition,
-    ): { messageId: "missingDtoReturn" | "returnsUnionType"; returned: string } | null {
+    ): {
+      messageId: (typeof CAUSE_TO_MESSAGE)[keyof typeof CAUSE_TO_MESSAGE];
+      returned: string;
+    } | null {
       if (!isAstNode(node.value)) {
         return {
-          messageId: "missingDtoReturn",
+          messageId: "returnsNonClass",
           returned: "un retorno sin tipo",
         };
       }
@@ -97,13 +113,13 @@ export const nestControllerReturnsDto: RuleModule = {
       const lacksSignature = signatures.length === 0;
       if (lacksSignature) {
         return {
-          messageId: "missingDtoReturn",
+          messageId: "returnsNonClass",
           returned: "un retorno sin tipo",
         };
       }
 
       for (const signature of signatures) {
-        const result = checkNestControllerDtoReturnType(
+        const result = classifyNestControllerDtoReturnType(
           activeTypeContext.checker.getReturnTypeOfSignature(signature),
           activeTypeContext,
           options,
@@ -111,10 +127,8 @@ export const nestControllerReturnsDto: RuleModule = {
 
         const hasInvalidReturnContract = result.status !== "ok";
         if (hasInvalidReturnContract) {
-          const reportsUnionReturn = result.status === "union";
-
           return {
-            messageId: reportsUnionReturn ? "returnsUnionType" : "missingDtoReturn",
+            messageId: CAUSE_TO_MESSAGE[result.status],
             returned: result.returned,
           };
         }
