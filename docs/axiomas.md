@@ -142,9 +142,19 @@ Son útiles para arreglar. No son suficientes para gobernar.
 
 Los prompts son necesarios. Sin contexto, un agente no tiene cómo saber qué quieres. Pero el prompt es una instrucción, no una garantía.
 
-El mismo prompt puede ser interpretado distinto por cada agente, por cada modelo o incluso por el mismo modelo en momentos distintos. Además, cuando una tarea tiene muchas restricciones, el agente puede resolver lo funcional y fallar en lo arquitectónico.
+El mismo prompt lo interpreta distinto cada agente, cada modelo, e incluso el mismo modelo en momentos distintos. Además, cuando una tarea tiene muchas restricciones, el agente puede resolver lo funcional y fallar en lo arquitectónico.
 
 Este paquete mueve esa presión fuera del prompt: la regla se ejecuta después y puede fallar con un mensaje concreto.
+
+### Optimización de precisión y contexto para LLMs (La ventaja de la fragmentación y el rol del LSP)
+
+Los agentes de IA sufren frecuentemente de **imprecisión de edición** (generación de parches / diffs) cuando trabajan sobre archivos monolíticos: confunden bloques de código similares, pierden la indentación y generan alucinaciones sintácticas.
+
+Al fragmentar el código al extremo mediante reglas como `skapxd/one-root-function-per-file` (manteniendo un promedio de ~20-50 líneas por archivo):
+1. **Edición trivial e infalible:** La modificación se vuelve sumamente simple. Reescribir o parchar un archivo pequeño tiene un riesgo de error sintáctico cercano a cero y un costo insignificante en tokens.
+2. **Foco en el contexto (Señal/Ruido):** El agente solo carga en su ventana de contexto el archivo específico de interés, eliminando el ruido de cientos de líneas de código irrelevante que podrían desviar la atención del LLM.
+
+Esta fragmentación extrema es viable y sostenible porque asume que el agente opera en un entorno dotado de un **Language Server Protocol (LSP)** (como `tsserver` o `vtsls`). El LSP proporciona la brújula determinista del agente (ejecutando operaciones como *Go to Definition* o *Rename Symbol*), lo que le permite localizar y refactorizar el código de manera segura y precisa en un árbol de archivos hiper-modularizado.
 
 ### Comparación rápida
 
