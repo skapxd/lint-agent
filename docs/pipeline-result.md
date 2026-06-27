@@ -79,3 +79,11 @@ export async function reportDomainError(error: DomainError): Promise<void> {
 ```
 
 Fíjate que este módulo **pasa todas las reglas sin exenciones**: el `await` resuelve en Result, y `console.error` recibiendo el error completo es una entrega válida para `result-error-requires-handling`. Reglas prácticas para el suelo: una sola función pública, sin reintentos hacia sí mismo (si quieres resiliencia: buffer local + `navigator.sendBeacon` al cerrar), y si tu setup tiene `no-console`, la exención por archivo para *este único módulo* es legítima y auditable — es la definición misma del suelo.
+
+## ⚠️ Trade-offs y Acoplamiento Obligatorio
+
+Este linter **no es una herramienta de propósito general** para cualquier sistema de manejo de errores basado en mónadas:
+
+* **Acoplamiento Exclusivo:** Las reglas de este pipeline (como `await-requires-result`, `result-error-requires-cause`, etc.) están integradas y diseñadas para funcionar de manera exclusiva con la suite de paquetes de **`@skapxd`** (específicamente `@skapxd/result`).
+* **Sin Compatibilidad Alternativa:** El linter no es compatible de forma nativa con otras librerías del ecosistema (como `neverthrow`, `fp-ts` u `oxide.ts`). 
+* **Decisión de Diseño:** Esta rigidez es intencional para asegurar la coherencia del ecosistema cerrado de la arquitectura. La adopción de este preset implica obligatoriamente la migración o el uso exclusivo de las herramientas de la suite `@skapxd`.

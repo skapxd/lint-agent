@@ -2,6 +2,14 @@
 
 [README principal](../README.md)
 
+> [!IMPORTANT]
+> **Advertencia de Alcance: Diseñado para Proyectos Nuevos y Desarrollo Agéntico**
+> 
+> `@skapxd/eslint-opinionated` fue concebido para ser un preset **Zero-Config adoptado al 100% desde el inicio en proyectos nuevos** gobernados por agentes de codificación (IA). Aunque este documento detalla cómo integrarlo de forma incremental en bases de código heredadas (*legacy*), ten en cuenta que este camino introduce fricciones organizativas y técnicas (como la gestión manual de excepciones y potenciales conflictos de fusión de Git en la lista de pendientes) que no representan el flujo óptimo del linter.
+>
+> Adicionalmente, considera la siguiente **limitación técnica en ejecuciones parciales**:
+> * **Punto ciego en reglas *type-aware*:** Al usar `skapxd-lint --changed` para evaluar solo archivos modificados, las reglas basadas en el type-checker de TypeScript no analizarán los archivos no modificados. Si el cambio en tu archivo rompe la compatibilidad de tipos en un archivo heredado que no has editado, la ejecución local no lo detectará. **El CI central siempre debe correr una suite completa sobre todo el proyecto** como red de seguridad definitiva.
+
 ## Adopción incremental: lintear solo lo que cambió
 
 En una base de código existente, activar todas las reglas de golpe genera mucho ruido. El paquete incluye el modo **`skapxd-lint --changed`**, que ejecuta **todas** las reglas **solo sobre los archivos que tocaste** (detectados con git), no sobre todo el repo. Así el código nuevo nace limpio y el legacy se arregla cuando lo editas — la "regla del boy scout".
