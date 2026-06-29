@@ -2,13 +2,13 @@
 
 [README principal](../README.md)
 
-# @skapxd/eslint-opinionated
+# Lint Agent
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **Reglas de ESLint para que los agentes no negocien la arquitectura de tu proyecto.**
 
-A diferencia de un prompt o una nota en el README (que el agente puede priorizar, reinterpretar o ignorar), `@skapxd/eslint-opinionated` convierte tus opiniones de arquitectura en guardrails que se **ejecutan** y **fallan** cuando el código no respeta la forma del proyecto — lo haya escrito una persona, Claude, Codex, Cursor o Copilot.
+A diferencia de un prompt o una nota en el README (que el agente puede priorizar, reinterpretar o ignorar), Lint Agent convierte tus opiniones de arquitectura en guardrails que se **ejecutan** y **fallan** cuando el código no respeta la forma del proyecto — lo haya escrito una persona, Claude, Codex, Cursor o Copilot. El paquete npm se conserva como `@skapxd/eslint-opinionated` por compatibilidad con consumidores existentes.
 
 - **Una función por archivo:** un archivo con cinco helpers escondidos no pasa; la regla hasta te dibuja la carpeta sugerida con formato `tree`.
 - **Errores con `Result`:** ningún `await` queda fuera del sistema de errores: o llamas una función que retorna `Promise<Result<...>>` o envuelves la operación en `trySafe`. Nada lanza sin que el tipo lo diga.
@@ -111,7 +111,7 @@ if (!result.ok) {
 }
 ```
 
-`@skapxd/eslint-opinionated` usa parser services y el TypeScript checker para aplicar esas reglas sobre tipos reales, no solo sobre nombres de imports.
+Lint Agent usa parser services y el TypeScript checker para aplicar esas reglas sobre tipos reales, no solo sobre nombres de imports.
 
 ### Plugins de React, Next.js y Astro
 
@@ -124,7 +124,7 @@ Eso es necesario, pero no responde preguntas de arquitectura del proyecto:
 - ¿este helper debe quedarse junto al entrypoint de Next?
 - ¿este error de negocio preserva el error técnico que lo causó?
 
-Este plugin los complementa. No los reemplaza.
+Lint Agent los complementa. No los reemplaza.
 
 ### Reglas genéricas de complejidad
 
@@ -166,11 +166,11 @@ Esta fragmentación extrema es viable y sostenible porque asume que el agente op
 | `max-lines` / `complexity` | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ |
 | Codemods / search | ❌ | Parcial | Parcial | ✅ | Parcial | ❌ |
 | Prompt/instrucciones para agentes | ❌ | ❌ | Parcial | Parcial | Parcial | ❌ |
-| **`@skapxd/eslint-opinionated`** | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Lint Agent** | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 ### En resumen
 
-`@skapxd/eslint-opinionated` existe para cubrir un hueco que ninguna de las anteriores cubre por sí sola: que un proyecto pueda **opinar de forma verificable** sobre cómo un agente escribe código — su forma de archivos, sus contratos de error, su manera de no perder la causa — y no solo sobre su estilo o su sintaxis.
+Lint Agent existe para cubrir un hueco que ninguna de las anteriores cubre por sí sola: que un proyecto pueda **opinar de forma verificable** sobre cómo un agente escribe código — su forma de archivos, sus contratos de error, su manera de no perder la causa — y no solo sobre su estilo o su sintaxis.
 
 No busca ser un style guide universal. Es una capa de guardrails ejecutables para proyectos que prefieren muchos archivos pequeños, nombres semánticos, errores modelados con `Result` y estructuras que se entienden desde el árbol del proyecto.
 

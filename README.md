@@ -1,10 +1,10 @@
-# @skapxd/eslint-opinionated
+# Lint Agent
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Reglas de ESLint para que los agentes no negocien la arquitectura de tu proyecto.
 
-Este paquete convierte opiniones de arquitectura en guardrails ejecutables: archivos pequenos, nombres semanticos, errores modelados con `Result`, causas preservadas y fronteras explicitas. El README queda como puerta de entrada; el detalle vive en `docs/` para que npm no entierre lo importante en 2.400 lineas.
+Lint Agent convierte opiniones de arquitectura en guardrails ejecutables: archivos pequenos, nombres semanticos, errores modelados con `Result`, causas preservadas y fronteras explicitas. El paquete npm sigue publicado como `@skapxd/eslint-opinionated`; ese identificador es compatibilidad tecnica, no el nombre de producto. El README queda como puerta de entrada; el detalle vive en `docs/` para que npm no entierre lo importante en 2.400 lineas.
 
 ## Skill para agentes
 
@@ -20,7 +20,7 @@ Luego pide al agente que la use:
 - "Adopta las reglas skapxd de forma incremental (10%) en este repo legacy."
 - "Verifica el lote de adopcion skapxd con la seed que acaba de generar el CLI."
 
-La skill esta indexada en skills.sh, invoca el CLI publicado `@skapxd/eslint-opinionated@6` con npm provenance y no modifica el proyecto medido: la evaluacion es efimera y solo lectura salvo que pidas aplicar fixes.
+La skill esta indexada en skills.sh, invoca el CLI publicado de Lint Agent (`@skapxd/eslint-opinionated@6`) con npm provenance y no modifica el proyecto medido: la evaluacion es efimera y solo lectura salvo que pidas aplicar fixes.
 
 Si no usas la skill, puedes invocar el CLI directo:
 
@@ -56,7 +56,7 @@ Los enlaces apuntan a GitHub de forma absoluta para que funcionen tambien desde 
 
 | Tema | Contenido |
 | --- | --- |
-| [Axiomas y motivacion](https://github.com/skapxd/eslint-opinionated/blob/main/docs/axiomas.md) | Por que existe el paquete, que protege y por que las alternativas no bastan. |
+| [Axiomas y motivacion](https://github.com/skapxd/eslint-opinionated/blob/main/docs/axiomas.md) | Por que existe Lint Agent, que protege y por que las alternativas no bastan. |
 | [Presets y estructura](https://github.com/skapxd/eslint-opinionated/blob/main/docs/presets.md) | Shared, backend, frontend, Next.js, NestJS, Astro, package y strict. |
 | [Adopcion incremental y legacy](https://github.com/skapxd/eslint-opinionated/blob/main/docs/adopcion-legacy.md) | Lint sobre cambios, olas de adopcion, overrides y propuestas de reglas. |
 | [Pipeline Result](https://github.com/skapxd/eslint-opinionated/blob/main/docs/pipeline-result.md) | Como encajan @skapxd/result, ts-pattern y el trace global. |

@@ -1,17 +1,17 @@
 ---
 name: skapxd-lint
-description: Audita o adopta las reglas de arquitectura skapxd en un proyecto sin configurar ESLint; devuelve hallazgos con mensajes que ensenan el fix, sin modificar el proyecto.
+description: Audita o adopta Lint Agent en un proyecto sin configurar ESLint; devuelve hallazgos con mensajes que ensenan el fix, sin modificar el proyecto.
 ---
 
 # skapxd-lint
 
-Usa esta skill cuando necesites auditar o adoptar las reglas de arquitectura skapxd en un proyecto sin instalar ni configurar ESLint en ese proyecto.
+Usa esta skill cuando necesites auditar o adoptar Lint Agent en un proyecto sin instalar ni configurar ESLint en ese proyecto.
 
-La skill no reimplementa reglas, presets ni deteccion. Invoca siempre el CLI publicado en npm y trata sus mensajes como el contrato operativo.
+La skill no reimplementa reglas, presets ni deteccion. Invoca siempre el CLI publicado de Lint Agent en npm y trata sus mensajes como el contrato operativo.
 
 ## Comando base
 
-Ejecuta el paquete publicado, anclado al major `@7`:
+Ejecuta el paquete publicado de Lint Agent, anclado al major `@7`:
 
 ```bash
 npx @skapxd/eslint-opinionated@7 <path> --yes --format toon

@@ -1,8 +1,10 @@
-# Presets y estructura del paquete
+# Presets y estructura de Lint Agent
 
 [README principal](../README.md)
 
 ## Estructura del paquete
+
+Lint Agent se publica tecnicamente como `@skapxd/eslint-opinionated`; los subpaths de esta seccion mantienen ese identificador porque son contratos de importacion.
 
 ```text
 src/
@@ -217,7 +219,7 @@ Para librerías npm escritas en TypeScript (tsup o equivalente). Trae las bases 
 - `skapxd/package-requires-typed-exports` — los `exports` del package.json cablean los tipos **por condición** (`import` → `.d.mts`, `require` → `.d.ts`); el `types` único por subpath es el bug "FalseCJS".
 - `skapxd/untrusted-module-requires-adapter` — inerte hasta que declares tu inventario de paquetes con tipos mentirosos (ver su sección).
 
-**Este mismo repo se lintea con este preset** — dogfood: la regla de exports nos obligó a corregir nuestro propio package.json al nacer.
+**Lint Agent se lintea con este preset** — dogfood: la regla de exports nos obligó a corregir nuestro propio package.json al nacer.
 
 ### Strict (sin escape via `eslint-disable`)
 
