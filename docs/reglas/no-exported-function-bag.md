@@ -21,7 +21,7 @@ Sin autofix. Separar una bolsa de funciones exige decidir nombres semánticos, m
 
 **Opciones.** `allowFilePatterns` permite declarar deuda legacy por glob. No existe `allowObjectNames`: permitir nombres concretos sería el bypass que esta regla intenta cerrar.
 
-**Presets.** La regla queda registrada y documentada, pero no activada en presets mientras el issue #159 siga marcado como `decision-pendiente`. Si el dueño decide activarla, por doctrina agnóstica debe entrar en `shared`/`base-rules` como `error`, no como `warn` ni como opt-in tibio.
+**Presets.** Activa como `error` en `shared`/`base-rules`; la heredan `base`, `backend`, `frontend`, `package` y las bases de `nest`, `next` y `astro`. Es agnóstica al framework: decide por AST local y exportaciones, no por convenciones de nombres ni por tipos.
 
 ---
 

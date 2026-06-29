@@ -21,7 +21,7 @@ Cada ficha vive en un archivo propio. El indice conserva la descripcion corta de
 | [`skapxd/max-hook-size`](./max-hook-size.md) | Marca hooks grandes o con demasiados `useState`. |
 | [`skapxd/class-properties-require-readonly`](./class-properties-require-readonly.md) | Toda propiedad de clase es `readonly`: el cambio se modela con instancias nuevas, no con mutación. |
 | [`skapxd/max-public-methods`](./max-public-methods.md) | Una clase, una responsabilidad: máximo N métodos públicos (default 1). Agnóstica al framework, en las reglas base; el preset `nest` le inyecta sus hooks. |
-| [`skapxd/no-exported-function-bag`](./no-exported-function-bag.md) | Prohíbe exportar objetos que publican varias funciones: una bolsa de funciones es una clase o namespace disfrazado. |
+| [`skapxd/no-exported-function-bag`](./no-exported-function-bag.md) | Prohíbe exportar objetos que publican varias funciones: una bolsa de funciones es una clase o namespace disfrazado. En las bases. |
 | [`skapxd/no-accessors`](./no-accessors.md) | Prohíbe `get`/`set`: un método explícito dice la verdad; el accessor esconde computación (y métodos disfrazados). |
 | [`skapxd/jsx-return-name-pascal-case`](./jsx-return-name-pascal-case.md) | Funciones que retornan JSX deben nombrarse como componentes. |
 | [`skapxd/nest-controller-injects-use-case`](./nest-controller-injects-use-case.md) | Controllers y gateways inyectan casos de uso con `@UseCase`, no services/repositories directos. Preset `nest`. |
