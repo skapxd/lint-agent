@@ -61,7 +61,7 @@ Los enlaces apuntan a GitHub de forma absoluta para que funcionen tambien desde 
 | [Adopcion incremental y legacy](https://github.com/skapxd/eslint-opinionated/blob/main/docs/adopcion-legacy.md) | Lint sobre cambios, olas de adopcion, overrides y propuestas de reglas. |
 | [Pipeline Result](https://github.com/skapxd/eslint-opinionated/blob/main/docs/pipeline-result.md) | Como encajan @skapxd/result, ts-pattern y el trace global. |
 | [Notas type-aware](https://github.com/skapxd/eslint-opinionated/blob/main/docs/notas-type-aware.md) | Supuestos, limites conocidos y notas de reglas que dependen del checker. |
-| [Indice de reglas](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/README.md) | Las 60 fichas individuales en docs/reglas/. |
+| [Indice de reglas](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/README.md) | Las 64 fichas individuales en docs/reglas/. |
 
 ## Reglas
 
@@ -82,6 +82,7 @@ Los enlaces apuntan a GitHub de forma absoluta para que funcionen tambien desde 
 | [`skapxd/max-hook-size`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/max-hook-size.md) | Marca hooks grandes o con demasiados `useState`. |
 | [`skapxd/class-properties-require-readonly`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/class-properties-require-readonly.md) | Toda propiedad de clase es `readonly`: el cambio se modela con instancias nuevas, no con mutación. |
 | [`skapxd/max-public-methods`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/max-public-methods.md) | Una clase, una responsabilidad: máximo N métodos públicos (default 1). Agnóstica al framework, en las reglas base; el preset `nest` le inyecta sus hooks. |
+| [`skapxd/no-exported-function-bag`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/no-exported-function-bag.md) | Prohíbe exportar objetos que publican varias funciones: una bolsa de funciones es una clase o namespace disfrazado. En las bases. |
 | [`skapxd/no-accessors`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/no-accessors.md) | Prohíbe `get`/`set`: un método explícito dice la verdad; el accessor esconde computación (y métodos disfrazados). |
 | [`skapxd/jsx-return-name-pascal-case`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/jsx-return-name-pascal-case.md) | Funciones que retornan JSX deben nombrarse como componentes. |
 | [`skapxd/nest-controller-injects-use-case`](https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas/nest-controller-injects-use-case.md) | Controllers y gateways inyectan casos de uso con `@UseCase`, no services/repositories directos. Preset `nest`. |

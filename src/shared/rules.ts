@@ -30,6 +30,7 @@ import { nestValidationPipeConfig } from "#/rules/nest-validation-pipe-config";
 import { nestedFunctionRequiresCapture } from "#/rules/nested-function-requires-capture";
 import { noDeepRelativeImports } from "#/rules/no-deep-relative-imports";
 import { noDefaultExport } from "#/rules/no-default-export";
+import { noExportedFunctionBag } from "#/rules/no-exported-function-bag";
 import { noAnonymousCondition } from "#/rules/no-anonymous-condition";
 import { noElse } from "#/rules/no-else";
 import { noEmoji } from "#/rules/no-emoji";
@@ -96,6 +97,7 @@ export const rules = {
   "no-anonymous-condition": noAnonymousCondition,
   "no-deep-relative-imports": noDeepRelativeImports,
   "no-default-export": noDefaultExport,
+  "no-exported-function-bag": noExportedFunctionBag,
   "no-else": noElse,
   "no-emoji": noEmoji,
   // Re-registros de reglas de typescript-eslint con nombre semántico y
