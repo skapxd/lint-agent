@@ -11,13 +11,13 @@ La skill no reimplementa reglas, presets ni deteccion. Invoca siempre el CLI pub
 
 ## Comando base
 
-Ejecuta el paquete publicado de Lint Agent, anclado al major `@8`:
+Ejecuta el paquete publicado de Lint Agent, anclado al major `@1`:
 
 ```bash
-npx @skapxd/lint-agent@8 <path> --yes --format toon
+npx @skapxd/lint-agent@1 <path> --yes --format toon
 ```
 
-Anclado a major `@8` (no `@latest` mutable): recibes parches y minors sin saltar a un major que pueda romper o estar comprometido. El paquete se publica en npm con provenance (procedencia verificable). Para adopcion permanente, instala el paquete como devDependency (version fija + lockfile con integridad) y corre el bin `skapxd-lint`; reserva `npx` para auditorias puntuales.
+Anclado a major `@1` (no `@latest` mutable): recibes parches y minors sin saltar a un major que pueda romper o estar comprometido. El paquete se publica en npm con provenance (procedencia verificable). Para adopcion permanente, instala el paquete como devDependency (version fija + lockfile con integridad) y corre el bin `skapxd-lint`; reserva `npx` para auditorias puntuales.
 
 No uses builds locales, no asumas que el paquete esta instalado en el proyecto medido y no dependas del formato `compact` por defecto.
 
@@ -35,7 +35,7 @@ Preferencia de formato:
 
 1. Corre el preset completo sobre el proyecto:
 
-   ```bash npx @skapxd/lint-agent@8 <path> --yes --format toon ```
+   ```bash npx @skapxd/lint-agent@1 <path> --yes --format toon ```
 
 2. Lee los hallazgos por archivo y regla.
 3. Arregla el codigo antes de que la deuda exista, si el usuario pidio aplicar fixes.
@@ -48,13 +48,13 @@ El objetivo en un proyecto nuevo es que el codigo nazca cumpliendo el preset com
 Usa el bucle `--adopt` y `--verify` para limpiar reglas completas por lotes reproducibles:
 
 ```bash
-npx @skapxd/lint-agent@8 <path> --yes --format toon --adopt 10
+npx @skapxd/lint-agent@1 <path> --yes --format toon --adopt 10
 ```
 
 Para repos con mucha deuda el reporte puede ser enorme y saturar el contexto del agente o la terminal. Vuelca la salida a un archivo con `--output <archivo>` y leelo por partes (grep, por regla, por archivo) en vez de stdout:
 
 ```bash
-npx @skapxd/lint-agent@8 <path> --yes --format toon --output skapxd-report.toon
+npx @skapxd/lint-agent@1 <path> --yes --format toon --output skapxd-report.toon
 ```
 
 Luego lee `skapxd-report.toon` selectivamente; no lo vuelques entero al contexto. El stdout muestra solo el resumen.
@@ -70,7 +70,7 @@ Flujo:
 3. Aplica solo los fixes necesarios para esas reglas objetivo, si el usuario pidio modificar el codigo.
 4. Verifica el mismo lote:
 
-   ```bash npx @skapxd/lint-agent@8 <path> --yes --format toon --verify <seed> ```
+   ```bash npx @skapxd/lint-agent@1 <path> --yes --format toon --verify <seed> ```
 
 5. Si `--verify <seed>` todavia reporta hallazgos del objetivo, sigue corrigiendo ese lote.
 6. Cuando el lote queda limpio, sube el porcentaje o repite `--adopt <percent>` para abrir la siguiente ronda.
@@ -102,7 +102,7 @@ No modifiques el proyecto medido salvo que el usuario pida aplicar los fixes. Si
 Para revisar solo lo tocado por git:
 
 ```bash
-npx @skapxd/lint-agent@8 <path> --yes --format toon --changed --base origin/main
+npx @skapxd/lint-agent@1 <path> --yes --format toon --changed --base origin/main
 ```
 
 Usa este modo para evitar que deuda legacy fuera del diff bloquee una tarea acotada. No lo confundas con adopcion completa del repo.
