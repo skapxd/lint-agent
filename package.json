@@ -1,6 +1,6 @@
 {
   "name": "@skapxd/lint-agent",
-  "version": "8.6.0",
+  "version": "1.0.0",
   "description": "Lint Agent: executable ESLint guardrails for coding agents across TypeScript, React, backend, frontend, and package projects",
   "packageManager": "pnpm@11.2.2",
   "main": "./dist/index.js",
