@@ -248,7 +248,7 @@ async function importInstalledPlugin(projectDir) {
     projectDir,
     "node_modules",
     "@skapxd",
-    "eslint-opinionated",
+    "lint-agent",
     "dist",
     "index.mjs",
   );
@@ -396,7 +396,7 @@ async function writeConfig(projectDir, check) {
   await writeFile(
     path.join(projectDir, `.tmp-${check.name}.config.mjs`),
     [
-      'import plugin from "@skapxd/eslint-opinionated";',
+      'import plugin from "@skapxd/lint-agent";',
       "",
       `const configs = ${check.configs};`,
       'const typedFiles = ["**/*.{ts,tsx}"];',

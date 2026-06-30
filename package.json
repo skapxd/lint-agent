@@ -1,7 +1,7 @@
 {
-  "name": "@skapxd/eslint-opinionated",
+  "name": "@skapxd/lint-agent",
   "version": "8.6.0",
-  "description": "Reusable ESLint architectural rules for TypeScript, React, backend, frontend, and package projects",
+  "description": "Lint Agent: executable ESLint guardrails for coding agents across TypeScript, React, backend, frontend, and package projects",
   "packageManager": "pnpm@11.2.2",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -83,12 +83,16 @@
     "typecheck": "tsc --noEmit"
   },
   "keywords": [
+    "lint-agent",
     "eslint",
     "eslint-plugin",
     "typescript",
     "react",
     "architecture",
-    "result"
+    "result",
+    "ai-agents",
+    "coding-agents",
+    "guardrails"
   ],
   "author": "skapxd",
   "license": "MIT",
@@ -119,6 +123,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/skapxd/eslint-opinionated"
+    "url": "https://github.com/skapxd/lint-agent"
   }
 }

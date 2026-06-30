@@ -12,7 +12,7 @@ Tres reglas se apoyan en **convenciones de React/JS** para identificar lo que mi
 | `jsx-return-name-pascal-case` | Detecta **JSX literal** en el cuerpo de la función. | Si devuelves JSX por indirección (`return render()`), no se detecta. |
 | `max-hook-size` | "Hook" = nombre que empieza con **`use`**; el tamaño se mide en líneas. | Una función con lógica de hook pero sin prefijo `use` no se mide. |
 
-Estos supuestos **se auto-refuerzan** con el resto del plugin: si nombras un componente en minúscula, `jsx-return-name-pascal-case` te obliga a pasarlo a PascalCase, y entonces `no-functions-inside-components` ya lo reconoce. Por eso no perseguimos "robustez" más allá de la convención: las reglas que la imponen cierran el hueco.
+Estos supuestos **se auto-refuerzan** con el resto de Lint Agent: si nombras un componente en minúscula, `jsx-return-name-pascal-case` te obliga a pasarlo a PascalCase, y entonces `no-functions-inside-components` ya lo reconoce. Por eso no perseguimos "robustez" más allá de la convención: las reglas que la imponen cierran el hueco.
 
 En cambio, las reglas atadas a `@skapxd/result` (`async-functions-return-result`, `result-error-requires-cause`, `await-requires-result`) **no** dependen de nombres: resuelven el símbolo hasta el paquete real (vía el `name` de su `package.json`), así que funcionan con alias, re-exports y en monorepos.
 
@@ -39,7 +39,7 @@ Ese es el contrato por defecto porque deja que `typescript-eslint` encuentre el 
 El anti-patrón es tomar un preset tipado y volver a declarar `parserOptions.project` encima:
 
 ```js
-import skapxd from "@skapxd/eslint-opinionated";
+import skapxd from "@skapxd/lint-agent";
 
 export default [
   {
@@ -59,7 +59,7 @@ export default [
 Reproducido con `eslint@9.39.4`, `typescript-eslint@8.59.4` y `typescript@5.9.3`, ese choque falla antes de ejecutar reglas:
 
 ```text
-/private/tmp/eslint-opinionated-issue-6-repro/src/index.ts
+/private/tmp/lint-agent-issue-6-repro/src/index.ts
   0:0  error  Parsing error: Enabling "project" does nothing when "projectService" is enabled. You can remove the "project" setting
 
 ✖ 1 problem (1 error, 0 warnings)
@@ -69,7 +69,7 @@ Si necesitas sumar reglas type-aware propias, reutiliza el `languageOptions` del
 
 ```js
 import customPlugin from "eslint-plugin-custom";
-import skapxd from "@skapxd/eslint-opinionated";
+import skapxd from "@skapxd/lint-agent";
 
 const backend = skapxd.configs.shared.backend;
 

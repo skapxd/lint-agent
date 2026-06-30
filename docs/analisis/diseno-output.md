@@ -4,12 +4,12 @@
 
 Este spike responde al issue #127 en el worktree `codex/issue-127-output-first-doc`. Es docs-only: no cambia `src/`, presets, reglas ni grafo. El objetivo es juzgar el output como producto consumible por una persona y por un agente, no como subproducto tecnico de ESLint.
 
-La medicion uso el build local de `@skapxd/eslint-opinionated@7.1.0` sobre dos codebases: este repo con preset `package` y `en-boca-astro` con preset `astro`. En ambos casos se generaron `compact`, `json` y `toon`, en modo evaluate y `--adopt 10`, con salida completa a `/tmp/eslint-output-spike-127/`.
+La medicion uso el build local de Lint Agent (`@skapxd/lint-agent.1.0`) sobre dos codebases: este repo con preset `package` y `en-boca-astro` con preset `astro`. En ambos casos se generaron `compact`, `json` y `toon`, en modo evaluate y `--adopt 10`, con salida completa a `/tmp/eslint-output-spike-127/`.
 
 | Codebase | Preset | Modo | Comando base |
 | --- | --- | --- | --- |
-| `eslint-opinionated` | `package` | evaluate | `node dist/cli.mjs /Users/manuelmeneses/dev/npm-packages/eslint-opinionated-wt/issue-127 --preset package --yes --format <fmt> --output /tmp/eslint-output-spike-127/self-evaluate.<fmt>` |
-| `eslint-opinionated` | `package` | adopt | `node dist/cli.mjs /Users/manuelmeneses/dev/npm-packages/eslint-opinionated-wt/issue-127 --preset package --yes --format <fmt> --adopt 10 --output /tmp/eslint-output-spike-127/self-adopt10.<fmt>` |
+| `Lint Agent` | `package` | evaluate | `node dist/cli.mjs /Users/manuelmeneses/dev/npm-packages/lint-agent-wt/issue-127 --preset package --yes --format <fmt> --output /tmp/eslint-output-spike-127/self-evaluate.<fmt>` |
+| `Lint Agent` | `package` | adopt | `node dist/cli.mjs /Users/manuelmeneses/dev/npm-packages/lint-agent-wt/issue-127 --preset package --yes --format <fmt> --adopt 10 --output /tmp/eslint-output-spike-127/self-adopt10.<fmt>` |
 | `en-boca-astro` | `astro` | evaluate | `node dist/cli.mjs /Users/manuelmeneses/dev/productos/en-boca-astro --preset astro --yes --format <fmt> --output /tmp/eslint-output-spike-127/en-boca-astro-evaluate.<fmt>` |
 | `en-boca-astro` | `astro` | adopt | `node dist/cli.mjs /Users/manuelmeneses/dev/productos/en-boca-astro --preset astro --yes --format <fmt> --adopt 10 --output /tmp/eslint-output-spike-127/en-boca-astro-adopt10.<fmt>` |
 
@@ -36,7 +36,7 @@ La reconciliacion falla en las dos codebases medidas.
 
 | Codebase | `errorCount` | Suma de `ruleSummaries.violationCount` | No atribuidos | Ejemplo |
 | --- | ---: | ---: | ---: | --- |
-| `eslint-opinionated` | 5 | 1 | 4 | Parse errors en `scripts/*.mjs` por `parserOptions.project`. |
+| `Lint Agent` | 5 | 1 | 4 | Parse errors en `scripts/*.mjs` por `parserOptions.project`. |
 | `en-boca-astro` | 3671 | 3670 | 1 | `@typescript-eslint/no-explicit-any`: `Definition for rule '@typescript-eslint/no-explicit-any' was not found.` |
 
 Ejemplo real del problema de `self-evaluate.compact`:

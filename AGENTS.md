@@ -198,19 +198,19 @@ Cuando hay más de un agente (o una tarea en paralelo con una revisión en curso
 
 ```bash
 # Crear: directorio hermano, 1:1 con issue y rama (prefijo = tu identidad de agente)
-git worktree add ../eslint-opinionated-wt/issue-16 -b claude/issue-16-no-unsafe origin/main
-cd ../eslint-opinionated-wt/issue-16
+git worktree add ../lint-agent-wt/issue-16 -b claude/issue-16-no-unsafe origin/main
+cd ../lint-agent-wt/issue-16
 pnpm install   # node_modules NO se comparte (pnpm hardlinkea del store: rápido)
 
 # Ver el mapa / limpiar al terminar (parte de la higiene de andamiaje)
 git worktree list
-git worktree remove ../eslint-opinionated-wt/issue-16 && git branch -d claude/issue-16-no-unsafe
+git worktree remove ../lint-agent-wt/issue-16 && git branch -d claude/issue-16-no-unsafe
 git worktree prune
 ```
 
 Convenciones y trampas de ESTE repo:
 
-- **Identidad 1:1:** issue `#N` ↔ rama `<agente>/issue-N-slug` ↔ worktree `../eslint-opinionated-wt/issue-N`. Si no puedes nombrar el worktree con un issue, no deberías estar creando el worktree.
+- **Identidad 1:1:** issue `#N` ↔ rama `<agente>/issue-N-slug` ↔ worktree `../lint-agent-wt/issue-N`. Si no puedes nombrar el worktree con un issue, no deberías estar creando el worktree.
 - **El checkout principal es del dueño**: se queda en `main`, limpio, reservado para revisión e integración. Los agentes no trabajan ahí.
 - **Cada worktree compila lo suyo**: el dogfood importa `./dist/index.mjs`, así que `pnpm build` es POR worktree (el script `lint` ya lo hace). Las mediciones de solo lectura apuntan al dist del worktree propio, no al del checkout principal.
 - **Verificaciones pesadas en paralelo compiten por CPU**: los testers tipados ya mostraron timeouts de 5s con la máquina cargada — si dos worktrees corren `pnpm test` a la vez y aparece un timeout, re-ejecuta antes de asumir rojo real.

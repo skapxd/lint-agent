@@ -26,7 +26,7 @@ function attachPluginConfigs<
 
 const plugin: PluginInConstruction = {
   meta: {
-    name: "@skapxd/eslint-opinionated",
+    name: "@skapxd/lint-agent",
     version: __PKG_VERSION__,
   },
   rules,
