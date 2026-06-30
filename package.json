@@ -1,5 +1,5 @@
 {
-  "name": "@skapxd/eslint-opinionated",
+  "name": "@skapxd/lint-agent",
   "version": "8.6.0",
   "description": "Lint Agent: executable ESLint guardrails for coding agents across TypeScript, React, backend, frontend, and package projects",
   "packageManager": "pnpm@11.2.2",
@@ -123,6 +123,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/skapxd/eslint-opinionated"
+    "url": "https://github.com/skapxd/lint-agent"
   }
 }

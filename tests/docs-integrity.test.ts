@@ -7,7 +7,7 @@ import { rules } from "#/shared/rules";
 const PROJECT_ROOT = fileURLToPath(new URL("..", import.meta.url));
 const RULES_DOCS_DIR = join(PROJECT_ROOT, "docs", "reglas");
 const GITHUB_DOCS_URL =
-  "https://github.com/skapxd/eslint-opinionated/blob/main/docs/reglas";
+  "https://github.com/skapxd/lint-agent/blob/main/docs/reglas";
 
 function readProjectFile(...pathSegments: string[]): string {
   return readFileSync(join(PROJECT_ROOT, ...pathSegments), "utf8");

@@ -8,7 +8,7 @@
 
 **Reglas de ESLint para que los agentes no negocien la arquitectura de tu proyecto.**
 
-A diferencia de un prompt o una nota en el README (que el agente puede priorizar, reinterpretar o ignorar), Lint Agent convierte tus opiniones de arquitectura en guardrails que se **ejecutan** y **fallan** cuando el código no respeta la forma del proyecto — lo haya escrito una persona, Claude, Codex, Cursor o Copilot. El paquete npm se conserva como `@skapxd/eslint-opinionated` por compatibilidad con consumidores existentes.
+A diferencia de un prompt o una nota en el README (que el agente puede priorizar, reinterpretar o ignorar), Lint Agent convierte tus opiniones de arquitectura en guardrails que se **ejecutan** y **fallan** cuando el código no respeta la forma del proyecto — lo haya escrito una persona, Claude, Codex, Cursor o Copilot. El paquete npm se publica como `@skapxd/lint-agent`.
 
 - **Una función por archivo:** un archivo con cinco helpers escondidos no pasa; la regla hasta te dibuja la carpeta sugerida con formato `tree`.
 - **Errores con `Result`:** ningún `await` queda fuera del sistema de errores: o llamas una función que retorna `Promise<Result<...>>` o envuelves la operación en `trySafe`. Nada lanza sin que el tipo lo diga.

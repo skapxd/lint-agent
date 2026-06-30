@@ -4,7 +4,7 @@
 
 ## Estructura del paquete
 
-Lint Agent se publica tecnicamente como `@skapxd/eslint-opinionated`; los subpaths de esta seccion mantienen ese identificador porque son contratos de importacion.
+Lint Agent se publica tecnicamente como `@skapxd/lint-agent`; los subpaths de esta seccion mantienen ese identificador porque son contratos de importacion.
 
 ```text
 src/
@@ -33,11 +33,11 @@ src/
 
 | Módulo | Propósito |
 | --- | --- |
-| `@skapxd/eslint-opinionated/shared` | Reglas y presets comunes para backend, frontend y paquetes npm. |
-| `@skapxd/eslint-opinionated/nest` | Presets específicos para NestJS. |
-| `@skapxd/eslint-opinionated/next` | Presets específicos para Next.js. |
-| `@skapxd/eslint-opinionated/astro` | Presets específicos para Astro. |
-| `@skapxd/eslint-opinionated` | Entry point principal con todas las reglas y configs. |
+| `@skapxd/lint-agent/shared` | Reglas y presets comunes para backend, frontend y paquetes npm. |
+| `@skapxd/lint-agent/nest` | Presets específicos para NestJS. |
+| `@skapxd/lint-agent/next` | Presets específicos para Next.js. |
+| `@skapxd/lint-agent/astro` | Presets específicos para Astro. |
+| `@skapxd/lint-agent` | Entry point principal con todas las reglas y configs. |
 
 ## Presets
 
@@ -48,7 +48,7 @@ Los presets tipados ya traen `parserOptions.projectService: true`. Si necesitas 
 Las reglas agnosticas al framework viven en `shared.base` como `error`. Por eso `skapxd/nested-function-requires-capture`, que solo depende de AST y scope, `skapxd/no-magic-numbers`, que wrappea una regla sintactica calibrada sin type info, y `skapxd/dense-function-requires-comment`, que mide estructura local sin type info, quedan en las bases y las heredan `shared.backend`, `shared.frontend`, `shared.package` y los presets de framework que extienden las bases.
 
 ```js
-import skapxd from "@skapxd/eslint-opinionated";
+import skapxd from "@skapxd/lint-agent";
 
 export default [
   skapxd.configs.shared.base,
@@ -60,7 +60,7 @@ export default [
 ### Backend
 
 ```js
-import skapxd from "@skapxd/eslint-opinionated";
+import skapxd from "@skapxd/lint-agent";
 
 export default [
   {
@@ -91,7 +91,7 @@ export default [
 ### Frontend
 
 ```js
-import skapxd from "@skapxd/eslint-opinionated";
+import skapxd from "@skapxd/lint-agent";
 
 export default [
   {
@@ -109,7 +109,7 @@ El contrato del front: ninguna función está obligada a retornar `Result`, pero
 import nextPlugin from "@next/eslint-plugin-next";
 import reactHooksPlugin from "eslint-plugin-react-hooks";
 import reactPlugin from "eslint-plugin-react";
-import skapxd from "@skapxd/eslint-opinionated";
+import skapxd from "@skapxd/lint-agent";
 import tseslint from "typescript-eslint";
 
 export default [
@@ -135,8 +135,8 @@ export default [
 También puedes importar solo el factory de Next.js:
 
 ```js
-import skapxd from "@skapxd/eslint-opinionated";
-import { createNextConfigs } from "@skapxd/eslint-opinionated/next";
+import skapxd from "@skapxd/lint-agent";
+import { createNextConfigs } from "@skapxd/lint-agent/next";
 
 export default [
   ...createNextConfigs(skapxd),
@@ -146,7 +146,7 @@ export default [
 ### NestJS
 
 ```js
-import skapxd from "@skapxd/eslint-opinionated";
+import skapxd from "@skapxd/lint-agent";
 
 export default [
   ...skapxd.configs.nest,
@@ -175,7 +175,7 @@ Detalles del preset:
 ### Astro
 
 ```js
-import skapxd from "@skapxd/eslint-opinionated";
+import skapxd from "@skapxd/lint-agent";
 
 export default [
   ...skapxd.configs.astro,
@@ -193,8 +193,8 @@ Si `skapxd/requires-strict-tsconfig` reporta que faltan `noImplicitReturns` o `n
 También puedes importar solo el factory de Astro:
 
 ```js
-import skapxd from "@skapxd/eslint-opinionated";
-import { createAstroConfigs } from "@skapxd/eslint-opinionated/astro";
+import skapxd from "@skapxd/lint-agent";
+import { createAstroConfigs } from "@skapxd/lint-agent/astro";
 
 export default [
   ...createAstroConfigs(skapxd),
@@ -204,7 +204,7 @@ export default [
 ### Paquete npm
 
 ```js
-import skapxd from "@skapxd/eslint-opinionated";
+import skapxd from "@skapxd/lint-agent";
 
 export default [
   {
@@ -226,7 +226,7 @@ Para librerías npm escritas en TypeScript (tsup o equivalente). Trae las bases 
 Un prompt o un agente puede saltarse cualquier regla con `// eslint-disable-next-line`. El preset `strict` activa `noInlineConfig`, que hace que ESLint **ignore todas las directivas inline** en los archivos que cubre: ningún `eslint-disable` surte efecto, así que las reglas no se pueden bypassear.
 
 ```js
-import skapxd from "@skapxd/eslint-opinionated";
+import skapxd from "@skapxd/lint-agent";
 
 export default [
   ...skapxd.configs.next,

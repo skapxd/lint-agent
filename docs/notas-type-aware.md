@@ -39,7 +39,7 @@ Ese es el contrato por defecto porque deja que `typescript-eslint` encuentre el 
 El anti-patrón es tomar un preset tipado y volver a declarar `parserOptions.project` encima:
 
 ```js
-import skapxd from "@skapxd/eslint-opinionated";
+import skapxd from "@skapxd/lint-agent";
 
 export default [
   {
@@ -59,7 +59,7 @@ export default [
 Reproducido con `eslint@9.39.4`, `typescript-eslint@8.59.4` y `typescript@5.9.3`, ese choque falla antes de ejecutar reglas:
 
 ```text
-/private/tmp/eslint-opinionated-issue-6-repro/src/index.ts
+/private/tmp/lint-agent-issue-6-repro/src/index.ts
   0:0  error  Parsing error: Enabling "project" does nothing when "projectService" is enabled. You can remove the "project" setting
 
 ✖ 1 problem (1 error, 0 warnings)
@@ -69,7 +69,7 @@ Si necesitas sumar reglas type-aware propias, reutiliza el `languageOptions` del
 
 ```js
 import customPlugin from "eslint-plugin-custom";
-import skapxd from "@skapxd/eslint-opinionated";
+import skapxd from "@skapxd/lint-agent";
 
 const backend = skapxd.configs.shared.backend;
 
