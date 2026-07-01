@@ -127,4 +127,4 @@ jobs:
       - name: Publish to NPM (OIDC trusted publisher)
         run: |
           npx -y npm@latest --version
-          npx -y npm@latest publish --access public
+          npx -y npm@latest publish --access public --provenance
