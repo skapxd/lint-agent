@@ -1,5 +1,11 @@
 # Lint Agent
 
+[![CI/CD](https://github.com/skapxd/lint-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/skapxd/lint-agent/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/skapxd/lint-agent/actions/workflows/codeql.yml/badge.svg)](https://github.com/skapxd/lint-agent/actions/workflows/codeql.yml)
+[![Dependency Review](https://github.com/skapxd/lint-agent/actions/workflows/dependency-review.yml/badge.svg)](https://github.com/skapxd/lint-agent/actions/workflows/dependency-review.yml)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/skapxd/lint-agent/badge)](https://securityscorecards.dev/viewer/?uri=github.com/skapxd/lint-agent)
+[![Coverage budget](https://img.shields.io/badge/coverage%20budget-80%25%20min-brightgreen.svg)](#budgets-de-coverage)
+[![npm version](https://img.shields.io/npm/v/@skapxd/lint-agent.svg)](https://www.npmjs.com/package/@skapxd/lint-agent)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Reglas de ESLint para que los agentes no negocien la arquitectura de tu proyecto.
@@ -7,6 +13,11 @@ Reglas de ESLint para que los agentes no negocien la arquitectura de tu proyecto
 Lint Agent convierte opiniones de arquitectura en guardrails ejecutables: archivos pequenos, nombres semanticos, errores modelados con `Result`, causas preservadas y fronteras explicitas. El paquete npm se publica como `@skapxd/lint-agent`. El README queda como puerta de entrada; el detalle vive en `docs/` para que npm no entierre lo importante en 2.400 lineas.
 
 ## Budgets de coverage
+
+[![Statements](https://img.shields.io/badge/statements-80%25%20min-brightgreen.svg)](#budgets-de-coverage)
+[![Branches](https://img.shields.io/badge/branches-80%25%20min-brightgreen.svg)](#budgets-de-coverage)
+[![Functions](https://img.shields.io/badge/functions-80%25%20min-brightgreen.svg)](#budgets-de-coverage)
+[![Lines](https://img.shields.io/badge/lines-80%25%20min-brightgreen.svg)](#budgets-de-coverage)
 
 La suite unitaria corre con coverage por defecto: `pnpm test` ejecuta `vitest run --coverage`, imprime el reporte V8 en el resultado de tests y falla si baja de 80% en statements, branches, functions o lines. El alias `pnpm test:coverage` existe solo para compatibilidad con el nombre explicito.
 
