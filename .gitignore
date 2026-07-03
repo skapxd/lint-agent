@@ -1,5 +1,6 @@
 dist
 node_modules
+coverage
 rule-timing-results.md
 *.log
 *.swp

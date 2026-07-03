@@ -79,8 +79,10 @@
     "test:peer-minimum": "pnpm build && node scripts/check-peer-minimum.mjs",
     "test:peer-latest": "pnpm build && node scripts/check-peer-latest.mjs",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "security:audit": "pnpm audit --audit-level low"
   },
   "keywords": [
     "lint-agent",
@@ -114,12 +116,13 @@
     "@types/picomatch": "^4.0.3",
     "@typescript-eslint/rule-tester": "^8.60.1",
     "@typescript-eslint/utils": "8.59.4",
+    "@vitest/coverage-v8": "4.1.9",
     "eslint": "9.39.4",
     "jiti": "^2.7.0",
     "tsup": "8.5.1",
     "typescript": "5.9.3",
     "typescript-eslint": "8.59.4",
-    "vitest": "^4.1.8"
+    "vitest": "4.1.9"
   },
   "repository": {
     "type": "git",
