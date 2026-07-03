@@ -1,5 +1,11 @@
 # Lint Agent
 
+[![CI/CD](https://github.com/skapxd/lint-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/skapxd/lint-agent/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/skapxd/lint-agent/actions/workflows/codeql.yml/badge.svg)](https://github.com/skapxd/lint-agent/actions/workflows/codeql.yml)
+[![Dependency Review](https://github.com/skapxd/lint-agent/actions/workflows/dependency-review.yml/badge.svg)](https://github.com/skapxd/lint-agent/actions/workflows/dependency-review.yml)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/skapxd/lint-agent/badge)](https://securityscorecards.dev/viewer/?uri=github.com/skapxd/lint-agent)
+[![Coverage budget](https://img.shields.io/badge/coverage%20budget-80%25%20min-brightgreen.svg)](https://github.com/skapxd/lint-agent/blob/main/vitest.config.ts)
+[![npm version](https://img.shields.io/npm/v/@skapxd/lint-agent.svg)](https://www.npmjs.com/package/@skapxd/lint-agent)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Reglas de ESLint para que los agentes no negocien la arquitectura de tu proyecto.
