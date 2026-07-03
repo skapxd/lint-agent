@@ -46,7 +46,7 @@ jobs:
 
       - name: Upload isolated timing artifact
         # actions/upload-artifact@v4
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: rule-timing-isolated
           path: rule-timing-isolated.json
@@ -79,7 +79,7 @@ jobs:
 
       - name: Upload all-rules timing artifact
         # actions/upload-artifact@v4
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: rule-timing-all
           path: rule-timing-all.json
