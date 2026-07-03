@@ -14,6 +14,7 @@ export const baseRules = {
   "skapxd/no-deep-relative-imports": "error",
   "skapxd/no-default-export": "error",
   "skapxd/no-exported-function-bag": "error",
+  "skapxd/no-local-function-bag": "error",
   "skapxd/no-else": "error",
   "skapxd/no-emoji": "error",
   "skapxd/no-magic-numbers": [
