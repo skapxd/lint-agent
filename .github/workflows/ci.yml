@@ -3,10 +3,13 @@ name: CI/CD
 on:
   push:
     branches: [ "main" ]
-    # Cada tag vX.Y.Z dispara la publicación a NPM
+    # Cada tag vX.Y.Z dispara la publicacion a NPM.
     tags: [ "v*" ]
   pull_request:
     branches: [ "main" ]
+
+permissions:
+  contents: read
 
 jobs:
   build-and-test:
@@ -14,79 +17,117 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # pnpm 11 requiere Node >= 22.13
+        # pnpm 11 requiere Node >= 22.13.
         node-version: [22.x, 24.x]
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v6
+      - name: Checkout repository
+        # actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
 
-    - name: Setup pnpm
-      uses: pnpm/action-setup@v6
+      - name: Setup pnpm
+        # pnpm/action-setup@v6
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v6
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'pnpm'
+      - name: Use Node.js ${{ matrix.node-version }}
+        # actions/setup-node@v6
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
 
-    - name: Install dependencies (Frozen Lockfile)
-      run: pnpm install --frozen-lockfile
+      - name: Install dependencies (Frozen Lockfile)
+        run: pnpm install --frozen-lockfile
 
-    - name: Type Check
-      run: pnpm typecheck
+      - name: Build Package
+        run: pnpm build
 
-    - name: Lint
-      run: pnpm lint
+      - name: Type Check
+        run: pnpm typecheck
 
-    - name: Run Tests
-      run: pnpm test
+      - name: Lint
+        run: pnpm lint
+
+      - name: Run Tests
+        run: pnpm test
 
   peer-minimum-contract:
     name: Peer Minimum Contract
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v6
+      - name: Checkout repository
+        # actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
 
-    - name: Setup pnpm
-      uses: pnpm/action-setup@v6
+      - name: Setup pnpm
+        # pnpm/action-setup@v6
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271
 
-    - name: Use Node.js 22.x
-      uses: actions/setup-node@v6
-      with:
-        node-version: 22.x
-        cache: 'pnpm'
+      - name: Use Node.js 22.x
+        # actions/setup-node@v6
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+        with:
+          node-version: 22.x
+          cache: 'pnpm'
 
-    - name: Install dependencies (Frozen Lockfile)
-      run: pnpm install --frozen-lockfile
+      - name: Install dependencies (Frozen Lockfile)
+        run: pnpm install --frozen-lockfile
 
-    - name: Check peer minimum contract
-      run: pnpm test:peer-minimum
+      - name: Check peer minimum contract
+        run: pnpm test:peer-minimum
 
   peer-latest-contract:
     name: Peer Latest Contract
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v6
+      - name: Checkout repository
+        # actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
 
-    - name: Setup pnpm
-      uses: pnpm/action-setup@v6
+      - name: Setup pnpm
+        # pnpm/action-setup@v6
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271
 
-    - name: Use Node.js 22.x
-      uses: actions/setup-node@v6
-      with:
-        node-version: 22.x
-        cache: 'pnpm'
+      - name: Use Node.js 22.x
+        # actions/setup-node@v6
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+        with:
+          node-version: 22.x
+          cache: 'pnpm'
 
-    - name: Install dependencies (Frozen Lockfile)
-      run: pnpm install --frozen-lockfile
+      - name: Install dependencies (Frozen Lockfile)
+        run: pnpm install --frozen-lockfile
 
-    - name: Check peer latest contract
-      run: pnpm test:peer-latest
+      - name: Check peer latest contract
+        run: pnpm test:peer-latest
+
+  dependency-audit:
+    name: Dependency Audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        # actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+
+      - name: Setup pnpm
+        # pnpm/action-setup@v6
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271
+
+      - name: Use Node.js 22.x
+        # actions/setup-node@v6
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+        with:
+          node-version: 22.x
+          cache: 'pnpm'
+
+      - name: Install dependencies (Frozen Lockfile)
+        run: pnpm install --frozen-lockfile
+
+      - name: Audit Dependencies
+        run: pnpm security:audit
 
   publish:
     name: Publish to NPM
@@ -94,24 +135,30 @@ jobs:
       - build-and-test
       - peer-minimum-contract
       - peer-latest-contract
-    if: startsWith(github.ref, 'refs/tags/v') # Solo corre en tags de versión
+      - dependency-audit
+    if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     permissions:
       contents: read
       id-token: write
+      attestations: write
+      artifact-metadata: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        # actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v6
+        # pnpm/action-setup@v6
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271
 
       # SIN `registry-url`: esa opcion hace que setup-node escriba un .npmrc con
       # `_authToken=${NODE_AUTH_TOKEN}` y exporte un NODE_AUTH_TOKEN placeholder
       # (XXXXX-XXXXX-...). npm lo toma como credencial y NUNCA intenta OIDC -> 404.
       # Sin authToken + id-token: write + npm >= 11.5.1, npm usa el Trusted Publisher.
       - name: Setup Node.js for Publishing
-        uses: actions/setup-node@v6
+        # actions/setup-node@v6
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
           node-version: 22.x
 
@@ -121,10 +168,24 @@ jobs:
       - name: Build Package
         run: pnpm build
 
+      - name: Pack release artifact
+        id: pack
+        shell: bash
+        run: |
+          package_file="$(npx -y npm@latest pack --json | node -e "let input = ''; process.stdin.on('data', chunk => input += chunk); process.stdin.on('end', () => console.log(JSON.parse(input)[0].filename));")"
+          shasum -a 256 "$package_file" > "$package_file.sha256"
+          echo "package_file=$package_file" >> "$GITHUB_OUTPUT"
+
+      - name: Generate release provenance
+        # actions/attest@v4.1.1
+        uses: actions/attest@a1948c3f048ba23858d222213b7c278aabede763
+        with:
+          subject-path: ${{ steps.pack.outputs.package_file }}
+
       # npm >= 11.5.1 via npx (Setup pnpm altera el prefix global, asi que
       # `npm install -g` no actualiza el npm que corre aqui). El id-token de Actions
       # autentica contra el Trusted Publisher OIDC; la provenance se genera sola.
       - name: Publish to NPM (OIDC trusted publisher)
         run: |
           npx -y npm@latest --version
-          npx -y npm@latest publish --access public --provenance
+          npx -y npm@latest publish "${{ steps.pack.outputs.package_file }}" --access public --provenance
