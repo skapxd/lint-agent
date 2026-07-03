@@ -279,7 +279,7 @@ function createCacheEnv(cacheRoot: string) {
 
 beforeAll(() => {
   runBuild();
-}, 30000);
+});
 
 describe("detectCliPreset", () => {
   it("detecta cada senal y cae a base por defecto", () => {

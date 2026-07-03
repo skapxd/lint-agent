@@ -51,10 +51,6 @@ jobs:
       - name: Run Tests
         run: pnpm test
 
-      - name: Run Coverage Budgets
-        if: matrix.node-version == '22.x'
-        run: pnpm test:coverage
-
   peer-minimum-contract:
     name: Peer Minimum Contract
     runs-on: ubuntu-latest

@@ -19,6 +19,7 @@ export default defineConfig({
   test: {
     include: ["tests/**/*.test.ts"],
     testTimeout: runsCoverageBudget ? 60_000 : 15_000,
+    hookTimeout: runsCoverageBudget ? 120_000 : 30_000,
     coverage: {
       enabled: runsCoverageBudget,
       provider: "v8",

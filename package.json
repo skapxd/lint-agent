@@ -78,8 +78,8 @@
     "skapxd-lint:build": "pnpm build && node dist/cli.mjs",
     "test:peer-minimum": "pnpm build && node scripts/check-peer-minimum.mjs",
     "test:peer-latest": "pnpm build && node scripts/check-peer-latest.mjs",
-    "test": "vitest run",
-    "test:coverage": "vitest run --coverage",
+    "test": "vitest run --coverage",
+    "test:coverage": "pnpm test",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "security:audit": "pnpm audit --audit-level low"
