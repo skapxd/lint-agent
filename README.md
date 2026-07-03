@@ -6,6 +6,19 @@ Reglas de ESLint para que los agentes no negocien la arquitectura de tu proyecto
 
 Lint Agent convierte opiniones de arquitectura en guardrails ejecutables: archivos pequenos, nombres semanticos, errores modelados con `Result`, causas preservadas y fronteras explicitas. El paquete npm se publica como `@skapxd/lint-agent`. El README queda como puerta de entrada; el detalle vive en `docs/` para que npm no entierre lo importante en 2.400 lineas.
 
+## Budgets de coverage
+
+La suite unitaria corre con coverage por defecto: `pnpm test` ejecuta `vitest run --coverage`, imprime el reporte V8 en el resultado de tests y falla si baja de 80% en statements, branches, functions o lines. El alias `pnpm test:coverage` existe solo para compatibilidad con el nombre explicito.
+
+| Budget | Minimo |
+| --- | --- |
+| Statements | 80% |
+| Branches | 80% |
+| Functions | 80% |
+| Lines | 80% |
+
+CI aplica esos budgets dentro del paso `Run Tests` en Node 22.x y Node 24.x; no hay un gate separado que pueda quedar verde mientras los unit tests no muestran coverage.
+
 ## Skill para agentes
 
 Instala la skill `skapxd-lint` en tu agente con un comando compatible con skills.sh y 20+ agentes como Claude Code, Cursor y Copilot:
