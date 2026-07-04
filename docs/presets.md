@@ -157,14 +157,16 @@ Nest trae un modelo de errores por excepciones (`HttpException` + exception filt
 
 | Capa Nest | Rol | Contrato |
 | --- | --- | --- |
-| Services / use-cases | El dominio puro | Todo retorna `Promise<Result<T, DomainError>>`; `trySafe` en la frontera con Mongoose/Prisma/HTTP |
-| Controllers | La frontera | Consumen el Result con `match()`: rama ok → DTO, rama err → `throw new HttpException(...)`. El `throw` aquí es el idioma del framework, no una fuga |
+| Repositories / providers / services de infra | Capa baja que toca IO o APIs que lanzan | Todo retorna `Promise<Result<T, DomainError>>`; `trySafe` en la frontera con Mongoose/Prisma/HTTP |
+| `@UseCase` | Frontera de aplicación | Consume el `Result` de la capa baja y retorna DTO o lanza `HttpException`; componer otro `@UseCase` con `await otherUseCase.execute()` queda exento de `await-requires-result` |
+| Controllers | Frontera HTTP | Awaitean use-cases y retornan DTO; no serializan `Result` crudo |
 | Exception filter global | **El suelo del sistema** | Recibe todo lo que escapó, con el `cause` completo → telemetría/log (ver "El suelo del sistema") |
 
 Detalles del preset:
 
 - Aplica a `src/**/*.ts` — `dev/`, `scripts/`, `e2e/` e `integration-test/` quedan fuera a propósito: no son la app.
 - Los entrypoints (`main.ts`, `instrumentation.ts`, `app-cluster.ts`) están exentos de `await-requires-result`: el bootstrap debe crashear ruidoso. Con `no-floating-promises` activa, el clásico `bootstrap();` del `main.ts` se escribe `void bootstrap();` — fire-and-forget declarado.
+- `await-requires-result` exime llamadas a otro `@UseCase` real de `@skapxd/nest`, incluido un receptor aliaseado, porque esa frontera ya traduce Result a DTO/excepción. No exime `await this.fetchRaw()` ni servicios/repositorios sin `@UseCase`: esa capa baja sigue obligada a `Result`/`trySafe`.
 - Los specs colocados (`*.spec.ts`, `*.e2e-spec.ts`) relajan `await-requires-result`, `no-try-catch`, `result-error-requires-handling` y `no-non-null-assertion` (el `!` sobre un fixture es el arrange del test): un test awaitea helpers libremente y descartar un Result en una aserción no es perder un trace. `no-floating-promises` sigue activa en specs: un `await` olvidado es un falso verde.
 - Activa `skapxd/nest-no-result-response` (ver su sección): un controller jamás retorna el Result crudo.
 - **El contrato Swagger vive en los DTOs, no en el controller.** El preset asume el plugin `@nestjs/swagger` activo en `nest-cli.json` (introspecciona query/params/body y tipo de retorno solo): `nest-dto-requires-api-property` exige `@ApiProperty` en toda propiedad pública de un `*.dto.ts`, y `nest-no-swagger-in-controllers` prohíbe los decoradores redundantes (`@ApiOperation`, `@ApiResponse`, `@ApiParam`, ...) en los controllers — solo se permiten los que el plugin no puede inferir: `ApiExcludeEndpoint`, `ApiTags`, `ApiBearerAuth`, `ApiConsumes`/`ApiBody` (uploads multipart).

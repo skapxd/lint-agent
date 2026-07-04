@@ -148,7 +148,7 @@ Referencia rápida de qué se puede configurar (detalle y defaults en la secció
 | Regla | Opciones |
 | --- | --- |
 | `async-functions-return-result` | `allowFilePatterns` (globs), `allowNamePatterns` (regex), `checkMissingReturnType`, `checkMissingReturnTypeWhenCallNames`, `requireCallNames`, `promiseTypeNames`, `resultTypeNames` |
-| `await-requires-result` | `allowFilePatterns` (globs), `trySafeCallNames` |
+| `await-requires-result` | `allowFilePatterns` (globs), `trySafeCallNames`, `useCaseDecoratorNames`, `useCaseDecoratorSource` |
 | `filename-matches-root-function` | `allowFilePatterns` (globs) |
 | `max-hook-size` | `maxLines`, `maxUseState` |
 | `class-properties-require-readonly` | `allowFilePatterns` (globs), `allowPropertyPatterns` (regex), `ormModuleSources` (default `["@nestjs/mongoose", "typeorm"]`) |
