@@ -48,6 +48,7 @@ export function createNestConfigs(
         // controller: el plugin @nestjs/swagger introspecciona el resto.
         "skapxd/nest-controller-injects-use-case": "error",
         "skapxd/nest-controller-returns-dto": "error",
+        "skapxd/nest-dto-no-class-decorator": "error",
         "skapxd/nest-dto-no-inline-object": "error",
         "skapxd/nest-dto-requires-api-property": "error",
         // Todo DTO valida en runtime con class-validator (+ @Type de

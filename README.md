@@ -67,7 +67,7 @@ Los enlaces apuntan a GitHub de forma absoluta para que funcionen tambien desde 
 | [Adopcion incremental y legacy](https://github.com/skapxd/lint-agent/blob/main/docs/adopcion-legacy.md) | Lint sobre cambios, olas de adopcion, overrides y propuestas de reglas. |
 | [Pipeline Result](https://github.com/skapxd/lint-agent/blob/main/docs/pipeline-result.md) | Como encajan @skapxd/result, ts-pattern y el trace global. |
 | [Notas type-aware](https://github.com/skapxd/lint-agent/blob/main/docs/notas-type-aware.md) | Supuestos, limites conocidos y notas de reglas que dependen del checker. |
-| [Indice de reglas](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/README.md) | Las 65 fichas individuales en docs/reglas/. |
+| [Indice de reglas](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/README.md) | Las 66 fichas individuales en docs/reglas/. |
 
 ## Reglas
 
@@ -94,6 +94,7 @@ Los enlaces apuntan a GitHub de forma absoluta para que funcionen tambien desde 
 | [`skapxd/jsx-return-name-pascal-case`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/jsx-return-name-pascal-case.md) | Funciones que retornan JSX deben nombrarse como componentes. |
 | [`skapxd/nest-controller-injects-use-case`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/nest-controller-injects-use-case.md) | Controllers y gateways inyectan casos de uso con `@UseCase`, no services/repositories directos. Preset `nest`. |
 | [`skapxd/nest-controller-returns-dto`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/nest-controller-returns-dto.md) | Los métodos de ruta de un `@Controller` retornan una clase `extends Dto()` con brand `"dto"` de `@skapxd/nest` para que Swagger genere el response schema sin exponer interfaces ni schemas de DB. Preset `nest`. |
+| [`skapxd/nest-dto-no-class-decorator`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/nest-dto-no-class-decorator.md) | Un DTO con brand de `@skapxd/nest` no declara decoradores de clase: `@Schema`/`@Entity` lo convierten en modelo de persistencia disfrazado. Preset `nest`. |
 | [`skapxd/nest-dto-no-inline-object`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/nest-dto-no-inline-object.md) | Los objetos anidados de un DTO se modelan como clases DTO, no como tipos inline ni `type: Object`. Preset `nest`. |
 | [`skapxd/nest-dto-requires-api-property`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/nest-dto-requires-api-property.md) | Toda propiedad pública de un `*.dto.ts` lleva `@ApiProperty`: el contrato HTTP se documenta en el DTO. Preset `nest`. |
 | [`skapxd/nest-dto-requires-validation`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/nest-dto-requires-validation.md) | Todo DTO valida en runtime: class-validator en cada propiedad, `@IsOptional` si hay `?`, `@Type` junto a `@ValidateNested`; zod/valibot para uniones. Preset `nest`. |

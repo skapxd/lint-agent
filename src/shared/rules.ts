@@ -17,6 +17,7 @@ import { maxHookSize } from "#/rules/max-hook-size";
 import { maxPublicMethods } from "#/rules/max-public-methods";
 import { nestControllerInjectsUseCase } from "#/rules/nest-controller-injects-use-case";
 import { nestControllerReturnsDto } from "#/rules/nest-controller-returns-dto";
+import { nestDtoNoClassDecorator } from "#/rules/nest-dto-no-class-decorator";
 import { nestDtoNoInlineObject } from "#/rules/nest-dto-no-inline-object";
 import { nestDtoRequiresApiProperty } from "#/rules/nest-dto-requires-api-property";
 import { nestDtoRequiresValidation } from "#/rules/nest-dto-requires-validation";
@@ -84,6 +85,7 @@ export const rules = {
   "max-public-methods": maxPublicMethods,
   "nest-controller-injects-use-case": nestControllerInjectsUseCase,
   "nest-controller-returns-dto": nestControllerReturnsDto,
+  "nest-dto-no-class-decorator": nestDtoNoClassDecorator,
   "nest-dto-no-inline-object": nestDtoNoInlineObject,
   "nest-dto-requires-api-property": nestDtoRequiresApiProperty,
   "nest-dto-requires-validation": nestDtoRequiresValidation,
