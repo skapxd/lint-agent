@@ -6,6 +6,15 @@ Las reglas de swagger del preset (`nest-no-swagger-in-controllers`, `nest-dto-re
 // nest-cli.json
 {
   "compilerOptions": {
+    "plugins": []                 // ❌ las reglas Swagger quedan sin premisa
+  }
+}
+```
+
+```jsonc
+// nest-cli.json
+{
+  "compilerOptions": {
     "plugins": ["@nestjs/swagger"]   // ✅ (también acepta { "name": "..." })
   }
 }

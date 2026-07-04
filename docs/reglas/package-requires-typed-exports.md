@@ -5,8 +5,20 @@ El contrato de empaquetado de una librería TypeScript dual (ESM + CJS): cada co
 ```jsonc
 "exports": {
   ".": {
-    "import": { "types": "./dist/index.d.mts", "default": "./dist/index.mjs" },
-    "require": { "types": "./dist/index.d.ts", "default": "./dist/index.js" }
+    "types": "./dist/index.d.ts", // ❌ FalseCJS: un solo types para ESM y CJS
+    "import": "./dist/index.mjs",
+    "require": "./dist/index.js"
+  }
+}
+```
+
+La salida legal cablea los tipos por condicion:
+
+```jsonc
+"exports": {
+  ".": {
+    "import": { "types": "./dist/index.d.mts", "default": "./dist/index.mjs" }, // ✅ tipos ESM
+    "require": { "types": "./dist/index.d.ts", "default": "./dist/index.js" } // ✅ tipos CJS
   }
 }
 ```

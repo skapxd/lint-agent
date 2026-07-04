@@ -3,8 +3,8 @@
 Prohibe casts `as` que estrechan sin evidencia. Un `as Config`, `as User` o `as unknown as FunctionNode` afirma un tipo que nadie verifico; despues, las reglas type-aware razonan sobre esa mentira como si fuera verdad.
 
 ```ts
-const config = JSON.parse(raw) as Config; // afirma sin verificar
-const node = current as unknown as FunctionNode; // misma mentira, lavada
+const config = JSON.parse(raw) as Config; // ❌ afirma sin verificar
+const node = current as unknown as FunctionNode; // ❌ misma mentira, lavada
 ```
 
 Las salidas aceptadas tienen evidencia:
@@ -16,6 +16,8 @@ function isConfig(value: unknown): value is Config {
 
 const parsed: unknown = JSON.parse(raw);
 if (!isConfig(parsed)) return Result.err({ message: "config invalida" });
+
+const config = parsed; // ✅ Config probado por el predicate
 ```
 
 Tambien sirven validacion en la frontera (zod, valibot, class-validator; en Nest, `nest-dto-requires-validation` ya exige esa premisa) o modelar mejor el tipo de origen para que el cast sobre. Ensanchar (`sub as Base`) y `as const` no afirman una forma nueva sin comprobarla, asi que pasan.

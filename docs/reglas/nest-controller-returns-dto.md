@@ -35,12 +35,12 @@ export class UsersController {
   @Get()
   findAll(): Promise<UserDto[]> {
     return this.usersService.findAll();
-  }
+  }                                      // ✅ leaf de retorno marcado con Dto()
 
   @Post()
   create(): Promise<CreatedUserDto> {
     return this.usersService.create();
-  }
+  }                                      // ✅ contrato HTTP introspectable
 }
 ```
 

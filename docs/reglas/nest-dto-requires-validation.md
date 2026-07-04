@@ -5,6 +5,16 @@ El tipo de TypeScript desaparece en runtime: un DTO sin class-validator es un co
 ```ts
 export class CreateLoanDto {
   @ApiProperty()
+  amount: number;              // ❌ el tipo desaparece; falta validador runtime
+
+  @ApiProperty()
+  termMonths?: number;         // ❌ `?` sin @IsOptional miente al runtime
+}
+```
+
+```ts
+export class CreateLoanDto {
+  @ApiProperty()
   @IsNumber()                 // 1. ✅ toda propiedad valida en runtime
   @IsNotEmpty()
   amount: number;

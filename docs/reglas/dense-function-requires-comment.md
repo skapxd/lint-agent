@@ -12,6 +12,16 @@ La regla protege el punto ciego que dejan las reglas de nombres y tamaño: una f
 
 Las tres señales deben cruzar el umbral al mismo tiempo. Un config builder largo con muchos literales pero pocas ramas no dispara; una función ramificada pero corta tampoco. La densidad es combinada, no una excusa para comentar cualquier función.
 
+```ts
+// ❌ funcion exportada densa sin declarar su modelo mental
+export function classifyCell(state: CellState) {
+  if (state.selected) return "selected";
+  if (state.error) return "error";
+  if (state.formula) return "formula";
+  // ...muchas ramas y literales mas
+}
+```
+
 El comentario válido es un bloque inmediatamente anterior a la función (`/** ... */` o `/* ... */`). Un `//` de una línea no cuenta porque no escala bien para una explicación markdown-friendly. Además, el bloque debe tener estructura markdown mínima para que VSCode lo renderice como hover útil:
 
 | Estructura | Qué exige |
@@ -20,6 +30,7 @@ El comentario válido es un bloque inmediatamente anterior a la función (`/** .
 | Code fence | Al menos un par de fences markdown con tres backticks, para un ejemplo entrada→salida o pseudocódigo. |
 
 ````ts
+// ✅ el bloque explica motivacion, prioridad y ejemplo antes del codigo denso
 /**
  * Traduce el estado visual de una celda al modo auditoria: cursor, seleccion,
  * precedentes/dependientes y celdas neutras compiten por el color final.

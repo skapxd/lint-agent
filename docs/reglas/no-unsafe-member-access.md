@@ -6,8 +6,7 @@ Familia indivisible de wrappers sobre `@typescript-eslint/no-unsafe-*`: `no-unsa
 
 ```ts
 const data = await response.json();
-console.log(data.user.name); // any invisible propagado
-return data;
+console.log(data.user.name); // ❌ lee propiedades sobre any invisible
 ```
 
 La salida legal es declarar la frontera como desconocida y estrechar con evidencia runtime:
@@ -15,7 +14,7 @@ La salida legal es declarar la frontera como desconocida y estrechar con evidenc
 ```ts
 const data: unknown = await response.json();
 const user = UserSchema.parse(data);
-console.log(user.name);
+console.log(user.name); // ✅ propiedades de un tipo validado
 ```
 
 El punto no es ordenar zod, valibot o class-validator como dependencia. El punto es cerrar las salidas ilegales hasta que un schema o un type predicate honesto sean el camino barato: `res.json()`/`JSON.parse()` producen `any`, `no-unsafe-*` impide tocarlo, `unknown` obliga a estrechar, y las reglas de ramificación/casts hacen caro fingir evidencia. En Nest, un `req.body` ya validado por DTO pertenece a otra frontera: la regla no pelea con `nest-dto-requires-validation`; depende de esa premisa.

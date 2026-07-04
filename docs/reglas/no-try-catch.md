@@ -3,6 +3,12 @@
 Prohíbe `try/catch`. La intención es que los errores se modelen como `Result` en vez de saltar como excepciones invisibles en el tipo.
 
 ```ts
+try {
+  await client.execute(query);
+} catch (error) {                         // ❌ excepcion invisible en la firma
+  return Result.err({ cause: error, type: "DB_FAILED" });
+}
+
 const result = await trySafe(() => client.execute(query)); // ✅
 if (!result.ok) return Result.err({ cause: result.error, type: "DB_FAILED" });
 ```

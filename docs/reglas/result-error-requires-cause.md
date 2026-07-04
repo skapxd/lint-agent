@@ -5,7 +5,18 @@ Evita perder el error original al transformar un `Result` fallido:
 ```ts
 if (!result.ok) {
   return Result.err({
-    cause: result.error,
+    message: "No pude completar la operación.",
+    type: "OPERATION_FAILED",
+  }); // ❌ pierde result.error
+}
+```
+
+La salida legal preserva la causa:
+
+```ts
+if (!result.ok) {
+  return Result.err({
+    cause: result.error, // ✅ conserva el error original
     message: "No pude completar la operación.",
     type: "OPERATION_FAILED",
   });
