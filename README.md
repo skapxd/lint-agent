@@ -67,7 +67,7 @@ Los enlaces apuntan a GitHub de forma absoluta para que funcionen tambien desde 
 | [Adopcion incremental y legacy](https://github.com/skapxd/lint-agent/blob/main/docs/adopcion-legacy.md) | Lint sobre cambios, olas de adopcion, overrides y propuestas de reglas. |
 | [Pipeline Result](https://github.com/skapxd/lint-agent/blob/main/docs/pipeline-result.md) | Como encajan @skapxd/result, ts-pattern y el trace global. |
 | [Notas type-aware](https://github.com/skapxd/lint-agent/blob/main/docs/notas-type-aware.md) | Supuestos, limites conocidos y notas de reglas que dependen del checker. |
-| [Indice de reglas](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/README.md) | Las 66 fichas individuales en docs/reglas/. |
+| [Indice de reglas](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/README.md) | Las 67 fichas individuales en docs/reglas/. |
 
 ## Reglas
 
@@ -111,6 +111,7 @@ Los enlaces apuntan a GitHub de forma absoluta para que funcionen tambien desde 
 | [`skapxd/no-default-export`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/no-default-export.md) | Prohíbe `export default`; el nombre del símbolo es el contrato. Exime configs/stories y, en el preset `next`, los entrypoints del App Router. |
 | [`skapxd/no-else`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/no-else.md) | Prohíbe `else`/`else if`: el else es el estado sin nombre. Retorno anticipado, ternario simple o `match()`. |
 | [`skapxd/no-emoji`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/no-emoji.md) | Prohíbe emojis en strings y JSX; cada sistema los renderiza distinto. Usa un icono SVG. |
+| [`skapxd/no-internal-module-imports`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/no-internal-module-imports.md) | Una carpeta con barrel `index.ts`/`index.js` declara API pública: desde fuera se importa el índice, no sus archivos internos. |
 | [`skapxd/no-explicit-any`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/no-explicit-any.md) | Prohíbe `any`: apaga el sistema de tipos donde más se necesita. `unknown` para lo desconocido, el tipo real para lo demás. Wrapper de typescript-eslint. |
 | [`skapxd/no-floating-promises`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/no-floating-promises.md) | Promesas sin `await` ni `void`: el rechazo muere sin pasar por trySafe. El mensaje corrige el consejo upstream (`.then/.catch` aquí están prohibidos). Wrapper de typescript-eslint. |
 | [`skapxd/no-magic-numbers`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/no-magic-numbers.md) | Prohíbe números mágicos: un literal numérico significativo debe extraerse a una `const` con nombre de dominio. Wrapper de typescript-eslint. |

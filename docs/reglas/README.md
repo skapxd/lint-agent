@@ -48,6 +48,7 @@ Cada ficha de regla mantiene un par minimo de ejemplos marcados: `❌` para el c
 | [`skapxd/no-default-export`](./no-default-export.md) | Prohíbe `export default`; el nombre del símbolo es el contrato. Exime configs/stories y, en el preset `next`, los entrypoints del App Router. |
 | [`skapxd/no-else`](./no-else.md) | Prohíbe `else`/`else if`: el else es el estado sin nombre. Retorno anticipado, ternario simple o `match()`. |
 | [`skapxd/no-emoji`](./no-emoji.md) | Prohíbe emojis en strings y JSX; cada sistema los renderiza distinto. Usa un icono SVG. |
+| [`skapxd/no-internal-module-imports`](./no-internal-module-imports.md) | Una carpeta con barrel `index.ts`/`index.js` declara API pública: desde fuera se importa el índice, no sus archivos internos. |
 | [`skapxd/no-explicit-any`](./no-explicit-any.md) | Prohíbe `any`: apaga el sistema de tipos donde más se necesita. `unknown` para lo desconocido, el tipo real para lo demás. Wrapper de typescript-eslint. |
 | [`skapxd/no-floating-promises`](./no-floating-promises.md) | Promesas sin `await` ni `void`: el rechazo muere sin pasar por trySafe. El mensaje corrige el consejo upstream (`.then/.catch` aquí están prohibidos). Wrapper de typescript-eslint. |
 | [`skapxd/no-magic-numbers`](./no-magic-numbers.md) | Prohíbe números mágicos: un literal numérico significativo debe extraerse a una `const` con nombre de dominio. Wrapper de typescript-eslint. |
