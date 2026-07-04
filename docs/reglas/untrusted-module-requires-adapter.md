@@ -9,6 +9,16 @@ El playbook, en orden:
 3. **`@ts-expect-error` con descripción** dentro del adaptador si hace falta forzar la corrección — es la puerta que `no-silenced-compiler` deja abierta, declarada y con porqué.
 4. **Arregla el upstream**: PR a DefinitelyTyped. Mientras llega, los pasos 1-3 te protegen.
 
+```ts
+import { read } from "xlsx"; // ❌ modulo declarado como no confiable fuera del adaptador
+```
+
+La salida legal pasa por el adaptador auditado:
+
+```ts
+import { readWorkbook } from "@/lib/xlsx-adapter"; // ✅ frontera anticorrupcion
+```
+
 ```js
 "skapxd/untrusted-module-requires-adapter": ["error", {
   adapterFilePatterns: ["src/lib/xlsx-adapter.ts"],

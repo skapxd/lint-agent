@@ -3,18 +3,18 @@
 Obliga a importar módulos nativos de Node con el protocolo explícito `node:`. El import deja de parecer un paquete npm y declara que la dependencia viene del runtime:
 
 ```ts
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
-const crypto = require("node:crypto");
+import { readFile } from "node:fs/promises"; // ✅ builtin explicito
+import { join } from "node:path"; // ✅ builtin explicito
+const crypto = require("node:crypto"); // ✅ builtin explicito
 ```
 
 La regla reporta las formas sin protocolo y las corrige de forma mecánica:
 
 ```ts
-import { readFile } from "fs/promises";
-export { join } from "path";
-const crypto = require("crypto");
-const stream = await import("stream");
+import { readFile } from "fs/promises"; // ❌ parece paquete npm
+export { join } from "path"; // ❌ falta node:
+const crypto = require("crypto"); // ❌ falta node:
+const stream = await import("stream"); // ❌ falta node:
 ```
 
 El autofix antepone `node:` y conserva subpaths como `fs/promises`, `stream/web` o `timers/promises`. Solo se corrigen literales string; imports dinámicos con variable o template quedan fuera porque no hay specifier exacto que reescribir.

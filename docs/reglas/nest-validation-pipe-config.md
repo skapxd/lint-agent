@@ -3,10 +3,12 @@
 La otra premisa verificada: todo `new ValidationPipe(...)` (el real, importado de `@nestjs/common`) debe configurar las dos opciones que hacen reales los contratos de los DTOs:
 
 ```ts
+app.useGlobalPipes(new ValidationPipe()); // ❌ no transforma ni filtra payloads
+
 app.useGlobalPipes(
   new ValidationPipe({
-    transform: true,   // sin él, class-transformer no corre: los @Type no hacen NADA
-    whitelist: true,   // sin él, las props sin decorador pasan crudas al dominio
+    transform: true,   // ✅ class-transformer corre: los @Type hacen efecto
+    whitelist: true,   // ✅ props sin decorador no pasan crudas al dominio
     // ...el resto (exceptionFactory, transformOptions) es tuyo
   }),
 );

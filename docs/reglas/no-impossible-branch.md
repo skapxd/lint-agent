@@ -5,6 +5,9 @@ La rama imposible: una condición que el type-checker demuestra constante. Si el
 ```ts
 const sheet = workbook.Sheets[name]; // tipo: WorkSheet (¿seguro?)
 if (!sheet) continue; // ❌ "always falsy"... ¿o el tipo miente?
+
+const safeSheet: WorkSheet | undefined = workbook.Sheets[name];
+if (!safeSheet) continue; // ✅ el tipo admite la duda; el guard ya no es imposible
 ```
 
 El mensaje de error enseña la lección completa: **si la comprobación hace falta en runtime, lo que está mal es el tipo**. El caso clásico es el acceso por índice sin `noUncheckedIndexedAccess` — `array[i]` y `obj[key]` juran que nunca son `undefined`, y esta regla, creyéndoles, acusaría guards necesarios. Por eso va de la mano de `skapxd/requires-strict-tsconfig`, que exige ese flag: primero el tsconfig dice la verdad, después esta regla opina.

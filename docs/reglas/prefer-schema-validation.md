@@ -7,7 +7,7 @@ function validateUser(data: unknown): boolean {
   if (typeof data !== "object" || data === null) return false;
   if (!("name" in data)) return false;
   if (typeof (data as Record<string, unknown>).name !== "string") return false;
-  if (!Array.isArray((data as Record<string, unknown>).roles)) return false;
+  if (!Array.isArray((data as Record<string, unknown>).roles)) return false; // ❌ schema artesanal
 
   return true;
 }
@@ -16,7 +16,7 @@ function validateUser(data: unknown): boolean {
 Ese código ya es un schema, pero escrito rama por rama: sin errores por campo, sin composición y fácil de desincronizar del tipo que dice proteger. Decláralo en la frontera:
 
 ```ts
-const UserSchema = z.object({
+const UserSchema = z.object({ // ✅ schema declarado en la frontera
   name: z.string(),
   roles: z.array(z.string()),
 });

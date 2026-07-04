@@ -4,6 +4,10 @@
 
 Cada ficha vive en un archivo propio. El indice conserva la descripcion corta de cada regla y enlaza al detalle movido desde el README original.
 
+## Convencion de ejemplos
+
+Cada ficha de regla mantiene un par minimo de ejemplos marcados: `❌` para el codigo que la regla reporta y `✅` para la salida preferida. El ejemplo bueno no puede contradecir reglas hermanas ni convertir el fix en una excepcion disfrazada.
+
 | Regla | Que protege |
 | --- | --- |
 | [`skapxd/one-root-function-per-file`](./one-root-function-per-file.md) | Un archivo, una función top-level semántica. |

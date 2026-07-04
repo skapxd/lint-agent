@@ -6,6 +6,26 @@ Todo el sistema descansa en que el compilador pueda hacer irrepresentables los e
 - `noImplicitReturns` — una rama que sale sin valor deja de ser silenciosa (la pareja en compilación de `no-else`).
 - `noUncheckedIndexedAccess` — `array[i]` y los accesos dinámicos confiesan su `undefined` en vez de fingir.
 
+```jsonc
+{
+  "compilerOptions": {
+    "strict": true // ❌ no basta: faltan noImplicitReturns y noUncheckedIndexedAccess
+  }
+}
+```
+
+La salida legal declara los tres flags:
+
+```jsonc
+{
+  "compilerOptions": {
+    "strict": true, // ✅ tipos estrictos
+    "noImplicitReturns": true, // ✅ ramas sin retorno visibles
+    "noUncheckedIndexedAccess": true // ✅ accesos dinamicos confiesan undefined
+  }
+}
+```
+
 Si la regla **no encuentra un `tsconfig.json` legible**, no es un falso positivo silencioso: la acción es crear o ubicar el `tsconfig.json` en la raíz del proyecto, o corregir la ejecución (`cwd`/ruta del archivo linteado) para que la regla lo resuelva.
 
 `strict: true` **no implica** los otros dos: hay que pedirlos explícitos. Fuera del default, a propósito: `exactOptionalPropertyTypes` y `strictPropertyInitialization` chocan con los DTOs de class-transformer y con muchas librerías — se agregan vía `requiredCompilerOptions` si el proyecto los soporta.

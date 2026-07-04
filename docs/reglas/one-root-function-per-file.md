@@ -4,6 +4,19 @@ Limita cada archivo a una sola función declarada en la raíz.
 
 Cuando detecta varias funciones, sugiere una estructura con formato tipo `tree`. Por ejemplo:
 
+```ts
+export function chargeCard() {}
+export function refundCard() {} // ❌ dos funciones raiz en un archivo
+```
+
+La salida legal deja un solo contrato top-level por archivo:
+
+```ts
+export function chargeCard() {} // ✅ una funcion raiz
+```
+
+Cuando el archivo original se llama:
+
 ```text
 payment-gateway.ts
 ```

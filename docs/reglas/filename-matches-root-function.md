@@ -18,16 +18,16 @@ No tiene autofix. Renombrar el archivo o renombrar el export cambia imports y AP
 
 ```ts
 // get-node.ts
-export const getNode = () => {}; // OK
+export const getNode = () => {}; // ✅ el stem coincide con getNode
 
 // get-node-ts.ts
-export const getNodeTS = () => {}; // OK
+export const getNodeTS = () => {}; // ✅ acronimo normalizado a kebab
 
 // card.tsx
 export function Card() {
   return <div />;
-} // OK
+} // ✅ componente PascalCase en archivo kebab
 
 // get-node.ts
-export const fetchNode = () => {}; // ERROR: el archivo esperado es fetch-node.ts
+export const fetchNode = () => {}; // ❌ el archivo esperado es fetch-node.ts
 ```

@@ -9,9 +9,26 @@ Detecta patrones de UI repetidos que ya dejaron de ser markup local y pasaron a 
 <div className="border shadow-sm rounded-lg p-4">
   <h3 className="font-bold text-lg">{b.title}</h3>
 </div>
+{/* ❌ tercer patron repetido sin componente */}
 <div className="shadow-sm p-4 border rounded-lg">
   <h3 className="text-lg font-bold">{c.title}</h3>
 </div>
+```
+
+La salida legal nombra la unidad repetida:
+
+```tsx
+function SummaryCard({ title }: { title: string }) {
+  return (
+    <div className="rounded-lg border p-4 shadow-sm">
+      <h3 className="text-lg font-bold">{title}</h3>
+    </div>
+  );
+}
+
+<SummaryCard title={a.title} /> // ✅ repeticion movida a un componente
+<SummaryCard title={b.title} />
+<SummaryCard title={c.title} />
 ```
 
 La regla compara dos firmas:

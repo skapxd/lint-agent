@@ -9,7 +9,7 @@ import { Dto } from "@skapxd/nest";
 export class UserDto extends Dto() {
   @Prop()
   passwordHash!: string;
-}                                      // falla: schema disfrazado de DTO
+}                                      // ❌ schema disfrazado de DTO
 ```
 
 La salida correcta separa persistencia y transporte. La entity/schema vive en su clase; el DTO extiende `Dto(...)` sin decoradores de clase, y el mapeo decide que campos cruzan la frontera HTTP.
@@ -24,7 +24,7 @@ export class UserSchema {
 export class UserDto extends Dto() {
   @Expose()
   id!: string;
-}                                      // valido: DTO puro
+}                                      // ✅ DTO puro, sin decorador de clase
 ```
 
 La regla es type-aware: resuelve el tipo de instancia de `ClassDeclaration` y `ClassExpression`, verifica que lleve el brand `SKAPXD_LAYER: "dto"` originado en `@skapxd/nest`, y solo entonces lee los decoradores de clase declarados en esa misma clase. No recorre la cadena de herencia: `class UserDto extends Dto(UserSchema) {}` y `class PdfFileDto extends Dto(StreamableFile) {}` son validos porque extender es libre; lo prohibido es declarar un decorador de clase sobre el propio DTO.

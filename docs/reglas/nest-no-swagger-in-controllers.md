@@ -15,6 +15,16 @@ export class UsersController {
 
 Solo se permiten los decoradores que el plugin **no puede inferir** (`allowedDecoratorNames`, configurable): `ApiExcludeEndpoint` (ocultar rutas internas), `ApiTags` (agrupación), `ApiBearerAuth` (auth), y `ApiConsumes`/`ApiBody` (uploads multipart, que la introspección no ve).
 
+```ts
+@Controller("users")
+export class UsersController {
+  @Get(":id")
+  findOne(@Param() params: FindUserParamsDto): Promise<UserDto> {
+    return this.findUser.execute(params);              // ✅ DTOs + retorno tipado bastan
+  }
+}
+```
+
 La detección compara contra los **imports reales de `@nestjs/swagger`** del archivo: un decorador propio que se llame `ApiOperation` no se toca. Solo aplica dentro de clases `@Controller`.
 
 ---
