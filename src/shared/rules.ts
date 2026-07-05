@@ -15,6 +15,7 @@ import { noAccessors } from "#/rules/no-accessors";
 import type { RuleModule } from "#/utils/rule-authoring/rule-types";
 import { maxHookSize } from "#/rules/max-hook-size";
 import { maxPublicMethods } from "#/rules/max-public-methods";
+import { nestControllerInputDtos } from "#/rules/nest-controller-input-dtos";
 import { nestControllerInjectsUseCase } from "#/rules/nest-controller-injects-use-case";
 import { nestControllerReturnsDto } from "#/rules/nest-controller-returns-dto";
 import { nestDtoNoClassDecorator } from "#/rules/nest-dto-no-class-decorator";
@@ -85,6 +86,7 @@ export const rules = {
   "max-hook-size": maxHookSize,
   "max-public-methods": maxPublicMethods,
   "nest-controller-injects-use-case": nestControllerInjectsUseCase,
+  "nest-controller-input-dtos": nestControllerInputDtos,
   "nest-controller-returns-dto": nestControllerReturnsDto,
   "nest-dto-no-class-decorator": nestDtoNoClassDecorator,
   "nest-dto-no-inline-object": nestDtoNoInlineObject,

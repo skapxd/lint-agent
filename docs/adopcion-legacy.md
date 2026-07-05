@@ -155,6 +155,7 @@ Referencia rápida de qué se puede configurar (detalle y defaults en la secció
 | `max-public-methods` | `allowFilePatterns` (globs), `max` (default `1`), `ignore` (aditivo a los hooks de Nest) |
 | `no-exported-function-bag` | `allowFilePatterns` (globs) |
 | `no-accessors` | `allowFilePatterns` (globs) |
+| `nest-controller-input-dtos` | `allowFilePatterns` (globs), `controllerDecoratorNames`, `checkedDecorators`, `nestDecoratorSource`, `dtoLayerSource` |
 | `nest-controller-returns-dto` | `allowFilePatterns` (globs), `controllerDecoratorNames`, `dtoLayerSource`, `gatewayDecoratorNames`, `responseHandlerParamDecorators` |
 | `nest-dto-requires-api-property` | `allowFilePatterns` (globs), `dtoFilePatterns` (default `["*.dto.ts"]`), `apiPropertyDecoratorNames` |
 | `nest-dto-requires-validation` | `allowFilePatterns` (globs), `dtoFilePatterns`, `outputDtoFilePatterns`, `outputDtoClassPatterns` (regex), `optionalDecoratorNames` |
