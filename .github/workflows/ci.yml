@@ -172,7 +172,7 @@ jobs:
         id: pack
         shell: bash
         run: |
-          package_file="$(npx -y npm@latest pack --json | node -e "let input = ''; process.stdin.on('data', chunk => input += chunk); process.stdin.on('end', () => { const parsed = JSON.parse(input); const pack = Array.isArray(parsed) ? parsed[0] : Object.values(parsed)[0]; if (!pack?.filename) { throw new Error('npm pack --json no devolvio filename'); } console.log(pack.filename); });")"
+          package_file="$(npx -y npm@11.18.0 pack --json | node -e "let input = ''; process.stdin.on('data', chunk => input += chunk); process.stdin.on('end', () => { const parsed = JSON.parse(input); const pack = Array.isArray(parsed) ? parsed[0] : Object.values(parsed)[0]; if (!pack?.filename) { throw new Error('npm pack --json no devolvio filename'); } console.log(pack.filename); });")"
           shasum -a 256 "$package_file" > "$package_file.sha256"
           echo "package_file=$package_file" >> "$GITHUB_OUTPUT"
 
@@ -182,10 +182,11 @@ jobs:
         with:
           subject-path: ${{ steps.pack.outputs.package_file }}
 
-      # npm >= 11.5.1 via npx (Setup pnpm altera el prefix global, asi que
+      # npm 11.18.0 via npx (Setup pnpm altera el prefix global, asi que
       # `npm install -g` no actualiza el npm que corre aqui). El id-token de Actions
-      # autentica contra el Trusted Publisher OIDC; la provenance se genera sola.
+      # autentica contra el Trusted Publisher OIDC; no usamos `latest` porque npm 12.0.0
+      # rompio `publish --provenance` en npx por falta de `sigstore`.
       - name: Publish to NPM (OIDC trusted publisher)
         run: |
-          npx -y npm@latest --version
-          npx -y npm@latest publish "${{ steps.pack.outputs.package_file }}" --access public --provenance
+          npx -y npm@11.18.0 --version
+          npx -y npm@11.18.0 publish "${{ steps.pack.outputs.package_file }}" --access public --provenance
