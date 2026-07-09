@@ -10,7 +10,7 @@ declare function Res(): ParameterDecorator;
 declare function Next(): ParameterDecorator;
 `;
 
-const invalidMissingReturnType = `
+const invalidInferredEmptyArray = `
 ${controllerDeclarations}
 
 @Controller("users")
@@ -244,7 +244,7 @@ export class UsersController {
 }
 `;
 
-const validArrayDto = `
+const invalidArrayDto = `
 import { Dto } from "@skapxd/nest";
 
 ${controllerDeclarations}
@@ -262,7 +262,7 @@ export class UsersController {
 }
 `;
 
-const validPromiseArrayDto = `
+const invalidPromiseArrayDto = `
 import { Dto } from "@skapxd/nest";
 
 ${controllerDeclarations}
@@ -276,6 +276,100 @@ export class UsersController {
   @Get()
   findAll(): Promise<UserDto[]> {
     return Promise.resolve([new UserDto()]);
+  }
+}
+`;
+
+const invalidGenericArrayDto = `
+import { Dto } from "@skapxd/nest";
+
+${controllerDeclarations}
+
+class UserDto extends Dto() {
+  id!: string;
+}
+
+@Controller("users")
+export class UsersController {
+  @Get()
+  findAll(): Array<UserDto> {
+    return [new UserDto()];
+  }
+}
+`;
+
+const invalidReadonlyArrayDto = `
+import { Dto } from "@skapxd/nest";
+
+${controllerDeclarations}
+
+class UserDto extends Dto() {
+  id!: string;
+}
+
+@Controller("users")
+export class UsersController {
+  @Get()
+  findAll(): ReadonlyArray<UserDto> {
+    return [new UserDto()];
+  }
+}
+`;
+
+const invalidTupleDto = `
+import { Dto } from "@skapxd/nest";
+
+${controllerDeclarations}
+
+class UserDto extends Dto() {
+  id!: string;
+}
+
+@Controller("users")
+export class UsersController {
+  @Get()
+  findAll(): [UserDto] {
+    return [new UserDto()];
+  }
+}
+`;
+
+const invalidInferredArrayDto = `
+import { Dto } from "@skapxd/nest";
+
+${controllerDeclarations}
+
+class UserDto extends Dto() {
+  id!: string;
+}
+
+@Controller("users")
+export class UsersController {
+  @Get()
+  findAll() {
+    return [new UserDto()];
+  }
+}
+`;
+
+const validListWrapperDto = `
+import { Dto } from "@skapxd/nest";
+
+${controllerDeclarations}
+
+class UserDto extends Dto() {
+  id!: string;
+}
+
+class ListUsersDto extends Dto() {
+  items!: UserDto[];
+}
+
+@Controller("users")
+export class UsersController {
+  @Get()
+  findAll(): Promise<ListUsersDto> {
+    return Promise.resolve(new ListUsersDto());
   }
 }
 `;
@@ -417,8 +511,13 @@ ruleTester.run(
   {
     invalid: [
       {
-        code: invalidMissingReturnType,
-        errors: [{ messageId: "returnsNonClass" }],
+        code: invalidInferredEmptyArray,
+        errors: [
+          {
+            data: { name: "findAll", returned: "never[]" },
+            messageId: "returnsArray",
+          },
+        ],
         filename: testFilename,
       },
       {
@@ -448,7 +547,12 @@ ruleTester.run(
       },
       {
         code: invalidSchemaReturn,
-        errors: [{ messageId: "returnsUnmarkedClass" }],
+        errors: [
+          {
+            data: { name: "findAll", returned: "UserSchema[]" },
+            messageId: "returnsArray",
+          },
+        ],
         filename: testFilename,
       },
       {
@@ -496,6 +600,66 @@ ruleTester.run(
         errors: [{ messageId: "returnsUnmarkedClass" }],
         filename: testFilename,
       },
+      {
+        code: invalidArrayDto,
+        errors: [
+          {
+            data: { name: "findAll", returned: "UserDto[]" },
+            messageId: "returnsArray",
+          },
+        ],
+        filename: testFilename,
+      },
+      {
+        code: invalidPromiseArrayDto,
+        errors: [
+          {
+            data: { name: "findAll", returned: "UserDto[]" },
+            messageId: "returnsArray",
+          },
+        ],
+        filename: testFilename,
+      },
+      {
+        code: invalidGenericArrayDto,
+        errors: [
+          {
+            data: { name: "findAll", returned: "UserDto[]" },
+            messageId: "returnsArray",
+          },
+        ],
+        filename: testFilename,
+      },
+      {
+        code: invalidReadonlyArrayDto,
+        errors: [
+          {
+            data: { name: "findAll", returned: "readonly UserDto[]" },
+            messageId: "returnsArray",
+          },
+        ],
+        filename: testFilename,
+      },
+      {
+        code: invalidTupleDto,
+        errors: [
+          {
+            data: { name: "findAll", returned: "[UserDto]" },
+            messageId: "returnsArray",
+          },
+        ],
+        filename: testFilename,
+      },
+      {
+        code: invalidInferredArrayDto,
+        errors: [
+          {
+            data: { name: "findAll", returned: "UserDto[]" },
+            messageId: "returnsArray",
+          },
+        ],
+        filename: testFilename,
+      },
     ],
     valid: [
       {
@@ -503,11 +667,7 @@ ruleTester.run(
         filename: testFilename,
       },
       {
-        code: validArrayDto,
-        filename: testFilename,
-      },
-      {
-        code: validPromiseArrayDto,
+        code: validListWrapperDto,
         filename: testFilename,
       },
       {

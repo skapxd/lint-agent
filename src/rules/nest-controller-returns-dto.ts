@@ -15,6 +15,7 @@ const typescriptCallSignatureKind = 0;
 const CAUSE_TO_MESSAGE = {
   union: "returnsUnionType",
   void: "returnsVoid",
+  array: "returnsArray",
   primitive: "returnsPrimitive",
   "non-class": "returnsNonClass",
   "unmarked-class": "returnsUnmarkedClass",
@@ -33,6 +34,8 @@ export const nestControllerReturnsDto: RuleModule = {
         "El metodo de ruta `{{name}}` retorna `{{returned}}`, que no es una clase. @nestjs/swagger solo introspecciona CLASES: una interface, un `type` o `any` dan `any` en el cliente. Conviertelo en una clase que extienda `Dto()`: `class FooDto extends Dto() { @Expose() id!: string }`.",
       returnsPrimitive:
         "El metodo de ruta `{{name}}` retorna un primitivo (`{{returned}}`). Un escalar suelto no documenta nada en swagger; envuelvelo en un Dto con un campo nombrado: `class TokenDto extends Dto() { @Expose() token!: string }` y retorna `Promise<TokenDto>`.",
+      returnsArray:
+        "El metodo de ruta `{{name}}` retorna una lista cruda (`{{returned}}`). Un endpoint no debe exponer `Dto[]` como contrato HTTP: envuelvelo en una clase `extends Dto()` con una propiedad `items` y deja espacio para paginacion o metadata: `class ListUsersDto extends Dto() { items!: UserDto[]; pageInfo?: PageInfoDto }`.",
       returnsUnionType:
         "El metodo de ruta `{{name}}` retorna una union (`{{returned}}`): un endpoint declara UNA forma, no \"una cosa u otra\". Modela lo polimorfico con un Dto contenedor y un discriminador, no `A | B`: `class PaymentDto extends Dto() { @Expose() status!: \"approved\" | \"rejected\"; @Expose() @Type(() => ApprovedDto) approved?: ApprovedDto }`.",
       returnsUnmarkedClass:

@@ -11,6 +11,7 @@ type DtoReturnCause =
   | { status: "ok" }
   | { returned: string; status: "union" }
   | { returned: string; status: "void" }
+  | { returned: string; status: "array" }
   | { returned: string; status: "primitive" }
   | { returned: string; status: "non-class" }
   | { returned: string; status: "unmarked-class" };
@@ -20,56 +21,48 @@ export function classifyNestControllerDtoReturnType(
   typeContext: TypeContext,
   options: NestControllerDtoReturnTypeOptions,
 ): DtoReturnCause {
-  function getLeafType(type: ts.Type): ts.Type | null {
+  function getEffectiveReturnType(type: ts.Type): ts.Type {
     const awaitedType = typeContext.checker.getAwaitedType(type);
     const effectiveAwaitedType = awaitedType ?? type;
     const hasAwaitedWrapper = effectiveAwaitedType !== type;
     if (hasAwaitedWrapper) {
-      return getLeafType(effectiveAwaitedType);
-    }
-
-    const hasArrayWrapper = typeContext.checker.isArrayType(type);
-    if (hasArrayWrapper) {
-      const elementType = typeContext.checker.getIndexTypeOfType(
-        type,
-        tslib.IndexKind.Number,
-      );
-
-      return elementType ? getLeafType(elementType) : null;
+      return getEffectiveReturnType(effectiveAwaitedType);
     }
 
     return type;
   }
 
-  const leafType = getLeafType(returnType);
-  const lacksLeafType = !leafType;
-  if (lacksLeafType) {
+  const effectiveReturnType = getEffectiveReturnType(returnType);
+  const returned = typeContext.checker.typeToString(effectiveReturnType);
+  const isRawArray = typeContext.checker.isArrayType(effectiveReturnType) ||
+    typeContext.checker.isTupleType(effectiveReturnType);
+  if (isRawArray) {
     return {
-      returned: typeContext.checker.typeToString(returnType),
-      status: "non-class",
+      returned,
+      status: "array",
     };
   }
 
-  const isUnionLeafType = leafType.isUnion();
-  if (isUnionLeafType) {
+  const isUnionReturnType = effectiveReturnType.isUnion();
+  if (isUnionReturnType) {
     return {
-      returned: typeContext.checker.typeToString(leafType),
+      returned,
       status: "union",
     };
   }
 
   const isVoidType = Boolean(
-    leafType.flags & (tslib.TypeFlags.Void | tslib.TypeFlags.Undefined),
+    effectiveReturnType.flags & (tslib.TypeFlags.Void | tslib.TypeFlags.Undefined),
   );
   if (isVoidType) {
     return {
-      returned: typeContext.checker.typeToString(leafType),
+      returned,
       status: "void",
     };
   }
 
   const isPrimitiveType = Boolean(
-    leafType.flags &
+    effectiveReturnType.flags &
       (tslib.TypeFlags.StringLike |
         tslib.TypeFlags.NumberLike |
         tslib.TypeFlags.BooleanLike |
@@ -77,13 +70,13 @@ export function classifyNestControllerDtoReturnType(
   );
   if (isPrimitiveType) {
     return {
-      returned: typeContext.checker.typeToString(leafType),
+      returned,
       status: "primitive",
     };
   }
 
   const hasDtoLayer = getSkapxdLayerOfType(
-    leafType,
+    effectiveReturnType,
     typeContext,
     options.dtoLayerSource,
   ) === "dto";
@@ -91,15 +84,15 @@ export function classifyNestControllerDtoReturnType(
     return { status: "ok" };
   }
 
-  const leafSymbol = leafType.getSymbol();
+  const returnSymbol = effectiveReturnType.getSymbol();
   const isClassType = Boolean(
-    leafSymbol
+    returnSymbol
       ?.getDeclarations()
       ?.some((declaration) => tslib.isClassDeclaration(declaration)),
   );
 
   return {
-    returned: typeContext.checker.typeToString(leafType),
+    returned,
     status: isClassType ? "unmarked-class" : "non-class",
   };
 }
