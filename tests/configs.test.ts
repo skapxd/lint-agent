@@ -299,6 +299,9 @@ describe("preset nest", () => {
     expect(nestBase.rules["skapxd/nest-controller-injects-use-case"]).toBe("error");
     expect(nestBase.rules["skapxd/nest-controller-input-dtos"]).toBe("error");
     expect(nestBase.rules["skapxd/nest-controller-returns-dto"]).toBe("error");
+    expect(
+      nestBase.rules["skapxd/nest-controller-delegates-to-use-case"],
+    ).toBeUndefined();
     expect(nestBase.rules["skapxd/nest-dto-no-class-decorator"]).toBe("error");
     expect(nestBase.rules["skapxd/nest-dto-no-inline-object"]).toBe("error");
     expect(nestBase.rules["skapxd/nest-dto-requires-api-property"]).toBe("error");

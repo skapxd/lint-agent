@@ -17,6 +17,7 @@ import { maxHookSize } from "#/rules/max-hook-size";
 import { maxPublicMethods } from "#/rules/max-public-methods";
 import { nestControllerInputDtos } from "#/rules/nest-controller-input-dtos";
 import { nestControllerInjectsUseCase } from "#/rules/nest-controller-injects-use-case";
+import { nestControllerDelegatesToUseCase } from "#/rules/nest-controller-delegates-to-use-case";
 import { nestControllerReturnsDto } from "#/rules/nest-controller-returns-dto";
 import { nestDtoNoClassDecorator } from "#/rules/nest-dto-no-class-decorator";
 import { nestDtoNoInlineObject } from "#/rules/nest-dto-no-inline-object";
@@ -86,6 +87,7 @@ export const rules = {
   "trysafe-only-at-boundary": trysafeOnlyAtBoundary,
   "max-hook-size": maxHookSize,
   "max-public-methods": maxPublicMethods,
+  "nest-controller-delegates-to-use-case": nestControllerDelegatesToUseCase,
   "nest-controller-injects-use-case": nestControllerInjectsUseCase,
   "nest-controller-input-dtos": nestControllerInputDtos,
   "nest-controller-returns-dto": nestControllerReturnsDto,

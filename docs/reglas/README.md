@@ -29,6 +29,7 @@ Cada ficha de regla mantiene un par minimo de ejemplos marcados: `❌` para el c
 | [`skapxd/no-local-function-bag`](./no-local-function-bag.md) | Prohíbe objetos locales que definen varias funciones inline: una bolsa local es un namespace disfrazado. En las bases. |
 | [`skapxd/no-accessors`](./no-accessors.md) | Prohíbe `get`/`set`: un método explícito dice la verdad; el accessor esconde computación (y métodos disfrazados). |
 | [`skapxd/jsx-return-name-pascal-case`](./jsx-return-name-pascal-case.md) | Funciones que retornan JSX deben nombrarse como componentes. |
+| [`skapxd/nest-controller-delegates-to-use-case`](./nest-controller-delegates-to-use-case.md) | Los route handlers de un `@Controller` adaptan HTTP y delegan una sola operación a un `@UseCase` real. Registrada como opt-in mientras #191 decide el preset. |
 | [`skapxd/nest-controller-injects-use-case`](./nest-controller-injects-use-case.md) | Controllers y gateways inyectan casos de uso con `@UseCase`, no services/repositories directos. Preset `nest`. |
 | [`skapxd/nest-controller-input-dtos`](./nest-controller-input-dtos.md) | Los inputs HTTP decorados de un `@Controller` entran como DTO completo `extends Dto()` con brand `"dto"` de `@skapxd/nest`, no como campos sueltos, arrays crudos, aliases ni clases sin contrato. Preset `nest`. |
 | [`skapxd/nest-controller-returns-dto`](./nest-controller-returns-dto.md) | Los métodos de ruta de un `@Controller` retornan una clase top-level `extends Dto()` con brand `"dto"` de `@skapxd/nest`, no interfaces, schemas de DB ni listas crudas. Preset `nest`. |
