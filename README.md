@@ -67,7 +67,7 @@ Los enlaces apuntan a GitHub de forma absoluta para que funcionen tambien desde 
 | [Adopcion incremental y legacy](https://github.com/skapxd/lint-agent/blob/main/docs/adopcion-legacy.md) | Lint sobre cambios, olas de adopcion, overrides y propuestas de reglas. |
 | [Pipeline Result](https://github.com/skapxd/lint-agent/blob/main/docs/pipeline-result.md) | Como encajan @skapxd/result, ts-pattern y el trace global. |
 | [Notas type-aware](https://github.com/skapxd/lint-agent/blob/main/docs/notas-type-aware.md) | Supuestos, limites conocidos y notas de reglas que dependen del checker. |
-| [Brief para un agente de codigo](https://github.com/skapxd/lint-agent/blob/main/docs/plantilla-brief-agente.md) | Como escribir el markdown autocontenido que implementa un cambio (regla, ajuste o paquete). |
+| [Tarea para un agente de codigo](https://github.com/skapxd/lint-agent/blob/main/docs/plantilla-tarea-agente.md) | Como escribir el markdown autocontenido que implementa un cambio (regla, ajuste o paquete). |
 | [Indice de reglas](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/README.md) | Las 67 fichas individuales en docs/reglas/. |
 
 ## Reglas
