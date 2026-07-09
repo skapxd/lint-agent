@@ -68,7 +68,7 @@ Los enlaces apuntan a GitHub de forma absoluta para que funcionen tambien desde 
 | [Pipeline Result](https://github.com/skapxd/lint-agent/blob/main/docs/pipeline-result.md) | Como encajan @skapxd/result, ts-pattern y el trace global. |
 | [Notas type-aware](https://github.com/skapxd/lint-agent/blob/main/docs/notas-type-aware.md) | Supuestos, limites conocidos y notas de reglas que dependen del checker. |
 | [Tarea para un agente de codigo](https://github.com/skapxd/lint-agent/blob/main/docs/plantilla-tarea-agente.md) | Como escribir el markdown autocontenido que implementa un cambio (regla, ajuste o paquete). |
-| [Indice de reglas](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/README.md) | Las 67 fichas individuales en docs/reglas/. |
+| [Indice de reglas](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/README.md) | Las 68 fichas individuales en docs/reglas/. |
 
 ## Reglas
 
@@ -94,6 +94,7 @@ Los enlaces apuntan a GitHub de forma absoluta para que funcionen tambien desde 
 | [`skapxd/no-accessors`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/no-accessors.md) | Prohíbe `get`/`set`: un método explícito dice la verdad; el accessor esconde computación (y métodos disfrazados). |
 | [`skapxd/jsx-return-name-pascal-case`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/jsx-return-name-pascal-case.md) | Funciones que retornan JSX deben nombrarse como componentes. |
 | [`skapxd/nest-controller-injects-use-case`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/nest-controller-injects-use-case.md) | Controllers y gateways inyectan casos de uso con `@UseCase`, no services/repositories directos. Preset `nest`. |
+| [`skapxd/nest-controller-input-dtos`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/nest-controller-input-dtos.md) | Los inputs HTTP decorados de un `@Controller` entran como DTO completo `extends Dto()` con brand `"dto"` de `@skapxd/nest`, no como campos sueltos, arrays crudos, aliases ni clases sin contrato. Preset `nest`. |
 | [`skapxd/nest-controller-returns-dto`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/nest-controller-returns-dto.md) | Los métodos de ruta de un `@Controller` retornan una clase `extends Dto()` con brand `"dto"` de `@skapxd/nest` para que Swagger genere el response schema sin exponer interfaces ni schemas de DB. Preset `nest`. |
 | [`skapxd/nest-dto-no-class-decorator`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/nest-dto-no-class-decorator.md) | Un DTO con brand de `@skapxd/nest` no declara decoradores de clase: `@Schema`/`@Entity` lo convierten en modelo de persistencia disfrazado. Preset `nest`. |
 | [`skapxd/nest-dto-no-inline-object`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/nest-dto-no-inline-object.md) | Los objetos anidados de un DTO se modelan como clases DTO, no como tipos inline ni `type: Object`. Preset `nest`. |

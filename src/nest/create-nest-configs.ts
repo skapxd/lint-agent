@@ -47,6 +47,7 @@ export function createNestConfigs(
         // El contrato HTTP se documenta en los DTOs (@ApiProperty), no en el
         // controller: el plugin @nestjs/swagger introspecciona el resto.
         "skapxd/nest-controller-injects-use-case": "error",
+        "skapxd/nest-controller-input-dtos": "error",
         "skapxd/nest-controller-returns-dto": "error",
         "skapxd/nest-dto-no-class-decorator": "error",
         "skapxd/nest-dto-no-inline-object": "error",
