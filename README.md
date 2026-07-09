@@ -68,7 +68,7 @@ Los enlaces apuntan a GitHub de forma absoluta para que funcionen tambien desde 
 | [Pipeline Result](https://github.com/skapxd/lint-agent/blob/main/docs/pipeline-result.md) | Como encajan @skapxd/result, ts-pattern y el trace global. |
 | [Notas type-aware](https://github.com/skapxd/lint-agent/blob/main/docs/notas-type-aware.md) | Supuestos, limites conocidos y notas de reglas que dependen del checker. |
 | [Tarea para un agente de codigo](https://github.com/skapxd/lint-agent/blob/main/docs/plantilla-tarea-agente.md) | Como escribir el markdown autocontenido que implementa un cambio (regla, ajuste o paquete). |
-| [Indice de reglas](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/README.md) | Las 68 fichas individuales en docs/reglas/. |
+| [Indice de reglas](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/README.md) | Las 69 fichas individuales en docs/reglas/. |
 
 ## Reglas
 
@@ -100,6 +100,7 @@ Los enlaces apuntan a GitHub de forma absoluta para que funcionen tambien desde 
 | [`skapxd/nest-dto-no-inline-object`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/nest-dto-no-inline-object.md) | Los objetos anidados de un DTO se modelan como clases DTO, no como tipos inline ni `type: Object`. Preset `nest`. |
 | [`skapxd/nest-dto-requires-api-property`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/nest-dto-requires-api-property.md) | Toda propiedad pública de un `*.dto.ts` lleva `@ApiProperty`: el contrato HTTP se documenta en el DTO. Preset `nest`. |
 | [`skapxd/nest-dto-requires-validation`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/nest-dto-requires-validation.md) | Todo DTO valida en runtime: class-validator en cada propiedad, `@IsOptional` si hay `?`, `@Type` junto a `@ValidateNested`; zod/valibot para uniones. Preset `nest`. |
+| [`skapxd/nest-module-layer-folders`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/nest-module-layer-folders.md) | Los módulos Nest declaran `http`, `application`, `domain`, `infrastructure` y `contracts` en el árbol; la raíz queda para el module file e `index.ts`. Preset `nest`. |
 | [`skapxd/nest-no-direct-instantiation`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/nest-no-direct-instantiation.md) | Prohíbe `new` sobre imports internos en services: las dependencias entran por el constructor (DI). Preset `nest`. |
 | [`skapxd/nest-no-inline-query-params`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/nest-no-inline-query-params.md) | Dos o más `@Query('x')`/`@ApiQuery` individuales son un DTO disfrazado: consolida en `@Query() filters: Dto`. Preset `nest`. |
 | [`skapxd/nest-no-result-response`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/nest-no-result-response.md) | Los métodos de un `@Controller` no retornan `Result`: el envelope se serializaría al cliente. La activa el preset `nest`. |

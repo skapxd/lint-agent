@@ -22,6 +22,7 @@ import { nestDtoNoClassDecorator } from "#/rules/nest-dto-no-class-decorator";
 import { nestDtoNoInlineObject } from "#/rules/nest-dto-no-inline-object";
 import { nestDtoRequiresApiProperty } from "#/rules/nest-dto-requires-api-property";
 import { nestDtoRequiresValidation } from "#/rules/nest-dto-requires-validation";
+import { nestModuleLayerFolders } from "#/rules/nest-module-layer-folders";
 import { nestNoDirectInstantiation } from "#/rules/nest-no-direct-instantiation";
 import { nestNoInlineQueryParams } from "#/rules/nest-no-inline-query-params";
 import { nestNoResultResponse } from "#/rules/nest-no-result-response";
@@ -92,6 +93,7 @@ export const rules = {
   "nest-dto-no-inline-object": nestDtoNoInlineObject,
   "nest-dto-requires-api-property": nestDtoRequiresApiProperty,
   "nest-dto-requires-validation": nestDtoRequiresValidation,
+  "nest-module-layer-folders": nestModuleLayerFolders,
   "nest-no-direct-instantiation": nestNoDirectInstantiation,
   "nest-no-inline-query-params": nestNoInlineQueryParams,
   "nest-no-result-response": nestNoResultResponse,

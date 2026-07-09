@@ -302,6 +302,7 @@ describe("preset nest", () => {
     expect(nestBase.rules["skapxd/nest-dto-no-class-decorator"]).toBe("error");
     expect(nestBase.rules["skapxd/nest-dto-no-inline-object"]).toBe("error");
     expect(nestBase.rules["skapxd/nest-dto-requires-api-property"]).toBe("error");
+    expect(nestBase.rules["skapxd/nest-module-layer-folders"]).toBe("error");
     expect(nestBase.rules["skapxd/nest-no-result-response"]).toBe("error");
     expect(nestBase.rules["skapxd/nest-use-case-no-result-response"]).toBe("error");
   });
