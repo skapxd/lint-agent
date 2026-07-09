@@ -159,7 +159,7 @@ function getPeerRange(peerDependencies, packageName) {
 }
 
 function getMinimumBound(range, packageName) {
-  const match = /^>=\s*(\d+)(?:\.(\d+))?(?:\.(\d+))?$/.exec(range.trim());
+  const match = /^>=\s*(\d+)(?:\.(\d+))?(?:\.(\d+))?(?:\s|$)/.exec(range.trim());
 
   if (!match) {
     throw new Error(
