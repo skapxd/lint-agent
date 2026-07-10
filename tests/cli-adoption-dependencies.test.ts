@@ -86,7 +86,7 @@ describe("dependencias de adopcion", () => {
     }
 
     expect(edgeCount).toBe(9);
-    expect(histogram.get(0)).toBe(63);
+    expect(histogram.get(0)).toBe(64);
     expect(histogram.get(1)).toBe(8);
     expect([...histogram.keys()].sort()).toEqual([0, 1]);
   });
@@ -103,6 +103,7 @@ describe("dependencias de adopcion", () => {
   it("expone capas correctas para premisas, dependientes e ids desconocidos", () => {
     expect(getRuleLayer("skapxd/filename-matches-root-function")).toBe(1);
     expect(getRuleLayer("skapxd/one-root-function-per-file")).toBe(0);
+    expect(getRuleLayer("skapxd/one-root-unit-per-file")).toBe(0);
     expect(getRuleLayer("skapxd/no-impossible-branch")).toBe(1);
     expect(getRuleLayer("skapxd/requires-strict-tsconfig")).toBe(0);
     expect(getRuleLayer("skapxd/untrusted-module-requires-adapter")).toBe(1);

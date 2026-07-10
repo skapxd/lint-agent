@@ -169,6 +169,25 @@ describe("contrato de errores: await-requires-result manda", () => {
     }
   });
 
+  it("one-root-unit-per-file queda opt-in durante el spike de #197", () => {
+    const allPresets = [
+      plugin.configs.base,
+      plugin.configs.backend,
+      plugin.configs.frontend,
+      plugin.configs.package,
+      ...plugin.configs.nest,
+      ...plugin.configs.next,
+      ...plugin.configs.astro,
+    ];
+
+    for (const preset of allPresets) {
+      expect(
+        preset.rules?.["skapxd/one-root-unit-per-file"],
+        preset.name,
+      ).toBeUndefined();
+    }
+  });
+
   it("reglas agnósticas nuevas están en las bases de framework", () => {
     const baseConsumers = [
       plugin.configs.base,

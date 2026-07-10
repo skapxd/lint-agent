@@ -1,4 +1,5 @@
 import { oneRootFunctionPerFile } from "#/rules/one-root-function-per-file";
+import { oneRootUnitPerFile } from "#/rules/one-root-unit-per-file";
 import { filenameMatchesRootFunction } from "#/rules/filename-matches-root-function";
 import { jsxReturnNamePascalCase } from "#/rules/jsx-return-name-pascal-case";
 import { asyncFunctionsReturnResult } from "#/rules/async-functions-return-result";
@@ -77,6 +78,7 @@ export const rules = {
   "filename-matches-root-function": filenameMatchesRootFunction,
   "no-accessors": noAccessors,
   "one-root-function-per-file": oneRootFunctionPerFile,
+  "one-root-unit-per-file": oneRootUnitPerFile,
   "jsx-return-name-pascal-case": jsxReturnNamePascalCase,
   "async-functions-return-result": asyncFunctionsReturnResult,
   "no-ad-hoc-ok-result": noAdHocOkResult,
