@@ -68,7 +68,7 @@ Los enlaces apuntan a GitHub de forma absoluta para que funcionen tambien desde 
 | [Pipeline Result](https://github.com/skapxd/lint-agent/blob/main/docs/pipeline-result.md) | Como encajan @skapxd/result, ts-pattern y el trace global. |
 | [Notas type-aware](https://github.com/skapxd/lint-agent/blob/main/docs/notas-type-aware.md) | Supuestos, limites conocidos y notas de reglas que dependen del checker. |
 | [Tarea para un agente de codigo](https://github.com/skapxd/lint-agent/blob/main/docs/plantilla-tarea-agente.md) | Como escribir el markdown autocontenido que implementa un cambio (regla, ajuste o paquete). |
-| [Indice de reglas](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/README.md) | Las 70 fichas individuales en docs/reglas/. |
+| [Indice de reglas](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/README.md) | Las 71 fichas individuales en docs/reglas/. |
 
 ## Reglas
 
@@ -86,6 +86,7 @@ Los enlaces apuntan a GitHub de forma absoluta para que funcionen tambien desde 
 | [`skapxd/no-rethrow-result-error`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/no-rethrow-result-error.md) | Prohíbe re-lanzar el error crudo de un `Result`: el flujo no vuelve de `trySafe` a excepción cruda. |
 | [`skapxd/trysafe-only-at-boundary`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/trysafe-only-at-boundary.md) | Exige que `trySafe` capture en la frontera runtime/paquete, no una capa arriba sobre código del proyecto. **En las bases** (agnóstica de framework); detección conservadora para acotar falsos positivos. |
 | [`skapxd/no-ad-hoc-ok-result`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/no-ad-hoc-ok-result.md) | Evita contratos `{ ok: ... }` hechos a mano en async exports. |
+| [`skapxd/max-class-size`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/max-class-size.md) | Limita cada clase a 150 líneas y señala datos declarativos extraíbles solo cuando explican todo el exceso. |
 | [`skapxd/max-hook-size`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/max-hook-size.md) | Marca hooks grandes o con demasiados `useState`. |
 | [`skapxd/class-properties-require-readonly`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/class-properties-require-readonly.md) | Toda propiedad de clase es `readonly`: el cambio se modela con instancias nuevas, no con mutación. |
 | [`skapxd/max-public-methods`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/max-public-methods.md) | Una clase, una responsabilidad: máximo N métodos públicos (default 1). Agnóstica al framework, en las reglas base; el preset `nest` le inyecta sus hooks. |

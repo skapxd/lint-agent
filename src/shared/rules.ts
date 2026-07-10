@@ -14,6 +14,7 @@ import { denseFunctionRequiresComment } from "#/rules/dense-function-requires-co
 import { noAccessors } from "#/rules/no-accessors";
 import type { RuleModule } from "#/utils/rule-authoring/rule-types";
 import { maxHookSize } from "#/rules/max-hook-size";
+import { maxClassSize } from "#/rules/max-class-size";
 import { maxPublicMethods } from "#/rules/max-public-methods";
 import { nestControllerInputDtos } from "#/rules/nest-controller-input-dtos";
 import { nestControllerInjectsUseCase } from "#/rules/nest-controller-injects-use-case";
@@ -85,6 +86,7 @@ export const rules = {
   "result-error-requires-handling": resultErrorRequiresHandling,
   "result-error-requires-modeling": resultErrorRequiresModeling,
   "trysafe-only-at-boundary": trysafeOnlyAtBoundary,
+  "max-class-size": maxClassSize,
   "max-hook-size": maxHookSize,
   "max-public-methods": maxPublicMethods,
   "nest-controller-delegates-to-use-case": nestControllerDelegatesToUseCase,

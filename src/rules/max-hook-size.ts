@@ -1,7 +1,7 @@
 import type { TSESTree } from "@typescript-eslint/utils";
 import { countOwnUseStateCalls } from "#/utils/react/count-own-use-state-calls";
 import { getFunctionExpressionName } from "#/utils/ast/get-function-expression-name";
-import { getFunctionLineCount } from "#/utils/ast/get-function-line-count";
+import { getNodeLineCount } from "#/utils/ast/get-node-line-count";
 import { getMaxHookSizeOptions } from "#/utils/options/get-max-hook-size-options";
 import { getParentFunctionName } from "#/utils/ast/get-parent-function-name";
 import { getParentFunctionReportNode } from "#/utils/ast/get-parent-function-report-node";
@@ -46,7 +46,7 @@ export const maxHookSize: RuleModule = {
             return;
           }
 
-          const lines = getFunctionLineCount(node);
+          const lines = getNodeLineCount(node);
           const useStateCount = countOwnUseStateCalls(node);
           const reportName = name ?? "anonymous";
 

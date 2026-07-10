@@ -1,5 +1,5 @@
 import type { TSESTree } from "@typescript-eslint/utils";
-import { getFunctionLineCount } from "#/utils/ast/get-function-line-count";
+import { getNodeLineCount } from "#/utils/ast/get-node-line-count";
 import { getNodeChildren } from "#/utils/ast/get-node-children";
 import type { FunctionNode } from "#/utils/ast/is-function-node";
 
@@ -12,7 +12,7 @@ export type DenseFunctionMetrics = {
 export function getDenseFunctionMetrics(functionNode: FunctionNode): DenseFunctionMetrics {
   const metrics: DenseFunctionMetrics = {
     branches: 0,
-    lines: getFunctionLineCount(functionNode),
+    lines: getNodeLineCount(functionNode),
     literals: 0,
   };
   const pendingNodes: TSESTree.Node[] = [functionNode];
