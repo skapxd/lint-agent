@@ -68,7 +68,7 @@ Los enlaces apuntan a GitHub de forma absoluta para que funcionen tambien desde 
 | [Pipeline Result](https://github.com/skapxd/lint-agent/blob/main/docs/pipeline-result.md) | Como encajan @skapxd/result, ts-pattern y el trace global. |
 | [Notas type-aware](https://github.com/skapxd/lint-agent/blob/main/docs/notas-type-aware.md) | Supuestos, limites conocidos y notas de reglas que dependen del checker. |
 | [Tarea para un agente de codigo](https://github.com/skapxd/lint-agent/blob/main/docs/plantilla-tarea-agente.md) | Como escribir el markdown autocontenido que implementa un cambio (regla, ajuste o paquete). |
-| [Indice de reglas](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/README.md) | Las 69 fichas individuales en docs/reglas/. |
+| [Indice de reglas](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/README.md) | Las 70 fichas individuales en docs/reglas/. |
 
 ## Reglas
 
@@ -93,6 +93,7 @@ Los enlaces apuntan a GitHub de forma absoluta para que funcionen tambien desde 
 | [`skapxd/no-local-function-bag`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/no-local-function-bag.md) | Prohíbe objetos locales que definen varias funciones inline: una bolsa local es un namespace disfrazado. En las bases. |
 | [`skapxd/no-accessors`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/no-accessors.md) | Prohíbe `get`/`set`: un método explícito dice la verdad; el accessor esconde computación (y métodos disfrazados). |
 | [`skapxd/jsx-return-name-pascal-case`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/jsx-return-name-pascal-case.md) | Funciones que retornan JSX deben nombrarse como componentes. |
+| [`skapxd/nest-controller-delegates-to-use-case`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/nest-controller-delegates-to-use-case.md) | Los route handlers de un `@Controller` adaptan HTTP y delegan una sola operación a un `@UseCase` real. Registrada como opt-in mientras #191 decide el preset. |
 | [`skapxd/nest-controller-injects-use-case`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/nest-controller-injects-use-case.md) | Controllers y gateways inyectan casos de uso con `@UseCase`, no services/repositories directos. Preset `nest`. |
 | [`skapxd/nest-controller-input-dtos`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/nest-controller-input-dtos.md) | Los inputs HTTP decorados de un `@Controller` entran como DTO completo `extends Dto()` con brand `"dto"` de `@skapxd/nest`, no como campos sueltos, arrays crudos, aliases ni clases sin contrato. Preset `nest`. |
 | [`skapxd/nest-controller-returns-dto`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/nest-controller-returns-dto.md) | Los métodos de ruta de un `@Controller` retornan una clase top-level `extends Dto()` con brand `"dto"` de `@skapxd/nest`, no interfaces, schemas de DB ni listas crudas. Preset `nest`. |

@@ -1,7 +1,7 @@
 import type { TSESTree } from "@typescript-eslint/utils";
 import { classifyNestControllerInputDtoType } from "#/utils/nest/classify-nest-controller-input-dto-type";
 import { getDecoratorName } from "#/utils/nest/get-decorator-name";
-import { getImportedLocalNames } from "#/utils/imports/get-imported-local-names";
+import { getImportedLocalNamesForNames } from "#/utils/imports/get-imported-local-names-for-names";
 import { getNestControllerInputDtosOptions } from "#/utils/options/get-nest-controller-input-dtos-options";
 import { getParameterName } from "#/utils/nest/get-parameter-name";
 import { getTypeContext } from "#/utils/type-aware/get-type-context";
@@ -78,34 +78,6 @@ export const nestControllerInputDtos: RuleModule = {
     let checkedDecoratorLocalNames = new Set<string>();
     let httpRouteDecoratorLocalNames = new Set<string>();
 
-    function getLocalNamesImportedFromNest(
-      program: TSESTree.Program,
-      importedNames: readonly string[],
-    ) {
-      const namesFromNest = getImportedLocalNames(program, options.nestDecoratorSource);
-      const localNames = new Set<string>();
-
-      for (const statement of program.body) {
-        const isDifferentSource = statement.type !== "ImportDeclaration" ||
-          statement.source.value !== options.nestDecoratorSource;
-        if (isDifferentSource) {
-          continue;
-        }
-
-        for (const specifier of statement.specifiers) {
-          const isTrackedSpecifier = specifier.type === "ImportSpecifier" &&
-            specifier.imported.type === "Identifier" &&
-            importedNames.includes(specifier.imported.name) &&
-            namesFromNest.has(specifier.local.name);
-          if (isTrackedSpecifier) {
-            localNames.add(specifier.local.name);
-          }
-        }
-      }
-
-      return localNames;
-    }
-
     function getInputDecorator(param: TSESTree.Parameter) {
       for (const decorator of param.decorators) {
         const decoratorName = getDecoratorName(decorator);
@@ -173,12 +145,14 @@ export const nestControllerInputDtos: RuleModule = {
 
     return {
       Program(node: TSESTree.Program) {
-        checkedDecoratorLocalNames = getLocalNamesImportedFromNest(
+        checkedDecoratorLocalNames = getImportedLocalNamesForNames(
           node,
+          options.nestDecoratorSource,
           options.checkedDecorators,
         );
-        httpRouteDecoratorLocalNames = getLocalNamesImportedFromNest(
+        httpRouteDecoratorLocalNames = getImportedLocalNamesForNames(
           node,
+          options.nestDecoratorSource,
           httpRouteDecoratorNames,
         );
       },
