@@ -198,7 +198,7 @@ Los `allowFilePatterns` de todas las reglas son **globs** (`*` un segmento, `**`
 
 ## Crear propuestas de reglas
 
-Las reglas nuevas no empiezan como código: empiezan como una propuesta que deja claro qué contrato arquitectónico se quiere volver ejecutable y qué costo trae. Usa el template [`.github/ISSUE_TEMPLATE/rule-proposal.md`](.github/ISSUE_TEMPLATE/rule-proposal.md) para abrir cualquier idea de regla nueva o cambio de política del catálogo.
+Las reglas nuevas no empiezan como código: empiezan como una propuesta que deja claro qué contrato arquitectónico se quiere volver ejecutable y qué costo trae. Usa el template [`.github/ISSUE_TEMPLATE/plantilla-propuesta-regla.md`](../.github/ISSUE_TEMPLATE/plantilla-propuesta-regla.md) para abrir cualquier idea de regla nueva o cambio de política del catálogo.
 
 La issue debe contestar, como mínimo:
 
@@ -213,7 +213,7 @@ La issue debe contestar, como mínimo:
 Desde GitHub, elige **New issue → Propuesta de regla**. Desde la CLI:
 
 ```bash
-gh issue create --template rule-proposal.md
+gh issue create --template plantilla-propuesta-regla.md
 ```
 
 Si la propuesta todavía necesita decisión de diseño, usa los labels `regla-nueva` y `decision-pendiente`. Cuando el problema sea deuda del propio repo o documentación, usa labels más específicos en vez de forzar este template.

@@ -449,4 +449,4 @@ pnpm build && pnpm typecheck && pnpm test && pnpm lint
 
 ---
 
-[Índice de reglas](./reglas/README.md) | [Propuesta de regla (issue template)](../.github/ISSUE_TEMPLATE/rule-proposal.md) | [README principal](../README.md)
+[Índice de reglas](./reglas/README.md) | [Propuesta de regla (issue template)](../.github/ISSUE_TEMPLATE/plantilla-propuesta-regla.md) | [README principal](../README.md)

@@ -38,7 +38,7 @@ gh issue list --json number,title,labels --jq '.[] | "\(.number): \(.title)"'
 gh issue view 16 --comments
 
 # Crear un issue: PRIMERO revisar las plantillas del repo
-ls .github/ISSUE_TEMPLATE/   # rule-proposal.md (reglas) | tech-debt.md (deuda)
+ls .github/ISSUE_TEMPLATE/   # plantilla-propuesta-regla.md (reglas) | plantilla-deuda-tecnica.md (deuda)
 gh issue create --title 'Regla x: contrato que protege' \
   --label "regla-nueva,decision-pendiente" --body-file /tmp/body.md
 
