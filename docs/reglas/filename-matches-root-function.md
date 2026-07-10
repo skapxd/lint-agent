@@ -4,7 +4,7 @@
 
 El archivo debe llamarse como la versión kebab de su función raíz exportada: `kebab(exportRaiz) === basename(archivo)`. A4 no se cumple solo con funciones pequeñas: el árbol también debe leerse como un índice. Si ves `get-node-ts.ts`, sabes que el export raíz será `getNodeTS` o una forma equivalente normalizada a kebab; si importas `createUser`, sabes buscar `create-user.ts`.
 
-La regla se apoya en dos premisas ya activas en las bases: `one-root-function-per-file` deja un único candidato semántico y `no-default-export` hace que el nombre público sea el named export. Por eso no intenta resolver módulos arbitrarios ni defaults: busca la función raíz exportada que `one-root-function-per-file` ya considera raíz y compara su nombre público con el stem del archivo.
+La regla se apoya en dos premisas ya activas en las bases: `one-root-unit-per-file` deja una única unidad raíz y, por tanto, una única función candidata; `no-default-export` hace que el nombre público sea el named export. Por eso no intenta resolver módulos arbitrarios ni defaults: busca la función raíz exportada que `one-root-unit-per-file` ya considera unidad y compara su nombre público con el stem del archivo.
 
 La comparación es estricta del lado del archivo: `filenameSinExtension` debe ser kebab. No se normaliza `Card.tsx` a `card`; un componente React vive en `card.tsx` y exporta `Card`. El export sí se normaliza con `to-kebab-case`, que cubre acrónimos sin mantener una lista manual: `getNodeTS` y `getNodeTs` comparan contra `get-node-ts`.
 

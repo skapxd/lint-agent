@@ -35,7 +35,7 @@ export const baseRules = {
   "skapxd/no-runtime-state-guard": "error",
   "skapxd/no-promise-chain": "error",
   "skapxd/no-try-catch": "error",
-  "skapxd/one-root-function-per-file": "error",
+  "skapxd/one-root-unit-per-file": "error",
   "skapxd/prefer-node-protocol-for-builtins": "error",
   "skapxd/prefer-tagged-union-state": "error",
   "skapxd/requires-strict-tsconfig": "error",

@@ -17,7 +17,7 @@ match(state)
   .exhaustive();
 ```
 
-Las salidas: **retorno anticipado** para flujo, **ternario simple** para decisiones de valor (los anidados ya los prohíbe `prefer-ts-pattern`), y **`match().exhaustive()`** para variantes. La única fricción real — dos ramas de efectos en medio de una función — se resuelve extrayendo la función que `one-root-function-per-file` ya pedía. Complementa a `no-nested-if` (profundidad) y a `prefer-tagged-union-state` (este ataca la *declaración* del estado sin nombre; `no-else` ataca su *consumo*).
+Las salidas: **retorno anticipado** para flujo, **ternario simple** para decisiones de valor (los anidados ya los prohíbe `prefer-ts-pattern`), y **`match().exhaustive()`** para variantes. La única fricción real — dos ramas de efectos en medio de una función — se resuelve extrayendo la función que `one-root-unit-per-file` ya pedía. Complementa a `no-nested-if` (profundidad) y a `prefer-tagged-union-state` (este ataca la *declaración* del estado sin nombre; `no-else` ataca su *consumo*).
 
 ---
 

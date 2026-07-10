@@ -68,13 +68,14 @@ Los enlaces apuntan a GitHub de forma absoluta para que funcionen tambien desde 
 | [Pipeline Result](https://github.com/skapxd/lint-agent/blob/main/docs/pipeline-result.md) | Como encajan @skapxd/result, ts-pattern y el trace global. |
 | [Notas type-aware](https://github.com/skapxd/lint-agent/blob/main/docs/notas-type-aware.md) | Supuestos, limites conocidos y notas de reglas que dependen del checker. |
 | [Tarea para un agente de codigo](https://github.com/skapxd/lint-agent/blob/main/docs/plantilla-tarea-agente.md) | Como escribir el markdown autocontenido que implementa un cambio (regla, ajuste o paquete). |
-| [Indice de reglas](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/README.md) | Las 71 fichas individuales en docs/reglas/. |
+| [Indice de reglas](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/README.md) | Las 72 fichas individuales en docs/reglas/. |
 
 ## Reglas
 
 | Regla | Que protege |
 | --- | --- |
 | [`skapxd/one-root-function-per-file`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/one-root-function-per-file.md) | Un archivo, una función top-level semántica. |
+| [`skapxd/one-root-unit-per-file`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/one-root-unit-per-file.md) | Una sola clase o función top-level. **Activa en las reglas base.** |
 | [`skapxd/filename-matches-root-function`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/filename-matches-root-function.md) | El nombre del archivo es la versión kebab de su función raíz exportada. |
 | [`skapxd/dense-function-requires-comment`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/dense-function-requires-comment.md) | Funciones exportadas densas en líneas, literales y ramas declaran su motivación en un comentario de bloque. |
 | [`skapxd/async-functions-return-result`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/async-functions-return-result.md) | Funciones async de dominio deben retornar `Promise<Result<...>>`. **Apagada por defecto; opt-in** (ver motivos en su sección). |
