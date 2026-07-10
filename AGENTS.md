@@ -151,7 +151,7 @@ Run del PR: <url>
 
 ## Convenciones del código (las que no perdonan)
 
-- **Un archivo, una función raíz** (`one-root-function-per-file` está activa sobre este src). Utils en `src/utils/<dominio>/`, una regla por archivo en `src/rules/`, opciones en su getter de `utils/options/`.
+- **Un archivo, una unidad raíz** (`one-root-unit-per-file` está activa sobre este src). Utils en `src/utils/<dominio>/`, una regla por archivo en `src/rules/`, opciones en su getter de `utils/options/`.
 - **Los mensajes de regla enseñan el fix** (estilo playbook) y van **sin tildes**; los comentarios de código y la documentación, en español correcto.
 - **Evidencia sobre convención** (A6 de [los axiomas](docs/axiomas.md)): type-checker > provenance de imports > nombres. A6 es uno de ocho axiomas, pero gobierna el cómo de toda regla: si detectas por nombre, justifica por qué no hay evidencia más fuerte disponible.
 - **El dogfood manda**: este repo se lintea con su propio preset `package`, tipado. La lista de pendientes del `eslint.config.ts` **solo encoge** — si tu cambio necesita agregarle una línea, eso es decisión del dueño con issue propio, no un commit tuyo.

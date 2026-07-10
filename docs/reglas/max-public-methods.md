@@ -1,6 +1,6 @@
 ### `skapxd/max-public-methods`
 
-El `one-root-function-per-file` del mundo de clases: **una clase, una responsabilidad** — máximo `max` métodos públicos (default `1`). Es la regla que convierte un `loans.service.ts` de 1965 líneas en una carpeta de casos de uso (`find-apc-score.service.ts`, `create-signature.service.ts`, ...).
+`one-root-unit-per-file` limita cuántas unidades viven en el archivo; esta regla aplica el mismo contrato dentro de cada clase: **una clase, una responsabilidad** — máximo `max` métodos públicos (default `1`). Es la regla que convierte un `loans.service.ts` de 1965 líneas en una carpeta de casos de uso (`find-apc-score.service.ts`, `create-signature.service.ts`, ...).
 
 Es **agnóstica al framework** y vive en las reglas base: una clase en Nest, Astro, Next o un proyecto Vite responde al mismo contrato. El conocimiento del framework lo inyecta cada preset vía `ignore` — la regla en sí no sabe qué es NestJS.
 

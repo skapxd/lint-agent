@@ -5,8 +5,8 @@ export type RuleDependencyMap = Readonly<Record<string, readonly string[]>>;
 // Clave = regla dependiente; valor = ids de sus premisas duras.
 export const RULE_DEPENDENCIES: RuleDependencyMap = {
   "skapxd/filename-matches-root-function": [
-    // docs/reglas/filename-matches-root-function.md:7: one-root-function-per-file deja un unico candidato semantico.
-    "skapxd/one-root-function-per-file",
+    // docs/reglas/filename-matches-root-function.md:7: one-root-unit-per-file deja una unica unidad raiz y, por tanto, una unica funcion candidata.
+    "skapxd/one-root-unit-per-file",
     // docs/reglas/filename-matches-root-function.md:7: no-default-export hace que el nombre publico sea el named export.
     "skapxd/no-default-export",
   ],

@@ -1,5 +1,8 @@
 import type { TSESTree } from "@typescript-eslint/utils";
-import { getRootUnitEntries } from "#/utils/ast/get-root-unit-entries";
+import {
+  getRootUnitEntries,
+  type RootUnitEntry,
+} from "#/utils/ast/get-root-unit-entries";
 import type { RuleContext, RuleModule } from "#/utils/rule-authoring/rule-types";
 
 export const oneRootUnitPerFile: RuleModule = {
@@ -26,15 +29,26 @@ export const oneRootUnitPerFile: RuleModule = {
             .filter((unit) => unit.node.type === "TSDeclareFunction")
             .map((unit) => unit.name),
         );
-        const units = rootUnits.filter(
-          (unit, index) =>
-            unit.kind === "class" ||
-            !overloadNames.has(unit.name) ||
-            rootUnits.findIndex(
-              (candidate) =>
-                candidate.kind === "function" && candidate.name === unit.name,
-            ) === index,
-        );
+        const isRootUnitRepresentative = (
+          unit: RootUnitEntry,
+          index: number,
+        ) => {
+          const isOverloadMember =
+            unit.kind === "function" && overloadNames.has(unit.name);
+          if (!isOverloadMember) {
+            return true;
+          }
+
+          const firstOverloadIndex = rootUnits.findIndex((candidate) => {
+            const hasSameFunctionName =
+              candidate.kind === "function" && candidate.name === unit.name;
+
+            return hasSameFunctionName;
+          });
+
+          return firstOverloadIndex === index;
+        };
+        const units = rootUnits.filter(isRootUnitRepresentative);
 
         const hasAtMostOneRootUnit = units.length <= 1;
         if (hasAtMostOneRootUnit) {

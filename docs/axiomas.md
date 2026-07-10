@@ -150,7 +150,7 @@ Este paquete mueve esa presión fuera del prompt: la regla se ejecuta después y
 
 Los agentes de IA sufren frecuentemente de **imprecisión de edición** (generación de parches / diffs) cuando trabajan sobre archivos monolíticos: confunden bloques de código similares, pierden la indentación y generan alucinaciones sintácticas.
 
-Al fragmentar el código al extremo mediante reglas como `skapxd/one-root-function-per-file` (manteniendo un promedio de ~20-50 líneas por archivo):
+Al fragmentar el código al extremo mediante reglas como `skapxd/one-root-unit-per-file` (manteniendo un promedio de ~20-50 líneas por archivo):
 1. **Edición trivial e infalible:** La modificación se vuelve sumamente simple. Reescribir o parchar un archivo pequeño tiene un riesgo de error sintáctico cercano a cero y un costo insignificante en tokens.
 2. **Foco en el contexto (Señal/Ruido):** El agente solo carga en su ventana de contexto el archivo específico de interés, eliminando el ruido de cientos de líneas de código irrelevante que podrían desviar la atención del LLM.
 

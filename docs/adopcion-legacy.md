@@ -28,7 +28,7 @@ No necesita husky ni hooks: basta con un script en tu `package.json`.
 - `pnpm lint:changed` → lintea lo que cambiaste en tu árbol de trabajo (modificado, en staging y sin trackear) respecto al último commit.
 - `pnpm lint:ci` (con `--base <rama>`) → lintea lo que tu branch cambió desde que divergió de esa rama. Ideal para CI / pull requests.
 
-Usa tu `eslint.config.*` y tus reglas tal cual; lo único que hace es **acotar el conjunto de archivos**. Si no hay cambios, no hace nada y sale con código `0`; si hay errores, sale con código `1` (apto para CI). Como acota por **archivo completo**, también dispara las reglas estructurales (p. ej. `one-root-function-per-file`), que un filtrado por línea se perdería.
+Usa tu `eslint.config.*` y tus reglas tal cual; lo único que hace es **acotar el conjunto de archivos**. Si no hay cambios, no hace nada y sale con código `0`; si hay errores, sale con código `1` (apto para CI). Como acota por **archivo completo**, también dispara las reglas estructurales (p. ej. `one-root-unit-per-file`), que un filtrado por línea se perdería.
 
 ## Adopción en proyectos legacy: de `off` a `error`, por olas
 
@@ -82,7 +82,7 @@ El orden no es arbitrario: va de "cada hallazgo es un bug que ya tienes" hacia "
 
 - `skapxd/no-nested-if` y `skapxd/no-else` — guard clauses. El refactor más formativo que existe para un junior: aplana la lógica o confiesa que la función hace demasiado.
 - `skapxd/no-anonymous-condition` — la pareja de las anteriores y **la más cara de todo el catálogo** (cientos de hallazgos en un backend típico): cada condición-cómputo recibe un nombre con criterio. Vale la pena ir por carpetas y SIN prisa — es la que más enseña por hallazgo, y la última de esta ola.
-- `skapxd/one-root-function-per-file` y `skapxd/no-default-export` — el árbol de archivos empieza a contar la historia.
+- `skapxd/one-root-unit-per-file` y `skapxd/no-default-export` — el árbol de archivos empieza a contar la historia.
 - `skapxd/no-accessors`, `skapxd/max-public-methods`, `skapxd/max-class-size` — clases con una intención y un presupuesto físico; partir un god-object es la cirugía mayor de esta ola, así que déjala de última.
 - Front: `skapxd/jsx-return-name-pascal-case`, `skapxd/max-hook-size`, `skapxd/no-functions-inside-components`, `skapxd/no-jsx-ternary-null`, `skapxd/no-tunnel-props`, `skapxd/repeated-jsx-requires-component`.
 - Nest: `skapxd/nest-no-swagger-in-controllers`, `skapxd/nest-dto-requires-api-property`, `skapxd/nest-dto-requires-validation`, `skapxd/nest-no-inline-query-params`, `skapxd/nest-no-direct-instantiation` — mover decoradores y dependencias a donde pertenecen.

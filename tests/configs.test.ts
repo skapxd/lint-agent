@@ -169,25 +169,6 @@ describe("contrato de errores: await-requires-result manda", () => {
     }
   });
 
-  it("one-root-unit-per-file queda opt-in durante el spike de #197", () => {
-    const allPresets = [
-      plugin.configs.base,
-      plugin.configs.backend,
-      plugin.configs.frontend,
-      plugin.configs.package,
-      ...plugin.configs.nest,
-      ...plugin.configs.next,
-      ...plugin.configs.astro,
-    ];
-
-    for (const preset of allPresets) {
-      expect(
-        preset.rules?.["skapxd/one-root-unit-per-file"],
-        preset.name,
-      ).toBeUndefined();
-    }
-  });
-
   it("reglas agnósticas nuevas están en las bases de framework", () => {
     const baseConsumers = [
       plugin.configs.base,
@@ -200,6 +181,14 @@ describe("contrato de errores: await-requires-result manda", () => {
     ];
 
     for (const preset of baseConsumers) {
+      expect(
+        preset.rules?.["skapxd/one-root-unit-per-file"],
+        preset.name,
+      ).toBe("error");
+      expect(
+        preset.rules?.["skapxd/one-root-function-per-file"],
+        preset.name,
+      ).toBeUndefined();
       expect(
         preset.rules?.["skapxd/trysafe-only-at-boundary"],
         preset.name,
@@ -223,7 +212,8 @@ describe("preset package", () => {
   it("trae las bases, el set type-driven y el contrato de empaquetado", () => {
     const preset = plugin.configs.package;
 
-    expect(preset.rules["skapxd/one-root-function-per-file"]).toBe("error");
+    expect(preset.rules["skapxd/one-root-unit-per-file"]).toBe("error");
+    expect(preset.rules["skapxd/one-root-function-per-file"]).toBeUndefined();
     // En las bases por decisión del dueño (issue #2): los legacy la apagan
     // en su lista de pendientes.
     expect(preset.rules["skapxd/no-anonymous-condition"]).toBe("error");

@@ -2,6 +2,8 @@
 
 Limita cada archivo a una sola función declarada en la raíz.
 
+Permanece disponible para configuraciones explícitas, pero ya no está activa en los presets: `one-root-unit-per-file` la sustituye en `shared/base-rules` y amplía el contrato a clases sin dejar diagnósticos duplicados.
+
 Cuando detecta varias funciones, sugiere una estructura con formato tipo `tree`. Por ejemplo:
 
 ```ts

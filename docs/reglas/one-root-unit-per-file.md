@@ -1,6 +1,6 @@
 ### `skapxd/one-root-unit-per-file`
 
-Limita cada archivo a una sola unidad de comportamiento declarada en la raíz: una clase o una función. Está registrada como **opt-in** mientras el issue #197 mide el impacto de sustituir `one-root-function-per-file` en los presets.
+Limita cada archivo a una sola unidad de comportamiento declarada en la raíz: una clase o una función. Está activa como `error` en `shared/base-rules` y todos los presets la heredan; sustituye allí a `one-root-function-per-file` para no duplicar diagnósticos.
 
 Reporta una sola vez sobre la segunda unidad y evita duplicar diagnósticos entre firmas overload y su implementación:
 
@@ -20,7 +20,7 @@ export class SignalParser {
 
 También acepta una única función, una única clase, un conjunto de overloads del mismo nombre y datos declarativos junto a la unidad. Ignora tipos, interfaces, enums, namespaces, callbacks, funciones anidadas, métodos y object bags.
 
-No tiene opciones ni autofix. No se activa junto a `one-root-function-per-file`: la decisión de sustitución, deprecación y SemVer depende de la medición de #197.
+No tiene opciones ni autofix. `one-root-function-per-file` permanece exportada para configuraciones explícitas, pero no se activa junto a esta regla en ningún preset.
 
 ---
 
