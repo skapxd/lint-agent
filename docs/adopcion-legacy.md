@@ -83,7 +83,7 @@ El orden no es arbitrario: va de "cada hallazgo es un bug que ya tienes" hacia "
 - `skapxd/no-nested-if` y `skapxd/no-else` — guard clauses. El refactor más formativo que existe para un junior: aplana la lógica o confiesa que la función hace demasiado.
 - `skapxd/no-anonymous-condition` — la pareja de las anteriores y **la más cara de todo el catálogo** (cientos de hallazgos en un backend típico): cada condición-cómputo recibe un nombre con criterio. Vale la pena ir por carpetas y SIN prisa — es la que más enseña por hallazgo, y la última de esta ola.
 - `skapxd/one-root-function-per-file` y `skapxd/no-default-export` — el árbol de archivos empieza a contar la historia.
-- `skapxd/no-accessors`, `skapxd/max-public-methods` — clases con una intención (partir un god-object es la cirugía mayor de esta ola: déjala de última).
+- `skapxd/no-accessors`, `skapxd/max-public-methods`, `skapxd/max-class-size` — clases con una intención y un presupuesto físico; partir un god-object es la cirugía mayor de esta ola, así que déjala de última.
 - Front: `skapxd/jsx-return-name-pascal-case`, `skapxd/max-hook-size`, `skapxd/no-functions-inside-components`, `skapxd/no-jsx-ternary-null`, `skapxd/no-tunnel-props`, `skapxd/repeated-jsx-requires-component`.
 - Nest: `skapxd/nest-no-swagger-in-controllers`, `skapxd/nest-dto-requires-api-property`, `skapxd/nest-dto-requires-validation`, `skapxd/nest-no-inline-query-params`, `skapxd/nest-no-direct-instantiation` — mover decoradores y dependencias a donde pertenecen.
 
@@ -150,6 +150,7 @@ Referencia rápida de qué se puede configurar (detalle y defaults en la secció
 | `async-functions-return-result` | `allowFilePatterns` (globs), `allowNamePatterns` (regex), `checkMissingReturnType`, `checkMissingReturnTypeWhenCallNames`, `requireCallNames`, `promiseTypeNames`, `resultTypeNames` |
 | `await-requires-result` | `allowFilePatterns` (globs), `trySafeCallNames`, `useCaseDecoratorNames`, `useCaseDecoratorSource` |
 | `filename-matches-root-function` | `allowFilePatterns` (globs) |
+| `max-class-size` | `maxLines` (default `150`) |
 | `max-hook-size` | `maxLines`, `maxUseState` |
 | `class-properties-require-readonly` | `allowFilePatterns` (globs), `allowPropertyPatterns` (regex), `ormModuleSources` (default `["@nestjs/mongoose", "typeorm"]`) |
 | `max-public-methods` | `allowFilePatterns` (globs), `max` (default `1`), `ignore` (aditivo a los hooks de Nest) |

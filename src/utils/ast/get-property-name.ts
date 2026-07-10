@@ -5,6 +5,11 @@ export function getPropertyName(node: TSESTree.Node) {
     return node.name;
   }
 
+  const isPrivateIdentifierNode = node.type === "PrivateIdentifier";
+  if (isPrivateIdentifierNode) {
+    return `#${node.name}`;
+  }
+
   const isLiteralNode = node.type === "Literal";
   if (isLiteralNode) {
     return String(node.value);

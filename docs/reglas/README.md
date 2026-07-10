@@ -22,6 +22,7 @@ Cada ficha de regla mantiene un par minimo de ejemplos marcados: `❌` para el c
 | [`skapxd/no-rethrow-result-error`](./no-rethrow-result-error.md) | Prohíbe re-lanzar el error crudo de un `Result`: el flujo no vuelve de `trySafe` a excepción cruda. |
 | [`skapxd/trysafe-only-at-boundary`](./trysafe-only-at-boundary.md) | Exige que `trySafe` capture en la frontera runtime/paquete, no una capa arriba sobre código del proyecto. **En las bases** (agnóstica de framework); detección conservadora para acotar falsos positivos. |
 | [`skapxd/no-ad-hoc-ok-result`](./no-ad-hoc-ok-result.md) | Evita contratos `{ ok: ... }` hechos a mano en async exports. |
+| [`skapxd/max-class-size`](./max-class-size.md) | Limita cada clase a 150 líneas y señala datos declarativos extraíbles solo cuando explican todo el exceso. |
 | [`skapxd/max-hook-size`](./max-hook-size.md) | Marca hooks grandes o con demasiados `useState`. |
 | [`skapxd/class-properties-require-readonly`](./class-properties-require-readonly.md) | Toda propiedad de clase es `readonly`: el cambio se modela con instancias nuevas, no con mutación. |
 | [`skapxd/max-public-methods`](./max-public-methods.md) | Una clase, una responsabilidad: máximo N métodos públicos (default 1). Agnóstica al framework, en las reglas base; el preset `nest` le inyecta sus hooks. |

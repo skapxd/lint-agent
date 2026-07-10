@@ -198,6 +198,12 @@ describe("coverage budget utility branches", () => {
     expect(getPropertyName(stringLiteral("status"))).toBe("status");
     expect(
       getPropertyName({
+        name: "secret",
+        type: AST_NODE_TYPES.PrivateIdentifier,
+      } as TSESTree.PrivateIdentifier),
+    ).toBe("#secret");
+    expect(
+      getPropertyName({
         type: AST_NODE_TYPES.ThisExpression,
       } as TSESTree.ThisExpression),
     ).toBe("anonymous");

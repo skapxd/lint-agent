@@ -193,6 +193,9 @@ describe("contrato de errores: await-requires-result manda", () => {
         preset.rules?.["skapxd/no-local-function-bag"],
         preset.name,
       ).toBe("error");
+      expect(preset.rules?.["skapxd/max-class-size"], preset.name).toBe(
+        "error",
+      );
     }
   });
 });
