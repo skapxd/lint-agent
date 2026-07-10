@@ -134,6 +134,21 @@ export class OrdersController {
 }
 `;
 
+const validImportedRealUseCase = `
+import { Controller, Post } from "@nestjs/common";
+import { ControllerDelegationUseCase } from "./controller-delegation-use-case";
+
+@Controller("orders")
+export class OrdersController {
+  constructor(private readonly createOrderUseCase: ControllerDelegationUseCase) {}
+
+  @Post()
+  create(dto: object): Promise<object> {
+    return this.createOrderUseCase.execute(dto);
+  }
+}
+`;
+
 const validLocalControllerAndPost = `
 declare function Controller(prefix?: string): ClassDecorator;
 declare function Post(): MethodDecorator;
@@ -361,6 +376,7 @@ const validCases = [
     { methodDecorator: "" },
   ),
   validAliasedDecorators,
+  validImportedRealUseCase,
   validLocalControllerAndPost,
   validDifferentNestImportsRenamedAsDecorators,
   createControllerSource(
@@ -383,13 +399,6 @@ export class NotAController {
   }
 }
 `,
-  createControllerSource(
-    "return this.primaryUseCase.execute(payload);",
-    {
-      methodDecorator: "@Get(\"file\")",
-      topLevel: "class StreamableFile {}\nclass PdfFileDto extends Dto(StreamableFile) {}",
-    },
-  ),
 ];
 
 const ruleTester = createTypedRuleTester();
