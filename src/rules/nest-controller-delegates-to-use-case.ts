@@ -352,7 +352,7 @@ export const nestControllerDelegatesToUseCase: RuleModule = {
           (ackExpression?.type === "CallExpression" ||
             ackExpression?.type === "NewExpression"),
         );
-        const hasAdditionalCall = bodyNodes.some((bodyNode) => {
+        function isAdditionalCall(bodyNode: TSESTree.Node) {
           const isCallOrConstruction = bodyNode.type === "CallExpression" ||
             bodyNode.type === "NewExpression";
           const isAllowedUseCaseCall = isCallOrConstruction &&
@@ -364,7 +364,8 @@ export const nestControllerDelegatesToUseCase: RuleModule = {
           }
 
           return !canExcludeAckRoot || bodyNode !== ackExpression;
-        });
+        }
+        const hasAdditionalCall = bodyNodes.some(isAdditionalCall);
         if (hasAdditionalCall) {
           context.report({
             data: { methodName },

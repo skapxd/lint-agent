@@ -27,7 +27,8 @@ export function runEphemeralEvaluation(
 ): Result<SkapxdLintOutput, CliExecutionError> {
   let configPath = "";
   const cleanupPaths: string[] = [];
-  const evaluationOutput = trySafe(() => {
+
+  function evaluate() {
     const targetPath = realpathSync(path.resolve(rawTargetPath));
     const projectRoot = getProjectRoot(targetPath);
     const lintTargetPattern = createLintTargetPattern(targetPath, projectRoot);
@@ -74,7 +75,9 @@ export function runEphemeralEvaluation(
       ...output,
       configDeleted: true,
     } satisfies SkapxdLintOutput;
-  });
+  }
+
+  const evaluationOutput = trySafe(evaluate);
   const hasConfigPath = configPath.length > 0;
 
   if (hasConfigPath) {

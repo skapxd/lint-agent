@@ -1,5 +1,15 @@
 import type { TSESTree } from "@typescript-eslint/utils";
 
+/**
+ * Decide si un valor de transporte puede cruzar directamente del controller al caso de uso sin esconder trabajo de dominio ni transformaciones.
+ *
+ * ### Contrato
+ * ```ts
+ * req.user.id              // true
+ * { id: req.user.id }      // true
+ * await mapRequest(req)    // false
+ * ```
+ */
 export function isTrivialControllerTransportValue(
   expression: TSESTree.Node,
 ): boolean {
@@ -22,26 +32,34 @@ export function isTrivialControllerTransportValue(
 
   const isArrayValue = expression.type === "ArrayExpression";
   if (isArrayValue) {
-    return expression.elements.every(
-      (element) =>
+    let hasOnlyTrivialElements = true;
+    for (const element of expression.elements) {
+      const isTrivialElement =
         element !== null &&
         element.type !== "SpreadElement" &&
-        isTrivialControllerTransportValue(element),
-    );
+        isTrivialControllerTransportValue(element);
+      hasOnlyTrivialElements &&= isTrivialElement;
+    }
+
+    return hasOnlyTrivialElements;
   }
 
   const isObjectValue = expression.type === "ObjectExpression";
   if (isObjectValue) {
-    return expression.properties.every((property) => {
+    let hasOnlyTrivialProperties = true;
+    for (const property of expression.properties) {
       const isStaticDataProperty = property.type === "Property" &&
         property.kind === "init" &&
         !property.computed &&
         !property.method &&
         property.value.type !== "AssignmentPattern";
 
-      return isStaticDataProperty &&
+      const isTrivialProperty = isStaticDataProperty &&
         isTrivialControllerTransportValue(property.value);
-    });
+      hasOnlyTrivialProperties &&= isTrivialProperty;
+    }
+
+    return hasOnlyTrivialProperties;
   }
 
   return false;

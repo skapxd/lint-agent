@@ -38,7 +38,11 @@ export function formatCompactAdoptionRuleSummaries({
   }
 
   const premiseRuleIds = new Set(rules.flatMap((rule) => rule.blockedBy ?? []));
-  const formattedRules = rules.map((rule, index) => {
+
+  function formatRule(
+    rule: AdoptionRuleSummary | RulePlanEntry,
+    index: number,
+  ) {
     const humanPosition = index + firstHumanPosition;
     const blockers = rule.blockedBy ?? [];
     const blockerRuleIds = blockers.map((blockedRuleId) => {
@@ -72,7 +76,9 @@ export function formatCompactAdoptionRuleSummaries({
       rule.affectedFileCount === singularFileCount ? "file" : "files";
 
     return `  ${humanPosition}. ${rule.ruleId}: ${rule.violationCount} ${countLabel}, ${rule.affectedFileCount} ${fileLabel}${premiseAnnotation}${blockerAnnotation}${independentAnnotation}`;
-  });
+  }
+
+  const formattedRules = rules.map(formatRule);
 
   return [header, ...formattedRules];
 }

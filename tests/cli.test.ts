@@ -1232,7 +1232,7 @@ describe("skapxd-lint", () => {
     );
   });
 
-  it("no reporta configs, tests, fixtures ni parse errors del propio repo", () => {
+  function verifiesOwnRepoExclusions() {
     const { json } = runCli([
       PROJECT_ROOT,
       "--preset",
@@ -1254,7 +1254,12 @@ describe("skapxd-lint", () => {
       ),
     ).toBe(false);
     expect(messages).not.toContain("was not found by the project service");
-  });
+  }
+
+  it(
+    "no reporta configs, tests, fixtures ni parse errors del propio repo",
+    verifiesOwnRepoExclusions,
+  );
 
   it("evalua con config efimero y no deja archivos temporales", () => {
     const projectRoot = createTempProject("skapxd-cli-ephemeral-");
@@ -1281,7 +1286,7 @@ describe("skapxd-lint", () => {
     expect(afterFiles.some((file) => file.startsWith(".tmp-skapxd-tsconfig-"))).toBe(false);
   });
 
-  it("endurece el tsconfig clonado y evita falsos positivos de no-impossible-branch por acceso indexado", () => {
+  function verifiesHardenedTsconfig() {
     const projectRoot = createTempProject("skapxd-cli-type-config-indexed-");
     writeLooseIndexedAccessAstroFixture(projectRoot);
 
@@ -1318,7 +1323,12 @@ describe("skapxd-lint", () => {
       source: "project",
     });
     expect(projectMessages).toContain("skapxd/no-impossible-branch");
-  });
+  }
+
+  it(
+    "endurece el tsconfig clonado y evita falsos positivos de no-impossible-branch por acceso indexado",
+    verifiesHardenedTsconfig,
+  );
 
   it("genera tsconfig base cuando el proyecto no tiene uno y limpia el temporal", () => {
     const projectRoot = createTempProject("skapxd-cli-type-config-generated-");

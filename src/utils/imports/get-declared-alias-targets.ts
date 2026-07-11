@@ -39,29 +39,33 @@ export function getDeclaredAliasTargets(
     return [];
   }
 
-  return id.properties.flatMap((property): AliasTarget[] => {
+  const targets: AliasTarget[] = [];
+  for (const property of id.properties) {
     const isRestElement = property.type === "RestElement";
     if (isRestElement) {
       const argument = property.argument;
       const hasIdentifierArgument = argument.type === "Identifier";
-
-      return hasIdentifierArgument
+      const restTargets: AliasTarget[] = hasIdentifierArgument
         ? [{ name: argument.name, represents: "result" }]
         : [];
+      targets.push(...restTargets);
+      continue;
     }
 
     const isErrorProperty = isPropertyKeyNamed(property, "error");
     if (!isErrorProperty) {
-      return [];
+      continue;
     }
 
     const propertyValue = property.value;
     const isIdentifierErrorBinding =
       isAstNode(propertyValue) && propertyValue.type === "Identifier";
     if (!isIdentifierErrorBinding) {
-      return [];
+      continue;
     }
 
-    return [{ name: propertyValue.name, represents: "error" }];
-  });
+    targets.push({ name: propertyValue.name, represents: "error" });
+  }
+
+  return targets;
 }

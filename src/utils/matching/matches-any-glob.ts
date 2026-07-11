@@ -8,10 +8,12 @@ import picomatch from "picomatch";
 export function matchesAnyGlob(filePath: string, globs: readonly string[]) {
   const normalized = filePath.replaceAll("\\", "/");
 
-  return globs.some((glob) => {
+  function matchesGlob(glob: string) {
     const anchored =
       glob.startsWith("/") || glob.startsWith("**") ? glob : `**/${glob}`;
 
     return picomatch(anchored)(normalized);
-  });
+  }
+
+  return globs.some(matchesGlob);
 }

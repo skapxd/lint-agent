@@ -49,7 +49,7 @@ export function isJsonCompatibleExpression(node: TSESTree.Node): boolean {
     return false;
   }
 
-  return node.properties.every((property) => {
+  for (const property of node.properties) {
     const isUnsupportedProperty =
       property.type !== "Property" ||
       property.kind !== "init" ||
@@ -64,6 +64,12 @@ export function isJsonCompatibleExpression(node: TSESTree.Node): boolean {
         (typeof property.key.value === "string" ||
           typeof property.key.value === "number"));
 
-    return hasStaticKey && isJsonCompatibleExpression(property.value);
-  });
+    const hasCompatibleValue = isJsonCompatibleExpression(property.value);
+    const lacksCompatibleStaticProperty = !hasStaticKey || !hasCompatibleValue;
+    if (lacksCompatibleStaticProperty) {
+      return false;
+    }
+  }
+
+  return true;
 }

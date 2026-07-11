@@ -5,11 +5,13 @@ export function hasClassDecoratorNamed(
   classNode: TSESTree.ClassDeclaration | TSESTree.ClassExpression,
   names: readonly string[],
 ) {
-  return classNode.decorators.some((decorator) => {
+  function hasConfiguredName(decorator: TSESTree.Decorator) {
     const expression = decorator.expression;
     const callee =
       expression.type === "CallExpression" ? expression.callee : expression;
 
     return callee.type === "Identifier" && names.includes(callee.name);
-  });
+  }
+
+  return classNode.decorators.some(hasConfiguredName);
 }

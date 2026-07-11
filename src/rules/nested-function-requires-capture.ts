@@ -7,6 +7,7 @@ import type {
   RuleContext,
   RuleModule,
   RuleScope,
+  RuleScopeReference,
 } from "#/utils/rule-authoring/rule-types";
 import { isReferenceToDeclaration } from "#/utils/rule-authoring/is-reference-to-declaration";
 
@@ -46,7 +47,7 @@ export const nestedFunctionRequiresCapture: RuleModule = {
       const ancestorLocalScopes = getAncestorLocalScopes(functionScope);
       const escapingReferences = functionScope.through ?? [];
 
-      return escapingReferences.some((reference) => {
+      function capturesAncestorScope(reference: RuleScopeReference) {
         const isOwnRecursiveReference = isReferenceToDeclaration(
           reference,
           subject.declarationNode,
@@ -62,7 +63,9 @@ export const nestedFunctionRequiresCapture: RuleModule = {
         }
 
         return ancestorLocalScopes.has(resolvedScope);
-      });
+      }
+
+      return escapingReferences.some(capturesAncestorScope);
     }
 
     function reportIfMissingCapture(subject: NestedFunctionSubject) {

@@ -7,14 +7,19 @@ export function getObjectKeysSetToTrue(
   objectExpression: TSESTree.ObjectExpression,
   keys: readonly string[],
 ) {
-  return keys.filter((key: string) =>
-    objectExpression.properties.some(
-      (property) =>
+  function isKeySetToTrue(key: string) {
+    function isMatchingTrueProperty(property: TSESTree.ObjectLiteralElement) {
+      return (
         property.type === "Property" &&
         isPropertyKeyNamed(property, key) &&
         isAstNode(property.value) &&
         property.value.type === "Literal" &&
-        property.value.value === true,
-    ),
-  );
+        property.value.value === true
+      );
+    }
+
+    return objectExpression.properties.some(isMatchingTrueProperty);
+  }
+
+  return keys.filter(isKeySetToTrue);
 }

@@ -2,16 +2,28 @@ import type { TSESTree } from "@typescript-eslint/utils";
 import { isAstNode } from "./is-ast-node";
 
 export function getNodeChildren(node: TSESTree.Node): TSESTree.Node[] {
-  return Object.entries(node).flatMap(([key, value]: [string, unknown]) => {
-    const includesParentLocRangeTokensComments = ["parent", "loc", "range", "tokens", "comments"].includes(key);
+  const children: TSESTree.Node[] = [];
+  for (const [key, value] of Object.entries(node)) {
+    const includesParentLocRangeTokensComments = [
+      "parent",
+      "loc",
+      "range",
+      "tokens",
+      "comments",
+    ].includes(key);
     if (includesParentLocRangeTokensComments) {
-      return [];
+      continue;
     }
 
     if (Array.isArray(value)) {
-      return value.filter(isAstNode);
+      children.push(...value.filter(isAstNode));
+      continue;
     }
 
-    return isAstNode(value) ? [value] : [];
-  });
+    if (isAstNode(value)) {
+      children.push(value);
+    }
+  }
+
+  return children;
 }

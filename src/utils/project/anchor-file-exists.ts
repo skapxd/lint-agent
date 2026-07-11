@@ -9,7 +9,7 @@ export function anchorFileExists(
   rootDir: string,
   anchorFilePatterns: readonly string[],
 ) {
-  return anchorFilePatterns.some((pattern: string) => {
+  function anchorExists(pattern: string) {
     const literal = pattern.replace(/^\*\*\//, "");
 
     const isGlobPattern = literal.includes("*") || literal.includes("{");
@@ -18,5 +18,7 @@ export function anchorFileExists(
     }
 
     return existsSync(join(rootDir, literal));
-  });
+  }
+
+  return anchorFilePatterns.some(anchorExists);
 }

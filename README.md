@@ -68,7 +68,7 @@ Los enlaces apuntan a GitHub de forma absoluta para que funcionen tambien desde 
 | [Pipeline Result](https://github.com/skapxd/lint-agent/blob/main/docs/pipeline-result.md) | Como encajan @skapxd/result, ts-pattern y el trace global. |
 | [Notas type-aware](https://github.com/skapxd/lint-agent/blob/main/docs/notas-type-aware.md) | Supuestos, limites conocidos y notas de reglas que dependen del checker. |
 | [Tarea para un agente de codigo](https://github.com/skapxd/lint-agent/blob/main/docs/plantilla-tarea-agente.md) | Como escribir el markdown autocontenido que implementa un cambio (regla, ajuste o paquete). |
-| [Indice de reglas](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/README.md) | Las 72 fichas individuales en docs/reglas/. |
+| [Indice de reglas](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/README.md) | Las 73 fichas individuales en docs/reglas/. |
 
 ## Reglas
 
@@ -78,6 +78,7 @@ Los enlaces apuntan a GitHub de forma absoluta para que funcionen tambien desde 
 | [`skapxd/one-root-unit-per-file`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/one-root-unit-per-file.md) | Una sola clase o función top-level. **Activa en las reglas base.** |
 | [`skapxd/filename-matches-root-function`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/filename-matches-root-function.md) | El nombre del archivo es la versión kebab de su función raíz exportada. |
 | [`skapxd/dense-function-requires-comment`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/dense-function-requires-comment.md) | Funciones exportadas densas en líneas, literales y ramas declaran su motivación en un comentario de bloque. |
+| [`skapxd/complex-inline-callback-requires-name`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/complex-inline-callback-requires-name.md) | Callbacks inline con dos o más decisiones propias se extraen a una función con nombre semántico. **Activa en las reglas base.** |
 | [`skapxd/async-functions-return-result`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/async-functions-return-result.md) | Funciones async de dominio deben retornar `Promise<Result<...>>`. **Apagada por defecto; opt-in** (ver motivos en su sección). |
 | [`skapxd/requires-strict-tsconfig`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/requires-strict-tsconfig.md) | El `tsconfig` debe ser implacable (`strict`, `noImplicitReturns`, `noUncheckedIndexedAccess`): sin ellos, el compilador no puede hacer irrepresentable lo inválido. |
 | [`skapxd/result-error-requires-cause`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/result-error-requires-cause.md) | Un `Result.err` derivado debe preservar `cause: result.error`. |

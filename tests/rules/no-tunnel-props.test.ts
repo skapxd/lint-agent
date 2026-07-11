@@ -2,7 +2,7 @@ import { expect, it } from "vitest";
 import { rules } from "../../src/shared/rules";
 import { createRuleTester } from "../rule-tester";
 
-it("forwardedProp y spreadTunnel dan el criterio store/hook-vs-children", () => {
+function verifiesTunnelMessages() {
   const messages = rules["no-tunnel-props"]!.meta.messages ?? {};
 
   for (const messageId of ["forwardedProp", "spreadTunnel"] as const) {
@@ -12,7 +12,12 @@ it("forwardedProp y spreadTunnel dan el criterio store/hook-vs-children", () => 
     expect(message).toContain("custom hook");
     expect(message).toContain("children");
   }
-});
+}
+
+it(
+  "forwardedProp y spreadTunnel dan el criterio store/hook-vs-children",
+  verifiesTunnelMessages,
+);
 
 createRuleTester().run("no-tunnel-props", rules["no-tunnel-props"]!, {
   invalid: [

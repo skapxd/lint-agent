@@ -102,13 +102,15 @@ export function getClassNameSignature(
 
     const isObjectExpression = node.type === "ObjectExpression";
     if (isObjectExpression) {
-      const propertySignatures = node.properties.map((property) => {
+      function readProperty(
+        property: TSESTree.ObjectLiteralElement,
+      ): ExpressionSignature {
         const isProperty = property.type === "Property";
         if (!isProperty) {
           return {
             classes: [],
             shape: "spread:dynamic",
-          } satisfies ExpressionSignature;
+          };
         }
 
         const keyValue = readStaticObjectKey(property.key);
@@ -117,8 +119,9 @@ export function getClassNameSignature(
         return {
           classes: [...new Set([...keyClasses, ...valueSignature.classes])].sort(),
           shape: `property(${keyClasses.join(" ")}:${valueSignature.shape})`,
-        } satisfies ExpressionSignature;
-      });
+        };
+      }
+      const propertySignatures = node.properties.map(readProperty);
       return {
         classes: mergeClassSignatureClasses(propertySignatures),
         shape: `object(${propertySignatures

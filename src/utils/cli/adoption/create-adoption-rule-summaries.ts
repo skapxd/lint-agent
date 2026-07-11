@@ -1,4 +1,5 @@
 import { getLintMessageRuleId } from "./get-lint-message-rule-id";
+import { compareAdoptionRuleSummaries } from "./compare-adoption-rule-summaries";
 import { getRuleLayer } from "./get-rule-layer";
 import { RULE_DEPENDENCIES } from "./rule-dependencies";
 import type { AdoptionRuleSummary, LintFileResult } from "#/utils/cli/types";
@@ -32,32 +33,25 @@ export function createAdoptionRuleSummaries(files: LintFileResult[]) {
 
   const ruleIdsWithFindings = new Set(summariesByRule.keys());
 
+  function createSummary([
+    ruleId,
+    summary,
+  ]: [string, RuleAccumulator]): AdoptionRuleSummary {
+    const dependencies = RULE_DEPENDENCIES[ruleId] ?? [];
+    const blockedBy = dependencies.filter((dependency) =>
+      ruleIdsWithFindings.has(dependency),
+    );
+
+    return {
+      affectedFileCount: summary.filePaths.size,
+      dependencyLayer: getRuleLayer(ruleId),
+      ...(blockedBy.length > 0 ? { blockedBy } : {}),
+      ruleId,
+      violationCount: summary.violationCount,
+    };
+  }
+
   return [...summariesByRule.entries()]
-    .map(([ruleId, summary]) => {
-      const dependencies = RULE_DEPENDENCIES[ruleId] ?? [];
-      const blockedBy = dependencies.filter((dependency) =>
-        ruleIdsWithFindings.has(dependency),
-      );
-
-      return {
-        affectedFileCount: summary.filePaths.size,
-        dependencyLayer: getRuleLayer(ruleId),
-        ...(blockedBy.length > 0 ? { blockedBy } : {}),
-        ruleId,
-        violationCount: summary.violationCount,
-      };
-    })
-    .sort((left, right) => {
-      const layerDelta = left.dependencyLayer - right.dependencyLayer;
-      const affectedFileDelta =
-        left.affectedFileCount - right.affectedFileCount;
-      const violationDelta = left.violationCount - right.violationCount;
-
-      return (
-        layerDelta ||
-        affectedFileDelta ||
-        violationDelta ||
-        left.ruleId.localeCompare(right.ruleId)
-      );
-    }) satisfies AdoptionRuleSummary[];
+    .map(createSummary)
+    .sort(compareAdoptionRuleSummaries) satisfies AdoptionRuleSummary[];
 }

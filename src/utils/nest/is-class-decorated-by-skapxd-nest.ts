@@ -14,7 +14,7 @@ export function isClassDecoratedBySkapxdNest(
     ? (tslib.getDecorators(classDeclaration) ?? [])
     : [];
 
-  return decorators.some((decorator: ts.Decorator) => {
+  function hasConfiguredDecorator(decorator: ts.Decorator) {
     const expression = decorator.expression;
     const callee = tslib.isCallExpression(expression)
       ? expression.expression
@@ -37,5 +37,7 @@ export function isClassDecoratedBySkapxdNest(
     }
 
     return isSymbolFromSkapxdNest(symbol, typeContext, source);
-  });
+  }
+
+  return decorators.some(hasConfiguredDecorator);
 }

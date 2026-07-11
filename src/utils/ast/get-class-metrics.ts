@@ -17,25 +17,24 @@ export function getClassMetrics(
     (member) => member.type === "MethodDefinition" && member.kind === "method",
   );
   const publicMethodCount = node.body.body.filter(isPublicClassMethod).length;
-  const propertyCount = node.body.body.reduce((count, member) => {
+  let propertyCount = 0;
+  for (const member of node.body.body) {
     const isPropertyDefinition = member.type === "PropertyDefinition";
     if (isPropertyDefinition) {
-      return count + 1;
+      propertyCount += 1;
+      continue;
     }
 
     const isConstructor =
       member.type === "MethodDefinition" && member.kind === "constructor";
     if (!isConstructor) {
-      return count;
+      continue;
     }
 
-    return (
-      count +
-      member.value.params.filter(
-        (parameter) => parameter.type === "TSParameterProperty",
-      ).length
-    );
-  }, 0);
+    propertyCount += member.value.params.filter(
+      (parameter) => parameter.type === "TSParameterProperty",
+    ).length;
+  }
 
   return {
     internalMethodCount: methods.length - publicMethodCount,

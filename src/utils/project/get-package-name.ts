@@ -25,7 +25,7 @@ export function getPackageName(fileName: string): string | null {
 
     const existsSyncFs = fs.existsSync(packageJsonPath);
     if (existsSyncFs) {
-      const parsed = trySafe<string | null>(() => {
+      function readPackageName() {
         const packageJson: unknown = JSON.parse(
           fs.readFileSync(packageJsonPath, "utf8"),
         );
@@ -38,7 +38,9 @@ export function getPackageName(fileName: string): string | null {
         const packageName = "name" in packageJson ? packageJson.name : undefined;
 
         return typeof packageName === "string" ? packageName : null;
-      });
+      }
+
+      const parsed = trySafe<string | null>(readPackageName);
       const name = parsed.ok ? parsed.value ?? null : null;
       for (const visitedDir of visited) packageNameByDir.set(visitedDir, name);
       return name;

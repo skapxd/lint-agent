@@ -21,7 +21,7 @@ export function createRulePlan(ruleSummaries: readonly AdoptionRuleSummary[]) {
     }
   }
 
-  return planRules.map((rule) => {
+  function createPlanEntry(rule: AdoptionRuleSummary) {
     const blockedBy = rule.blockedBy ?? [];
     const unblocks = unblocksByRuleId.get(rule.ruleId) ?? [];
     const hasBlockers = blockedBy.length > 0;
@@ -42,5 +42,7 @@ export function createRulePlan(ruleSummaries: readonly AdoptionRuleSummary[]) {
       resolutionRole,
       ...(unblocks.length > 0 ? { unblocks } : {}),
     } satisfies RulePlanEntry;
-  });
+  }
+
+  return planRules.map(createPlanEntry);
 }
