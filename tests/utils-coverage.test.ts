@@ -75,12 +75,18 @@ function parseFirstJsxAttribute(code: string, attributeName: string) {
     throw new Error("Fixture return value must be a JSX element");
   }
 
-  const attribute = jsxElement.openingElement.attributes.find(
-    (candidate): candidate is TSESTree.JSXAttribute =>
+  function isMatchingAttribute(
+    candidate: TSESTree.JSXAttribute | TSESTree.JSXSpreadAttribute,
+  ): candidate is TSESTree.JSXAttribute {
+    return (
       candidate.type === "JSXAttribute" &&
       candidate.name.type === "JSXIdentifier" &&
-      candidate.name.name === attributeName,
-  );
+      candidate.name.name === attributeName
+    );
+  }
+
+  const attribute =
+    jsxElement.openingElement.attributes.find(isMatchingAttribute);
   if (!attribute) {
     throw new Error(`Missing JSX attribute ${attributeName}`);
   }

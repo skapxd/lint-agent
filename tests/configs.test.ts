@@ -79,7 +79,7 @@ describe("configs.frontend", () => {
 });
 
 describe("reglas React en presets de UI", () => {
-  it("frontend, next y astro consumen el mismo reactRules, incluyendo repeated-jsx", () => {
+  function verifiesSharedReactRules() {
     const uiPresets = [
       plugin.configs.frontend,
       findConfigByName(plugin.configs.next, "skapxd/next/react"),
@@ -98,9 +98,14 @@ describe("reglas React en presets de UI", () => {
         preset.name,
       ).toBe("error");
     }
-  });
+  }
 
-  it("no reintroduce literales React inline en los presets", () => {
+  it(
+    "frontend, next y astro consumen el mismo reactRules, incluyendo repeated-jsx",
+    verifiesSharedReactRules,
+  );
+
+  function verifiesNoInlineReactRules() {
     const presetSources = [
       readFileSync(
         new URL("../src/shared/configs/create-shared-configs.ts", import.meta.url),
@@ -121,7 +126,12 @@ describe("reglas React en presets de UI", () => {
         expect(source, ruleName).not.toContain(`"${ruleName}"`);
       }
     }
-  });
+  }
+
+  it(
+    "no reintroduce literales React inline en los presets",
+    verifiesNoInlineReactRules,
+  );
 });
 
 describe("alias await-requires-try-safe eliminado en v1.0.0", () => {
@@ -270,7 +280,7 @@ describe("no-default-export en el preset next", () => {
 });
 
 describe("severidades", () => {
-  it("ningún preset usa warn: error, u off por scoping deliberado", () => {
+  function verifiesPresetSeverities() {
     const presets = [
       plugin.configs.base,
       plugin.configs.backend,
@@ -288,7 +298,12 @@ describe("severidades", () => {
         expect(severity, `${preset.name} → ${rule}`).not.toBe("warn");
       }
     }
-  });
+  }
+
+  it(
+    "ningún preset usa warn: error, u off por scoping deliberado",
+    verifiesPresetSeverities,
+  );
 });
 
 describe("preset nest", () => {
@@ -388,7 +403,7 @@ const ownTypeDrivenRules = ["prefer-schema-validation"];
 const wrapperWithLocalOptions = ["no-unverified-cast"];
 
 describe("reglas type-driven (wrappers de typescript-eslint) en presets tipados", () => {
-  it("activa el set curado completo en backend, frontend, package, nest/base y astro/typescript", () => {
+  function verifiesTypedRules() {
     const typedPresets = [
       plugin.configs.backend,
       plugin.configs.frontend,
@@ -425,7 +440,12 @@ describe("reglas type-driven (wrappers de typescript-eslint) en presets tipados"
       // puede registrar su propia instancia de tseslint sin chocar.
       expect(preset.plugins["@typescript-eslint"], preset.name).toBeUndefined();
     }
-  });
+  }
+
+  it(
+    "activa el set curado completo en backend, frontend, package, nest/base y astro/typescript",
+    verifiesTypedRules,
+  );
 
   it("astro/typescript consume exactamente typeDrivenRules sin duplicar reglas base de Result", () => {
     const astroTypescript = findConfigByName(
@@ -492,7 +512,7 @@ describe("reglas type-driven (wrappers de typescript-eslint) en presets tipados"
     }
   });
 
-  it("cada wrapper delega en su regla upstream sin messageIds huérfanos", async () => {
+  async function verifiesWrappedRules() {
     const { default: tseslint } = await import("typescript-eslint");
     // El tipo CompatiblePlugin de tseslint no expone `rules`: se reafirma a
     // la forma real del plugin para leer las reglas originales.
@@ -524,7 +544,12 @@ describe("reglas type-driven (wrappers de typescript-eslint) en presets tipados"
 
       expect(wrapped.create, skapxdName).toBeTypeOf("function");
     }
-  });
+  }
+
+  it(
+    "cada wrapper delega en su regla upstream sin messageIds huérfanos",
+    verifiesWrappedRules,
+  );
 
   it("los mensajes principales enseñan en español", () => {
     const messageOf = (name: string, id: string) =>

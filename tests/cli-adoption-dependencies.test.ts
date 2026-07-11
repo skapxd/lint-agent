@@ -69,7 +69,7 @@ describe("dependencias de adopcion", () => {
     expect(unknownRuleIds).toEqual([]);
   });
 
-  it("calcula capas aciclicas con el histograma del spike", () => {
+  function verifiesAcyclicLayerHistogram() {
     expect(() => computeRuleLayers(RULE_DEPENDENCIES)).not.toThrow();
 
     const layers = computeRuleLayers(RULE_DEPENDENCIES);
@@ -89,7 +89,12 @@ describe("dependencias de adopcion", () => {
     expect(histogram.get(0)).toBe(65);
     expect(histogram.get(1)).toBe(8);
     expect([...histogram.keys()].sort()).toEqual([0, 1]);
-  });
+  }
+
+  it(
+    "calcula capas aciclicas con el histograma del spike",
+    verifiesAcyclicLayerHistogram,
+  );
 
   it("rechaza ciclos en aristas futuras", () => {
     expect(() =>

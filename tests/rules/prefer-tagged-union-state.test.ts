@@ -2,7 +2,7 @@ import { expect, it } from "vitest";
 import { rules } from "../../src/shared/rules";
 import { createRuleTester } from "../rule-tester";
 
-it("split* da el criterio union-vs-reducer y lo comparte con tooManyUseState", () => {
+function verifiesTaggedUnionMessages() {
   const messages = rules["prefer-tagged-union-state"]!.meta.messages ?? {};
   const tooManyUseState = rules["max-hook-size"]!.meta.messages?.tooManyUseState ?? "";
 
@@ -16,7 +16,12 @@ it("split* da el criterio union-vs-reducer y lo comparte con tooManyUseState", (
   // Coherencia entre reglas hermanas: ambas usan EXACTAMENTE "union discriminada".
   expect(tooManyUseState).toContain("union discriminada");
   expect(tooManyUseState).toContain("useReducer");
-});
+}
+
+it(
+  "split* da el criterio union-vs-reducer y lo comparte con tooManyUseState",
+  verifiesTaggedUnionMessages,
+);
 
 createRuleTester().run(
   "prefer-tagged-union-state",
