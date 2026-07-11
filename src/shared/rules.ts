@@ -11,6 +11,7 @@ import { resultErrorRequiresHandling } from "#/rules/result-error-requires-handl
 import { resultErrorRequiresModeling } from "#/rules/result-error-requires-modeling";
 import { trysafeOnlyAtBoundary } from "#/rules/trysafe-only-at-boundary";
 import { classPropertiesRequireReadonly } from "#/rules/class-properties-require-readonly";
+import { complexInlineCallbackRequiresName } from "#/rules/complex-inline-callback-requires-name";
 import { denseFunctionRequiresComment } from "#/rules/dense-function-requires-comment";
 import { noAccessors } from "#/rules/no-accessors";
 import type { RuleModule } from "#/utils/rule-authoring/rule-types";
@@ -74,6 +75,7 @@ import { untrustedModuleRequiresAdapter } from "#/rules/untrusted-module-require
 
 export const rules = {
   "class-properties-require-readonly": classPropertiesRequireReadonly,
+  "complex-inline-callback-requires-name": complexInlineCallbackRequiresName,
   "dense-function-requires-comment": denseFunctionRequiresComment,
   "filename-matches-root-function": filenameMatchesRootFunction,
   "no-accessors": noAccessors,
