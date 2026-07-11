@@ -56,6 +56,7 @@ export function createNestConfigs(
         // class-transformer para anidados); las exenciones de output son
         // opt-in por configuracion, no convencion de nombres.
         "skapxd/nest-dto-requires-validation": "error",
+        "skapxd/nest-layer-import-direction": "error",
         "skapxd/nest-module-layer-folders": "error",
         // El controller es la frontera: consume el Result con match() y
         // traduce a DTO o HttpException. Devolverlo crudo serializa el

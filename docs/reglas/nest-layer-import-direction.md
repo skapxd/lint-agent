@@ -51,7 +51,7 @@ Opciones:
 
 Cada entrada declarada en `allowedLayerImports` reemplaza únicamente la política de esa capa; las capas no declaradas conservan el default. Los specs colocados (`**/*.spec.ts`, `**/*.test.ts`, `**/*.e2e-spec.ts`) siempre están permitidos y `allowFilePatterns` agrega exenciones del proyecto.
 
-La regla está registrada como opt-in mientras #192 calibra la señal en proyectos reales; no está activa en `skapxd/nest/base`. No tiene autofix ni suggestions: invertir una dependencia puede exigir crear puertos, mover contratos y ajustar providers, y una reescritura parcial sería incorrecta.
+La regla está activa como `error` en `skapxd/nest/base`. No tiene autofix ni suggestions: invertir una dependencia puede exigir crear puertos, mover contratos y ajustar providers, y una reescritura parcial sería incorrecta.
 
 ---
 

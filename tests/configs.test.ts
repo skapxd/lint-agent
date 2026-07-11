@@ -307,6 +307,26 @@ describe("severidades", () => {
 });
 
 describe("preset nest", () => {
+  it("activa nest-layer-import-direction solo en Nest", () => {
+    const nestBase = findConfigByName(plugin.configs.nest, "skapxd/nest/base");
+    const nonNestConfigs = [
+      plugin.configs.base,
+      plugin.configs.backend,
+      plugin.configs.frontend,
+      plugin.configs.package,
+      ...plugin.configs.next,
+      ...plugin.configs.astro,
+    ];
+
+    expect(nestBase.rules?.["skapxd/nest-layer-import-direction"]).toBe("error");
+    for (const config of nonNestConfigs) {
+      expect(
+        config.rules?.["skapxd/nest-layer-import-direction"],
+        config.name,
+      ).toBeUndefined();
+    }
+  });
+
   it("exime los entrypoints del bootstrap en await-requires-result", () => {
     const nestBase = plugin.configs.nest.find(
       (config: { name: string }) => config.name === "skapxd/nest/base",
@@ -337,9 +357,6 @@ describe("preset nest", () => {
     expect(nestBase.rules["skapxd/nest-dto-no-inline-object"]).toBe("error");
     expect(nestBase.rules["skapxd/nest-dto-requires-api-property"]).toBe("error");
     expect(nestBase.rules["skapxd/nest-module-layer-folders"]).toBe("error");
-    expect(
-      nestBase.rules["skapxd/nest-layer-import-direction"],
-    ).toBeUndefined();
     expect(nestBase.rules["skapxd/nest-no-result-response"]).toBe("error");
     expect(nestBase.rules["skapxd/nest-use-case-no-result-response"]).toBe("error");
   });
