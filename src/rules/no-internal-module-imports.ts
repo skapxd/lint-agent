@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, statSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import {
   dirname,
   join,
@@ -8,12 +8,12 @@ import {
 } from "node:path";
 import type { TSESTree } from "@typescript-eslint/utils";
 import { trySafe } from "@skapxd/result";
+import { resolveLocalImportFile } from "#/utils/imports/resolve-local-import-file";
 import { getNoInternalModuleImportsOptions } from "#/utils/options/get-no-internal-module-imports-options";
 import { matchesAnyGlob } from "#/utils/matching/matches-any-glob";
 import { isInsideDirectory } from "#/utils/project/is-inside-directory";
 import type { RuleContext, RuleModule } from "#/utils/rule-authoring/rule-types";
 
-const sourceExtensions = [".ts", ".tsx", ".js", ".jsx", ".mts", ".cts", ".mjs", ".cjs"];
 const relativeExportPattern =
   /\bexport\s+(?:type\s+)?(?:\*|\{[^}]*\})\s+from\s+["']\.[^"']*["']/;
 
@@ -69,53 +69,6 @@ export const noInternalModuleImports: RuleModule = {
 
     function normalizePath(pathName: string) {
       return pathName.replaceAll(pathSeparator, "/");
-    }
-
-    function resolveExistingFile(candidate: string) {
-      const exactCandidateIsFile =
-        existsSync(candidate) && statSync(candidate).isFile();
-      if (exactCandidateIsFile) {
-        return candidate;
-      }
-
-      for (const extension of sourceExtensions) {
-        const fileCandidate = `${candidate}${extension}`;
-        const fileCandidateIsFile =
-          existsSync(fileCandidate) && statSync(fileCandidate).isFile();
-        if (fileCandidateIsFile) {
-          return fileCandidate;
-        }
-      }
-
-      for (const indexFileName of options.indexFileNames) {
-        const indexCandidate = join(candidate, indexFileName);
-        const indexCandidateIsFile =
-          existsSync(indexCandidate) && statSync(indexCandidate).isFile();
-        if (indexCandidateIsFile) {
-          return indexCandidate;
-        }
-      }
-
-      return null;
-    }
-
-    function resolveImportFile(importSource: string) {
-      const relativeImport = importSource.startsWith(".");
-      if (relativeImport) {
-        return resolveExistingFile(resolve(dirname(absoluteFilename), importSource));
-      }
-
-      const aliasPrefix = options.aliasPrefixes.find((prefix) =>
-        importSource.startsWith(prefix),
-      );
-      const lacksAliasPrefix = !aliasPrefix;
-      if (lacksAliasPrefix) {
-        return null;
-      }
-
-      return resolveExistingFile(
-        resolve(sourceRoot, importSource.slice(aliasPrefix.length)),
-      );
     }
 
     function findModuleBoundary(importFile: string) {
@@ -183,11 +136,18 @@ export const noInternalModuleImports: RuleModule = {
       }
 
       const importSource = source.value;
-      const importFile = resolveImportFile(importSource);
-      const unresolvedImport = !importFile;
-      if (unresolvedImport) {
+      const resolution = resolveLocalImportFile({
+        aliasPrefixes: options.aliasPrefixes,
+        importerFile: absoluteFilename,
+        importSource,
+        indexFileNames: options.indexFileNames,
+        sourceRoot,
+      });
+      const lacksResolvedImport = resolution.kind !== "resolved";
+      if (lacksResolvedImport) {
         return;
       }
+      const importFile = resolution.filePath;
 
       const boundary = findModuleBoundary(importFile);
       const lacksBoundary = !boundary;

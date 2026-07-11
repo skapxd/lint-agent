@@ -85,9 +85,9 @@ describe("dependencias de adopcion", () => {
       histogram.set(layer, (histogram.get(layer) ?? 0) + 1);
     }
 
-    expect(edgeCount).toBe(9);
+    expect(edgeCount).toBe(10);
     expect(histogram.get(0)).toBe(65);
-    expect(histogram.get(1)).toBe(8);
+    expect(histogram.get(1)).toBe(9);
     expect([...histogram.keys()].sort()).toEqual([0, 1]);
   }
 
@@ -114,6 +114,8 @@ describe("dependencias de adopcion", () => {
     expect(getRuleLayer("skapxd/untrusted-module-requires-adapter")).toBe(1);
     expect(getRuleLayer("skapxd/no-ad-hoc-ok-result")).toBe(0);
     expect(getRuleLayer("skapxd/await-requires-result")).toBe(1);
+    expect(getRuleLayer("skapxd/nest-layer-import-direction")).toBe(1);
+    expect(getRuleLayer("skapxd/nest-module-layer-folders")).toBe(0);
     expect(getRuleLayer("skapxd/desconocida")).toBe(0);
   });
 

@@ -40,6 +40,7 @@ Cada ficha de regla mantiene un par minimo de ejemplos marcados: `❌` para el c
 | [`skapxd/nest-dto-no-inline-object`](./nest-dto-no-inline-object.md) | Los objetos anidados de un DTO se modelan como clases DTO, no como tipos inline ni `type: Object`. Preset `nest`. |
 | [`skapxd/nest-dto-requires-api-property`](./nest-dto-requires-api-property.md) | Toda propiedad pública de un `*.dto.ts` lleva `@ApiProperty`: el contrato HTTP se documenta en el DTO. Preset `nest`. |
 | [`skapxd/nest-dto-requires-validation`](./nest-dto-requires-validation.md) | Todo DTO valida en runtime: class-validator en cada propiedad, `@IsOptional` si hay `?`, `@Type` junto a `@ValidateNested`; zod/valibot para uniones. Preset `nest`. |
+| [`skapxd/nest-layer-import-direction`](./nest-layer-import-direction.md) | La matriz de capas Nest impide que `domain`/`application` dependan de transporte o adaptadores concretos. Preset `nest`. |
 | [`skapxd/nest-module-layer-folders`](./nest-module-layer-folders.md) | Los módulos Nest declaran `http`, `application`, `domain`, `infrastructure` y `contracts` en el árbol; la raíz queda para el module file e `index.ts`. Preset `nest`. |
 | [`skapxd/nest-no-direct-instantiation`](./nest-no-direct-instantiation.md) | Prohíbe `new` sobre imports internos en services: las dependencias entran por el constructor (DI). Preset `nest`. |
 | [`skapxd/nest-no-inline-query-params`](./nest-no-inline-query-params.md) | Dos o más `@Query('x')`/`@ApiQuery` individuales son un DTO disfrazado: consolida en `@Query() filters: Dto`. Preset `nest`. |
