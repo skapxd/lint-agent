@@ -32,4 +32,8 @@ export const RULE_DEPENDENCIES: RuleDependencyMap = {
   "skapxd/nest-dto-requires-validation": [
     "skapxd/nest-validation-pipe-config",
   ],
+  // docs/reglas/nest-layer-import-direction.md:3: primero el arbol declara las capas, despues la matriz gobierna sus imports.
+  "skapxd/nest-layer-import-direction": [
+    "skapxd/nest-module-layer-folders",
+  ],
 };

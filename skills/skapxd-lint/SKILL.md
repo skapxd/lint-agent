@@ -136,10 +136,11 @@ La prioridad estatica se calcula por posicion en este listado: numero menor = se
 67. [`skapxd/filename-matches-root-function`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/filename-matches-root-function.md)
 68. [`skapxd/nest-dto-requires-api-property`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/nest-dto-requires-api-property.md)
 69. [`skapxd/nest-dto-requires-validation`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/nest-dto-requires-validation.md)
-70. [`skapxd/nest-no-swagger-in-controllers`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/nest-no-swagger-in-controllers.md)
-71. [`skapxd/no-impossible-branch`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/no-impossible-branch.md)
-72. [`skapxd/prefer-schema-validation`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/prefer-schema-validation.md)
-73. [`skapxd/untrusted-module-requires-adapter`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/untrusted-module-requires-adapter.md)
+70. [`skapxd/nest-layer-import-direction`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/nest-layer-import-direction.md)
+71. [`skapxd/nest-no-swagger-in-controllers`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/nest-no-swagger-in-controllers.md)
+72. [`skapxd/no-impossible-branch`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/no-impossible-branch.md)
+73. [`skapxd/prefer-schema-validation`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/prefer-schema-validation.md)
+74. [`skapxd/untrusted-module-requires-adapter`](https://github.com/skapxd/lint-agent/blob/main/docs/reglas/untrusted-module-requires-adapter.md)
 
 Flujo:
 
