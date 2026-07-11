@@ -73,7 +73,9 @@ export const nestDtoNoInlineObject: RuleModule = {
           hasArrayInlineObjectType ||
           hasGenericArrayInlineObjectType;
 
-        const hasOpaqueObjectApiProperty = node.decorators.some((decorator) => {
+        function hasOpaqueObjectApiPropertyDecorator(
+          decorator: TSESTree.Decorator,
+        ) {
           const decoratorName = getDecoratorName(decorator);
           const isTrackedApiProperty = Boolean(
             decoratorName &&
@@ -125,7 +127,10 @@ export const nestDtoNoInlineObject: RuleModule = {
             !hasSchemaProperties;
 
           return isObjectIdentifier || isOpaqueObjectLiteral;
-        });
+        }
+        const hasOpaqueObjectApiProperty = node.decorators.some(
+          hasOpaqueObjectApiPropertyDecorator,
+        );
 
         const usesOpaqueObject = hasInlineObjectType || hasOpaqueObjectApiProperty;
         if (!usesOpaqueObject) {

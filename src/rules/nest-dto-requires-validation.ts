@@ -110,12 +110,12 @@ export const nestDtoRequiresValidation: RuleModule = {
           return;
         }
 
-        const declaresOptional = decoratorNames.some(
-          (name: string | null) =>
-            typeof name === "string" &&
+        function isOptionalDecoratorName(name: string | null) {
+          return typeof name === "string" &&
             validatorNames.has(name) &&
-            options.optionalDecoratorNames.includes(name),
-        );
+            options.optionalDecoratorNames.includes(name);
+        }
+        const declaresOptional = decoratorNames.some(isOptionalDecoratorName);
 
         const needsIsOptionalDecorator = node.optional && !declaresOptional;
         if (needsIsOptionalDecorator) {

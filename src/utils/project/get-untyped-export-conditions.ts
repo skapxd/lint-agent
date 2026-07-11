@@ -1,6 +1,7 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { isExportCondition } from "#/utils/project/is-export-condition";
+import { isExportValue } from "#/utils/project/is-export-value";
 
 type ExportValue = string | Record<string, unknown>;
 
@@ -27,14 +28,20 @@ export function getUntypedExportConditions(
   packageDir: string,
 ): UntypedExportViolation[] {
   const violations: UntypedExportViolation[] = [];
-  const entries: Array<[string, ExportValue]> =
-    "import" in exportsField || "require" in exportsField
-      ? [[".", exportsField]]
-      : Object.entries(exportsField).filter(
-          (entry): entry is [string, ExportValue] =>
-            typeof entry[1] === "string" ||
-            (typeof entry[1] === "object" && entry[1] !== null),
-        );
+  const entries: Array<[string, ExportValue]> = [];
+  const hasRootConditions = "import" in exportsField || "require" in exportsField;
+  if (hasRootConditions) {
+    entries.push([".", exportsField]);
+  }
+
+  if (!hasRootConditions) {
+    for (const [subpath, value] of Object.entries(exportsField)) {
+      const exportEntries: Array<[string, ExportValue]> = isExportValue(value)
+        ? [[subpath, value]]
+        : [];
+      entries.push(...exportEntries);
+    }
+  }
 
   for (const [subpath, value] of entries) {
     const isSubpathPackageJson = subpath === "./package.json";

@@ -17,17 +17,19 @@ export function formatCompactUnattributedFindings({
     return [];
   }
 
+  function formatFinding(finding: UnattributedFindingOutput) {
+    const relativeFilePath = formatCompactPath(
+      finding.filePath,
+      targetPath ?? null,
+    );
+    const ruleId = finding.ruleId ?? "parse";
+    const message = formatCompactMessage(finding.message);
+
+    return `  ${relativeFilePath}:${finding.line}:${finding.column}  ${finding.category}  ${ruleId}  ${message}  ${finding.actionability}`;
+  }
+
   return [
     "no atribuidos:",
-    ...findings.map((finding) => {
-      const relativeFilePath = formatCompactPath(
-        finding.filePath,
-        targetPath ?? null,
-      );
-      const ruleId = finding.ruleId ?? "parse";
-      const message = formatCompactMessage(finding.message);
-
-      return `  ${relativeFilePath}:${finding.line}:${finding.column}  ${finding.category}  ${ruleId}  ${message}  ${finding.actionability}`;
-    }),
+    ...findings.map(formatFinding),
   ];
 }

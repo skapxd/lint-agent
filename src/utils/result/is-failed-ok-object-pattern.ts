@@ -7,13 +7,18 @@ export function isFailedOkObjectPattern(node: TSESTree.Node | undefined) {
     return false;
   }
 
-  return node.properties.some((property: TSESTree.Node) => {
+  for (const property of node.properties) {
     const isOkProperty = property.type === "Property" &&
       isObjectPropertyNamed(property, "ok");
     const hasFalseValue = property.type === "Property" &&
       property.value.type === "Literal" &&
       property.value.value === false;
 
-    return isOkProperty && hasFalseValue;
-  });
+    const isFailedOkProperty = isOkProperty && hasFalseValue;
+    if (isFailedOkProperty) {
+      return true;
+    }
+  }
+
+  return false;
 }

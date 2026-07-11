@@ -184,7 +184,7 @@ describe("contrato de errores: await-requires-result manda", () => {
       expect(
         preset.rules?.["skapxd/complex-inline-callback-requires-name"],
         preset.name,
-      ).toBeUndefined();
+      ).toBe("error");
       expect(
         preset.rules?.["skapxd/one-root-unit-per-file"],
         preset.name,

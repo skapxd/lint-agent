@@ -27,12 +27,18 @@ export function hasInjectableDecorator(identifier: TSESTree.Node, typeContext: T
     ? (ts.getDecorators(declaration) ?? [])
     : [];
 
-  return decorators.some((decorator: ts.Decorator) => {
+  for (const decorator of decorators) {
     const expression = decorator.expression;
     const callee = ts.isCallExpression(expression)
       ? expression.expression
       : expression;
 
-    return ts.isIdentifier(callee) && callee.text === "Injectable";
-  });
+    const isInjectableDecorator =
+      ts.isIdentifier(callee) && callee.text === "Injectable";
+    if (isInjectableDecorator) {
+      return true;
+    }
+  }
+
+  return false;
 }

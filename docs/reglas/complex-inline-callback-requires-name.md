@@ -29,8 +29,8 @@ La V1 es AST-only y no cubre wrappers transparentes de TypeScript como `as` o `s
 
 | Preset | Estado |
 | --- | --- |
-| `shared.base` / `base-rules` | Opt-in mientras #201 espera la decisión del dueño posterior a la medición. |
-| Presets que heredan `shared.base` | Opt-in. |
+| `shared.base` / `base-rules` | `error`. |
+| Presets que heredan `shared.base` | `error`. |
 
 | Axioma | Relación |
 | --- | --- |

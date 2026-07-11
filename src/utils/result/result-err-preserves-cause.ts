@@ -21,12 +21,14 @@ export function resultErrPreservesCause(node: unknown, resultName: string) {
     return false;
   }
 
-  return unwrappedNode.properties.some((property: TSESTree.Node) => {
+  function preservesCause(property: TSESTree.ObjectLiteralElement) {
     const lacksCauseProperty = property.type !== "Property" || !isPropertyKeyNamed(property, "cause");
     if (lacksCauseProperty) {
       return false;
     }
 
     return isAstNode(property.value) && isResultErrorMember(property.value, resultName);
-  });
+  }
+
+  return unwrappedNode.properties.some(preservesCause);
 }
