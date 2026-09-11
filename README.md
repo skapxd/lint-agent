@@ -1,6 +1,7 @@
 # Lint Agent
 
-[![CI/CD](https://github.com/skapxd/lint-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/skapxd/lint-agent/actions/workflows/ci.yml)
+[![CI/CD con GuardDog](https://github.com/skapxd/lint-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/skapxd/lint-agent/actions/workflows/ci.yml)
+[![Socket: paquete npm](https://badge.socket.dev/npm/package/@skapxd/lint-agent/1.5.0)](https://socket.dev/npm/package/@skapxd/lint-agent/overview/1.5.0)
 [![CodeQL](https://github.com/skapxd/lint-agent/actions/workflows/codeql.yml/badge.svg)](https://github.com/skapxd/lint-agent/actions/workflows/codeql.yml)
 [![Dependency Review](https://github.com/skapxd/lint-agent/actions/workflows/dependency-review.yml/badge.svg)](https://github.com/skapxd/lint-agent/actions/workflows/dependency-review.yml)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/skapxd/lint-agent/badge)](https://securityscorecards.dev/viewer/?uri=github.com/skapxd/lint-agent)
@@ -11,6 +12,13 @@
 Reglas de ESLint para que los agentes no negocien la arquitectura de tu proyecto.
 
 Lint Agent convierte opiniones de arquitectura en guardrails ejecutables: archivos pequenos, nombres semanticos, errores modelados con `Result`, causas preservadas y fronteras explicitas. El paquete npm se publica como `@skapxd/lint-agent`. El README queda como puerta de entrada; el detalle vive en `docs/` para que npm no entierre lo importante en 2.400 lineas.
+
+## Evidencia de seguridad antes de instalar
+
+- **Socket — paquete npm:** el badge abre el análisis público de la versión publicada indicada en su URL. Incluye las señales del paquete distribuido; no representa un escaneo de todos los archivos de este repositorio. La integración oficial de dependencias para PRs está preparada en `socket.yml`, pero su instalación y sus checks siguen **pendientes de verificación** ([paso externo](https://github.com/skapxd/lint-agent/blob/main/docs/seguridad-paquete.md#socket-en-pull-requests)).
+- **GuardDog — fuentes y distribuible:** en cada PR, push a `main` y tag de publicación, el job **GuardDog · sources & npm tarball** del [workflow CI/CD](https://github.com/skapxd/lint-agent/actions/workflows/ci.yml) analiza `src/`, scripts/configuración del paquete y el contenido del `.tgz` generado por `npm pack`. Consulta sin iniciar sesión la [evidencia pública del 11-09-2026](https://github.com/skapxd/lint-agent/issues/218#issuecomment-5635537780), identificada por commit y SHA-256. Para ejecuciones posteriores, **Summary** muestra fecha, escáner y hallazgos; **Artifacts → security-reports** conserva JSON y diagnósticos durante 90 días. GitHub puede exigir sesión para esos detalles. El badge CI/CD refleja todo ese workflow, incluido GuardDog; un fallo general no identifica por sí solo qué comprobación falló.
+
+La publicación queda bloqueada ante amenazas, riesgos o errores del escáner y consume el mismo `.tgz` analizado, verificado por SHA-256. Las capacidades observadas (por ejemplo, leer archivos) permanecen visibles y no equivalen por sí solas a malware. Consulta [alcance, criterio de bloqueo, límites y reproducción](https://github.com/skapxd/lint-agent/blob/main/docs/seguridad-paquete.md). Sin detecciones no garantiza ausencia de malware; cada resultado corresponde al commit o versión indicados.
 
 ## Skill para agentes
 

@@ -7,3 +7,7 @@ rule-timing-results.md
 # Los stubs de tipos de los fixtures SI se versionan: la regla
 # package-requires-typed-exports verifica su existencia en disco.
 !tests/fixtures/**/dist
+
+# Artefactos locales del gate de publicacion.
+/release-artifact/
+/security-reports/
