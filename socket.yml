@@ -1,0 +1,8 @@
+# La App debe instalarse para skapxd/lint-agent; este archivo no la instala.
+version: 2
+githubApp:
+  enabled: true
+  pullRequestAlertsEnabled: true
+  projectReportsEnabled: true
+  dependencyOverviewEnabled: true
+  disableCommentsAndCheckRuns: false

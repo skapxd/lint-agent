@@ -82,7 +82,10 @@
     "test:coverage": "pnpm test",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
-    "security:audit": "pnpm audit --audit-level low"
+    "security:audit": "pnpm audit --audit-level low",
+    "security:badge": "node scripts/sync-socket-badge.mjs",
+    "version": "node scripts/sync-socket-badge.mjs && git add README.md",
+    "test:security": "node --test scripts/security/*.test.mjs"
   },
   "keywords": [
     "lint-agent",
